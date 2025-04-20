@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Tests\Unit\Dispatcher;
+namespace Boson\Tests\Unit\Dispatcher;
 
-use Serafim\Boson\Dispatcher\DelegateEventListener;
-use Serafim\Boson\Dispatcher\EventListener;
+use Boson\Dispatcher\DelegateEventListener;
+use Boson\Dispatcher\EventListener;
 use PHPUnit\Framework\Attributes\Group;
-use Serafim\Boson\Tests\Unit\Dispatcher\Stub\EventListenerContainerStub;
+use Boson\Tests\Unit\Dispatcher\Stub\EventListenerContainerStub;
 
 #[Group('dispatcher')]
 final class GCEventListenerTest extends DispatcherTestCase

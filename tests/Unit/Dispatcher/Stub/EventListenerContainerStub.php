@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Tests\Unit\Dispatcher\Stub;
+namespace Boson\Tests\Unit\Dispatcher\Stub;
 
-use Serafim\Boson\Dispatcher\EventDispatcherInterface;
-use Serafim\Boson\Dispatcher\EventListener;
-use Serafim\Boson\Dispatcher\EventListenerInterface;
-use Serafim\Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
-use Serafim\Boson\Dispatcher\Subscription\SubscriptionInterface;
+use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListener;
+use Boson\Dispatcher\EventListenerInterface;
+use Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
+use Boson\Dispatcher\Subscription\SubscriptionInterface;
 
 final readonly class EventListenerContainerStub implements
     EventListenerInterface,
