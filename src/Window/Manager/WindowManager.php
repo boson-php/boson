@@ -11,6 +11,7 @@ use Boson\Dispatcher\EventListener;
 use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\GarbageCollector\ObservableWeakSet;
+use Boson\Window\Color\ColorFactoryInterface;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Event\WindowCreated;
 use Boson\Window\Window;
@@ -56,6 +57,7 @@ final class WindowManager implements
         private readonly LibSaucer $api,
         private readonly Application $app,
         private readonly ProcessUnlockPlaceholder $placeholder,
+        private readonly ColorFactoryInterface $colors,
         WindowCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
@@ -90,6 +92,7 @@ final class WindowManager implements
         $this->windows->attach($window = new Window(
             api: $this->api,
             placeholder: $this->placeholder,
+            colors: $this->colors,
             app: $this->app,
             info: $info,
             dispatcher: $this->events,

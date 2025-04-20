@@ -41,8 +41,9 @@ And much easier than that =)
     - [Window Resizing](#window-resizing)
     - [Window Max Size](#window-max-size)
     - [Window Min Size](#window-min-size)
-    - [Window Dark Mode](#window-dark-mode)
     - [Window Decorations](#window-decorations)
+    - [Window Color](#window-color)
+    - [Window Dark Mode](#window-dark-mode)
   - **WebView**
     - [HTML Content](#webview-html-content)
     - [Navigation to URL](#webview-url-navigation)
@@ -387,6 +388,32 @@ echo $app->window->min; // Will display the minimum allowed window size
 $app->window->min->update(1024, 768);
 ```
 
+
+### Window Color
+
+To set the window background color, use the `$background` window's property.
+
+```php
+$app = new Boson\Application();
+
+echo $app->window->background; // string(7) "#ffffff"
+
+$app->window->background->green = 0;
+$app->window->background->blue = 0;
+
+// OR
+
+$app->window->background->update(green: 0, blue: 0);
+```
+
+You can make the window completely transparent by specifying `0` for the alpha 
+color value. The lower the alpha value, the more transparent the window.
+
+```php
+$app->window->background->alpha = 0;
+```
+
+By default, the window color is completely white (`Color(255, 255, 255, 255)`).
 
 ### Window Dark Mode
 

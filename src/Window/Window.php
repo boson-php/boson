@@ -12,6 +12,9 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Internal\WebViewCreateInfo\FlagsListFormatter;
 use Boson\WebView\WebView;
+use Boson\Window\Color\ColorFactoryInterface;
+use Boson\Window\Color\Exception\InvalidColorException;
+use Boson\Window\Internal\Color\ManagedColor;
 use Boson\Window\Internal\Size\ManagedWindowMaxBounds;
 use Boson\Window\Internal\Size\ManagedWindowMinBounds;
 use Boson\Window\Internal\Size\ManagedWindowSize;
@@ -56,6 +59,89 @@ final class Window
     }
 
     /**
+     * Contains current window background color.
+     */
+    public MutableColorInterface $background {
+        /**
+         * Returns mutable {@see MutableColorInterface} window color value object.
+         *
+         * ```
+         * echo $window->background; // string(9) "#FFFFFFFF"
+         * ```
+         *
+         * Since the property returns mutable window background color, they can
+         * be changed explicitly.
+         *
+         * ```
+         * $window->background->red   = 128;
+         * $window->background->green = 128;
+         * $window->background->blue  = 128
+         * $window->background->alpha = 0;
+         * ```
+         *
+         * Or using simultaneously update.
+         *
+         * ```
+         * $window->background->update(128, 128, 128, 0);
+         * ```
+         */
+        get => $this->background;
+        /**
+         * Allows to update window background color using any
+         * {@see ColorInterface} (for example {@see Color}) instance.
+         *
+         * ```
+         * $window->background = new Color(red: 128, blue: 128);
+         * ```
+         *
+         * The background color can also be set from the {@see string};
+         * The allowed values are defined in the {@see ColorFactoryInterface}.
+         *
+         * ```
+         * $window->background = '#DEADBE';   // new Color(222, 173, 190)
+         * $window->background = '#DEADBEEF'; // new Color(222, 173, 190, 239)
+         * ```
+         *
+         * The colors can also be passed between different window instances
+         * and window properties.
+         *
+         * ```
+         * $window1->background = $window2->background;
+         * ```
+         *
+         * @uses \Boson\Window\Color\ColorFactoryInterface::createFromString()
+         *       to create color from string.
+         *
+         * @param non-empty-string|ColorInterface $color
+         *
+         * @throws InvalidColorException in case of passed color string value
+         *         format cannot be recognized
+         */
+        set(string|ColorInterface $color) {
+            if ($color instanceof ManagedColor) {
+                $this->background = $color;
+
+                return;
+            }
+
+            if (\is_string($color) && $color !== '') {
+                $color = $this->colors->createFromString($color)
+                    ?? throw new InvalidColorException(\sprintf(
+                        'Could not recognize "%s" color format',
+                        $color,
+                    ));
+            }
+
+            $this->background->update(
+                red: $color->red,
+                green: $color->green,
+                blue: $color->blue,
+                alpha: $color->alpha,
+            );
+        }
+    }
+
+    /**
      * Contains current window size.
      */
     public MutableSizeInterface $size {
@@ -86,7 +172,7 @@ final class Window
          * (for example {@see Size}) instance.
          *
          * ```
-         * $window->min = new Size(640, 480);
+         * $window->size = new Size(640, 480);
          * ```
          *
          * The sizes can also be passed between different window instances
@@ -363,6 +449,10 @@ final class Window
          */
         private readonly ProcessUnlockPlaceholder $placeholder,
         /**
+         * Contains factory to create color instances.
+         */
+        private readonly ColorFactoryInterface $colors,
+        /**
          * Gets parent application instance to which this window belongs.
          */
         public readonly Application $app,
@@ -376,6 +466,7 @@ final class Window
 
         $this->events = new DelegateEventListener($dispatcher);
         $this->size = new ManagedWindowSize($this->api, $this->id->ptr);
+        $this->background = new ManagedColor($this->api, $this->id->ptr);
         $this->min = new ManagedWindowMinBounds($this->api, $this->id->ptr);
         $this->max = new ManagedWindowMaxBounds($this->api, $this->id->ptr);
 
