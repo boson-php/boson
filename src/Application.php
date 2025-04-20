@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Boson;
 
-use FFI\CData;
-use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
 use Boson\Event\ApplicationStarted;
@@ -28,6 +26,8 @@ use Boson\WebView\WebView;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
 use Boson\Window\Window;
+use FFI\CData;
+use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 
 /**
  * @api

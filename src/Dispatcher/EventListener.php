@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Boson\Dispatcher;
 
-use Psr\EventDispatcher\StoppableEventInterface;
 use Boson\Dispatcher\Subscription\CancellableSubscription;
 use Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
 use Boson\Dispatcher\Subscription\SubscriptionInterface;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
 use Boson\Shared\IdValueGenerator\IntValueGenerator;
+use Psr\EventDispatcher\StoppableEventInterface;
 
 class EventListener implements EventListenerInterface, EventDispatcherInterface
 {

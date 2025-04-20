@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Internal;
 
-use FFI\CData;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerPolicy;
@@ -24,6 +23,7 @@ use Boson\WebView\Event\WebViewTitleChanging;
 use Boson\WebView\State;
 use Boson\WebView\Url\UrlParserInterface;
 use Boson\WebView\WebView;
+use FFI\CData;
 
 /**
  * @internal this is an internal library class, please do not use it in your code

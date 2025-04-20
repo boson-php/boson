@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Scripts;
 
-use JetBrains\PhpStorm\Language;
 use Boson\Internal\Saucer\LibSaucer;
+use JetBrains\PhpStorm\Language;
 
 final readonly class WebViewScript implements \Stringable
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\Shared\Id;
 
-use FFI\CData;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\ValueObject\ValueObjectInterface;
+use FFI\CData;
 
 /**
  * @template-implements IntIdInterface<int>

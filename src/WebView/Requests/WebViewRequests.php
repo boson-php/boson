@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Requests;
 
-use JetBrains\PhpStorm\Language;
 use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
 use Boson\Shared\IdValueGenerator\IntValueGenerator;
@@ -12,6 +11,7 @@ use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Requests\Exception\StalledRequestException;
 use Boson\WebView\Requests\Exception\UnprocessableRequestException;
 use Boson\WebView\WebView;
+use JetBrains\PhpStorm\Language;
 
 final class WebViewRequests
 {

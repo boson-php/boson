@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Scripts;
 
-use FFI\CData;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Id\StructPointerId;
+use FFI\CData;
 
 final readonly class WebViewScriptId extends StructPointerId
 {

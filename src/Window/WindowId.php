@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\Window;
 
-use FFI\CData;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Id\StructPointerId;
+use FFI\CData;
 
 final readonly class WindowId extends StructPointerId
 {

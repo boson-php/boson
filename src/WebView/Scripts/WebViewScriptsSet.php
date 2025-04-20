@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Scripts;
 
-use FFI\CData;
-use JetBrains\PhpStorm\Language;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerLoadTime;
 use Boson\WebView\WebView;
+use FFI\CData;
+use JetBrains\PhpStorm\Language;
 
 /**
  * @template-implements \IteratorAggregate<mixed, WebViewScript>

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\Dispatcher;
 
-use Psr\EventDispatcher\ListenerProviderInterface;
 use Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
 use Boson\Dispatcher\Subscription\SubscriptionInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
 
 interface EventListenerInterface extends ListenerProviderInterface
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\Internal;
 
-use FFI\CData;
 use Boson\Application;
 use Boson\Internal\Saucer\LibSaucer;
+use FFI\CData;
 
 /**
  * Provides a placeholder to unlock the process workflow.

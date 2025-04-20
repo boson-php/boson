@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\WebView;
 
-use FFI\CData;
-use JetBrains\PhpStorm\Language;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
 use Boson\Internal\ProcessUnlockPlaceholder;
@@ -21,6 +18,9 @@ use Boson\WebView\Url\MemoizedUrlParser;
 use Boson\WebView\Url\NativeUrlParser;
 use Boson\WebView\Url\UrlParserInterface;
 use Boson\Window\Window;
+use FFI\CData;
+use JetBrains\PhpStorm\Language;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class WebView
 {

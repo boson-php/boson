@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\Window\Internal\Size;
 
-use FFI\CData;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Window\MutableSizeInterface;
 use Boson\Window\Size\SizeStringableProvider;
+use FFI\CData;
 
 /**
  * @internal this is an internal library class, please do not use it in your code

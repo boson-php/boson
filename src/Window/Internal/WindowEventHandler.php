@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Window\Internal;
 
-use FFI\CData;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerPolicy;
@@ -18,6 +17,7 @@ use Boson\Window\Event\WindowMaximized;
 use Boson\Window\Event\WindowMinimized;
 use Boson\Window\Event\WindowResized;
 use Boson\Window\Window;
+use FFI\CData;
 
 /**
  * @internal this is an internal library class, please do not use it in your code

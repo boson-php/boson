@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Window;
 
-use FFI\CData;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
@@ -19,6 +17,8 @@ use Boson\Window\Internal\Size\ManagedWindowMinBounds;
 use Boson\Window\Internal\Size\ManagedWindowSize;
 use Boson\Window\Internal\WindowEventHandler;
 use Boson\Window\Manager\WindowFactoryInterface;
+use FFI\CData;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @api
