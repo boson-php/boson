@@ -1,6 +1,6 @@
 {
     "name": "boson-php/runtime",
-    "description": "Native PHP WebView bridge",
+    "description": "PHP WebView runtime",
     "type": "library",
     "license": "MIT",
     "bin": ["bin/boson"],
