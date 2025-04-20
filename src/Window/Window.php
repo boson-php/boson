@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window;
+namespace Boson\Window;
 
 use FFI\CData;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Serafim\Boson\Application;
-use Serafim\Boson\Dispatcher\DelegateEventListener;
-use Serafim\Boson\Dispatcher\EventListener;
-use Serafim\Boson\Internal\ProcessUnlockPlaceholder;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Shared\Marker\RequiresDealloc;
-use Serafim\Boson\WebView\Internal\WebViewCreateInfo\FlagsListFormatter;
-use Serafim\Boson\WebView\WebView;
-use Serafim\Boson\Window\Internal\Size\ManagedWindowMaxBounds;
-use Serafim\Boson\Window\Internal\Size\ManagedWindowMinBounds;
-use Serafim\Boson\Window\Internal\Size\ManagedWindowSize;
-use Serafim\Boson\Window\Internal\WindowEventHandler;
-use Serafim\Boson\Window\Manager\WindowFactoryInterface;
+use Boson\Application;
+use Boson\Dispatcher\DelegateEventListener;
+use Boson\Dispatcher\EventListener;
+use Boson\Internal\ProcessUnlockPlaceholder;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Shared\Marker\RequiresDealloc;
+use Boson\WebView\Internal\WebViewCreateInfo\FlagsListFormatter;
+use Boson\WebView\WebView;
+use Boson\Window\Internal\Size\ManagedWindowMaxBounds;
+use Boson\Window\Internal\Size\ManagedWindowMinBounds;
+use Boson\Window\Internal\Size\ManagedWindowSize;
+use Boson\Window\Internal\WindowEventHandler;
+use Boson\Window\Manager\WindowFactoryInterface;
 
 /**
  * @api

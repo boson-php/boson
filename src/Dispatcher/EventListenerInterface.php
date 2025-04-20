@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Dispatcher;
+namespace Boson\Dispatcher;
 
 use Psr\EventDispatcher\ListenerProviderInterface;
-use Serafim\Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
-use Serafim\Boson\Dispatcher\Subscription\SubscriptionInterface;
+use Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
+use Boson\Dispatcher\Subscription\SubscriptionInterface;
 
 interface EventListenerInterface extends ListenerProviderInterface
 {

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Binding\Exception;
+namespace Boson\WebView\Binding\Exception;
 
-use Serafim\Boson\WebView\Exception\WebViewException;
+use Boson\WebView\Exception\WebViewException;
 
 class WebViewBindingException extends WebViewException {}

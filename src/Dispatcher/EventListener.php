@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Dispatcher;
+namespace Boson\Dispatcher;
 
 use Psr\EventDispatcher\StoppableEventInterface;
-use Serafim\Boson\Dispatcher\Subscription\CancellableSubscription;
-use Serafim\Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
-use Serafim\Boson\Dispatcher\Subscription\SubscriptionInterface;
-use Serafim\Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
-use Serafim\Boson\Shared\IdValueGenerator\IntValueGenerator;
+use Boson\Dispatcher\Subscription\CancellableSubscription;
+use Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
+use Boson\Dispatcher\Subscription\SubscriptionInterface;
+use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
+use Boson\Shared\IdValueGenerator\IntValueGenerator;
 
 class EventListener implements EventListenerInterface, EventDispatcherInterface
 {

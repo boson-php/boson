@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView;
+namespace Boson\WebView;
 
 use FFI\CData;
 use JetBrains\PhpStorm\Language;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Serafim\Boson\Dispatcher\DelegateEventListener;
-use Serafim\Boson\Dispatcher\EventListener;
-use Serafim\Boson\Internal\ProcessUnlockPlaceholder;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Shared\Marker\BlockingOperation;
-use Serafim\Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
-use Serafim\Boson\WebView\Binding\WebViewFunctionsMap;
-use Serafim\Boson\WebView\Internal\WebViewEventHandler;
-use Serafim\Boson\WebView\Requests\WebViewRequests;
-use Serafim\Boson\WebView\Scripts\WebViewScriptsSet;
-use Serafim\Boson\WebView\Url\MemoizedUrlParser;
-use Serafim\Boson\WebView\Url\NativeUrlParser;
-use Serafim\Boson\WebView\Url\UrlParserInterface;
-use Serafim\Boson\Window\Window;
+use Boson\Dispatcher\DelegateEventListener;
+use Boson\Dispatcher\EventListener;
+use Boson\Internal\ProcessUnlockPlaceholder;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Shared\Marker\BlockingOperation;
+use Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Binding\WebViewFunctionsMap;
+use Boson\WebView\Internal\WebViewEventHandler;
+use Boson\WebView\Requests\WebViewRequests;
+use Boson\WebView\Scripts\WebViewScriptsSet;
+use Boson\WebView\Url\MemoizedUrlParser;
+use Boson\WebView\Url\NativeUrlParser;
+use Boson\WebView\Url\UrlParserInterface;
+use Boson\Window\Window;
 
 final class WebView
 {

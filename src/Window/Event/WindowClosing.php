@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Event;
+namespace Boson\Window\Event;
 
-use Serafim\Boson\Shared\Marker\AsWindowEvent;
+use Boson\Shared\Marker\AsWindowEvent;
 
 #[AsWindowEvent]
 final class WindowClosing extends WindowIntention {}

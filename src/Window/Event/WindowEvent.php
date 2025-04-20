@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Event;
+namespace Boson\Window\Event;
 
-use Serafim\Boson\Dispatcher\Event;
-use Serafim\Boson\Window\Window;
+use Boson\Dispatcher\Event;
+use Boson\Window\Window;
 
 /**
  * @template-extends Event<Window>

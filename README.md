@@ -1,20 +1,20 @@
-<a href="https://github.com/SerafimArts/Boson">
+<a href="https://github.com/BosonPHP/runtime">
     <img align="center" src="https://github.com/user-attachments/assets/169b6bf1-4644-4873-ac4e-6448b36dc2a5" />
 </a>
 
 ---
 
 <p align="center">
-    <a href="https://packagist.org/packages/serafim/boson"><img src="https://poser.pugx.org/serafim/boson/require/php?style=for-the-badge" alt="PHP 8.4+"></a>
-    <a href="https://packagist.org/packages/serafim/boson"><img src="https://poser.pugx.org/serafim/boson/version?style=for-the-badge" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/serafim/boson"><img src="https://poser.pugx.org/serafim/boson/v/unstable?style=for-the-badge" alt="Latest Unstable Version"></a>
-    <a href="https://raw.githubusercontent.com/SerafimArts/Boson/blob/master/LICENSE"><img src="https://poser.pugx.org/serafim/boson/license?style=for-the-badge" alt="License MIT"></a>
+    <a href="https://packagist.org/packages/boson-php/runtime"><img src="https://poser.pugx.org/boson-php/runtime/require/php?style=for-the-badge" alt="PHP 8.4+"></a>
+    <a href="https://packagist.org/packages/boson-php/runtime"><img src="https://poser.pugx.org/boson-php/runtime/version?style=for-the-badge" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/boson-php/runtime"><img src="https://poser.pugx.org/boson-php/runtime/v/unstable?style=for-the-badge" alt="Latest Unstable Version"></a>
+    <a href="https://raw.githubusercontent.com/BosonPHP/runtime/blob/master/LICENSE"><img src="https://poser.pugx.org/boson-php/runtime/license?style=for-the-badge" alt="License MIT"></a>
     <a href="https://github.com/xepozz/meta-storm-idea-plugin"><img src="https://img.shields.io/static/v1?label=Powered+by&message=Meta+Storm&color=db5860&style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iMTExIiBoZWlnaHQ9IjExMSIgdmlld0JveD0iMCAwIDExMSAxMTEiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTYwLjQ2MTcgOEwzMC4xNjU0IDguMjQ3OUMyNy4yNDYgOC4yNzE3OSAyNC42NDggMTAuMTA1IDIzLjY0NyAxMi44NDc1TDAuNDMwNTkgNzYuODMxNEMtMS4yNDQ1OSA4MS40MjA4IDIuMTc4MDUgODYuMjcxMyA3LjA2MzUzIDg2LjIzMTNMMzIuMTE5NyA4Ni4wMjYzTDM1LjQxNDcgNzYuOTk5TDkuODczOTEgNzcuMjA4TDMxLjYyNTkgMTcuMjM2Mkw1Ny4xNjY2IDE3LjAyNzNMNjAuNDYxNyA4WiIgZmlsbD0iI0FGQjFCMyIvPjxwYXRoIGQ9Ik00OS40MTQ5IDEwMi45OTlMNzkuNzEyMiAxMDIuOTk5QzgyLjYzMTcgMTAyLjk5OSA4NS4yNDQ2IDEwMS4xODcgODYuMjY4IDk4LjQ1MjlMMTEwLjAxMyAzNC40NTI0QzExMS43MjYgMjkuODc2OCAxMDguMzQzIDI0Ljk5ODUgMTAzLjQ1NyAyNC45OTg1TDc4LjQwMDQgMjQuOTk4NUw3NS4wMzE2IDMzLjk5ODVMMTAwLjU3MyAzMy45OTg1TDc4LjMyNTMgOTMuOTk5TDUyLjc4MzcgOTMuOTk5TDQ5LjQxNDkgMTAyLjk5OVoiIGZpbGw9IiNBRkIxQjMiLz48cGF0aCBkPSJNMjIgNjFMODYgOEw1NyA1MEw4OS45OTk3IDQ5Ljk5OTdMMjYgMTAzTDU1IDYxSDIyWiIgZmlsbD0iI0M3NTQ1MCIvPjwvc3ZnPg==" alt="MetaStorm"></a>
 </p>
 <p align="center">
-    <a href="https://github.com/SerafimArts/Boson/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/SerafimArts/Boson/tests.yml?label=Tests&style=flat-square&logo=unpkg"></a>
-    <a href="https://github.com/SerafimArts/Boson/actions/workflows/codestyle.yml"><img src="https://img.shields.io/github/actions/workflow/status/SerafimArts/Boson/codestyle.yml?label=PER-2+CodeStyle&style=flat-square&logo=telegraph"></a>
-    <a href="https://github.com/SerafimArts/Boson/actions/workflows/static-analysis.yml"><img src="https://img.shields.io/github/actions/workflow/status/SerafimArts/Boson/static-analysis.yml?label=PHPStan&style=flat-square&logo=data:image/png;base64,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"></a>
+    <a href="https://github.com/BosonPHP/runtime/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/BosonPHP/runtime/tests.yml?label=Tests&style=flat-square&logo=unpkg"></a>
+    <a href="https://github.com/BosonPHP/runtime/actions/workflows/codestyle.yml"><img src="https://img.shields.io/github/actions/workflow/status/BosonPHP/runtime/codestyle.yml?label=PER-2+CodeStyle&style=flat-square&logo=telegraph"></a>
+    <a href="https://github.com/BosonPHP/runtime/actions/workflows/static-analysis.yml"><img src="https://img.shields.io/github/actions/workflow/status/BosonPHP/runtime/static-analysis.yml?label=PHPStan&style=flat-square&logo=data:image/png;base64,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"></a>
 </p>
 
 Why Boson? Because it's not an [Electron](https://www.electronjs.org)! 
@@ -61,7 +61,7 @@ And much easier than that =)
 ## Simple Example
 
 ```php
-use Serafim\Boson\Application;
+use Boson\Application;
 
 $app = new Application();
 
@@ -89,7 +89,7 @@ $app->run();
 
 > At the moment, all binaries are supplied [together with the library](./bin). 
 > In future versions, a separate platform-dependent installation of 
-> assemblies from [the GitHub Actions CI](https://github.com/SerafimArts/Boson/actions/workflows/build.yml) 
+> assemblies from [the GitHub Actions CI](https://github.com/BosonPHP/runtime/actions/workflows/build.yml) 
 > is planned.
 
 ### Windows
@@ -113,7 +113,7 @@ The default backend is WebKitGtk:
 - Fedora: `dnf install gtk4 webkitgtk6.0`
 - FreeBSD: `pkg install webkit2-gtk4`
 
-You can download other assemblies separately from [GitHub Actions](https://github.com/SerafimArts/Boson/actions/workflows/build.yml).
+You can download other assemblies separately from [GitHub Actions](https://github.com/BosonPHP/runtime/actions/workflows/build.yml).
 Automatic detection and installation of dependencies is not supported yet.
 
 ## Installation
@@ -122,12 +122,12 @@ Boson package is available as Composer repository and can
 be installed using the following command in a root of your project:
 
 ```bash
-$ composer require serafim/boson
+$ composer require boson-php/runtime
 ```
 
 ## Usage
 
-> This documentation corresponds to the latest release (see https://github.com/SerafimArts/Boson/tags). 
+> This documentation corresponds to the latest release (see https://github.com/BosonPHP/runtime/tags). 
 > Behavior and code in the `master` branch may differ from what is shown below.
 
 ## Application Configuration
@@ -149,9 +149,9 @@ ApplicationCreateInfo
 In the PHP code it might look like this:
 
 ```php
-use Serafim\Boson\ApplicationCreateInfo;
-use Serafim\Boson\WebView\WebViewCreateInfo;
-use Serafim\Boson\Window\WindowCreateInfo;
+use Boson\ApplicationCreateInfo;
+use Boson\WebView\WebViewCreateInfo;
+use Boson\Window\WindowCreateInfo;
 
 $config = new ApplicationCreateInfo(
     debug: false,
@@ -171,8 +171,8 @@ The configuration is passed to the application itself
 and can be optional.
 
 ```php
-use Serafim\Boson\Application;
-use Serafim\Boson\ApplicationCreateInfo;
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
 
 // Create an application
 $app = new Application();
@@ -189,7 +189,7 @@ $appWithConfig = new Application(new ApplicationCreateInfo(
 To start the application, you must call the `run()` method.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->run();
 ```
@@ -199,7 +199,7 @@ meaning that no further code will be executed until the
 application is stopped.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->run();
 
@@ -219,8 +219,8 @@ If you do not need the application to start automatically,
 then this option should be disabled (set to `false`).
 
 ```php
-use Serafim\Boson\Application;
-use Serafim\Boson\ApplicationCreateInfo;
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
 
 $app = new Application(new ApplicationCreateInfo(
     autorun: false,
@@ -233,7 +233,7 @@ $app = new Application(new ApplicationCreateInfo(
 To stop the application, you should call the `quit()` method.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 /// ... do smth
 
@@ -245,8 +245,8 @@ launched, and launching blocks the thread, it makes sense for the application
 to terminate after any event is fired.
 
 ```php
-use Serafim\Boson\Application;
-use Serafim\Boson\Window\Event\WindowMinimized;
+use Boson\Application;
+use Boson\Window\Event\WindowMinimized;
 
 $app = new Application();
 
@@ -261,8 +261,8 @@ automatically after ALL windows are closed. To disable this behavior,
 you should set the `quitOnClose` application config.
 
 ```php
-use Serafim\Boson\Application;
-use Serafim\Boson\ApplicationCreateInfo;
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
 
 $appWithConfig = new Application(new ApplicationCreateInfo(
     // Disables app quit when all windows are has been closed
@@ -276,7 +276,7 @@ $appWithConfig = new Application(new ApplicationCreateInfo(
 To get or update the title, you should change the `$title` property
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->webview->title = 'New Title';
 
@@ -286,9 +286,9 @@ echo 'Current Title: ' . $app->webview->title;
 Or set title from configuration
 
 ```php
-$app = new Serafim\Boson\Application(
-    info: new \Serafim\Boson\ApplicationCreateInfo(
-        window: new Serafim\Boson\Window\WindowCreateInfo(
+$app = new Boson\Application(
+    info: new \Boson\ApplicationCreateInfo(
+        window: new Boson\Window\WindowCreateInfo(
             title: 'New Title',
         ),
     ),
@@ -301,7 +301,7 @@ $app = new Serafim\Boson\Application(
 To obtain window size, use the `$size` property.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 echo $app->window->size; // Size(640 × 480)
 
@@ -312,9 +312,9 @@ echo $app->window->size->height; // int(480)
 You also may set default window size via configuration.
 
 ```php
-$app = new Serafim\Boson\Application(
-    info: new \Serafim\Boson\ApplicationCreateInfo(
-        window: new Serafim\Boson\Window\WindowCreateInfo(
+$app = new Boson\Application(
+    info: new \Boson\ApplicationCreateInfo(
+        window: new Boson\Window\WindowCreateInfo(
             width: 640,
             height: 480,
         ),
@@ -328,19 +328,19 @@ $app = new Serafim\Boson\Application(
 To change the size, use the `$size` property.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 // Update window size to 640×480
 $app->window->size->update(640, 480);
 
 // Or set the dimensions explicitly using new Size object
-$app->window->size = new \Serafim\Boson\Window\Size(640, 480);
+$app->window->size = new \Boson\Window\Size(640, 480);
 ```
 
 In addition, each window size can also be changed separately.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->window->size->width = 640;
 $app->window->size->height = 480;
@@ -350,9 +350,9 @@ To disable the ability to resize a window, pass the appropriate
 `resizable` window configuration option.
 
 ```php
-$app = new Serafim\Boson\Application(
-    info: new \Serafim\Boson\ApplicationCreateInfo(
-        window: new Serafim\Boson\Window\WindowCreateInfo(
+$app = new Boson\Application(
+    info: new \Boson\ApplicationCreateInfo(
+        window: new Boson\Window\WindowCreateInfo(
             resizable: false,
         ),
     ),
@@ -366,7 +366,7 @@ To specify the maximum window size, use the `$max` property. The behavior of
 the property is identical to the `$size` property [described above](#window-size).
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 echo $app->window->max; // Will display the maximum allowed window size
 
@@ -380,7 +380,7 @@ To specify the maximum window size, use the `$min` property. The behavior of
 the property is identical to the `$size` property [described above](#window-size).
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 echo $app->window->min; // Will display the minimum allowed window size
 
@@ -394,7 +394,7 @@ To set the dark mode (dark theme), use the `$isDarkModeEnabled`
 window's property.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->window->isDarkModeEnabled = true;
 
@@ -406,9 +406,9 @@ if ($app->window->isDarkModeEnabled) {
 Or set dark mode from configuration
 
 ```php
-$app = new Serafim\Boson\Application(
-    info: new \Serafim\Boson\ApplicationCreateInfo(
-        window: new Serafim\Boson\Window\WindowCreateInfo(
+$app = new Boson\Application(
+    info: new \Boson\ApplicationCreateInfo(
+        window: new Boson\Window\WindowCreateInfo(
             darkMode: true,
         ),
     ),
@@ -422,7 +422,7 @@ You can DISABLE the standard window\`s title bar, minimize, maximize and close
 buttons. To do this, you should set the `false` for `$isDecorated` property.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->window->isDecorated = false;
 ```
@@ -430,9 +430,9 @@ $app->window->isDecorated = false;
 Or via configuration options.
 
 ```php
-$app = new Serafim\Boson\Application(
-    info: new \Serafim\Boson\ApplicationCreateInfo(
-        window: new Serafim\Boson\Window\WindowCreateInfo(
+$app = new Boson\Application(
+    info: new \Boson\ApplicationCreateInfo(
+        window: new Boson\Window\WindowCreateInfo(
             decorated: false,
         ),
     ),
@@ -444,11 +444,11 @@ be able to control the window (moving and resizing), but you can implement
 this behavior yourself using HTML attributes.
 
 ```php
-$app = new Serafim\Boson\Application(
-    info: new \Serafim\Boson\ApplicationCreateInfo(
-        window: new Serafim\Boson\Window\WindowCreateInfo(
+$app = new Boson\Application(
+    info: new \Boson\ApplicationCreateInfo(
+        window: new Boson\Window\WindowCreateInfo(
             decorated: false,
-            webview: new \Serafim\Boson\WebView\WebViewCreateInfo(
+            webview: new \Boson\WebView\WebViewCreateInfo(
                 html: <<<'HTML'
                     <div data-webview-drag>
                         By dragging this element you can move the window
@@ -484,7 +484,7 @@ $app = new Serafim\Boson\Application(
 To set the content, you should use the `$html` property
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->webview->html = '<button>Do Not Click Me!</button>';
 ```
@@ -492,9 +492,9 @@ $app->webview->html = '<button>Do Not Click Me!</button>';
 Or set html content from configuration
 
 ```php
-$app = new Serafim\Boson\Application(
-    window: new Serafim\Boson\Window\WindowCreateInfo(
-        webview: new Serafim\Boson\WebView\WebViewCreateInfo(
+$app = new Boson\Application(
+    window: new Boson\Window\WindowCreateInfo(
+        webview: new Boson\WebView\WebViewCreateInfo(
             html: '<button>Do Not Click Me!</button>',
         ),
     ),
@@ -505,8 +505,8 @@ Please note that reading this property is NOT possible. If you need to
 read the contents, use the [data retrieval method](#code-requests).
 
 ```php
-use Serafim\Boson\Application;
-use Serafim\Boson\WebView\Event\WebViewDomReady;
+use Boson\Application;
+use Boson\WebView\Event\WebViewDomReady;
 
 $app = new Application();
 
@@ -525,18 +525,18 @@ $app->events->addEventListener(WebViewDomReady::class, function () use ($app) {
 To load content from the URL, you should use the `$url` property
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
-$app->webview->url = 'https://github.com/SerafimArts/Boson';
+$app->webview->url = 'https://github.com/BosonPHP';
 ```
 
 Or set URL from configuration
 
 ```php
-$app = new Serafim\Boson\Application(
-    window: new Serafim\Boson\Window\WindowCreateInfo(
-        webview: new Serafim\Boson\WebView\URLWebViewCreateInfo(
-            url: 'https://github.com/SerafimArts/Boson',
+$app = new Boson\Application(
+    window: new Boson\Window\WindowCreateInfo(
+        webview: new Boson\WebView\URLWebViewCreateInfo(
+            url: 'https://github.com/BosonPHP',
         ),
     ),
 );
@@ -549,28 +549,28 @@ In addition to navigation to the specified URL address, it is also possible
 to obtain information about the URL.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
-$app->webview->url = 'https://github.com/SerafimArts/Boson';
+$app->webview->url = 'https://github.com/BosonPHP';
 
 echo 'URL: ' . $app->webview->url . "\n"; // string("about:blank")
 
 $app->events->addEventListener(WebViewNavigated::class, function () use ($app) {
-    echo 'URL: ' . $app->webview->url . "\n"; // string("https://github.com/SerafimArts/Boson")
+    echo 'URL: ' . $app->webview->url . "\n"; // string("https://github.com/BosonPHP")
 });
 ```
 
 In addition, you can get separate information about the URL parts.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
-$app->webview->url = 'https://github.com/SerafimArts/Boson';
+$app->webview->url = 'https://github.com/BosonPHP';
 
 $app->events->addEventListener(WebViewNavigated::class, function () use ($app) {
     echo 'Scheme: ' . $app->webview->url->scheme . "\n"; // string("https")
     echo 'Host:   ' . $app->webview->url->host . "\n";   // string("github.com")
-    echo 'Path:   ' . $app->webview->url->path . "\n";   // string("/SerafimArts/Boson")
+    echo 'Path:   ' . $app->webview->url->path . "\n";   // string("/BosonPHP")
 });
 ```
 
@@ -580,7 +580,7 @@ $app->events->addEventListener(WebViewNavigated::class, function () use ($app) {
 You can execute arbitrary code directly on current WebView
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 // Load empty page
 $app->webview->html = '';
@@ -594,7 +594,7 @@ $app->webview->eval('document.write("Hello World!")');
 You can register a JavaScript code that will be applied to any page.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->webview->scripts->add(<<<'JS'
     alert('hello');
@@ -604,9 +604,9 @@ $app->webview->scripts->add(<<<'JS'
 Or set scripts from configuration
 
 ```php
-$app = new Serafim\Boson\Application(
-    window: new Serafim\Boson\Window\WindowCreateInfo(
-        webview: new Serafim\Boson\WebView\WebViewCreateInfo(
+$app = new Boson\Application(
+    window: new Boson\Window\WindowCreateInfo(
+        webview: new Boson\WebView\WebViewCreateInfo(
             scripts: [<<<'JS'
                 alert('hello');
                 JS],
@@ -618,7 +618,7 @@ $app = new Serafim\Boson\Application(
 It is worth noting that adding code is available in several options.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 // "This code will be executed BEFORE the page loads: undefined"
 $app->webview->scripts->preload(<<<'JS'
@@ -639,7 +639,7 @@ $app->webview->html = '<b>hello</b>';
 You can create a function that can be called directly from WebView
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->webview->bind('foo', function () { 
     var_dump('Executed!');
@@ -649,9 +649,9 @@ $app->webview->bind('foo', function () {
 Or set functions list from configuration
 
 ```php
-$app = new Serafim\Boson\Application(
-    window: new Serafim\Boson\Window\WindowCreateInfo(
-        webview: new Serafim\Boson\WebView\WebViewCreateInfo(
+$app = new Boson\Application(
+    window: new Boson\Window\WindowCreateInfo(
+        webview: new Boson\WebView\WebViewCreateInfo(
             functions: ['foo' => function () { 
                 var_dump('Executed!');
             }],
@@ -666,7 +666,7 @@ $app = new Serafim\Boson\Application(
 You can directly get data from WebView context.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->events->addEventListener(WebViewDomReady::class, function () use ($app) {
     var_dump($app->webview->request('document.location')); 
@@ -691,11 +691,11 @@ Please note that the request CAN NOT be processed if the
 application is not running.
 
 ```php
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 var_dump($app->webview->request('document.location'));
 //
-// Uncaught Serafim\Boson\WebView\Requests\Exception\UnprocessableRequestException:
+// Uncaught Boson\WebView\Requests\Exception\UnprocessableRequestException:
 //      Request "document.location" could not be processed
 //      because application is not running
 //
@@ -711,10 +711,10 @@ something. Any intent can be rejected or modified.
 To subscribe to events and intents, the `$events` field is used.
 
 ```php
-use Serafim\Boson\WebView\Event\WebViewNavigating;
-use Serafim\Boson\WebView\Event\WebViewNavigated;
+use Boson\WebView\Event\WebViewNavigating;
+use Boson\WebView\Event\WebViewNavigated;
 
-$app = new Serafim\Boson\Application();
+$app = new Boson\Application();
 
 $app->events->addEventListener(WebViewNavigating::class, function (WebViewNavigating $intention): void {
     echo 'Try to move on URL: ' . $intention->url . "\n";
@@ -739,7 +739,7 @@ To enable debug mode, you should define the `debug: ?bool`
 argument of the `Application` instance.
 
 ```php
-$app = new Serafim\Boson\Application(
+$app = new Boson\Application(
     // true  - enable debug mode
     // false - disable debug mode
     // null  - autodetect debug mode
@@ -754,7 +754,7 @@ To define binary, you should define the `library: ?non-empty-string`
 argument of the `Application` instance.
 
 ```php
-$app = new Serafim\Boson\Application(
+$app = new Boson\Application(
     // string - defines pathname to the library
     // null   - autodetect library
     library: __DIR__ . '/path/to/custom-webview.so',

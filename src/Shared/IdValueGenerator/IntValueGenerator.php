@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Shared\IdValueGenerator;
+namespace Boson\Shared\IdValueGenerator;
 
-use Serafim\Boson\Shared\IdValueGenerator\Exception\IdOverflowException;
+use Boson\Shared\IdValueGenerator\Exception\IdOverflowException;
 
 /**
  * @template TInteger of int<min, max>

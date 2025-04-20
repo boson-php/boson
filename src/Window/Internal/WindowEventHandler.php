@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Internal;
+namespace Boson\Window\Internal;
 
 use FFI\CData;
-use Serafim\Boson\Dispatcher\EventDispatcherInterface;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Internal\Saucer\SaucerPolicy;
-use Serafim\Boson\Internal\Saucer\SaucerWindowEvent;
-use Serafim\Boson\Internal\Window\CSaucerWindowEventsStruct;
-use Serafim\Boson\Window\Event\WindowClosed;
-use Serafim\Boson\Window\Event\WindowClosing;
-use Serafim\Boson\Window\Event\WindowDecorated;
-use Serafim\Boson\Window\Event\WindowFocused;
-use Serafim\Boson\Window\Event\WindowMaximized;
-use Serafim\Boson\Window\Event\WindowMinimized;
-use Serafim\Boson\Window\Event\WindowResized;
-use Serafim\Boson\Window\Window;
+use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Internal\Saucer\SaucerPolicy;
+use Boson\Internal\Saucer\SaucerWindowEvent;
+use Boson\Internal\Window\CSaucerWindowEventsStruct;
+use Boson\Window\Event\WindowClosed;
+use Boson\Window\Event\WindowClosing;
+use Boson\Window\Event\WindowDecorated;
+use Boson\Window\Event\WindowFocused;
+use Boson\Window\Event\WindowMaximized;
+use Boson\Window\Event\WindowMinimized;
+use Boson\Window\Event\WindowResized;
+use Boson\Window\Window;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Serafim\Boson\Window
+ * @psalm-internal Boson\Window
  */
 final readonly class WindowEventHandler
 {

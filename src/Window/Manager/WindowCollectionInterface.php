@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Manager;
+namespace Boson\Window\Manager;
 
-use Serafim\Boson\Window\Window;
+use Boson\Window\Window;
 
 /**
  * @template-extends \Traversable<array-key, Window>

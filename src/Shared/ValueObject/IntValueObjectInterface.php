@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Shared\ValueObject;
+namespace Boson\Shared\ValueObject;
 
 /**
  * Representation of all value objects that contain {@see int} casting.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Dispatcher\Subscription;
+namespace Boson\Dispatcher\Subscription;
 
 /**
  * @template T of object

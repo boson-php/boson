@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Internal\Saucer;
+namespace Boson\Internal\Saucer;
 
 use FFI\Env\Runtime;
-use Serafim\Boson\Environment\Architecture;
-use Serafim\Boson\Environment\Exception\UnsupportedArchitectureException;
-use Serafim\Boson\Environment\Exception\UnsupportedOperatingSystemException;
-use Serafim\Boson\Environment\OperatingSystem;
+use Boson\Environment\Architecture;
+use Boson\Environment\Exception\UnsupportedArchitectureException;
+use Boson\Environment\Exception\UnsupportedOperatingSystemException;
+use Boson\Environment\OperatingSystem;
 
 /**
  * @mixin \FFI
  *
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Serafim\Boson
+ * @psalm-internal Boson
  */
 final readonly class LibSaucer
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson;
+namespace Boson;
 
-use Serafim\Boson\Window\WindowCreateInfo;
+use Boson\Window\WindowCreateInfo;
 
 /**
  * Information (configuration) DTO for creating a new application.

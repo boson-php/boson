@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson;
+namespace Boson;
 
 use FFI\CData;
 use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
-use Serafim\Boson\Dispatcher\DelegateEventListener;
-use Serafim\Boson\Dispatcher\EventListener;
-use Serafim\Boson\Event\ApplicationStarted;
-use Serafim\Boson\Event\ApplicationStarting;
-use Serafim\Boson\Event\ApplicationStopped;
-use Serafim\Boson\Event\ApplicationStopping;
-use Serafim\Boson\Exception\NoDefaultWindowException;
-use Serafim\Boson\Internal\DebugEnvResolver;
-use Serafim\Boson\Internal\DeferRunner\DeferRunnerInterface;
-use Serafim\Boson\Internal\DeferRunner\NativeShutdownFunctionRunner;
-use Serafim\Boson\Internal\ProcessUnlockPlaceholder;
-use Serafim\Boson\Internal\QuitHandler\PcntlQuitHandler;
-use Serafim\Boson\Internal\QuitHandler\QuitHandlerInterface;
-use Serafim\Boson\Internal\QuitHandler\WindowsQuitHandler;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Internal\ThreadsCountResolver;
-use Serafim\Boson\Shared\Marker\BlockingOperation;
-use Serafim\Boson\Shared\Marker\RequiresDealloc;
-use Serafim\Boson\WebView\WebView;
-use Serafim\Boson\Window\Event\WindowClosed;
-use Serafim\Boson\Window\Manager\WindowManager;
-use Serafim\Boson\Window\Window;
+use Boson\Dispatcher\DelegateEventListener;
+use Boson\Dispatcher\EventListener;
+use Boson\Event\ApplicationStarted;
+use Boson\Event\ApplicationStarting;
+use Boson\Event\ApplicationStopped;
+use Boson\Event\ApplicationStopping;
+use Boson\Exception\NoDefaultWindowException;
+use Boson\Internal\DebugEnvResolver;
+use Boson\Internal\DeferRunner\DeferRunnerInterface;
+use Boson\Internal\DeferRunner\NativeShutdownFunctionRunner;
+use Boson\Internal\ProcessUnlockPlaceholder;
+use Boson\Internal\QuitHandler\PcntlQuitHandler;
+use Boson\Internal\QuitHandler\QuitHandlerInterface;
+use Boson\Internal\QuitHandler\WindowsQuitHandler;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Internal\ThreadsCountResolver;
+use Boson\Shared\Marker\BlockingOperation;
+use Boson\Shared\Marker\RequiresDealloc;
+use Boson\WebView\WebView;
+use Boson\Window\Event\WindowClosed;
+use Boson\Window\Manager\WindowManager;
+use Boson\Window\Window;
 
 /**
  * @api

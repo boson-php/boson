@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Event;
+namespace Boson\Window\Event;
 
-use Serafim\Boson\Shared\Marker\AsWindowEvent;
-use Serafim\Boson\Window\Window;
+use Boson\Shared\Marker\AsWindowEvent;
+use Boson\Window\Window;
 
 #[AsWindowEvent]
 final class WindowMaximized extends WindowEvent

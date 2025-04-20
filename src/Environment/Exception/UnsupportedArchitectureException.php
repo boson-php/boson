@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Environment\Exception;
+namespace Boson\Environment\Exception;
 
 final class UnsupportedArchitectureException extends EnvironmentException
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Event;
+namespace Boson\Event;
 
-use Serafim\Boson\Application;
-use Serafim\Boson\Dispatcher\Intention;
+use Boson\Application;
+use Boson\Dispatcher\Intention;
 
 /**
  * @template-extends Intention<Application>

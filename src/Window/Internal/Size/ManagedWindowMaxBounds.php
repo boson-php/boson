@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Internal\Size;
+namespace Boson\Window\Internal\Size;
 
 use FFI\CData;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Serafim\Boson\Window
+ * @psalm-internal Boson\Window
  */
 final class ManagedWindowMaxBounds extends MemoizedManagedSize
 {

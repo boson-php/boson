@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Shared\IdValueGenerator;
+namespace Boson\Shared\IdValueGenerator;
 
-use Serafim\Boson\Shared\IdValueGenerator\Exception\IdNotSupportedException;
+use Boson\Shared\IdValueGenerator\Exception\IdNotSupportedException;
 
 /**
  * @template-extends IntValueGenerator<int<0, 9223372036854775807>>

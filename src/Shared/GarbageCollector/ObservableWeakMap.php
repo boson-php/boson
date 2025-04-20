@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Shared\GarbageCollector;
+namespace Boson\Shared\GarbageCollector;
 
 /**
  * Allows to store a set of objects with referenced values and

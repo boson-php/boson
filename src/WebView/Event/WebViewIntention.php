@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Event;
+namespace Boson\WebView\Event;
 
-use Serafim\Boson\Dispatcher\Intention;
-use Serafim\Boson\WebView\WebView;
+use Boson\Dispatcher\Intention;
+use Boson\WebView\WebView;
 
 /**
  * @template-extends Intention<WebView>

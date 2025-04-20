@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Shared\Id\Exception;
+namespace Boson\Shared\Id\Exception;
 
 final class InvalidIdException extends IdException
 {

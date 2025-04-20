@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Scripts;
+namespace Boson\WebView\Scripts;
 
 use JetBrains\PhpStorm\Language;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
+use Boson\Internal\Saucer\LibSaucer;
 
 final readonly class WebViewScript implements \Stringable
 {

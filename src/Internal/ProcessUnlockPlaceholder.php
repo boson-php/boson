@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Internal;
+namespace Boson\Internal;
 
 use FFI\CData;
-use Serafim\Boson\Application;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
+use Boson\Application;
+use Boson\Internal\Saucer\LibSaucer;
 
 /**
  * Provides a placeholder to unlock the process workflow.
  *
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Serafim\Boson
+ * @psalm-internal Boson
  */
 final readonly class ProcessUnlockPlaceholder
 {

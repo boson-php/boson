@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Binding\Exception;
+namespace Boson\WebView\Binding\Exception;
 
 final class FunctionAlreadyDefinedException extends WebViewBindingException
 {

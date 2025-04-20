@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Scripts;
+namespace Boson\WebView\Scripts;
 
 enum WebViewScriptLoadingTime
 {

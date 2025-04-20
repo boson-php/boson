@@ -1,12 +1,12 @@
 <?php
 
-namespace Serafim\Boson\Internal\Window;
+namespace Boson\Internal\Window;
 
 use FFI\CData;
 
 /**
  * @internal this is an INTERNAL STRUCT for PHPStan only, please do not use it in your code
- * @psalm-internal Serafim\Boson\Internal\Window
+ * @psalm-internal Boson\Internal\Window
  *
  * @seal-properties
  * @seal-methods

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Exception;
+namespace Boson\Exception;
 
 final class NoDefaultWindowException extends ApplicationException
 {

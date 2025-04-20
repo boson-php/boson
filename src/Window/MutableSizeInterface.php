@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window;
+namespace Boson\Window;
 
 interface MutableSizeInterface extends SizeInterface
 {

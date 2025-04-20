@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Internal\Saucer;
+namespace Boson\Internal\Saucer;
 
 use FFI\CData;
 use FFI\CType;

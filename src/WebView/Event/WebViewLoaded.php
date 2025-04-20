@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Event;
+namespace Boson\WebView\Event;
 
-use Serafim\Boson\Shared\Marker\AsWebViewEvent;
+use Boson\Shared\Marker\AsWebViewEvent;
 
 #[AsWebViewEvent]
 final class WebViewLoaded extends WebViewEvent {}

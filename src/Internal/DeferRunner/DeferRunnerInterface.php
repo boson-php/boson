@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Internal\DeferRunner;
+namespace Boson\Internal\DeferRunner;
 
 interface DeferRunnerInterface
 {

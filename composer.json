@@ -1,5 +1,5 @@
 {
-    "name": "serafim/boson",
+    "name": "boson-php/runtime",
     "description": "Native PHP WebView bridge",
     "type": "library",
     "license": "MIT",
@@ -12,7 +12,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Serafim\\Boson\\": "src"
+            "Boson\\": "src"
         }
     },
     "require-dev": {
@@ -27,7 +27,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Serafim\\Boson\\Tests\\": "tests"
+            "Boson\\Tests\\": "tests"
         }
     },
     "extra": {

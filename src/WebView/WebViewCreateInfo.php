@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView;
+namespace Boson\WebView;
 
-use Serafim\Boson\Application;
-use Serafim\Boson\WebView\Internal\WebViewCreateInfo\StorageDirectoryResolver;
+use Boson\Application;
+use Boson\WebView\Internal\WebViewCreateInfo\StorageDirectoryResolver;
 
 /**
  * Information (configuration) about creating a new webview object.

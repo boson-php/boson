@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Shared\Id;
+namespace Boson\Shared\Id;
 
-use Serafim\Boson\Shared\ValueObject\IntValueObjectInterface;
+use Boson\Shared\ValueObject\IntValueObjectInterface;
 
 /**
  * Representation of all int-like identifiers.

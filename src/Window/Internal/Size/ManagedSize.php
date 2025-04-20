@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Internal\Size;
+namespace Boson\Window\Internal\Size;
 
 use FFI\CData;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Window\MutableSizeInterface;
-use Serafim\Boson\Window\Size\SizeStringableProvider;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Window\MutableSizeInterface;
+use Boson\Window\Size\SizeStringableProvider;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Serafim\Boson\Window
+ * @psalm-internal Boson\Window
  */
 abstract class ManagedSize implements MutableSizeInterface
 {

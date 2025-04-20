@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Shared\IdValueGenerator;
+namespace Boson\Shared\IdValueGenerator;
 
 /**
  * The most compatible generator with all subsystems and platforms.

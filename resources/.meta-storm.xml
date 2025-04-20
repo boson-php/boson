@@ -2,73 +2,73 @@
 <meta-storm xmlns="meta-storm">
     <definitions>
 
-        <classConstructor class="\Serafim\Boson\WebView\WebViewCreateInfo" argument="5">
+        <classConstructor class="\Boson\WebView\WebViewCreateInfo" argument="5">
             <directories xpath="$directory" />
         </classConstructor>
 
-        <classMethod class="\Serafim\Boson\Dispatcher\EventListenerInterface" method="addEventListener" argument="0">
+        <classMethod class="\Boson\Dispatcher\EventListenerInterface" method="addEventListener" argument="0">
             <collection name="application-events" />
             <collection name="window-events" />
             <collection name="webview-events" />
             <stopCompletion />
         </classMethod>
 
-        <classMethod class="\Serafim\Boson\Dispatcher\EventListenerInterface" method="removeAllEventListenersForEvent" argument="0">
+        <classMethod class="\Boson\Dispatcher\EventListenerInterface" method="removeAllEventListenersForEvent" argument="0">
             <collection name="application-events" />
             <collection name="window-events" />
             <collection name="webview-events" />
             <stopCompletion />
         </classMethod>
 
-        <classMethod class="\Serafim\Boson\Dispatcher\EventListener" method="addEventListener" argument="0">
+        <classMethod class="\Boson\Dispatcher\EventListener" method="addEventListener" argument="0">
             <collection name="application-events" />
             <collection name="window-events" />
             <collection name="webview-events" />
             <stopCompletion />
         </classMethod>
 
-        <classMethod class="\Serafim\Boson\Dispatcher\EventListener" method="removeAllEventListenersForEvent" argument="0">
+        <classMethod class="\Boson\Dispatcher\EventListener" method="removeAllEventListenersForEvent" argument="0">
             <collection name="application-events" />
             <collection name="window-events" />
             <collection name="webview-events" />
             <stopCompletion />
         </classMethod>
 
-        <classMethod class="\Serafim\Boson\Dispatcher\DelegateEventListener" method="addEventListener" argument="0">
+        <classMethod class="\Boson\Dispatcher\DelegateEventListener" method="addEventListener" argument="0">
             <collection name="application-events" />
             <collection name="window-events" />
             <collection name="webview-events" />
             <stopCompletion />
         </classMethod>
 
-        <classMethod class="\Serafim\Boson\Dispatcher\DelegateEventListener" method="removeAllEventListenersForEvent" argument="0">
+        <classMethod class="\Boson\Dispatcher\DelegateEventListener" method="removeAllEventListenersForEvent" argument="0">
             <collection name="application-events" />
             <collection name="window-events" />
             <collection name="webview-events" />
             <stopCompletion />
         </classMethod>
 
-        <classConstructor class="\Serafim\Boson\Internal\AsFacade" argument="0">
+        <classConstructor class="\Boson\Internal\AsFacade" argument="0">
             <collection name="GLOBAL:php-classes" />
         </classConstructor>
 
-        <classConstructor class="\Serafim\Boson\Internal\AsMethodFacade" argument="0">
+        <classConstructor class="\Boson\Internal\AsMethodFacade" argument="0">
             <collection name="GLOBAL:php-classes" />
         </classConstructor>
-        <classConstructor class="\Serafim\Boson\Internal\AsMethodFacade" argument="1">
+        <classConstructor class="\Boson\Internal\AsMethodFacade" argument="1">
             <methods relatedArgument="0" />
         </classConstructor>
 
-        <classConstructor class="\Serafim\Boson\Internal\AsPropertyFacade" argument="0">
+        <classConstructor class="\Boson\Internal\AsPropertyFacade" argument="0">
             <collection name="GLOBAL:php-classes" />
         </classConstructor>
-        <classConstructor class="\Serafim\Boson\Internal\AsPropertyFacade" argument="1">
+        <classConstructor class="\Boson\Internal\AsPropertyFacade" argument="1">
             <properties relatedArgument="0" />
         </classConstructor>
     </definitions>
     <collections>
-        <attributeClass name="application-events" class="\Serafim\Boson\Internal\AsApplicationEvent" />
-        <attributeClass name="window-events" class="\Serafim\Boson\Internal\AsWindowEvent" />
-        <attributeClass name="webview-events" class="\Serafim\Boson\Internal\AsWebViewEvent" />
+        <attributeClass name="application-events" class="\Boson\Internal\AsApplicationEvent" />
+        <attributeClass name="window-events" class="\Boson\Internal\AsWindowEvent" />
+        <attributeClass name="webview-events" class="\Boson\Internal\AsWebViewEvent" />
     </collections>
 </meta-storm>

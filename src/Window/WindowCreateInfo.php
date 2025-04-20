@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window;
+namespace Boson\Window;
 
-use Serafim\Boson\WebView\WebViewCreateInfo;
+use Boson\WebView\WebViewCreateInfo;
 
 /**
  * Information (configuration) DTO for creating a new physical window.

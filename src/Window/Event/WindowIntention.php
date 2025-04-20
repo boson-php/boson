@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Event;
+namespace Boson\Window\Event;
 
-use Serafim\Boson\Dispatcher\Intention;
-use Serafim\Boson\Window\Window;
+use Boson\Dispatcher\Intention;
+use Boson\Window\Window;
 
 /**
  * @template-extends Intention<Window>

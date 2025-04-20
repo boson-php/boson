@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Requests\Exception;
+namespace Boson\WebView\Requests\Exception;
 
 final class UnprocessableRequestException extends RequestException
 {

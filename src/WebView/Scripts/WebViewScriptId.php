@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Scripts;
+namespace Boson\WebView\Scripts;
 
 use FFI\CData;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Shared\Id\StructPointerId;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Shared\Id\StructPointerId;
 
 final readonly class WebViewScriptId extends StructPointerId
 {

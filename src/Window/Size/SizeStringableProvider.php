@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Size;
+namespace Boson\Window\Size;
 
-use Serafim\Boson\Window\SizeInterface;
+use Boson\Window\SizeInterface;
 
 /**
  * @phpstan-require-implements SizeInterface

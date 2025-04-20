@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Internal\Saucer;
+namespace Boson\Internal\Saucer;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Serafim\Boson
+ * @psalm-internal Boson
  */
 final readonly class SaucerWindowEvent
 {

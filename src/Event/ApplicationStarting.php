@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Event;
+namespace Boson\Event;
 
-use Serafim\Boson\Shared\Marker\AsApplicationEvent;
+use Boson\Shared\Marker\AsApplicationEvent;
 
 #[AsApplicationEvent]
 final class ApplicationStarting extends ApplicationIntention {}

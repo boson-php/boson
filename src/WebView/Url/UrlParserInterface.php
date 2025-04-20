@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Url;
+namespace Boson\WebView\Url;
 
-use Serafim\Boson\WebView\Url;
+use Boson\WebView\Url;
 
 interface UrlParserInterface
 {

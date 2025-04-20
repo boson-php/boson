@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Dispatcher;
+namespace Boson\Dispatcher;
 
 use Psr\EventDispatcher\StoppableEventInterface;
 

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Environment\Exception;
+namespace Boson\Environment\Exception;
 
-use Serafim\Boson\Exception\BosonException;
+use Boson\Exception\BosonException;
 
 class EnvironmentException extends BosonException {}

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Binding;
+namespace Boson\WebView\Binding;
 
-use Serafim\Boson\Dispatcher\EventListenerInterface;
-use Serafim\Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
-use Serafim\Boson\WebView\Binding\Exception\FunctionNotDefinedException;
-use Serafim\Boson\WebView\Binding\Exception\InvalidFunctionException;
-use Serafim\Boson\WebView\Event\WebViewMessageReceiving;
-use Serafim\Boson\WebView\Scripts\WebViewScriptsSet;
+use Boson\Dispatcher\EventListenerInterface;
+use Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Binding\Exception\FunctionNotDefinedException;
+use Boson\WebView\Binding\Exception\InvalidFunctionException;
+use Boson\WebView\Event\WebViewMessageReceiving;
+use Boson\WebView\Scripts\WebViewScriptsSet;
 
 /**
  * @template-implements \IteratorAggregate<non-empty-string, \Closure(mixed...):mixed>

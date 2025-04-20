@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Internal;
+namespace Boson\WebView\Internal;
 
 use FFI\CData;
-use Serafim\Boson\Dispatcher\EventDispatcherInterface;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Internal\Saucer\SaucerPolicy;
-use Serafim\Boson\Internal\Saucer\SaucerState;
-use Serafim\Boson\Internal\Saucer\SaucerWebEvent as Event;
-use Serafim\Boson\Internal\WebView\CSaucerWebViewEventsStruct;
-use Serafim\Boson\WebView\Event\WebViewDomReady;
-use Serafim\Boson\WebView\Event\WebViewFaviconChanged;
-use Serafim\Boson\WebView\Event\WebViewFaviconChanging;
-use Serafim\Boson\WebView\Event\WebViewLoaded;
-use Serafim\Boson\WebView\Event\WebViewLoading;
-use Serafim\Boson\WebView\Event\WebViewMessageReceiving;
-use Serafim\Boson\WebView\Event\WebViewNavigated;
-use Serafim\Boson\WebView\Event\WebViewNavigating;
-use Serafim\Boson\WebView\Event\WebViewTitleChanged;
-use Serafim\Boson\WebView\Event\WebViewTitleChanging;
-use Serafim\Boson\WebView\State;
-use Serafim\Boson\WebView\Url\UrlParserInterface;
-use Serafim\Boson\WebView\WebView;
+use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Internal\Saucer\SaucerPolicy;
+use Boson\Internal\Saucer\SaucerState;
+use Boson\Internal\Saucer\SaucerWebEvent as Event;
+use Boson\Internal\WebView\CSaucerWebViewEventsStruct;
+use Boson\WebView\Event\WebViewDomReady;
+use Boson\WebView\Event\WebViewFaviconChanged;
+use Boson\WebView\Event\WebViewFaviconChanging;
+use Boson\WebView\Event\WebViewLoaded;
+use Boson\WebView\Event\WebViewLoading;
+use Boson\WebView\Event\WebViewMessageReceiving;
+use Boson\WebView\Event\WebViewNavigated;
+use Boson\WebView\Event\WebViewNavigating;
+use Boson\WebView\Event\WebViewTitleChanged;
+use Boson\WebView\Event\WebViewTitleChanging;
+use Boson\WebView\State;
+use Boson\WebView\Url\UrlParserInterface;
+use Boson\WebView\WebView;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Serafim\Boson\WebView
+ * @psalm-internal Boson\WebView
  */
 final class WebViewEventHandler
 {

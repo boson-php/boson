@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Shared\Marker;
+namespace Boson\Shared\Marker;
 
 /**
  * Marks methods that blocks current execution thread. This can slow down

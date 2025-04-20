@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\Window\Manager;
+namespace Boson\Window\Manager;
 
-use Serafim\Boson\Application;
-use Serafim\Boson\Dispatcher\DelegateEventListener;
-use Serafim\Boson\Dispatcher\EventDispatcherInterface;
-use Serafim\Boson\Dispatcher\EventListener;
-use Serafim\Boson\Internal\ProcessUnlockPlaceholder;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Shared\GarbageCollector\ObservableWeakSet;
-use Serafim\Boson\Window\Event\WindowClosed;
-use Serafim\Boson\Window\Event\WindowCreated;
-use Serafim\Boson\Window\Window;
-use Serafim\Boson\Window\WindowCreateInfo;
+use Boson\Application;
+use Boson\Dispatcher\DelegateEventListener;
+use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListener;
+use Boson\Internal\ProcessUnlockPlaceholder;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Shared\GarbageCollector\ObservableWeakSet;
+use Boson\Window\Event\WindowClosed;
+use Boson\Window\Event\WindowCreated;
+use Boson\Window\Window;
+use Boson\Window\WindowCreateInfo;
 
 /**
  * @template-implements \IteratorAggregate<array-key, Window>

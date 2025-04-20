@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Serafim\Boson\WebView\Scripts;
+namespace Boson\WebView\Scripts;
 
 use FFI\CData;
 use JetBrains\PhpStorm\Language;
-use Serafim\Boson\Internal\Saucer\LibSaucer;
-use Serafim\Boson\Internal\Saucer\SaucerLoadTime;
-use Serafim\Boson\WebView\WebView;
+use Boson\Internal\Saucer\LibSaucer;
+use Boson\Internal\Saucer\SaucerLoadTime;
+use Boson\WebView\WebView;
 
 /**
  * @template-implements \IteratorAggregate<mixed, WebViewScript>
