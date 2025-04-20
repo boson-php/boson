@@ -1,8 +1,0 @@
-# IDE
-/.idea
-/.vsc
-/.vs
-
-# Builds
-/build
-/cmake-*

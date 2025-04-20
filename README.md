@@ -90,7 +90,7 @@ $app->run();
 
 > At the moment, all binaries are supplied [together with the library](./bin). 
 > In future versions, a separate platform-dependent installation of 
-> assemblies from [the GitHub Actions CI](https://github.com/BosonPHP/runtime/actions/workflows/build.yml) 
+> assemblies from [the GitHub Actions CI](https://github.com/BosonPHP/frontend/actions/workflows/build.yml) 
 > is planned.
 
 ### Windows
