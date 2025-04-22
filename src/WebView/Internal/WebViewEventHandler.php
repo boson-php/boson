@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView\Internal;
 
 use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Http\Uri\Factory\UriFactoryInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerPolicy;
 use Boson\Internal\Saucer\SaucerState;
@@ -21,7 +22,6 @@ use Boson\WebView\Event\WebViewNavigating;
 use Boson\WebView\Event\WebViewTitleChanged;
 use Boson\WebView\Event\WebViewTitleChanging;
 use Boson\WebView\State;
-use Boson\WebView\Url\UrlParserInterface;
 use Boson\WebView\WebView;
 use FFI\CData;
 
@@ -56,7 +56,7 @@ final class WebViewEventHandler
         private readonly LibSaucer $api,
         private readonly WebView $webview,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly UrlParserInterface $urlParser,
+        private readonly UriFactoryInterface $uris,
         /**
          * @phpstan-ignore property.onlyWritten
          */
@@ -124,7 +124,7 @@ final class WebViewEventHandler
     {
         $this->dispatcher->dispatch(new WebViewNavigated(
             subject: $this->webview,
-            url: $this->urlParser->parse($url),
+            url: $this->uris->createUriFromString($url),
         ));
     }
 
@@ -132,8 +132,8 @@ final class WebViewEventHandler
     {
         $this->changeState(State::Navigating);
 
-        $uri = $this->urlParser->parse(
-            url: \FFI::string($this->api->saucer_navigation_url($navigation)),
+        $uri = $this->uris->createUriFromString(
+            uri: \FFI::string($this->api->saucer_navigation_url($navigation)),
         );
 
         $intention = $this->dispatcher->dispatch(new WebViewNavigating(

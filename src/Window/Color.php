@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\Window;
 
-use Boson\Window\Color\ColorStringableProvider;
+use Boson\Window\Color\ColorStringableImpl;
 
 final readonly class Color implements ColorInterface
 {
-    use ColorStringableProvider;
+    use ColorStringableImpl;
 
     public function __construct(
         /**

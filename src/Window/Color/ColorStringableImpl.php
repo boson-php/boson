@@ -8,9 +8,8 @@ use Boson\Window\ColorInterface;
 
 /**
  * @phpstan-require-implements ColorInterface
- * @mixin ColorInterface
  */
-trait ColorStringableProvider
+trait ColorStringableImpl
 {
     public function __toString(): string
     {

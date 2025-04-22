@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Boson\Shared\Id;
 
 use Boson\Internal\Saucer\LibSaucer;
-use Boson\Shared\ValueObject\ValueObjectInterface;
 use FFI\CData;
 
 /**
@@ -51,12 +50,10 @@ abstract readonly class StructPointerId implements IntIdInterface
         return (string) $this->id;
     }
 
-    public function equals(ValueObjectInterface $object): bool
+    public function equals(mixed $object): bool
     {
-        return $object === $this || (
-            $object instanceof self
-                && $this->id === $object->id
-        );
+        return $object === $this
+            || ($object instanceof self && $this->id === $object->id);
     }
 
     public function __serialize(): array

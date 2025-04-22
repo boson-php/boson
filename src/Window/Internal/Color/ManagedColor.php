@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Window\Internal\Color;
 
 use Boson\Internal\Saucer\LibSaucer;
-use Boson\Window\Color\ColorStringableProvider;
+use Boson\Window\Color\ColorStringableImpl;
 use Boson\Window\MutableColorInterface;
 use FFI\CData;
 
@@ -15,7 +15,7 @@ use FFI\CData;
  */
 final class ManagedColor implements MutableColorInterface
 {
-    use ColorStringableProvider;
+    use ColorStringableImpl;
 
     /**
      * @var int<0, 255>

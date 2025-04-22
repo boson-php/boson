@@ -8,9 +8,8 @@ use Boson\Window\SizeInterface;
 
 /**
  * @phpstan-require-implements SizeInterface
- * @mixin SizeInterface
  */
-trait SizeStringableProvider
+trait SizeStringableImpl
 {
     public function __toString(): string
     {

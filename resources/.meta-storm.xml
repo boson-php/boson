@@ -47,28 +47,10 @@
             <collection name="webview-events" />
             <stopCompletion />
         </classMethod>
-
-        <classConstructor class="\Boson\Internal\AsFacade" argument="0">
-            <collection name="GLOBAL:php-classes" />
-        </classConstructor>
-
-        <classConstructor class="\Boson\Internal\AsMethodFacade" argument="0">
-            <collection name="GLOBAL:php-classes" />
-        </classConstructor>
-        <classConstructor class="\Boson\Internal\AsMethodFacade" argument="1">
-            <methods relatedArgument="0" />
-        </classConstructor>
-
-        <classConstructor class="\Boson\Internal\AsPropertyFacade" argument="0">
-            <collection name="GLOBAL:php-classes" />
-        </classConstructor>
-        <classConstructor class="\Boson\Internal\AsPropertyFacade" argument="1">
-            <properties relatedArgument="0" />
-        </classConstructor>
     </definitions>
     <collections>
-        <attributeClass name="application-events" class="\Boson\Internal\AsApplicationEvent" />
-        <attributeClass name="window-events" class="\Boson\Internal\AsWindowEvent" />
-        <attributeClass name="webview-events" class="\Boson\Internal\AsWebViewEvent" />
+        <attributeClass name="application-events" class="\Boson\Shared\Marker\AsApplicationEvent" />
+        <attributeClass name="window-events" class="\Boson\Shared\Marker\AsWindowEvent" />
+        <attributeClass name="webview-events" class="\Boson\Shared\Marker\AsWebViewEvent" />
     </collections>
 </meta-storm>

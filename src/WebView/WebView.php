@@ -6,6 +6,9 @@ namespace Boson\WebView;
 
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
+use Boson\Http\Method\MethodFactoryInterface;
+use Boson\Http\Uri\Factory\UriFactoryInterface;
+use Boson\Http\UriInterface;
 use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
@@ -13,10 +16,8 @@ use Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Binding\WebViewFunctionsMap;
 use Boson\WebView\Internal\WebViewEventHandler;
 use Boson\WebView\Requests\WebViewRequests;
+use Boson\WebView\Scheme\WebViewSchemeSet;
 use Boson\WebView\Scripts\WebViewScriptsSet;
-use Boson\WebView\Url\MemoizedUrlParser;
-use Boson\WebView\Url\NativeUrlParser;
-use Boson\WebView\Url\UrlParserInterface;
 use Boson\Window\Window;
 use FFI\CData;
 use JetBrains\PhpStorm\Language;
@@ -46,41 +47,46 @@ final class WebView
     public readonly WebViewRequests $requests;
 
     /**
+     * Gets access to the registered protocol middleware.
+     */
+    public readonly WebViewSchemeSet $schemes;
+
+    /**
      * Contains webview URI instance.
      */
-    public Url $url {
+    public UriInterface $url {
         /**
          * Gets current webview URI instance.
          *
          * ```
-         * echo $webview->uri;          // http://example.com
-         * echo $webview->uri->host;    // example.com
-         * echo $webview->uri->scheme;  // http
+         * echo $webview->url;          // http://example.com
+         * echo $webview->url->host;    // example.com
+         * echo $webview->url->scheme;  // http
          * ```
          */
-        get => $this->urlParser->parse($this->urlString);
+        get => $this->uris->createUriFromString($this->uriString);
         /**
          * Updates URI of the webview.
          *
          * This can also be considered as navigation to a specific web page.
          *
          * ```
-         * $webview->uri = 'http://example.com';
+         * $webview->url = 'http://example.com';
          * ```
          *
          * Don't forget that you can also use any compatible URI interface,
          * such as PSR-compatible.
          *
          * ```
-         * $webview->uri = new Psr17\AnyUriFactory()
+         * $webview->url = new Psr17\AnyUriFactory()
          *      ->create('http://example.com');
          *
          * // OR
          *
-         * $webview->uri = new Psr7\AnyUri('http://example.com');
+         * $webview->url = new Psr7\AnyUri('http://example.com');
          * ```
          */
-        set(Url|\Stringable|string $value) {
+        set(UriInterface|\Stringable|string $value) {
             $this->api->saucer_webview_set_url($this->ptr, (string) $value);
         }
     }
@@ -109,7 +115,7 @@ final class WebView
     /**
      * Contains current non-memoized webview url string.
      */
-    private string $urlString {
+    private string $uriString {
         get {
             $result = $this->api->saucer_webview_url($this->ptr);
 
@@ -120,11 +126,6 @@ final class WebView
             }
         }
     }
-
-    /**
-     * Contains WebView URI parser.
-     */
-    private readonly UrlParserInterface $urlParser;
 
     /**
      * Contains an internal bridge between system {@see LibSaucer} events
@@ -160,6 +161,14 @@ final class WebView
          */
         private readonly ProcessUnlockPlaceholder $placeholder,
         /**
+         * Contains WebView {@see UriFactoryInterface} URI parser.
+         */
+        private readonly UriFactoryInterface $uris,
+        /**
+         * Contains WebView {@see MethodFactoryInterface} HTTP method parser.
+         */
+        private readonly MethodFactoryInterface $methods,
+        /**
          * Gets parent application window instance to which
          * this webview instance belongs.
          */
@@ -170,10 +179,6 @@ final class WebView
         public readonly WebViewCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
-        $this->urlParser = new MemoizedUrlParser(
-            delegate: new NativeUrlParser(),
-        );
-
         $this->events = new DelegateEventListener($dispatcher);
         // The WebView handle pointer is the same as the Window pointer.
         $this->ptr = $this->window->id->ptr;
@@ -193,11 +198,18 @@ final class WebView
             placeholder: $this->placeholder,
         );
 
+        $this->schemes = new WebViewSchemeSet(
+            api: $this->api,
+            webview: $this,
+            uris: $this->uris,
+            methods: $this->methods,
+        );
+
         $this->handler = new WebViewEventHandler(
             api: $this->api,
             webview: $this,
             dispatcher: $this->events,
-            urlParser: $this->urlParser,
+            uris: $this->uris,
             state: $this->state,
         );
 

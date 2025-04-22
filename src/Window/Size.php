@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\Window;
 
-use Boson\Window\Size\SizeStringableProvider;
+use Boson\Window\Size\SizeStringableImpl;
 
 final readonly class Size implements SizeInterface
 {
-    use SizeStringableProvider;
+    use SizeStringableImpl;
 
     public function __construct(
         /**

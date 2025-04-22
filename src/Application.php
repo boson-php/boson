@@ -11,6 +11,12 @@ use Boson\Event\ApplicationStarting;
 use Boson\Event\ApplicationStopped;
 use Boson\Event\ApplicationStopping;
 use Boson\Exception\NoDefaultWindowException;
+use Boson\Http\Method\MemoizedMethodFactory;
+use Boson\Http\Method\MethodFactory;
+use Boson\Http\Method\MethodFactoryInterface;
+use Boson\Http\Uri\Factory\MemoizedUriFactory;
+use Boson\Http\Uri\Factory\UriFactory;
+use Boson\Http\Uri\Factory\UriFactoryInterface;
 use Boson\Internal\DebugEnvResolver;
 use Boson\Internal\DeferRunner\DeferRunnerInterface;
 use Boson\Internal\DeferRunner\NativeShutdownFunctionRunner;
@@ -144,6 +150,16 @@ final class Application
     private readonly ColorFactoryInterface $colors;
 
     /**
+     * Gets an internal URI factory implementation.
+     */
+    private readonly UriFactoryInterface $uris;
+
+    /**
+     * Gets an internal HTTP method factory implementation.
+     */
+    private readonly MethodFactoryInterface $methods;
+
+    /**
      * @param PsrEventDispatcherInterface|null $dispatcher an optional event
      *        dispatcher for handling application events
      */
@@ -166,19 +182,52 @@ final class Application
             app: $this,
         );
 
-        $this->windows = new WindowManager(
+        $this->uris = new MemoizedUriFactory(
+            delegate: new UriFactory(),
+        );
+
+        $this->methods = new MemoizedMethodFactory(
+            delegate: new MethodFactory(),
+        );
+
+        $this->registerSchemes();
+        $this->registerDefaultEventListeners();
+
+        $this->windows = $this->createWindowManager();
+
+        if ($this->info->autorun) {
+            $this->registerDeferRunnerIfNotRegistered();
+        }
+    }
+
+    /**
+     * Creates a new window manager instance.
+     *
+     * This method initializes and returns a {@see WindowManager} object
+     * that is responsible for managing all application windows.
+     */
+    private function createWindowManager(): WindowManager
+    {
+        return new WindowManager(
             api: $this->api,
             app: $this,
             placeholder: $this->placeholder,
             colors: $this->colors,
+            uris: $this->uris,
+            methods: $this->methods,
             info: $this->info->window,
             dispatcher: $this->events,
         );
+    }
 
-        $this->registerDefaultEventListeners();
-
-        if ($this->info->autorun) {
-            $this->registerDeferRunnerIfNotRegistered();
+    /**
+     * Register list of protocol names that will be
+     * intercepted by the application.
+     */
+    private function registerSchemes(): void
+    {
+        foreach ($this->info->schemes as $scheme => $_) {
+            $this->api->saucer_register_scheme($scheme);
         }
     }
 

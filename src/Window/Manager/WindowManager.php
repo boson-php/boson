@@ -8,6 +8,8 @@ use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListener;
+use Boson\Http\Method\MethodFactoryInterface;
+use Boson\Http\Uri\Factory\UriFactoryInterface;
 use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\GarbageCollector\ObservableWeakSet;
@@ -58,6 +60,8 @@ final class WindowManager implements
         private readonly Application $app,
         private readonly ProcessUnlockPlaceholder $placeholder,
         private readonly ColorFactoryInterface $colors,
+        private readonly UriFactoryInterface $uris,
+        private readonly MethodFactoryInterface $methods,
         WindowCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
@@ -93,6 +97,8 @@ final class WindowManager implements
             api: $this->api,
             placeholder: $this->placeholder,
             colors: $this->colors,
+            uris: $this->uris,
+            methods: $this->methods,
             app: $this->app,
             info: $info,
             dispatcher: $this->events,

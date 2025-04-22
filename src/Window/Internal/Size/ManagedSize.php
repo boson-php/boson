@@ -6,7 +6,7 @@ namespace Boson\Window\Internal\Size;
 
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Window\MutableSizeInterface;
-use Boson\Window\Size\SizeStringableProvider;
+use Boson\Window\Size\SizeStringableImpl;
 use FFI\CData;
 
 /**
@@ -15,7 +15,7 @@ use FFI\CData;
  */
 abstract class ManagedSize implements MutableSizeInterface
 {
-    use SizeStringableProvider;
+    use SizeStringableImpl;
 
     /**
      * @var int<0, 2147483647>

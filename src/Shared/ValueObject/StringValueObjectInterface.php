@@ -11,8 +11,6 @@ interface StringValueObjectInterface extends ValueObjectInterface
 {
     /**
      * Gets VO value as PHP {@see string} scalar.
-     *
-     * @return non-empty-string
      */
     public function toString(): string;
 }

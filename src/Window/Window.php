@@ -7,6 +7,8 @@ namespace Boson\Window;
 use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
+use Boson\Http\Method\MethodFactoryInterface;
+use Boson\Http\Uri\Factory\UriFactoryInterface;
 use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\RequiresDealloc;
@@ -453,6 +455,14 @@ final class Window
          */
         private readonly ColorFactoryInterface $colors,
         /**
+         * Contains factory to create URI instances.
+         */
+        private readonly UriFactoryInterface $uris,
+        /**
+         * Contains factory to create HTTP method instances.
+         */
+        private readonly MethodFactoryInterface $methods,
+        /**
          * Gets parent application instance to which this window belongs.
          */
         public readonly Application $app,
@@ -473,6 +483,8 @@ final class Window
         $this->webview = new WebView(
             api: $this->api,
             placeholder: $this->placeholder,
+            uris: $this->uris,
+            methods: $this->methods,
             window: $this,
             info: $this->info->webview,
             dispatcher: $this->events,
