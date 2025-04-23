@@ -48,6 +48,7 @@ And much easier than that =)
     - [HTML Content](#webview-html-content)
     - [Navigation to URL](#webview-url-navigation)
     - [Navigation URL info](#webview-url-info)
+    - [Custom Protocols](#webview-custom-protocols)
     - **JavaScript** 
       - [Scripts](#webview-scripts)
       - [Code Evaluation](#webview-code-evaluation)
@@ -599,6 +600,67 @@ $app->events->addEventListener(WebViewNavigated::class, function () use ($app) {
     echo 'Host:   ' . $app->webview->url->host . "\n";   // string("github.com")
     echo 'Path:   ' . $app->webview->url->path . "\n";   // string("/BosonPHP")
 });
+```
+
+
+### WebView Custom Protocols
+
+You can register custom scheme/protocols and intercept standard one.
+
+To register global application middleware you may define list of middleware 
+for the given protocol.
+
+```php
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
+use Boson\Http\Middleware\HandlerInterface;
+use Boson\Http\Middleware\MiddlewareInterface;
+use Boson\Http\RequestInterface;
+use Boson\Http\Response;
+
+$middleware = new class implements MiddlewareInterface {
+    public function handle(RequestInterface $request, HandlerInterface $handler): Response
+    {
+        return new Response('<h1>Hello from "' . $request->url . '"!</h1>');
+    }
+};
+
+$app = new Application(new ApplicationCreateInfo(
+    // List of middleware for "https" protocol
+    schemes: [ 'https' => [$middleware] ],
+));
+
+$app->webview->url = 'https://hello.world/';
+```
+
+To register middleware for a specific window (webview) for a specified protocol, 
+you should use direct addition of middleware to the middleware list for webview.
+
+```php
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
+use Boson\Http\Middleware\HandlerInterface;
+use Boson\Http\Middleware\MiddlewareInterface;
+use Boson\Http\RequestInterface;
+use Boson\Http\Response;
+
+$app = new Application(new ApplicationCreateInfo(
+    // Adding "https" protocol interception support
+    schemes: [ 'https' ],
+));
+
+// Select pipeline for "https" protocol
+$pipeline = $app->webview->schemes->find('https');
+
+// Add middleware for "https" protocol for main window
+$pipeline?->append(new class implements MiddlewareInterface {
+    public function handle(RequestInterface $request, HandlerInterface $handler): Response
+    {
+        return new Response('<h1>Hello from "' . $request->url . '"!</h1>');
+    }
+});
+
+$app->webview->url = 'https://hello.world/';
 ```
 
 
