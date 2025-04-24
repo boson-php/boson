@@ -58,9 +58,10 @@ final class Window
     }
 
     public WindowDecoration $decoration {
-        get => $value;
+        get => $this->decoration;
         set {
             // Do nothing if decoration is equal to previous one
+            /** @phpstan-ignore-next-line : PHPStan false positive */
             if (isset($this->decoration) && $value === $this->decoration) {
                 return;
             }
@@ -77,8 +78,22 @@ final class Window
 
             $isDarkModeWasEnabled = $this->api->saucer_webview_force_dark_mode($ptr);
 
+            // Please note that the order of function calls is important,
+            // as there is a bug in the kernel of saucer v6.0 that causes
+            // loss of state after change decorations.
+            //
+            // ```
+            // if (!decorated) {
+            //     impl::set_style(m_impl->hwnd.get(), 0); // previous WS_XXX
+            //                                             // state has been lost?
+            //     return;
+            // }
+            // ```
+            //
+            // We need to figure it out...
             switch ($this->decoration = $value) {
                 case WindowDecoration::DarkMode:
+                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
                     $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
                     $this->api->saucer_window_set_decorations($ptr, true);
 
@@ -88,15 +103,21 @@ final class Window
                         $this->refresh();
                     }
                     break;
+
                 case WindowDecoration::Frameless:
+                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
                     $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
                     $this->api->saucer_window_set_decorations($ptr, false);
                     break;
+
                 case WindowDecoration::Transparent:
                     $this->api->saucer_window_set_decorations($ptr, false);
+                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
                     $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 0);
                     break;
+
                 default:
+                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
                     $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
                     $this->api->saucer_window_set_decorations($ptr, true);
 
@@ -538,8 +559,16 @@ final class Window
      */
     private function refresh(): void
     {
-        $this->size->height += 1;
-        $this->size->height -= 1;
+        $height = $this->size->height;
+
+        // Avoid height overflow
+        if ($height >= 2147483647) {
+            $this->size->height = $height - 1;
+        } else {
+            $this->size->height = $height + 1;
+        }
+
+        $this->size->height = $height;
     }
 
     /**
