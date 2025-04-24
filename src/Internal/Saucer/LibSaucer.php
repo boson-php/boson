@@ -21,6 +21,16 @@ final readonly class LibSaucer
     /**
      * @var non-empty-string
      */
+    private const string MINIMAL_REQUIRED_VERSION = '0.2.0';
+
+    /**
+     * @var non-empty-string
+     */
+    private const string MAXIMAL_SUPPORTED_VERSION = '1.0.0';
+
+    /**
+     * @var non-empty-string
+     */
     private const string DEFAULT_BIN_DIR = __DIR__ . '/../../../bin';
 
     private \FFI $ffi;
@@ -56,6 +66,29 @@ final readonly class LibSaucer
                 default => throw UnsupportedOperatingSystemException::becauseOperatingSystemIsInvalid($os->name),
             },
         );
+
+        $this->assertVersionCompatibility();
+    }
+
+    private function assertVersionCompatibility(): void
+    {
+        /** @var string $version */
+        $version = $this->ffi->boson_version();
+
+        $isSupported = \version_compare($version, self::MINIMAL_REQUIRED_VERSION, '>=')
+            && \version_compare($version, self::MAXIMAL_SUPPORTED_VERSION, '<');
+
+        if ($isSupported) {
+            return;
+        }
+
+        throw new \OutOfRangeException(\sprintf(
+            'The current version of the library is %s, '
+                . 'but at least %s (but not higher than %s) is supported',
+            $version,
+            self::MINIMAL_REQUIRED_VERSION,
+            self::MAXIMAL_SUPPORTED_VERSION,
+        ));
     }
 
     /**
