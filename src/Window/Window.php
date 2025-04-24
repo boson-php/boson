@@ -67,14 +67,16 @@ final class Window
     public private(set) WindowState $state = WindowState::Normal {
         get => $this->state;
         set {
-            // In case of initial state is defined
-            if (isset($this->state)) {
-                $this->events->dispatch(new WindowStateChanged(
-                    subject: $this,
-                    state: $value,
-                    previous: $this->state,
-                ));
+            // Do nothing if state is equal to previous one.
+            if ($this->state === $value) {
+                return;
             }
+
+            $this->events->dispatch(new WindowStateChanged(
+                subject: $this,
+                state: $value,
+                previous: $this->state,
+            ));
 
             $this->state = $value;
         }
