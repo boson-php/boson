@@ -1,56 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <meta-storm xmlns="meta-storm">
     <definitions>
-
         <classConstructor class="\Boson\WebView\WebViewCreateInfo" argument="5">
             <directories xpath="$directory" />
         </classConstructor>
 
         <classMethod class="\Boson\Dispatcher\EventListenerInterface" method="addEventListener" argument="0">
-            <collection name="application-events" />
-            <collection name="window-events" />
-            <collection name="webview-events" />
+            <collection name="App Event" />
+            <collection name="Window Event" />
+            <collection name="WebView Event" />
             <stopCompletion />
         </classMethod>
 
         <classMethod class="\Boson\Dispatcher\EventListenerInterface" method="removeAllEventListenersForEvent" argument="0">
-            <collection name="application-events" />
-            <collection name="window-events" />
-            <collection name="webview-events" />
+            <collection name="App Event" />
+            <collection name="Window Event" />
+            <collection name="WebView Event" />
             <stopCompletion />
         </classMethod>
 
         <classMethod class="\Boson\Dispatcher\EventListener" method="addEventListener" argument="0">
-            <collection name="application-events" />
-            <collection name="window-events" />
-            <collection name="webview-events" />
+            <collection name="App Event" />
+            <collection name="Window Event" />
+            <collection name="WebView Event" />
             <stopCompletion />
         </classMethod>
 
         <classMethod class="\Boson\Dispatcher\EventListener" method="removeAllEventListenersForEvent" argument="0">
-            <collection name="application-events" />
-            <collection name="window-events" />
-            <collection name="webview-events" />
+            <collection name="App Event" />
+            <collection name="Window Event" />
+            <collection name="WebView Event" />
             <stopCompletion />
         </classMethod>
 
         <classMethod class="\Boson\Dispatcher\DelegateEventListener" method="addEventListener" argument="0">
-            <collection name="application-events" />
-            <collection name="window-events" />
-            <collection name="webview-events" />
+            <collection name="App Event" />
+            <collection name="Window Event" />
+            <collection name="WebView Event" />
             <stopCompletion />
         </classMethod>
 
         <classMethod class="\Boson\Dispatcher\DelegateEventListener" method="removeAllEventListenersForEvent" argument="0">
-            <collection name="application-events" />
-            <collection name="window-events" />
-            <collection name="webview-events" />
+            <collection name="App Event" />
+            <collection name="Window Event" />
+            <collection name="WebView Event" />
             <stopCompletion />
         </classMethod>
     </definitions>
     <collections>
-        <attributeClass name="application-events" class="\Boson\Shared\Marker\AsApplicationEvent" />
-        <attributeClass name="window-events" class="\Boson\Shared\Marker\AsWindowEvent" />
-        <attributeClass name="webview-events" class="\Boson\Shared\Marker\AsWebViewEvent" />
+        <attributeClass name="App Event" class="\Boson\Shared\Marker\AsApplicationEvent" />
+        <attributeClass name="Window Event" class="\Boson\Shared\Marker\AsWindowEvent" />
+        <attributeClass name="WebView Event" class="\Boson\Shared\Marker\AsWebViewEvent" />
     </collections>
 </meta-storm>
