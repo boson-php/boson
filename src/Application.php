@@ -29,8 +29,6 @@ use Boson\Internal\ThreadsCountResolver;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\WebView;
-use Boson\Window\Color\ColorFactory;
-use Boson\Window\Color\ColorFactoryInterface;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
 use Boson\Window\Window;
@@ -145,11 +143,6 @@ final class Application
     private readonly ProcessUnlockPlaceholder $placeholder;
 
     /**
-     * Gets an internal color factory implementation.
-     */
-    private readonly ColorFactoryInterface $colors;
-
-    /**
      * Gets an internal URI factory implementation.
      */
     private readonly UriFactoryInterface $uris;
@@ -175,7 +168,6 @@ final class Application
         $this->isDebug = DebugEnvResolver::resolve($this->info->debug);
         $this->events = $this->createEventListener($dispatcher);
         $this->id = $this->createApplicationId($this->info->name, $this->info->threads);
-        $this->colors = $this->createColorFactory();
 
         $this->placeholder = new ProcessUnlockPlaceholder(
             api: $this->api,
@@ -212,7 +204,6 @@ final class Application
             api: $this->api,
             app: $this,
             placeholder: $this->placeholder,
-            colors: $this->colors,
             uris: $this->uris,
             methods: $this->methods,
             info: $this->info->window,
@@ -252,14 +243,6 @@ final class Application
         if ($this->info->quitOnClose && $this->windows->count() === 0) {
             $this->quit();
         }
-    }
-
-    /**
-     * Creates a new default color factory.
-     */
-    private function createColorFactory(): ColorFactoryInterface
-    {
-        return new ColorFactory();
     }
 
     /**

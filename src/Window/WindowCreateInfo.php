@@ -39,13 +39,6 @@ final readonly class WindowCreateInfo
          */
         public int $height = self::DEFAULT_HEIGHT,
         /**
-         * Enable window dark mode in case of {@see true} or disable
-         * in case of {@see false}.
-         *
-         * In case of {@see null} the theme will be identical to the system one.
-         */
-        public ?bool $darkMode = null,
-        /**
          * Enables graphics hardware acceleration in case of this option
          * is set to {@see true} or disables in case {@see false}.
          *
@@ -62,10 +55,12 @@ final readonly class WindowCreateInfo
          */
         public bool $resizable = true,
         /**
-         * Enable or disable window decorations (title bar, minimize, maximize
-         * and exit buttons).
+         * Manage window decorations.
+         *
+         * Enable or disable title bar, minimize, maximize, exit buttons,
+         * transparency and so on...
          */
-        public bool $decorated = true,
+        public WindowDecoration $decoration = WindowDecoration::Default,
         /**
          * Information (configuration) about creating a new webview object
          * that will be attached to the window.

@@ -45,8 +45,6 @@ And much easier than that =)
     - [Window Max Size](#window-max-size)
     - [Window Min Size](#window-min-size)
     - [Window Decorations](#window-decorations)
-    - [Window Color](#window-color)
-    - [Window Dark Mode](#window-dark-mode)
   - **WebView**
     - [HTML Content](#webview-html-content)
     - [Navigation to URL](#webview-url-navigation)
@@ -393,69 +391,25 @@ $app->window->min->update(1024, 768);
 ```
 
 
-### Window Color
-
-To set the window background color, use the `$background` window's property.
-
-```php
-$app = new Boson\Application();
-
-echo $app->window->background; // string(7) "#ffffff"
-
-$app->window->background->green = 0;
-$app->window->background->blue = 0;
-
-// OR
-
-$app->window->background->update(green: 0, blue: 0);
-```
-
-You can make the window completely transparent by specifying `0` for the alpha 
-color value. The lower the alpha value, the more transparent the window.
-
-```php
-$app->window->background->alpha = 0;
-```
-
-By default, the window color is completely white (`Color(255, 255, 255, 255)`).
-
-### Window Dark Mode
-
-To set the dark mode (dark theme), use the `$isDarkModeEnabled` 
-window's property.
-
-```php
-$app = new Boson\Application();
-
-$app->window->isDarkModeEnabled = true;
-
-if ($app->window->isDarkModeEnabled) {
-    echo 'Dark mode is enabled!';
-}
-```
-
-Or set dark mode from configuration
-
-```php
-$app = new Boson\Application(
-    info: new \Boson\ApplicationCreateInfo(
-        window: new Boson\Window\WindowCreateInfo(
-            darkMode: true,
-        ),
-    ),
-);
-```
-
-
 ### Window Decorations
 
-You can DISABLE the standard window\`s title bar, minimize, maximize and close 
-buttons. To do this, you should set the `false` for `$isDecorated` property.
+You can change the standard window\`s title bar, minimize, maximize and close 
+buttons via `Boson\Window\WindowDecoration` enum.
 
 ```php
 $app = new Boson\Application();
 
-$app->window->isDecorated = false;
+// Sets default window behaviour
+$app->window->decoration = Boson\Window\WindowDecoration::Default;
+
+// Enable dark mode
+$app->window->decoration = Boson\Window\WindowDecoration::DarkMode;
+
+// Disable window decorations
+$app->window->decoration = Boson\Window\WindowDecoration::Frameless;
+
+// Disable decorations and make window transparent
+$app->window->decoration = Boson\Window\WindowDecoration::Transparent;
 ```
 
 Or via configuration options.
@@ -464,11 +418,19 @@ Or via configuration options.
 $app = new Boson\Application(
     info: new \Boson\ApplicationCreateInfo(
         window: new Boson\Window\WindowCreateInfo(
-            decorated: false,
+            decoration: Boson\Window\WindowDecoration::Frameless,
         ),
     ),
 );
 ```
+
+| Enum Case   | Controls | Dark Mode | Transparency |
+|-------------|----------|-----------|--------------|
+| Default     | ✓        | ✗         | ✗            |
+| DarkMode    | ✓        | ✓         | ✗            |
+| Frameless   | ✗        | ✗         | ✗            |
+| Transparent | ✗        | ✗         | ✓            |
+
 
 Please note that by disabling the standard title bar and buttons you will not
 be able to control the window (moving and resizing), but you can implement 
@@ -483,6 +445,8 @@ $app = new Boson\Application(
                 html: <<<'HTML'
                     <div data-webview-drag>
                         By dragging this element you can move the window
+
+                        <button data-webview-ignore>non-draggable button</button>
                     </div>
                     
                     <hr />
@@ -507,7 +471,8 @@ $app = new Boson\Application(
   - An `l` attribute's value means the ability to resize horizontally, left of the window.
   - Using combinations such as `tl`, `tr`, `bl` and `br` allows you to specify 
     simultaneous resizing of the window vertically and horizontally.
-
+- The `data-webview-ignore` attribute disables drag or resize behaviour for
+  the element and children.
 
 
 ### WebView HTML Content

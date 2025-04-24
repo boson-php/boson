@@ -14,9 +14,6 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Internal\WebViewCreateInfo\FlagsListFormatter;
 use Boson\WebView\WebView;
-use Boson\Window\Color\ColorFactoryInterface;
-use Boson\Window\Color\Exception\InvalidColorException;
-use Boson\Window\Internal\Color\ManagedColor;
 use Boson\Window\Internal\Size\ManagedWindowMaxBounds;
 use Boson\Window\Internal\Size\ManagedWindowMinBounds;
 use Boson\Window\Internal\Size\ManagedWindowSize;
@@ -60,86 +57,55 @@ final class Window
         }
     }
 
-    /**
-     * Contains current window background color.
-     */
-    public MutableColorInterface $background {
-        /**
-         * Returns mutable {@see MutableColorInterface} window color value object.
-         *
-         * ```
-         * echo $window->background; // string(9) "#FFFFFFFF"
-         * ```
-         *
-         * Since the property returns mutable window background color, they can
-         * be changed explicitly.
-         *
-         * ```
-         * $window->background->red   = 128;
-         * $window->background->green = 128;
-         * $window->background->blue  = 128
-         * $window->background->alpha = 0;
-         * ```
-         *
-         * Or using simultaneously update.
-         *
-         * ```
-         * $window->background->update(128, 128, 128, 0);
-         * ```
-         */
-        get => $this->background;
-        /**
-         * Allows to update window background color using any
-         * {@see ColorInterface} (for example {@see Color}) instance.
-         *
-         * ```
-         * $window->background = new Color(red: 128, blue: 128);
-         * ```
-         *
-         * The background color can also be set from the {@see string};
-         * The allowed values are defined in the {@see ColorFactoryInterface}.
-         *
-         * ```
-         * $window->background = '#DEADBE';   // new Color(222, 173, 190)
-         * $window->background = '#DEADBEEF'; // new Color(222, 173, 190, 239)
-         * ```
-         *
-         * The colors can also be passed between different window instances
-         * and window properties.
-         *
-         * ```
-         * $window1->background = $window2->background;
-         * ```
-         *
-         * @uses \Boson\Window\Color\ColorFactoryInterface::createFromString()
-         *       to create color from string.
-         *
-         * @param non-empty-string|ColorInterface $color
-         *
-         * @throws InvalidColorException in case of passed color string value
-         *         format cannot be recognized
-         */
-        set(string|ColorInterface $color) {
-            if ($color instanceof ManagedColor) {
-                $this->background = $color;
-
+    public WindowDecoration $decoration {
+        get => $value;
+        set {
+            // Do nothing if decoration is equal to previous one
+            if (isset($this->decoration) && $value === $this->decoration) {
                 return;
             }
 
-            if (\is_string($color) && $color !== '') {
-                $color = $this->colors->createFromString($color)
-                    ?? throw new InvalidColorException(\sprintf(
-                        'Could not recognize "%s" color format',
-                        $color,
-                    ));
-            }
+            $ptr = $this->id->ptr;
 
-            $this->background->update(
-                red: $color->red,
-                green: $color->green,
-                blue: $color->blue,
-                alpha: $color->alpha,
+            $this->api->saucer_webview_background(
+                $ptr,
+                \FFI::addr($r = $this->api->new('uint8_t')),
+                \FFI::addr($g = $this->api->new('uint8_t')),
+                \FFI::addr($b = $this->api->new('uint8_t')),
+                \FFI::addr($a = $this->api->new('uint8_t')),
             );
+
+            $isDarkModeWasEnabled = $this->api->saucer_webview_force_dark_mode($ptr);
+
+            switch ($this->decoration = $value) {
+                case WindowDecoration::DarkMode:
+                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    $this->api->saucer_window_set_decorations($ptr, true);
+
+                    // Refresh in case of dark mode was disabled
+                    if ($isDarkModeWasEnabled === false) {
+                        $this->api->saucer_webview_set_force_dark_mode($ptr, true);
+                        $this->refresh();
+                    }
+                    break;
+                case WindowDecoration::Frameless:
+                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    $this->api->saucer_window_set_decorations($ptr, false);
+                    break;
+                case WindowDecoration::Transparent:
+                    $this->api->saucer_window_set_decorations($ptr, false);
+                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 0);
+                    break;
+                default:
+                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    $this->api->saucer_window_set_decorations($ptr, true);
+
+                    // Refresh in case of dark mode was enabled
+                    if ($isDarkModeWasEnabled) {
+                        $this->api->saucer_webview_set_force_dark_mode($ptr, false);
+                        $this->refresh();
+                    }
+            }
         }
     }
 
@@ -376,39 +342,6 @@ final class Window
     }
 
     /**
-     * Contains window decorated option.
-     */
-    public bool $isDecorated {
-        /**
-         * Gets current window decorated state.
-         *
-         * ```
-         * if ($window->isDecorated) {
-         *     echo 'Window is decorated';
-         * } else {
-         *     echo 'Window is not decorated';
-         * }
-         * ```
-         */
-        get => $this->api->saucer_window_decorations($this->id->ptr);
-        /**
-         * Enable window decorations in case of {@see true} or
-         * disable in case of {@see false}.
-         *
-         * ```
-         * // Enable window decorations
-         * $window->isDecorated = true;
-         *
-         * // Disable window decorations
-         * $window->isDecorated = false;
-         * ```
-         */
-        set {
-            $this->api->saucer_window_set_decorations($this->id->ptr, $value);
-        }
-    }
-
-    /**
      * Gets current window closed state.
      *
      * ```
@@ -451,10 +384,6 @@ final class Window
          */
         private readonly ProcessUnlockPlaceholder $placeholder,
         /**
-         * Contains factory to create color instances.
-         */
-        private readonly ColorFactoryInterface $colors,
-        /**
          * Contains factory to create URI instances.
          */
         private readonly UriFactoryInterface $uris,
@@ -476,11 +405,29 @@ final class Window
 
         $this->events = new DelegateEventListener($dispatcher);
         $this->size = new ManagedWindowSize($this->api, $this->id->ptr);
-        $this->background = new ManagedColor($this->api, $this->id->ptr);
         $this->min = new ManagedWindowMinBounds($this->api, $this->id->ptr);
         $this->max = new ManagedWindowMaxBounds($this->api, $this->id->ptr);
+        $this->webview = $this->createWebView();
 
-        $this->webview = new WebView(
+        $this->handler = new WindowEventHandler(
+            api: $this->api,
+            window: $this,
+            dispatcher: $this->events,
+        );
+
+        $this->decoration = $this->info->decoration;
+
+        if ($this->info->visible) {
+            $this->show();
+        }
+    }
+
+    /**
+     * Creates WebView instance of the window
+     */
+    private function createWebView(): WebView
+    {
+        return new WebView(
             api: $this->api,
             placeholder: $this->placeholder,
             uris: $this->uris,
@@ -489,16 +436,6 @@ final class Window
             info: $this->info->webview,
             dispatcher: $this->events,
         );
-
-        $this->handler = new WindowEventHandler(
-            api: $this->api,
-            window: $this,
-            dispatcher: $this->events,
-        );
-
-        if ($this->info->visible) {
-            $this->show();
-        }
     }
 
     /**
@@ -534,20 +471,16 @@ final class Window
         try {
             $handle = $this->api->saucer_new($preferences);
 
+            if ($info->decoration === WindowDecoration::DarkMode) {
+                $this->api->saucer_webview_set_force_dark_mode($handle, true);
+            }
+
             if ($info->title !== '') {
                 $this->api->saucer_window_set_title($handle, $info->title);
             }
 
-            if ($info->darkMode !== null) {
-                $this->api->saucer_webview_set_force_dark_mode($handle, $info->darkMode);
-            }
-
             if ($info->resizable === false) {
                 $this->api->saucer_window_set_resizable($handle, false);
-            }
-
-            if ($info->decorated === false) {
-                $this->api->saucer_window_set_decorations($handle, false);
             }
 
             $this->api->saucer_window_set_size($handle, $info->width, $info->height);
@@ -601,6 +534,15 @@ final class Window
     }
 
     /**
+     * Magic hack to refresh the window without internal API calls :3
+     */
+    private function refresh(): void
+    {
+        $this->size->height += 1;
+        $this->size->height -= 1;
+    }
+
+    /**
      * Makes this window visible.
      *
      * Note: The same can be done using the window's visibility
@@ -624,6 +566,29 @@ final class Window
     public function hide(): void
     {
         $this->api->saucer_window_hide($this->id->ptr);
+    }
+
+    /**
+     * Set window as maximized.
+     *
+     * @internal Does not works correctly, awaiting for {@link https://github.com/saucer/bindings/pull/4} merge
+     * @api
+     */
+    public function maximize(): void
+    {
+        $this->api->saucer_window_set_minimized($this->id->ptr, false);
+        $this->api->saucer_window_set_maximized($this->id->ptr, true);
+    }
+
+    /**
+     * Set window as maximized.
+     *
+     * @api
+     */
+    public function minimize(): void
+    {
+        $this->api->saucer_window_set_maximized($this->id->ptr, false);
+        $this->api->saucer_window_set_minimized($this->id->ptr, true);
     }
 
     /**
