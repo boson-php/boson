@@ -49,21 +49,29 @@ final readonly class LibSaucer
                 OperatingSystem::Windows => match ($arch = Architecture::current()) {
                     Architecture::x86,
                     Architecture::Amd64 => self::DEFAULT_BIN_DIR . '/libboson-windows-x86_64.dll',
-                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid($arch->name),
+                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
+                        architecture: $arch->value ?? 'unknown',
+                    ),
                 },
                 OperatingSystem::Linux => match ($arch = Architecture::current()) {
                     Architecture::x86,
                     Architecture::Amd64 => self::DEFAULT_BIN_DIR . '/libboson-linux-x86_64.so',
                     Architecture::Arm64 => self::DEFAULT_BIN_DIR . '/libboson-linux-aarch64.so',
-                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid($arch->name),
+                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
+                        architecture: $arch->value ?? 'unknown',
+                    ),
                 },
                 OperatingSystem::MacOS => match ($arch = Architecture::current()) {
                     Architecture::x86,
                     Architecture::Amd64,
                     Architecture::Arm64 => self::DEFAULT_BIN_DIR . '/libboson-darwin-universal.dylib',
-                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid($arch->name),
+                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
+                        architecture: $arch->value ?? 'unknown',
+                    ),
                 },
-                default => throw UnsupportedOperatingSystemException::becauseOperatingSystemIsInvalid($os->name),
+                default => throw UnsupportedOperatingSystemException::becauseOperatingSystemIsInvalid(
+                    os: $os->value ?? 'unknown',
+                ),
             },
         );
 

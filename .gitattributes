@@ -1,16 +1,12 @@
 * text=auto eol=lf
-*.pp eol=lf linguist-language=EBNF
-*.pp2 eol=lf linguist-language=EBNF
 
 .editorconfig export-ignore
-.php-cs-fixer.php export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore
 
+.php-cs-fixer.php export-ignore
 phpunit.xml export-ignore
-psalm.xml export-ignore
-rector.php export-ignore
+phpstan.neon export-ignore
 
 /.github export-ignore
-/example export-ignore
 /tests export-ignore
