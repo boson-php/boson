@@ -114,6 +114,7 @@ final class Window
              */
             if (!isset($this->decoration)) {
                 $this->decoration = $value;
+
                 return;
             }
 
@@ -258,6 +259,7 @@ final class Window
                 assert($size instanceof ManagedWindowSize);
 
                 $this->size = $size;
+
                 return;
             }
 
@@ -318,6 +320,7 @@ final class Window
                 assert($size instanceof ManagedWindowMinBounds);
 
                 $this->min = $size;
+
                 return;
             }
 
@@ -378,6 +381,7 @@ final class Window
                 assert($size instanceof ManagedWindowMaxBounds);
 
                 $this->max = $size;
+
                 return;
             }
 
@@ -613,6 +617,7 @@ final class Window
         if ($isDevToolsEnabled) {
             /**
              * Force disable unnecessary XSS warnings in dev tools
+             *
              * @link https://developer.chrome.com/blog/self-xss#can_you_disable_it_for_test_automation
              */
             $this->api->saucer_preferences_add_browser_flag(
@@ -725,6 +730,7 @@ final class Window
      * Set window as maximized.
      *
      * @api
+     *
      * @since frontend 0.2.0
      */
     public function maximize(): void
