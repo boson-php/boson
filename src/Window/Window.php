@@ -600,8 +600,9 @@ final class Window
     /**
      * Set window as maximized.
      *
-     * @internal Does not works correctly, awaiting for {@link https://github.com/saucer/bindings/pull/4} merge
      * @api
+     *
+     * @internal Does not works correctly, awaiting for {@link https://github.com/saucer/bindings/pull/4} merge
      */
     public function maximize(): void
     {
