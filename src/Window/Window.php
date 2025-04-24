@@ -14,6 +14,9 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Internal\WebViewCreateInfo\FlagsListFormatter;
 use Boson\WebView\WebView;
+use Boson\Window\Event\WindowMaximized;
+use Boson\Window\Event\WindowMinimized;
+use Boson\Window\Event\WindowStateChanged;
 use Boson\Window\Internal\Size\ManagedWindowMaxBounds;
 use Boson\Window\Internal\Size\ManagedWindowMinBounds;
 use Boson\Window\Internal\Size\ManagedWindowSize;
@@ -57,8 +60,51 @@ final class Window
         }
     }
 
+    /**
+     * Gets window state.
+     */
+    public private(set) WindowState $state = WindowState::Normal {
+        get => $this->state;
+        set {
+            // In case of initial state is defined
+            if (isset($this->state)) {
+                $this->events->dispatch(new WindowStateChanged(
+                    subject: $this,
+                    state: $value,
+                    previous: $this->state,
+                ));
+            }
+
+            $this->state = $value;
+        }
+    }
+
+    /**
+     * Provides window decorations configs.
+     */
     public WindowDecoration $decoration {
+        /**
+         * Gets current window decoration value.
+         *
+         * ```
+         * if ($window->decoration === WindowDecoration::DarkMode) {
+         *     echo 'Dark mode enabled!;
+         * } else {
+         *     echo 'Dark mode disabled!';
+         * }
+         * ```
+         */
         get => $this->decoration;
+        /**
+         * Updates current window decorations mode.
+         *
+         * ```
+         * // Toggle dark mode
+         * $window->decoration = $window->decoration === WindowDecoration::DarkMode
+         *     ? WindowDecoration::Default
+         *     : WindowDecoration::DarkMode;
+         * ```
+         */
         set {
             // Do nothing if decoration is equal to previous one
             /** @phpstan-ignore-next-line : PHPStan false positive */
@@ -93,8 +139,11 @@ final class Window
             // We need to figure it out...
             switch ($this->decoration = $value) {
                 case WindowDecoration::DarkMode:
-                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    if ($a->cdata !== 255) {
+                        /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
+                        $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    }
+
                     $this->api->saucer_window_set_decorations($ptr, true);
 
                     // Refresh in case of dark mode was disabled
@@ -105,20 +154,29 @@ final class Window
                     break;
 
                 case WindowDecoration::Frameless:
-                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    if ($a->cdata !== 255) {
+                        /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
+                        $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    }
+
                     $this->api->saucer_window_set_decorations($ptr, false);
                     break;
 
                 case WindowDecoration::Transparent:
                     $this->api->saucer_window_set_decorations($ptr, false);
-                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 0);
+
+                    if ($a->cdata !== 0) {
+                        /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
+                        $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 0);
+                    }
                     break;
 
                 default:
-                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    if ($a->cdata !== 255) {
+                        /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
+                        $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                    }
+
                     $this->api->saucer_window_set_decorations($ptr, true);
 
                     // Refresh in case of dark mode was enabled
@@ -438,9 +496,25 @@ final class Window
 
         $this->decoration = $this->info->decoration;
 
+        $this->registerDefaultEventListeners();
+
         if ($this->info->visible) {
             $this->show();
         }
+    }
+
+    /**
+     * Registers default event listeners for the window.
+     */
+    private function registerDefaultEventListeners(): void
+    {
+        $this->events->addEventListener(WindowMinimized::class, function (WindowMinimized $e): void {
+            $this->state = $e->isMinimized ? WindowState::Minimized : WindowState::Normal;
+        });
+
+        $this->events->addEventListener(WindowMaximized::class, function (WindowMaximized $e): void {
+            $this->state = $e->isMaximized ? WindowState::Maximized : WindowState::Normal;
+        });
     }
 
     /**
@@ -489,6 +563,25 @@ final class Window
     {
         $preferences = $this->createPreferencesPointer($info);
 
+        // Enable dev tools in case of the corresponding value was passed
+        // explicitly to the create info options or debug mode was enabled.
+        $isDevToolsEnabled = $info->webview->devTools ?? $this->app->isDebug;
+
+        // Enable context menu in case of the corresponding value was passed
+        // explicitly to the create info options or debug mode was enabled.
+        $isContextMenuEnabled = $info->webview->contextMenu ?? $this->app->isDebug;
+
+        if ($isDevToolsEnabled) {
+            /**
+             * Force disable unnecessary XSS warnings in dev tools
+             * @link https://developer.chrome.com/blog/self-xss#can_you_disable_it_for_test_automation
+             */
+            $this->api->saucer_preferences_add_browser_flag(
+                $preferences,
+                '--unsafely-disable-devtools-self-xss-warnings',
+            );
+        }
+
         try {
             $handle = $this->api->saucer_new($preferences);
 
@@ -505,15 +598,7 @@ final class Window
             }
 
             $this->api->saucer_window_set_size($handle, $info->width, $info->height);
-
-            // Enable context menu in case of the corresponding value was passed
-            // explicitly to the create info options or debug mode was enabled.
-            $isContextMenuEnabled = $info->webview->contextMenu ?? $this->app->isDebug;
             $this->api->saucer_webview_set_context_menu($handle, $isContextMenuEnabled);
-
-            // Enable dev tools in case of the corresponding value was passed
-            // explicitly to the create info options or debug mode was enabled.
-            $isDevToolsEnabled = $info->webview->devTools ?? $this->app->isDebug;
             $this->api->saucer_webview_set_dev_tools($handle, $isDevToolsEnabled);
 
             return $handle;
@@ -601,12 +686,10 @@ final class Window
      * Set window as maximized.
      *
      * @api
-     *
-     * @internal Does not works correctly, awaiting for {@link https://github.com/saucer/bindings/pull/4} merge
+     * @since frontend 0.2.0
      */
     public function maximize(): void
     {
-        $this->api->saucer_window_set_minimized($this->id->ptr, false);
         $this->api->saucer_window_set_maximized($this->id->ptr, true);
     }
 
@@ -617,8 +700,18 @@ final class Window
      */
     public function minimize(): void
     {
-        $this->api->saucer_window_set_maximized($this->id->ptr, false);
         $this->api->saucer_window_set_minimized($this->id->ptr, true);
+    }
+
+    /**
+     * Restore window size.
+     *
+     * @api
+     */
+    public function restore(): void
+    {
+        $this->api->saucer_window_set_maximized($this->id->ptr, false);
+        $this->api->saucer_window_set_minimized($this->id->ptr, false);
     }
 
     /**
