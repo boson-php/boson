@@ -14,6 +14,7 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Internal\WebViewCreateInfo\FlagsListFormatter;
 use Boson\WebView\WebView;
+use Boson\Window\Event\WindowDecorationChanged;
 use Boson\Window\Event\WindowMaximized;
 use Boson\Window\Event\WindowMinimized;
 use Boson\Window\Event\WindowStateChanged;
@@ -106,9 +107,14 @@ final class Window
          * ```
          */
         set {
-            // Do nothing if decoration is equal to previous one
-            /** @phpstan-ignore-next-line : PHPStan false positive */
-            if (isset($this->decoration) && $value === $this->decoration) {
+            // Skip in case of decoration is not defined.
+            if (!isset($this->decoration)) {
+                $this->decoration = $value;
+                return;
+            }
+
+            // Do nothing if decoration is equal to previous one.
+            if ($value === $this->decoration) {
                 return;
             }
 
@@ -137,7 +143,7 @@ final class Window
             // ```
             //
             // We need to figure it out...
-            switch ($this->decoration = $value) {
+            switch ($value) {
                 case WindowDecoration::DarkMode:
                     if ($a->cdata !== 255) {
                         /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
@@ -185,6 +191,14 @@ final class Window
                         $this->refresh();
                     }
             }
+
+            $this->events->dispatch(new WindowDecorationChanged(
+                subject: $this,
+                decoration: $value,
+                previous: $this->decoration,
+            ));
+
+            $this->decoration = $value;
         }
     }
 
