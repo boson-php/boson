@@ -67,16 +67,14 @@ final class Window
     public private(set) WindowState $state = WindowState::Normal {
         get => $this->state;
         set {
-            // Do nothing if state is equal to previous one.
-            if ($this->state === $value) {
-                return;
+            // Dispatch only if the state has changed
+            if ($this->state !== $value) {
+                $this->events->dispatch(new WindowStateChanged(
+                    subject: $this,
+                    state: $value,
+                    previous: $this->state,
+                ));
             }
-
-            $this->events->dispatch(new WindowStateChanged(
-                subject: $this,
-                state: $value,
-                previous: $this->state,
-            ));
 
             $this->state = $value;
         }
@@ -109,7 +107,11 @@ final class Window
          * ```
          */
         set {
-            // Skip in case of decoration is not defined.
+            /**
+             * Skip (just initialize) in case of decoration is uninitialized.
+             *
+             * @phpstan-ignore-next-line : PHPStan cannot detect uninitialized property state
+             */
             if (!isset($this->decoration)) {
                 $this->decoration = $value;
                 return;
@@ -246,9 +248,16 @@ final class Window
          * ```
          */
         set(SizeInterface $size) {
-            if ($size instanceof ManagedWindowSize) {
-                $this->size = $size;
+            /**
+             * Allow direct set only on first initialization. First size set
+             * MUST be an internal instance of {@see ManagedWindowSize}.
+             *
+             * @phpstan-ignore-next-line : PHPStan cannot detect uninitialized property state
+             */
+            if (!isset($this->size)) {
+                assert($size instanceof ManagedWindowSize);
 
+                $this->size = $size;
                 return;
             }
 
@@ -299,9 +308,16 @@ final class Window
          * ```
          */
         set(SizeInterface $size) {
-            if ($size instanceof ManagedWindowMinBounds) {
-                $this->min = $size;
+            /**
+             * Allow direct set only on first initialization. First min size
+             * set MUST be an internal instance of {@see ManagedWindowMinBounds}.
+             *
+             * @phpstan-ignore-next-line : PHPStan cannot detect uninitialized property state
+             */
+            if (!isset($this->min)) {
+                assert($size instanceof ManagedWindowMinBounds);
 
+                $this->min = $size;
                 return;
             }
 
@@ -352,9 +368,16 @@ final class Window
          * ```
          */
         set(SizeInterface $size) {
-            if ($size instanceof ManagedWindowMaxBounds) {
-                $this->max = $size;
+            /**
+             * Allow direct set only on first initialization. First max size
+             * set MUST be an internal instance of {@see ManagedWindowMaxBounds}.
+             *
+             * @phpstan-ignore-next-line : PHPStan cannot detect uninitialized property state
+             */
+            if (!isset($this->max)) {
+                assert($size instanceof ManagedWindowMaxBounds);
 
+                $this->max = $size;
                 return;
             }
 
