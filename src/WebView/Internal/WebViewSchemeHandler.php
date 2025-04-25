@@ -110,12 +110,6 @@ final readonly class WebViewSchemeHandler
             $this->api->saucer_scheme_response_add_header($struct, $header, (string) $value);
         }
 
-        // In case of content-type is not defined
-        // Add "content-type: text/html; charset=utf-8"
-        if (!$response->headers->contains('content-type')) {
-            $this->api->saucer_scheme_response_add_header($struct, 'content-type', "{$mime}; charset=utf-8");
-        }
-
         return $struct;
     }
 
