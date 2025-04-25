@@ -217,7 +217,7 @@ final class Application
      */
     private function registerSchemes(): void
     {
-        foreach ($this->info->schemes as $scheme => $_) {
+        foreach ($this->info->schemes as $scheme) {
             $this->api->saucer_register_scheme($scheme);
         }
     }

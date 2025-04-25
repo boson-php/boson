@@ -15,8 +15,8 @@ use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Binding\WebViewFunctionsMap;
 use Boson\WebView\Internal\WebViewEventHandler;
+use Boson\WebView\Internal\WebViewSchemeHandler;
 use Boson\WebView\Requests\WebViewRequests;
-use Boson\WebView\Scheme\WebViewSchemeSet;
 use Boson\WebView\Scripts\WebViewScriptsSet;
 use Boson\Window\Window;
 use FFI\CData;
@@ -45,11 +45,6 @@ final class WebView
      * Gets access to the requests API of the webview.
      */
     public readonly WebViewRequests $requests;
-
-    /**
-     * Gets access to the registered protocol middleware.
-     */
-    public readonly WebViewSchemeSet $schemes;
 
     /**
      * Contains webview URI instance.
@@ -128,12 +123,18 @@ final class WebView
     }
 
     /**
-     * Contains an internal bridge between system {@see LibSaucer} events
+     * Contains an internal bridge between {@see LibSaucer} events system
      * and the PSR {@see WebView::$events} dispatcher.
      *
      * @phpstan-ignore property.onlyWritten
      */
-    private readonly WebViewEventHandler $handler;
+    private readonly WebViewEventHandler $internalWebViewEventHandler;
+
+    /**
+     * Contains an internal bridge between {@see LibSaucer} scheme interception
+     * system and the PSR {@see WebView::$events} dispatcher.
+     */
+    private readonly WebViewSchemeHandler $internalWebViewSchemeHandler;
 
     /**
      * @internal Please do not use the constructor directly. There is a
@@ -183,36 +184,67 @@ final class WebView
         // The WebView handle pointer is the same as the Window pointer.
         $this->ptr = $this->window->id->ptr;
 
-        $this->scripts = new WebViewScriptsSet(
+        $this->scripts = $this->createWebViewScriptsApi();
+        $this->functions = $this->createFunctionsApi();
+        $this->requests = $this->createRequestApi();
+
+        $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
+        $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
+
+        $this->bootWebView();
+    }
+
+    private function createWebViewScriptsApi(): WebViewScriptsSet
+    {
+        return new WebViewScriptsSet(
             api: $this->api,
             webview: $this,
         );
+    }
 
-        $this->functions = new WebViewFunctionsMap(
+    private function createFunctionsApi(): WebViewFunctionsMap
+    {
+        return new WebViewFunctionsMap(
             scripts: $this->scripts,
             events: $this->events,
         );
+    }
 
-        $this->requests = new WebViewRequests(
+    private function createRequestApi(): WebViewRequests
+    {
+        return new WebViewRequests(
             webview: $this,
             placeholder: $this->placeholder,
         );
+    }
 
-        $this->schemes = new WebViewSchemeSet(
+    private function createWebViewSchemeHandler(): WebViewSchemeHandler
+    {
+        return new WebViewSchemeHandler(
             api: $this->api,
             webview: $this,
             uris: $this->uris,
             methods: $this->methods,
+            events: $this->events,
         );
+    }
 
-        $this->handler = new WebViewEventHandler(
+    private function createWebViewEventHandler(): WebViewEventHandler
+    {
+        return new WebViewEventHandler(
             api: $this->api,
             webview: $this,
             dispatcher: $this->events,
             uris: $this->uris,
             state: $this->state,
         );
+    }
 
+    /**
+     * Load configured payload to the webview
+     */
+    private function bootWebView(): void
+    {
         foreach ($this->info->functions as $function => $callback) {
             $this->functions->bind($function, $callback);
         }

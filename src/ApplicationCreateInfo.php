@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Boson;
 
-use Boson\Http\Middleware\MiddlewareInterface;
 use Boson\Window\WindowCreateInfo;
 
 /**
  * Information (configuration) DTO for creating a new application.
- *
- * @phpstan-type SchemeNamesType iterable<mixed, non-empty-string>
- * @phpstan-type SchemeMiddlewareType iterable<mixed, MiddlewareInterface>
- * @phpstan-type SchemeNameAndMiddlewareType iterable<non-empty-string, SchemeMiddlewareType>
  */
 final readonly class ApplicationCreateInfo
 {
@@ -27,12 +22,12 @@ final readonly class ApplicationCreateInfo
      * List of protocol (scheme) names that will be
      * intercepted by the application.
      *
-     * @var array<non-empty-lowercase-string, list<MiddlewareInterface>>
+     * @var list<non-empty-lowercase-string>
      */
     public array $schemes;
 
     /**
-     * @param SchemeNamesType|SchemeNameAndMiddlewareType $schemes list of scheme names
+     * @param iterable<mixed, non-empty-string> $schemes list of scheme names
      */
     public function __construct(
         /**
@@ -75,30 +70,6 @@ final readonly class ApplicationCreateInfo
          */
         public WindowCreateInfo $window = new WindowCreateInfo(),
     ) {
-        $this->schemes = self::formatSchemes($schemes);
-    }
-
-    /**
-     * @param SchemeNamesType|SchemeNameAndMiddlewareType $schemes
-     *
-     * @return array<non-empty-lowercase-string, list<MiddlewareInterface>>
-     */
-    private static function formatSchemes(iterable $schemes): array
-    {
-        $result = [];
-
-        foreach ($schemes as $scheme => $middleware) {
-            // Matches ['scheme' => [middleware-1, middleware-2]] format
-            if (\is_string($scheme) && $scheme !== '' && \is_iterable($middleware)) {
-                $result[\strtolower($scheme)] = \iterator_to_array($middleware, false);
-                // Matches ['scheme'] format
-            } elseif (\is_string($middleware) && $middleware !== '') {
-                $result[\strtolower($middleware)] = [];
-            } else {
-                throw new \InvalidArgumentException('Invalid scheme definition');
-            }
-        }
-
-        return $result;
+        $this->schemes = \iterator_to_array($schemes, false);
     }
 }

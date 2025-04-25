@@ -575,60 +575,83 @@ $app->events->addEventListener(WebViewNavigated::class, function () use ($app) {
 
 You can register custom scheme/protocols and intercept standard one.
 
-To register global application middleware you may define list of middleware 
-for the given protocol.
+To enable processing of specific protocols, you should specify 
+them in the list of schemes.
 
 ```php
-use Boson\Application;
-use Boson\ApplicationCreateInfo;
-use Boson\Http\Middleware\HandlerInterface;
-use Boson\Http\Middleware\MiddlewareInterface;
-use Boson\Http\RequestInterface;
-use Boson\Http\Response;
-
-$middleware = new class implements MiddlewareInterface {
-    public function handle(RequestInterface $request, HandlerInterface $handler): Response
-    {
-        return new Response('<h1>Hello from "' . $request->url . '"!</h1>');
-    }
-};
-
-$app = new Application(new ApplicationCreateInfo(
-    // List of middleware for "https" protocol
-    schemes: [ 'https' => [$middleware] ],
+$app = new Boson\Application(new Boson\ApplicationCreateInfo(
+    // List of handling "https" protocol
+    schemes: [ 'https' ],
 ));
 
 $app->webview->url = 'https://hello.world/';
 ```
 
-To register middleware for a specific window (webview) for a specified protocol, 
-you should use direct addition of middleware to the middleware list for webview.
+After enabling the interception of all the necessary protocols (in this 
+case, `https`), you can start catching the corresponding events of sending 
+requests to this protocol (to this scheme).
 
 ```php
-use Boson\Application;
-use Boson\ApplicationCreateInfo;
-use Boson\Http\Middleware\HandlerInterface;
-use Boson\Http\Middleware\MiddlewareInterface;
-use Boson\Http\RequestInterface;
-use Boson\Http\Response;
+use \Boson\WebView\Event\WebViewRequest;
 
-$app = new Application(new ApplicationCreateInfo(
-    // Adding "https" protocol interception support
+$app = new Boson\Application(new Boson\ApplicationCreateInfo(
+    // List of middleware for "https" protocol
     schemes: [ 'https' ],
 ));
 
-// Select pipeline for "https" protocol
-$pipeline = $app->webview->schemes->find('https');
-
-// Add middleware for "https" protocol for main window
-$pipeline?->append(new class implements MiddlewareInterface {
-    public function handle(RequestInterface $request, HandlerInterface $handler): Response
-    {
-        return new Response('<h1>Hello from "' . $request->url . '"!</h1>');
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) {
+    echo \sprintf("%s %s\r\n", $e->request->method, $e->request->url);
+    foreach ($e->request->headers as $header => $value) {
+        echo \sprintf("%s: %s\r\n", $header, $value);
     }
+    echo \sprintf("\r\n\r\n%s", $e->request->body);
+    
+    //
+    // Result may looks like:
+    //
+    // GET https://hello.world/
+    // accept: text/html,application/xhtml+xml,application/xml;q=0.9,etc...
+    // upgrade-insecure-requests: 1
+    // user-agent: Mozilla/5.0 etc...
+    // sec-ch-ua: "Microsoft Edge WebView2";v="135", etc...
+    // sec-ch-ua-mobile: ?0
+    // sec-ch-ua-platform: "Windows"
+    //
 });
 
 $app->webview->url = 'https://hello.world/';
+```
+
+In that case, if you need to block a request to a specified URL, 
+you can cancel it.
+
+```php
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) {
+    $e->cancel();
+});
+```
+
+In addition to canceling a request, you can also simulate a 
+response from a resource.
+
+```php
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) {
+    $e->response = new \Boson\Http\Response(
+        body: 'Hello World!',
+    );
+});
+```
+
+Or a more complex response example:
+
+```php
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) {
+    $e->response = new \Boson\Http\Response(
+        body: \json_encode(['error' => 'Something went wrong']),
+        headers: ['content-type' => 'application/json'],
+        status: \Boson\Http\StatusCode::NotFound,
+    );
+});
 ```
 
 

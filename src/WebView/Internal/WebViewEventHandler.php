@@ -186,12 +186,9 @@ final class WebViewEventHandler
     {
         if ($state[0] === SaucerState::SAUCER_STATE_STARTED) {
             $this->changeState(State::Loading);
-            $this->dispatcher->dispatch(new WebViewLoading($this->webview));
-
             return;
         }
 
         $this->changeState(State::Ready);
-        $this->dispatcher->dispatch(new WebViewLoaded($this->webview));
     }
 }

@@ -34,6 +34,7 @@ abstract class Event implements StoppableEventInterface, \Stringable
         public object $subject,
         ?int $time = null,
     ) {
+        echo static::class . "\n";
         $this->time = $time ?? \hrtime(true);
     }
 

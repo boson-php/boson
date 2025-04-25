@@ -7,17 +7,17 @@ namespace Boson\Http;
 /**
  * An implementation of immutable headers list.
  *
- * @template-implements \IteratorAggregate<non-empty-lowercase-string, string>
+ * @template-implements \IteratorAggregate<non-empty-lowercase-string, \Stringable|string>
  */
 class Headers implements HeadersInterface, \IteratorAggregate
 {
     /**
-     * @var array<non-empty-lowercase-string, list<string>>
+     * @var array<non-empty-lowercase-string, list<\Stringable|string>>
      */
     protected array $lines;
 
     /**
-     * @param iterable<non-empty-string, string> $headers
+     * @param iterable<non-empty-string, \Stringable|string> $headers
      */
     public function __construct(iterable $headers = [])
     {
@@ -37,9 +37,9 @@ class Headers implements HeadersInterface, \IteratorAggregate
     }
 
     /**
-     * @param iterable<non-empty-string, string> $headers
+     * @param iterable<non-empty-string, \Stringable|string> $headers
      *
-     * @return array<non-empty-lowercase-string, list<string>>
+     * @return array<non-empty-lowercase-string, list<\Stringable|string>>
      */
     private static function packHeaderLines(iterable $headers): array
     {
@@ -52,6 +52,22 @@ class Headers implements HeadersInterface, \IteratorAggregate
         return $result;
     }
 
+    public function first(string $name, \Stringable|string|null $default = null): \Stringable|string|null
+    {
+        $headerLines = $this->lines[self::normalizeHeaderName($name)] ?? [];
+
+        foreach ($headerLines as $headerLine) {
+            return $headerLine;
+        }
+
+        return $default;
+    }
+
+    public function contains(string $name): bool
+    {
+        return ($this->lines[self::normalizeHeaderName($name)] ?? []) !== [];
+    }
+
     public function offsetExists(mixed $offset): bool
     {
         assert(\is_string($offset) && $offset !== '');
@@ -60,13 +76,13 @@ class Headers implements HeadersInterface, \IteratorAggregate
     }
 
     /**
-     * @return list<string>
+     * @return list<\Stringable|string>
      */
     public function offsetGet(mixed $offset): array
     {
         assert(\is_string($offset) && $offset !== '');
 
-        /** @var list<string> */
+        /** @var list<\Stringable|string> */
         return $this->lines[$offset] ?? [];
     }
 

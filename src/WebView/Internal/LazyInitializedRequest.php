@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Scheme\Internal;
+namespace Boson\WebView\Internal;
 
 use Boson\Http\Headers;
 use Boson\Http\HeadersInterface;
@@ -15,6 +15,10 @@ use Boson\Http\UriInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use FFI\CData;
 
+/**
+ * @internal this is an internal library class, please do not use it in your code.
+ * @psalm-internal Boson\WebView\Scheme
+ */
 final class LazyInitializedRequest implements RequestInterface
 {
     public MethodInterface $method {
