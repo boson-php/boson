@@ -12,12 +12,14 @@ interface HeadersInterface extends \Traversable, \ArrayAccess, \Countable
 {
     /**
      * @param non-empty-string $name
+     *
      * @return ($default is null ? \Stringable|string|null : \Stringable|string)
      */
     public function first(string $name, \Stringable|string|null $default = null): \Stringable|string|null;
 
     /**
      * @param non-empty-string $name
+     *
      * @return iterable<array-key, \Stringable|string>
      */
     public function all(string $name): iterable;

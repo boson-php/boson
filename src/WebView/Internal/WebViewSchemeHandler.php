@@ -57,6 +57,7 @@ final readonly class WebViewSchemeHandler
                             $code = SaucerSchemeError::SAUCER_REQUEST_ERROR_ABORTED;
 
                             $this->api->saucer_scheme_executor_reject($executor, $code);
+
                             return;
                         }
 

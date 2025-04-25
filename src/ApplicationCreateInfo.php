@@ -75,6 +75,7 @@ final readonly class ApplicationCreateInfo
 
     /**
      * @param iterable<mixed, non-empty-string> $schemes
+     *
      * @return list<non-empty-lowercase-string>
      */
     private static function schemesToList(iterable $schemes): array

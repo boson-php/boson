@@ -14,8 +14,6 @@ use Boson\Internal\WebView\CSaucerWebViewEventsStruct;
 use Boson\WebView\Event\WebViewDomReady;
 use Boson\WebView\Event\WebViewFaviconChanged;
 use Boson\WebView\Event\WebViewFaviconChanging;
-use Boson\WebView\Event\WebViewLoaded;
-use Boson\WebView\Event\WebViewLoading;
 use Boson\WebView\Event\WebViewMessageReceiving;
 use Boson\WebView\Event\WebViewNavigated;
 use Boson\WebView\Event\WebViewNavigating;
@@ -186,6 +184,7 @@ final class WebViewEventHandler
     {
         if ($state[0] === SaucerState::SAUCER_STATE_STARTED) {
             $this->changeState(State::Loading);
+
             return;
         }
 
