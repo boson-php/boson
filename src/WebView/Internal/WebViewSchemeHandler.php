@@ -124,10 +124,6 @@ final readonly class WebViewSchemeHandler
             return $this->api->saucer_stash_from($ptr, 0);
         }
 
-        if ($length > 32767) {
-            throw new \OutOfRangeException('Response body too large');
-        }
-
         $string = $this->createResponseBodyData($response);
         $uint8Array = $this->api->cast('uint8_t*', \FFI::addr($string));
 

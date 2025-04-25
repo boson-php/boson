@@ -16,12 +16,7 @@ final readonly class ThreadsCountResolver
     private const int THREADS_MIN_COUNT = 1;
 
     /**
-     * Threads max count value.
-     */
-    private const int THREADS_MAX_COUNT = 32767;
-
-    /**
-     * @return int<1, 32767>|null
+     * @return int<1, max>|null
      */
     public static function resolve(?int $threads): ?int
     {
@@ -30,7 +25,6 @@ final readonly class ThreadsCountResolver
         }
 
         self::assertValidMinThreadsCountBound($threads);
-        self::assertValidMaxThreadsCountBound($threads);
 
         return $threads;
     }
@@ -47,22 +41,6 @@ final readonly class ThreadsCountResolver
         throw new \InvalidArgumentException(\sprintf(
             'Threads count cannot be less than %d, but %d passed',
             self::THREADS_MIN_COUNT,
-            $threads,
-        ));
-    }
-
-    /**
-     * @return ($threads is int<min, 32767> ? void : never)
-     */
-    private static function assertValidMaxThreadsCountBound(int $threads): void
-    {
-        if ($threads <= self::THREADS_MAX_COUNT) {
-            return;
-        }
-
-        throw new \InvalidArgumentException(\sprintf(
-            'Threads count cannot be greater than %d, but %d passed',
-            self::THREADS_MAX_COUNT,
             $threads,
         ));
     }

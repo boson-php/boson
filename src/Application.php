@@ -262,7 +262,7 @@ final class Application
      * Creates a new application ID
      *
      * @param non-empty-string $name
-     * @param int<1, 32767>|null $threads
+     * @param int<1, max>|null $threads
      */
     private function createApplicationId(string $name, ?int $threads): ApplicationId
     {
@@ -277,7 +277,7 @@ final class Application
      * Creates a new application instance pointer.
      *
      * @param non-empty-string $name
-     * @param int<1, 32767>|null $threads
+     * @param int<1, max>|null $threads
      */
     #[RequiresDealloc]
     private function createApplicationPointer(string $name, ?int $threads): CData
@@ -295,7 +295,7 @@ final class Application
      * Creates a new application options pointer.
      *
      * @param non-empty-string $name
-     * @param int<1, 32767>|null $threads
+     * @param int<1, max>|null $threads
      */
     #[RequiresDealloc]
     private function createApplicationOptionsPointer(string $name, ?int $threads): CData

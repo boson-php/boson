@@ -43,7 +43,7 @@ final readonly class ApplicationCreateInfo
          * The number of threads will be determined automatically if it
          * is not explicitly specified (defined as {@see null}).
          *
-         * @var int<1, 32767>|null
+         * @var int<1, max>|null
          */
         public ?int $threads = null,
         /**

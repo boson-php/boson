@@ -79,7 +79,6 @@ final readonly class LibSaucer
 
     /**
      * @param SaucerOptionsType $options
-     * @param int<-32768, 32767> $threads
      */
     public function saucer_options_set_threads(CData $options, int $threads): void {}
 
@@ -144,7 +143,6 @@ final readonly class LibSaucer
 
     /**
      * @param SaucerStashType $stash
-     * @return int<-32768, 32767>
      */
     public function saucer_stash_size(CData $stash): int {}
 
@@ -156,14 +154,12 @@ final readonly class LibSaucer
 
     /**
      * @param UInt8ArrayType $data
-     * @param int<-32768, 32767> $size
      * @return SaucerStashType
      */
     public function saucer_stash_from(CData $data, int $size): CData {}
 
     /**
      * @param UInt8ArrayType $data
-     * @param int<-32768, 32767> $size
      * @return SaucerStashType
      */
     public function saucer_stash_view(CData $data, int $size): CData {}
@@ -212,9 +208,6 @@ final readonly class LibSaucer
 
     public function saucer_memory_free(CData $data): void {}
 
-    /**
-     * @param int<-32768, 32767> $size
-     */
     public function saucer_memory_alloc(int $size): CData {}
 
     /**
