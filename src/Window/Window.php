@@ -114,6 +114,7 @@ final class Window
              */
             if (!isset($this->decoration)) {
                 $this->decoration = $value;
+                $this->updateDecoration($value);
 
                 return;
             }
@@ -123,79 +124,7 @@ final class Window
                 return;
             }
 
-            $ptr = $this->id->ptr;
-
-            $this->api->saucer_webview_background(
-                $ptr,
-                \FFI::addr($r = $this->api->new('uint8_t')),
-                \FFI::addr($g = $this->api->new('uint8_t')),
-                \FFI::addr($b = $this->api->new('uint8_t')),
-                \FFI::addr($a = $this->api->new('uint8_t')),
-            );
-
-            $isDarkModeWasEnabled = $this->api->saucer_webview_force_dark_mode($ptr);
-
-            // Please note that the order of function calls is important,
-            // as there is a bug in the kernel of saucer v6.0 that causes
-            // loss of state after change decorations.
-            //
-            // ```
-            // if (!decorated) {
-            //     impl::set_style(m_impl->hwnd.get(), 0); // previous WS_XXX
-            //                                             // state has been lost?
-            //     return;
-            // }
-            // ```
-            //
-            // We need to figure it out...
-            switch ($value) {
-                case WindowDecoration::DarkMode:
-                    if ($a->cdata !== 255) {
-                        /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                        $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
-                    }
-
-                    $this->api->saucer_window_set_decorations($ptr, true);
-
-                    // Refresh in case of dark mode was disabled
-                    if ($isDarkModeWasEnabled === false) {
-                        $this->api->saucer_webview_set_force_dark_mode($ptr, true);
-                        $this->refresh();
-                    }
-                    break;
-
-                case WindowDecoration::Frameless:
-                    if ($a->cdata !== 255) {
-                        /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                        $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
-                    }
-
-                    $this->api->saucer_window_set_decorations($ptr, false);
-                    break;
-
-                case WindowDecoration::Transparent:
-                    $this->api->saucer_window_set_decorations($ptr, false);
-
-                    if ($a->cdata !== 0) {
-                        /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                        $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 0);
-                    }
-                    break;
-
-                default:
-                    if ($a->cdata !== 255) {
-                        /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                        $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
-                    }
-
-                    $this->api->saucer_window_set_decorations($ptr, true);
-
-                    // Refresh in case of dark mode was enabled
-                    if ($isDarkModeWasEnabled) {
-                        $this->api->saucer_webview_set_force_dark_mode($ptr, false);
-                        $this->refresh();
-                    }
-            }
+            $this->updateDecoration($value);
 
             $this->events->dispatch(new WindowDecorationChanged(
                 subject: $this,
@@ -681,6 +610,86 @@ final class Window
         }
 
         return $preferences;
+    }
+
+    /**
+     * Apply selected decoration to the window styles.
+     */
+    private function updateDecoration(WindowDecoration $decoration): void
+    {
+        $ptr = $this->id->ptr;
+
+        $this->api->saucer_webview_background(
+            $ptr,
+            \FFI::addr($r = $this->api->new('uint8_t')),
+            \FFI::addr($g = $this->api->new('uint8_t')),
+            \FFI::addr($b = $this->api->new('uint8_t')),
+            \FFI::addr($a = $this->api->new('uint8_t')),
+        );
+
+        $isDarkModeWasEnabled = $this->api->saucer_webview_force_dark_mode($ptr);
+
+        // Please note that the order of function calls is important,
+        // as there is a bug in the kernel of saucer v6.0 that causes
+        // loss of state after change decorations.
+        //
+        // ```
+        // if (!decorated) {
+        //     impl::set_style(m_impl->hwnd.get(), 0); // previous WS_XXX
+        //                                             // state has been lost?
+        //     return;
+        // }
+        // ```
+        //
+        // We need to figure it out...
+        switch ($decoration) {
+            case WindowDecoration::DarkMode:
+                if ($a->cdata !== 255) {
+                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
+                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                }
+
+                $this->api->saucer_window_set_decorations($ptr, true);
+
+                // Refresh in case of dark mode was disabled
+                if ($isDarkModeWasEnabled === false) {
+                    $this->api->saucer_webview_set_force_dark_mode($ptr, true);
+                    $this->refresh();
+                }
+                break;
+
+            case WindowDecoration::Frameless:
+                if ($a->cdata !== 255) {
+                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
+                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                }
+
+                $this->api->saucer_window_set_decorations($ptr, false);
+                break;
+
+            case WindowDecoration::Transparent:
+                $this->api->saucer_window_set_decorations($ptr, false);
+
+                if ($a->cdata !== 0) {
+                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
+                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 0);
+                }
+                break;
+
+            default:
+                if ($a->cdata !== 255) {
+                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
+                    $this->api->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
+                }
+
+                $this->api->saucer_window_set_decorations($ptr, true);
+
+                // Refresh in case of dark mode was enabled
+                if ($isDarkModeWasEnabled) {
+                    $this->api->saucer_webview_set_force_dark_mode($ptr, false);
+                    $this->refresh();
+                }
+        }
     }
 
     /**
