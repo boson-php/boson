@@ -52,6 +52,15 @@ class Headers implements HeadersInterface, \IteratorAggregate
         return $result;
     }
 
+    /**
+     * @return list<\Stringable|string>
+     */
+    public function all(string $name): array
+    {
+        /** @var list<\Stringable|string> */
+        return $this->lines[self::normalizeHeaderName($name)] ?? [];
+    }
+
     public function first(string $name, \Stringable|string|null $default = null): \Stringable|string|null
     {
         $headerLines = $this->lines[self::normalizeHeaderName($name)] ?? [];
@@ -72,7 +81,9 @@ class Headers implements HeadersInterface, \IteratorAggregate
     {
         assert(\is_string($offset) && $offset !== '');
 
-        return isset($this->lines[$offset]);
+        $name = self::normalizeHeaderName($offset);
+
+        return isset($this->lines[$name]) && $this->lines[$name] !== [];
     }
 
     /**
@@ -82,8 +93,7 @@ class Headers implements HeadersInterface, \IteratorAggregate
     {
         assert(\is_string($offset) && $offset !== '');
 
-        /** @var list<\Stringable|string> */
-        return $this->lines[$offset] ?? [];
+        return $this->all($offset);
     }
 
     /**

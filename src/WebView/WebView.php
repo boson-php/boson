@@ -133,6 +133,8 @@ final class WebView
     /**
      * Contains an internal bridge between {@see LibSaucer} scheme interception
      * system and the PSR {@see WebView::$events} dispatcher.
+     *
+     * @phpstan-ignore property.onlyWritten
      */
     private readonly WebViewSchemeHandler $internalWebViewSchemeHandler;
 

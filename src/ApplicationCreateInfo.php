@@ -70,6 +70,21 @@ final readonly class ApplicationCreateInfo
          */
         public WindowCreateInfo $window = new WindowCreateInfo(),
     ) {
-        $this->schemes = \iterator_to_array($schemes, false);
+        $this->schemes = self::schemesToList($schemes);
+    }
+
+    /**
+     * @param iterable<mixed, non-empty-string> $schemes
+     * @return list<non-empty-lowercase-string>
+     */
+    private static function schemesToList(iterable $schemes): array
+    {
+        $result = [];
+
+        foreach ($schemes as $scheme) {
+            $result[] = \strtolower($scheme);
+        }
+
+        return $result;
     }
 }

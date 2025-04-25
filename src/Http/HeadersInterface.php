@@ -18,6 +18,12 @@ interface HeadersInterface extends \Traversable, \ArrayAccess, \Countable
 
     /**
      * @param non-empty-string $name
+     * @return iterable<array-key, \Stringable|string>
+     */
+    public function all(string $name): iterable;
+
+    /**
+     * @param non-empty-string $name
      */
     public function contains(string $name): bool;
 }
