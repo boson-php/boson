@@ -26,6 +26,11 @@ final class Query implements QueryInterface, \IteratorAggregate
         $this->components = \iterator_to_array($components);
     }
 
+    public function has(string $key): bool
+    {
+        return \array_key_exists($key, $this->components);
+    }
+
     public function get(string $key, ?string $default = null): ?string
     {
         $result = $this->components[$key] ?? $default;

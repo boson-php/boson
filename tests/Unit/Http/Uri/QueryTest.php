@@ -46,8 +46,8 @@ final class QueryTest extends UriTestCase
 
         $query = new Query($components);
 
-        self::assertSame(['value1', 'value2'], $query['key']);
-        self::assertSame('key=value1&key=value2', (string)$query);
+        self::assertSame('value2', $query->get('key'));
+        self::assertSame('key=value2', (string) $query);
     }
 
     public function testCreateQueryWithSpecialCharacters(): void
@@ -67,32 +67,8 @@ final class QueryTest extends UriTestCase
     {
         $query = new Query(['key' => 'value']);
 
-        self::assertTrue(isset($query['key']));
-        self::assertFalse(isset($query['non-existent']));
-    }
-
-    public function testOffsetGet(): void
-    {
-        $query = new Query(['key' => 'value']);
-
-        self::assertSame(['value'], $query['key']);
-        self::assertSame([], $query['non-existent']);
-    }
-
-    public function testOffsetSetThrowsException(): void
-    {
-        $query = new Query();
-
-        $this->expectException(\OutOfRangeException::class);
-        $query['key'] = 'value';
-    }
-
-    public function testOffsetUnsetThrowsException(): void
-    {
-        $query = new Query(['key' => 'value']);
-
-        $this->expectException(\OutOfRangeException::class);
-        unset($query['key']);
+        self::assertTrue($query->has('key'));
+        self::assertFalse($query->has('non-existent'));
     }
 
     public function testGetIterator(): void
@@ -119,8 +95,8 @@ final class QueryTest extends UriTestCase
             'key2' => '0',
         ]);
 
-        self::assertSame([''], $query['key1']);
-        self::assertSame(['0'], $query['key2']);
-        self::assertSame('key1=&key2=0', (string)$query);
+        self::assertSame('', $query->get('key1'));
+        self::assertSame('0', $query->get('key2'));
+        self::assertSame('key1=&key2=0', (string) $query);
     }
 }

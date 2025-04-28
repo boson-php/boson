@@ -22,6 +22,14 @@ interface QueryInterface extends StringValueObjectInterface, \Traversable, \Coun
     public const string SEGMENT_DELIMITER = '&';
 
     /**
+     * Returns {@see true} in case of passed key is defined in query
+     * parameter or {@see false} instead.
+     *
+     * @param non-empty-string $key
+     */
+    public function has(string $key): bool;
+
+    /**
      * Returns raw query parameter if defined or default value if query
      * parameter has not been passed.
      *

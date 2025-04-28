@@ -14,7 +14,7 @@ final class PathTest extends UriTestCase
     {
         $path = new Path();
 
-        self::assertSame('', (string)$path);
+        self::assertSame('/', (string)$path);
         self::assertSame(0, $path->count());
     }
 
@@ -22,7 +22,7 @@ final class PathTest extends UriTestCase
     {
         $path = new Path(['segment']);
 
-        self::assertSame('segment', (string)$path);
+        self::assertSame('/segment', (string)$path);
         self::assertSame(1, $path->count());
     }
 
@@ -30,7 +30,7 @@ final class PathTest extends UriTestCase
     {
         $path = new Path(['segment1', 'segment2', 'segment3']);
 
-        self::assertSame('segment1/segment2/segment3', (string)$path);
+        self::assertSame('/segment1/segment2/segment3', (string)$path);
         self::assertSame(3, $path->count());
     }
 
@@ -39,7 +39,7 @@ final class PathTest extends UriTestCase
         $path = new Path(['segment with spaces', 'segment/with/slashes', 'segment&with&ampersands']);
 
         self::assertSame(
-            'segment+with+spaces/segment%2Fwith%2Fslashes/segment%26with%26ampersands',
+            '/segment+with+spaces/segment%2Fwith%2Fslashes/segment%26with%26ampersands',
             (string)$path
         );
     }
@@ -67,7 +67,7 @@ final class PathTest extends UriTestCase
 
         $path = new Path($segments);
 
-        self::assertSame('segment1/segment2/segment3', (string)$path);
+        self::assertSame('/segment1/segment2/segment3', (string)$path);
         self::assertSame(3, $path->count());
     }
 
@@ -76,7 +76,7 @@ final class PathTest extends UriTestCase
         $segments = ['segment1', 'segment2', 'segment3'];
         $path = new Path($segments);
 
-        self::assertSame('segment1/segment2/segment3', (string)$path);
+        self::assertSame('/segment1/segment2/segment3', (string)$path);
         self::assertSame(3, $path->count());
 
         foreach ($path as $segment) {
