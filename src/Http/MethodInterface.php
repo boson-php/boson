@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
-use Boson\WebView\Http\non;
+use Boson\Shared\ValueObject\StringValueObjectInterface;
 
 /**
  * HTTP defines a set of request methods to indicate the purpose of the
@@ -15,7 +15,7 @@ use Boson\WebView\Http\non;
  * but some characteristics are shared across multiple methods,
  * specifically request methods can be safe, idempotent, or cacheable.
  */
-interface MethodInterface extends \Stringable
+interface MethodInterface extends StringValueObjectInterface
 {
     /**
      * The name of the HTTP method (e.g., `GET`, `POST`, `PUT`, `DELETE`).

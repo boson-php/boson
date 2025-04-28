@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Internal;
 
-use Boson\Http\Headers;
+use Boson\Http\Headers\HeadersFactoryInterface;
 use Boson\Http\HeadersInterface;
 use Boson\Http\Method;
 use Boson\Http\Method\MethodFactoryInterface;
@@ -40,8 +40,9 @@ final class LazyInitializedRequest implements RequestInterface
     public function __construct(
         private readonly LibSaucer $api,
         private readonly CData $ptr,
-        private readonly UriFactoryInterface $uris,
-        private readonly MethodFactoryInterface $methods,
+        private readonly UriFactoryInterface $uriFactory,
+        private readonly MethodFactoryInterface $methodFactory,
+        private readonly HeadersFactoryInterface $headersFactory,
     ) {}
 
     private function fetchMethod(): MethodInterface
@@ -52,7 +53,7 @@ final class LazyInitializedRequest implements RequestInterface
             return Method::Get;
         }
 
-        return $this->methods->createMethodFromString($method);
+        return $this->methodFactory->createMethodFromString($method);
     }
 
     private function fetchMethodString(): string
@@ -68,7 +69,7 @@ final class LazyInitializedRequest implements RequestInterface
 
     private function fetchUri(): UriInterface
     {
-        return $this->uris->createUriFromString(
+        return $this->uriFactory->createUriFromString(
             uri: $this->fetchUriString(),
         );
     }
@@ -86,11 +87,13 @@ final class LazyInitializedRequest implements RequestInterface
 
     private function fetchHeaders(): HeadersInterface
     {
-        return new Headers($this->fetchHeaderLines());
+        return $this->headersFactory->createHeadersFromIterable(
+            headers: $this->fetchHeaderLines(),
+        );
     }
 
     /**
-     * @return iterable<non-empty-string, string>
+     * @return iterable<non-empty-string, string|\Stringable>
      */
     private function fetchHeaderLines(): iterable
     {

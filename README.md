@@ -57,6 +57,11 @@ And much easier than that =)
       - [Code Requests](#webview-requests)
   - **Events**
     - [Events and Intentions](#events-and-intentions)
+  - **Bridge**
+    - [Static](#adapter-static-files)
+    - [Symfony](#adapter-symfony-http) 
+    - [Laravel](#adapter-laravel-http) 
+    - [PSR-7/PSR-17 frameworks](#adapter-psr-http) 
   - **Misc**
     - [Debug Mode](#debug-mode)
     - [Custom Library](#custom-library)
@@ -810,6 +815,175 @@ $app->events->addEventListener(WebViewNavigated::class, function (WebViewNavigat
 });
 
 $app->webview->url = 'https://nesk.me';
+```
+
+
+### Adapter: Static Files
+
+To return static files from the required location, you can use static adapters.
+
+```php
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
+use Boson\Bridge\Static\FilesystemStaticAdapter;
+use Boson\WebView\Event\WebViewRequest;
+
+// Create an application
+$app = new Application(new ApplicationCreateInfo(
+    schemes: ['http'],
+));
+
+// Create static files adapter
+$static = new FilesystemStaticAdapter([__DIR__ . '/public']);
+
+// Subscribe to receive a request
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) use ($static): void {
+    // Lookup static file and create response in
+    // case of given file is available.
+    if (($response = $static->lookup($e->request)) !== null) {
+        $e->response = $response;
+        return;
+    }
+    
+    // Do something else...
+});
+
+$app->webview->url = 'http://localhost/example';
+```
+
+
+### Adapter: Symfony HTTP
+
+To work with Symfony HTTP kernel you can use specific adapter.
+
+```php
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
+use Boson\Bridge\Http\SymfonyHttpAdapter;
+use Boson\WebView\Event\WebViewRequest;
+
+// Create an application
+$app = new Application(new ApplicationCreateInfo(
+    schemes: ['http'],
+));
+
+// Create Symfony HTTP adapter
+$symfony = new SymfonyHttpAdapter();
+
+// Subscribe to receive a request
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) use ($symfony): void {
+    $symfonyRequest = $symfony->createRequest($e->request);
+    
+    // ...do something, like:
+    //
+    // $kernel->boot();
+    // $symfonyResponse = $kernel->handle($symfonyRequest);
+    //
+    
+    $e->response = $symfony->createResponse($symfonyResponse);
+    
+    // if ($kernel instanceof TerminableInterface) {
+    //     $kernel->terminate($symfonyRequest, $symfonyResponse);
+    // }
+});
+
+$app->webview->url = 'http://symfony/example';
+```
+
+
+### Adapter: Laravel HTTP
+
+
+You can create a Laravel HTTP request in the same way as Symfony. 
+
+> Correct functionality is NOT GUARANTEED. 
+> 
+> It is not possible to make this framework work quickly and stably 
+> due to architectural issues, a lot of memleaks, side effect and 
+> other "bad practice features".
+
+
+```php
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
+use Boson\Bridge\Http\LaravelHttpAdapter;
+use Boson\WebView\Event\WebViewRequest;
+
+// Create an application
+$app = new Application(new ApplicationCreateInfo(
+    schemes: ['http'],
+));
+
+// Do not forget to fix for known Laravel issue with using
+// shared kernel for web, cli and other environments:
+// $_SERVER['APP_RUNNING_IN_CONSOLE'] = false;
+
+// Create Laravel HTTP adapter
+$laravel = new LaravelHttpAdapter();
+
+// Subscribe to receive a request
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) use ($laravel): void {
+    $laravelRequest = $laravel->createRequest($e->request);
+    
+    // ...do something, like:
+    // 
+    // $app = require __DIR__ . '/bootstrap/app.php';
+    //
+    // Container::setInstance($app);
+    // Facade::clearResolvedInstances();
+    // Facade::setFacadeApplication($app);
+    //
+    // $kernel = $app->make(HttpKernelContract::class);
+    // $laravelResponse = $kernel->handle($laravelRequest);
+    //
+    
+    $e->response = $laravel->createResponse($laravelResponse);
+    
+    //
+    // $kernel->terminate($symfonyRequest, $symfonyResponse);
+    // $app->terminate();
+    //
+});
+
+$app->webview->url = 'http://laravel/example';
+```
+
+
+### Adapter: PSR HTTP
+
+To work with any PSR-7/17-compatible framework (e.g. [Yii3](https://github.com/yiisoft/demo),
+[Spiral](https://spiral.dev/), [Slim](https://www.slimframework.com/), etc), 
+you are provided with a corresponding adapter `Psr7HttpAdapter`.
+
+```php
+use Boson\Application;
+use Boson\ApplicationCreateInfo;
+use Boson\Bridge\Http\Psr7HttpAdapter;
+use Boson\WebView\Event\WebViewRequest;
+
+// Create an application
+$app = new Application(new ApplicationCreateInfo(
+    schemes: ['http'],
+));
+
+// Create PSR-7 HTTP adapter
+$psr7 = new Psr7HttpAdapter(
+    requests: new YourVendorPsr17ServerRequestFactory(),
+);
+
+// Subscribe to receive a request
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) use ($psr7): void {
+    $psr7Request = $psr7->createRequest($e->request);
+    
+    // ...do something, like:
+    // 
+    // $psr7Response = $app->handle($psr7Request);
+    //
+    
+    $e->response = $psr7->createResponse($psr7Response);
+});
+
+$app->webview->url = 'http://psr7/example';
 ```
 
 

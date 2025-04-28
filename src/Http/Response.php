@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
+use Boson\Http\Headers\HeadersFactory;
+use Boson\Http\Headers\HeadersFactoryInterface;
 use Boson\Http\StatusCode\CustomStatusCode;
 
 /**
@@ -28,6 +30,7 @@ readonly class Response implements ResponseInterface
         HeadersInterface|iterable $headers = [],
         /** @phpstan-ignore-next-line : Known issue */
         StatusCodeInterface|int $status = StatusCode::OK,
+        private HeadersFactoryInterface $headersFactory = new HeadersFactory(),
     ) {
         $this->headers = $this->extendHeaders(
             headers: $this->formatHeaders($headers),
@@ -79,6 +82,8 @@ readonly class Response implements ResponseInterface
             return $headers;
         }
 
-        return new EvolvableHeaders($headers);
+        $immutable = $this->headersFactory->createHeadersFromIterable($headers);
+
+        return new EvolvableHeaders($immutable);
     }
 }

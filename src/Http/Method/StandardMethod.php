@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Boson\Http\Method;
 
 use Boson\Http\MethodInterface;
-use Boson\WebView\Http\Method\non;
 
 /**
  * An implementation of the builtin method.
  */
 abstract readonly class StandardMethod implements MethodInterface
 {
-    use MethodStringableImpl;
+    use MethodValueObjectImpl;
 
     /**
      * @var non-empty-string

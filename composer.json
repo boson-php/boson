@@ -18,11 +18,14 @@
     "require-dev": {
         "ffi/var-dumper": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.75",
+        "illuminate/http": "^12.0",
         "jetbrains/phpstorm-attributes": "^1.2",
+        "nyholm/psr7": "^1.8",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^12.0",
         "symfony/console": "^6.4|^7.0",
+        "symfony/http-foundation": "^7.2",
         "symfony/var-dumper": "^6.4|^7.0"
     },
     "autoload-dev": {

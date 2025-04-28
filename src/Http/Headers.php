@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
+use Boson\Http\Headers\HeaderLine\HeaderLineFactoryInterface;
+
 /**
  * An implementation of immutable headers list.
  *
@@ -28,10 +30,9 @@ class Headers implements HeadersInterface, \IteratorAggregate
      * @phpstan-pure
      *
      * @param non-empty-string $name
-     *
      * @return non-empty-lowercase-string
      */
-    protected static function normalizeHeaderName(string $name): string
+    public static function getFormattedHeaderName(string $name): string
     {
         return \strtolower($name);
     }
@@ -46,7 +47,7 @@ class Headers implements HeadersInterface, \IteratorAggregate
         $result = [];
 
         foreach ($headers as $name => $value) {
-            $result[self::normalizeHeaderName($name)][] = $value;
+            $result[self::getFormattedHeaderName($name)][] = $value;
         }
 
         return $result;
@@ -58,12 +59,12 @@ class Headers implements HeadersInterface, \IteratorAggregate
     public function all(string $name): array
     {
         /** @var list<\Stringable|string> */
-        return $this->lines[self::normalizeHeaderName($name)] ?? [];
+        return $this->lines[self::getFormattedHeaderName($name)] ?? [];
     }
 
     public function first(string $name, \Stringable|string|null $default = null): \Stringable|string|null
     {
-        $headerLines = $this->lines[self::normalizeHeaderName($name)] ?? [];
+        $headerLines = $this->lines[self::getFormattedHeaderName($name)] ?? [];
 
         foreach ($headerLines as $headerLine) {
             return $headerLine;
@@ -74,14 +75,14 @@ class Headers implements HeadersInterface, \IteratorAggregate
 
     public function contains(string $name): bool
     {
-        return ($this->lines[self::normalizeHeaderName($name)] ?? []) !== [];
+        return ($this->lines[self::getFormattedHeaderName($name)] ?? []) !== [];
     }
 
     public function offsetExists(mixed $offset): bool
     {
         assert(\is_string($offset) && $offset !== '');
 
-        $name = self::normalizeHeaderName($offset);
+        $name = self::getFormattedHeaderName($offset);
 
         return isset($this->lines[$name]) && $this->lines[$name] !== [];
     }

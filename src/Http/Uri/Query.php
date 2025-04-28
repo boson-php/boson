@@ -14,77 +14,64 @@ final class Query implements QueryInterface, \IteratorAggregate
     use QueryValueObjectImpl;
 
     /**
-     * @var array<non-empty-string, list<string>>
+     * @var array<non-empty-string, string|array<array-key, string>>
      */
     private array $components;
 
     /**
-     * @param iterable<non-empty-string, string> $components
+     * @param iterable<non-empty-string, string|array<array-key, string>> $components
      */
     public function __construct(iterable $components = [])
     {
-        $this->components = self::packComponents($components);
+        $this->components = \iterator_to_array($components);
     }
 
-    /**
-     * @template TArgKey of non-empty-string
-     * @template TArgValue of string
-     *
-     * @param iterable<TArgKey, TArgValue> $components
-     *
-     * @return array<TArgKey, list<TArgValue>>
-     */
-    private static function packComponents(iterable $components): array
+    public function get(string $key, ?string $default = null): ?string
     {
-        $result = [];
+        $result = $this->components[$key] ?? $default;
 
-        foreach ($components as $key => $value) {
-            $result[$key][] = $value;
+        return match (true) {
+            \is_string($result) => $result,
+            \is_array($result) => (string) \reset($result),
+            default => $default,
+        };
+    }
+
+    public function int(string $key, ?int $default = null): ?int
+    {
+        $result = \filter_var($this->get($key), \FILTER_VALIDATE_INT);
+
+        return $result === false ? $default : $result;
+    }
+
+    public function array(string $key, array $default = []): array
+    {
+        if (!\array_key_exists($key, $this->components)) {
+            return $default;
         }
 
-        return $result;
+        $result = $this->components[$key] ?? [];
+
+        return \is_array($result) ? $result : [$result];
     }
 
-    public function offsetExists(mixed $offset): bool
+    public function toArray(): array
     {
-        assert(\is_string($offset) && $offset !== '');
-
-        return isset($this->components[$offset]);
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function offsetGet(mixed $offset): array
-    {
-        assert(\is_string($offset) && $offset !== '');
-
-        /** @var list<string> */
-        return $this->components[$offset] ?? [];
-    }
-
-    /**
-     * @internal
-     */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        throw new \OutOfRangeException(self::class . ' is immutable');
-    }
-
-    /**
-     * @internal
-     */
-    public function offsetUnset(mixed $offset): void
-    {
-        throw new \OutOfRangeException(self::class . ' is immutable');
+        return $this->components;
     }
 
     public function getIterator(): \Traversable
     {
-        foreach ($this->components as $key => $values) {
-            foreach ($values as $value) {
-                yield $key => $value;
+        foreach ($this->components as $key => $value) {
+            if (\is_array($value)) {
+                foreach ($value as $index => $item) {
+                    yield \sprintf('%s[%s]', $key, $index) => $item;
+                }
+
+                continue;
             }
+
+            yield $key => $value;
         }
     }
 

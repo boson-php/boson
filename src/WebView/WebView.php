@@ -6,6 +6,7 @@ namespace Boson\WebView;
 
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
+use Boson\Http\Headers\HeadersFactoryInterface;
 use Boson\Http\Method\MethodFactoryInterface;
 use Boson\Http\Uri\Factory\UriFactoryInterface;
 use Boson\Http\UriInterface;
@@ -172,6 +173,10 @@ final class WebView
          */
         private readonly MethodFactoryInterface $methods,
         /**
+         * Contains WebView {@see HeadersFactoryInterface} HTTP headers parser.
+         */
+        private readonly HeadersFactoryInterface $headers,
+        /**
          * Gets parent application window instance to which
          * this webview instance belongs.
          */
@@ -227,6 +232,7 @@ final class WebView
             webview: $this,
             uris: $this->uris,
             methods: $this->methods,
+            headers: $this->headers,
             events: $this->events,
         );
     }

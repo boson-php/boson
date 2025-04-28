@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Boson\Http\Method;
 
 use Boson\Http\MethodInterface;
-use Boson\WebView\Http\Method\non;
 
 /**
  * @phpstan-require-implements MethodInterface

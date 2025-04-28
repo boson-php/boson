@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView\Internal;
 
 use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Http\Headers\HeadersFactoryInterface;
 use Boson\Http\Method\MethodFactoryInterface;
 use Boson\Http\RequestInterface;
 use Boson\Http\ResponseInterface;
@@ -27,6 +28,7 @@ final readonly class WebViewSchemeHandler
         private WebView $webview,
         private UriFactoryInterface $uris,
         private MethodFactoryInterface $methods,
+        private HeadersFactoryInterface $headers,
         private EventDispatcherInterface $events,
     ) {
         $this->mimeTypes = new MimeTypeReader();
@@ -82,8 +84,9 @@ final readonly class WebViewSchemeHandler
         return new LazyInitializedRequest(
             api: $this->api,
             ptr: $request,
-            uris: $this->uris,
-            methods: $this->methods,
+            uriFactory: $this->uris,
+            methodFactory: $this->methods,
+            headersFactory: $this->headers,
         );
     }
 

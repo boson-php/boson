@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Http;
 
 use Boson\Http\Method\HttpMethod;
-use Boson\Http\Method\MethodStringableImpl;
+use Boson\Http\Method\MethodValueObjectImpl;
 use Boson\Shared\ValueObject\BackedEnumLikeImpl;
 
 /**
@@ -67,7 +67,7 @@ final readonly class Method implements MethodInterface
 {
     /** @use BackedEnumLikeImpl<MethodInterface, non-empty-uppercase-string> */
     use BackedEnumLikeImpl;
-    use MethodStringableImpl;
+    use MethodValueObjectImpl;
 
     /**
      * The `GET` method requests transfer of a current selected representation

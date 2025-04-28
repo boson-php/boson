@@ -14,7 +14,7 @@ class EvolvableHeaders extends Headers implements EvolvableHeadersInterface
     {
         $self = clone $this;
         /** @phpstan-ignore-next-line : False-positive, does not mutate this context */
-        $self->lines[self::normalizeHeaderName($name)] = [$value];
+        $self->lines[self::getFormattedHeaderName($name)] = [$value];
 
         return $self;
     }
@@ -23,7 +23,7 @@ class EvolvableHeaders extends Headers implements EvolvableHeadersInterface
     {
         $self = clone $this;
         /** @phpstan-ignore-next-line : False-positive, does not mutate this context */
-        $self->lines[self::normalizeHeaderName($name)][] = $value;
+        $self->lines[self::getFormattedHeaderName($name)][] = $value;
 
         return $self;
     }
@@ -32,7 +32,7 @@ class EvolvableHeaders extends Headers implements EvolvableHeadersInterface
     {
         $self = clone $this;
         /** @phpstan-ignore-next-line : False-positive, does not mutate this context */
-        unset($self->lines[self::normalizeHeaderName($name)]);
+        unset($self->lines[self::getFormattedHeaderName($name)]);
 
         return $self;
     }

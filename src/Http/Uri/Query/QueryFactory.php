@@ -15,37 +15,13 @@ final class QueryFactory implements QueryFactoryInterface
     }
 
     /**
-     * @return iterable<non-empty-string, string>
+     * @return array<non-empty-string, string|array<array-key, string>>
      */
-    private function components(string $query): iterable
+    private function components(string $query): array
     {
-        foreach (self::params($query) as $parameter) {
-            /** @var non-empty-list<string> $segments */
-            $segments = \explode(QueryInterface::KV_DELIMITER, $parameter);
+        \parse_str($query, $components);
 
-            if (($key = \array_shift($segments)) === '') {
-                continue;
-            }
-
-            $value = \implode(QueryInterface::KV_DELIMITER, $segments);
-
-            yield \urldecode($key) => \urldecode($value);
-        }
-    }
-
-    /**
-     * @return iterable<array-key, non-empty-string>
-     */
-    private static function params(string $query): iterable
-    {
-        $parameters = \explode(QueryInterface::SEGMENT_DELIMITER, $query);
-
-        foreach ($parameters as $parameter) {
-            if ($parameter === '') {
-                continue;
-            }
-
-            yield $parameter;
-        }
+        /** @var array<non-empty-string, string|array<array-key, string>> */
+        return $components;
     }
 }

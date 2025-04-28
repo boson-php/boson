@@ -26,6 +26,6 @@ trait PathStringableImpl
             $result[] = \urlencode($segment);
         }
 
-        return \implode(PathInterface::SEGMENT_DELIMITER, $result);
+        return '/' . \implode(PathInterface::SEGMENT_DELIMITER, $result);
     }
 }

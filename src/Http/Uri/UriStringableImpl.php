@@ -24,11 +24,6 @@ trait UriStringableImpl
     /**
      * @var non-empty-string
      */
-    private const string AUTHORITY_SUFFIX = '/';
-
-    /**
-     * @var non-empty-string
-     */
     private const string QUERY_PREFIX = '?';
 
     /**
@@ -56,7 +51,7 @@ trait UriStringableImpl
         }
 
         if ($this->authority !== null) {
-            $result .= self::AUTHORITY_PREFIX . $this->authority . self::AUTHORITY_SUFFIX;
+            $result .= self::AUTHORITY_PREFIX . $this->authority;
         }
 
         $result .= $this->path;

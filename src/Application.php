@@ -11,6 +11,8 @@ use Boson\Event\ApplicationStarting;
 use Boson\Event\ApplicationStopped;
 use Boson\Event\ApplicationStopping;
 use Boson\Exception\NoDefaultWindowException;
+use Boson\Http\Headers\HeadersFactory;
+use Boson\Http\Headers\HeadersFactoryInterface;
 use Boson\Http\Method\MemoizedMethodFactory;
 use Boson\Http\Method\MethodFactory;
 use Boson\Http\Method\MethodFactoryInterface;
@@ -153,6 +155,11 @@ final class Application
     private readonly MethodFactoryInterface $methods;
 
     /**
+     * Gets an internal HTTP headers factory implementation.
+     */
+    private readonly HeadersFactoryInterface $headers;
+
+    /**
      * @param PsrEventDispatcherInterface|null $dispatcher an optional event
      *        dispatcher for handling application events
      */
@@ -182,6 +189,8 @@ final class Application
             delegate: new MethodFactory(),
         );
 
+        $this->headers = new HeadersFactory();
+
         $this->registerSchemes();
         $this->registerDefaultEventListeners();
 
@@ -206,6 +215,7 @@ final class Application
             placeholder: $this->placeholder,
             uris: $this->uris,
             methods: $this->methods,
+            headers: $this->headers,
             info: $this->info->window,
             dispatcher: $this->events,
         );
