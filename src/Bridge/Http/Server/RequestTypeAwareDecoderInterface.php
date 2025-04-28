@@ -8,6 +8,7 @@ use Boson\Http\RequestInterface;
 
 /**
  * @template-covariant T of mixed = mixed
+ *
  * @template-extends GlobalsDecoderInterface<T>
  */
 interface RequestTypeAwareDecoderInterface extends GlobalsDecoderInterface

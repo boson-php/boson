@@ -6,15 +6,14 @@ namespace Boson\Bridge\Http;
 
 use Boson\Bridge\Http\Server\BodyDecoder;
 use Boson\Bridge\Http\Server\BodyDecoder\FormUrlEncodedDecoded;
-use Boson\Bridge\Http\Server\BodyDecoder\JsonBodyDecoder;
 use Boson\Bridge\Http\Server\BodyDecoder\MultipartFormDataDecoder;
 use Boson\Bridge\Http\Server\GlobalsDecoderInterface;
 use Boson\Bridge\Http\Server\ServerGlobalsDecoder;
 
 /**
  * @template-covariant TRequest of object
- * @template TResponse of object
  *
+ * @template TResponse of object
  * @template-implements RequestAdapterInterface<TRequest>
  * @template-implements ResponseAdapterInterface<TResponse>
  */

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
-use Boson\Http\Headers\HeaderLine\HeaderLineFactoryInterface;
-
 /**
  * An implementation of immutable headers list.
  *
@@ -30,6 +28,7 @@ class Headers implements HeadersInterface, \IteratorAggregate
      * @phpstan-pure
      *
      * @param non-empty-string $name
+     *
      * @return non-empty-lowercase-string
      */
     public static function getFormattedHeaderName(string $name): string
