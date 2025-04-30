@@ -561,20 +561,6 @@ $app->events->addEventListener(WebViewNavigated::class, function () use ($app) {
 });
 ```
 
-In addition, you can get separate information about the URL parts.
-
-```php
-$app = new Boson\Application();
-
-$app->webview->url = 'https://github.com/BosonPHP';
-
-$app->events->addEventListener(WebViewNavigated::class, function () use ($app) {
-    echo 'Scheme: ' . $app->webview->url->scheme . "\n"; // string("https")
-    echo 'Host:   ' . $app->webview->url->host . "\n";   // string("github.com")
-    echo 'Path:   ' . $app->webview->url->path . "\n";   // string("/BosonPHP")
-});
-```
-
 
 ### WebView Custom Protocols
 
@@ -586,14 +572,14 @@ them in the list of schemes.
 ```php
 $app = new Boson\Application(new Boson\ApplicationCreateInfo(
     // List of handling "https" protocol
-    schemes: [ 'https' ],
+    schemes: [ 'test' ],
 ));
 
-$app->webview->url = 'https://hello.world/';
+$app->webview->url = 'test://hello.world/';
 ```
 
 After enabling the interception of all the necessary protocols (in this 
-case, `https`), you can start catching the corresponding events of sending 
+case, `test`), you can start catching the corresponding events of sending 
 requests to this protocol (to this scheme).
 
 ```php
@@ -601,7 +587,7 @@ use \Boson\WebView\Event\WebViewRequest;
 
 $app = new Boson\Application(new Boson\ApplicationCreateInfo(
     // List of middleware for "https" protocol
-    schemes: [ 'https' ],
+    schemes: [ 'test' ],
 ));
 
 $app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) {
@@ -614,7 +600,7 @@ $app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $
     //
     // Result may looks like:
     //
-    // GET https://hello.world/
+    // GET test://hello.world/
     // accept: text/html,application/xhtml+xml,application/xml;q=0.9,etc...
     // upgrade-insecure-requests: 1
     // user-agent: Mozilla/5.0 etc...
@@ -624,7 +610,7 @@ $app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $
     //
 });
 
-$app->webview->url = 'https://hello.world/';
+$app->webview->url = 'test://hello.world/';
 ```
 
 In that case, if you need to block a request to a specified URL, 
@@ -654,7 +640,16 @@ $app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $
     $e->response = new \Boson\Http\Response(
         body: \json_encode(['error' => 'Something went wrong']),
         headers: ['content-type' => 'application/json'],
-        status: \Boson\Http\StatusCode::NotFound,
+        status: 404,
+    );
+});
+
+// OR
+
+$app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $e) {
+    $e->response = new \Boson\Http\JsonResponse(
+        body: ['error' => 'Something went wrong'],
+        status: 404,
     );
 });
 ```
@@ -830,7 +825,7 @@ use Boson\WebView\Event\WebViewRequest;
 
 // Create an application
 $app = new Application(new ApplicationCreateInfo(
-    schemes: ['http'],
+    schemes: ['static'],
 ));
 
 // Create static files adapter
@@ -848,7 +843,7 @@ $app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $
     // Do something else...
 });
 
-$app->webview->url = 'http://localhost/example';
+$app->webview->url = 'static://localhost/example/image.png';
 ```
 
 
@@ -864,7 +859,7 @@ use Boson\WebView\Event\WebViewRequest;
 
 // Create an application
 $app = new Application(new ApplicationCreateInfo(
-    schemes: ['http'],
+    schemes: ['symfony'],
 ));
 
 // Create Symfony HTTP adapter
@@ -887,7 +882,7 @@ $app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $
     // }
 });
 
-$app->webview->url = 'http://symfony/example';
+$app->webview->url = 'symfony://app/example';
 ```
 
 
@@ -911,7 +906,7 @@ use Boson\WebView\Event\WebViewRequest;
 
 // Create an application
 $app = new Application(new ApplicationCreateInfo(
-    schemes: ['http'],
+    schemes: ['laravel'],
 ));
 
 // Do not forget to fix for known Laravel issue with using
@@ -945,7 +940,7 @@ $app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $
     //
 });
 
-$app->webview->url = 'http://laravel/example';
+$app->webview->url = 'laravel://app/example';
 ```
 
 
@@ -963,7 +958,7 @@ use Boson\WebView\Event\WebViewRequest;
 
 // Create an application
 $app = new Application(new ApplicationCreateInfo(
-    schemes: ['http'],
+    schemes: ['psr7'],
 ));
 
 // Create PSR-7 HTTP adapter
@@ -983,7 +978,7 @@ $app->events->addEventListener(WebViewRequest::class, function (WebViewRequest $
     $e->response = $psr7->createResponse($psr7Response);
 });
 
-$app->webview->url = 'http://psr7/example';
+$app->webview->url = 'psr7://app/example';
 ```
 
 
@@ -993,12 +988,12 @@ To enable debug mode, you should define the `debug: ?bool`
 argument of the `Application` instance.
 
 ```php
-$app = new Boson\Application(
+$app = new Boson\Application(new Boson\ApplicationCreateInfo(
     // true  - enable debug mode
     // false - disable debug mode
     // null  - autodetect debug mode
     debug: true, 
-);
+));
 ```
 
 
@@ -1008,11 +1003,11 @@ To define binary, you should define the `library: ?non-empty-string`
 argument of the `Application` instance.
 
 ```php
-$app = new Boson\Application(
+$app = new Boson\Application(new Boson\ApplicationCreateInfo(
     // string - defines pathname to the library
     // null   - autodetect library
     library: __DIR__ . '/path/to/custom-webview.so',
-);
+));
 ```
 
 ---
