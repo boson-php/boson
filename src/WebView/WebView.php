@@ -6,10 +6,6 @@ namespace Boson\WebView;
 
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
-use Boson\Http\Headers\HeadersFactoryInterface;
-use Boson\Http\Method\MethodFactoryInterface;
-use Boson\Http\Uri\Factory\UriFactoryInterface;
-use Boson\Http\UriInterface;
 use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
@@ -50,17 +46,23 @@ final class WebView
     /**
      * Contains webview URI instance.
      */
-    public UriInterface $url {
+    public string $url {
         /**
          * Gets current webview URI instance.
          *
          * ```
          * echo $webview->url;          // http://example.com
-         * echo $webview->url->host;    // example.com
-         * echo $webview->url->scheme;  // http
          * ```
          */
-        get => $this->uris->createUriFromString($this->uriString);
+        get {
+            $result = $this->api->saucer_webview_url($this->ptr);
+
+            try {
+                return \FFI::string($result);
+            } finally {
+                \FFI::free($result);
+            }
+        }
         /**
          * Updates URI of the webview.
          *
@@ -69,20 +71,8 @@ final class WebView
          * ```
          * $webview->url = 'http://example.com';
          * ```
-         *
-         * Don't forget that you can also use any compatible URI interface,
-         * such as PSR-compatible.
-         *
-         * ```
-         * $webview->url = new Psr17\AnyUriFactory()
-         *      ->create('http://example.com');
-         *
-         * // OR
-         *
-         * $webview->url = new Psr7\AnyUri('http://example.com');
-         * ```
          */
-        set(UriInterface|\Stringable|string $value) {
+        set(\Stringable|string $value) {
             $this->api->saucer_webview_set_url($this->ptr, (string) $value);
         }
     }
@@ -109,23 +99,10 @@ final class WebView
     private readonly CData $ptr;
 
     /**
-     * Contains current non-memoized webview url string.
-     */
-    private string $uriString {
-        get {
-            $result = $this->api->saucer_webview_url($this->ptr);
-
-            try {
-                return \FFI::string($result);
-            } finally {
-                \FFI::free($result);
-            }
-        }
-    }
-
-    /**
      * Contains an internal bridge between {@see LibSaucer} events system
      * and the PSR {@see WebView::$events} dispatcher.
+     *
+     * @noinspection PhpPropertyOnlyWrittenInspection
      *
      * @phpstan-ignore property.onlyWritten
      */
@@ -134,6 +111,8 @@ final class WebView
     /**
      * Contains an internal bridge between {@see LibSaucer} scheme interception
      * system and the PSR {@see WebView::$events} dispatcher.
+     *
+     * @noinspection PhpPropertyOnlyWrittenInspection
      *
      * @phpstan-ignore property.onlyWritten
      */
@@ -164,18 +143,6 @@ final class WebView
          * webview process workflow.
          */
         private readonly ProcessUnlockPlaceholder $placeholder,
-        /**
-         * Contains WebView {@see UriFactoryInterface} URI parser.
-         */
-        private readonly UriFactoryInterface $uris,
-        /**
-         * Contains WebView {@see MethodFactoryInterface} HTTP method parser.
-         */
-        private readonly MethodFactoryInterface $methods,
-        /**
-         * Contains WebView {@see HeadersFactoryInterface} HTTP headers parser.
-         */
-        private readonly HeadersFactoryInterface $headers,
         /**
          * Gets parent application window instance to which
          * this webview instance belongs.
@@ -230,9 +197,6 @@ final class WebView
         return new WebViewSchemeHandler(
             api: $this->api,
             webview: $this,
-            uris: $this->uris,
-            methods: $this->methods,
-            headers: $this->headers,
             events: $this->events,
         );
     }
@@ -243,7 +207,6 @@ final class WebView
             api: $this->api,
             webview: $this,
             dispatcher: $this->events,
-            uris: $this->uris,
             state: $this->state,
         );
     }

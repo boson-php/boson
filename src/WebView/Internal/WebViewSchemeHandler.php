@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Boson\WebView\Internal;
 
 use Boson\Dispatcher\EventDispatcherInterface;
-use Boson\Http\Headers\HeadersFactoryInterface;
-use Boson\Http\Method\MethodFactoryInterface;
 use Boson\Http\RequestInterface;
 use Boson\Http\ResponseInterface;
-use Boson\Http\Uri\Factory\UriFactoryInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerLaunch;
 use Boson\Internal\Saucer\SaucerSchemeError;
@@ -26,9 +23,6 @@ final readonly class WebViewSchemeHandler
     public function __construct(
         private LibSaucer $api,
         private WebView $webview,
-        private UriFactoryInterface $uris,
-        private MethodFactoryInterface $methods,
-        private HeadersFactoryInterface $headers,
         private EventDispatcherInterface $events,
     ) {
         $this->mimeTypes = new MimeTypeReader();
@@ -81,13 +75,7 @@ final readonly class WebViewSchemeHandler
 
     private function createRequest(CData $request): RequestInterface
     {
-        return new LazyInitializedRequest(
-            api: $this->api,
-            ptr: $request,
-            uriFactory: $this->uris,
-            methodFactory: $this->methods,
-            headersFactory: $this->headers,
-        );
+        return new LazyInitializedRequest($this->api, $request);
     }
 
     private function dispatch(ResponseInterface $response, CData $executor): void
@@ -106,11 +94,10 @@ final readonly class WebViewSchemeHandler
         $mime = $this->mimeTypes->getFromResponse($response);
         $struct = $this->api->saucer_scheme_response_new($stash, $mime);
 
-        /** @phpstan-ignore-next-line : Allow invalid status codes */
-        $this->api->saucer_scheme_response_set_status($struct, $response->status->code);
+        $this->api->saucer_scheme_response_set_status($struct, $response->status);
 
         foreach ($response->headers as $header => $value) {
-            $this->api->saucer_scheme_response_add_header($struct, $header, (string) $value);
+            $this->api->saucer_scheme_response_add_header($struct, $header, $value);
         }
 
         return $struct;

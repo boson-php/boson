@@ -4,37 +4,29 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
-use Boson\Http\Body\BodyProviderImpl;
-use Boson\Http\Body\BodyProviderInterface;
+use Boson\Http\Body\MutableBodyProviderImpl;
 use Boson\Http\Body\MutableBodyProviderInterface;
-use Boson\Http\Headers\HeadersProviderImpl;
-use Boson\Http\Headers\HeadersProviderInterface;
+use Boson\Http\Headers\MutableHeadersProviderImpl;
 use Boson\Http\Headers\MutableHeadersProviderInterface;
-use Boson\Http\Method\MethodProviderImpl;
-use Boson\Http\Method\MethodProviderInterface;
+use Boson\Http\Method\MutableMethodProviderImpl;
 use Boson\Http\Method\MutableMethodProviderInterface;
+use Boson\Http\Url\MutableUrlProviderImpl;
 use Boson\Http\Url\MutableUrlProviderInterface;
-use Boson\Http\Url\UrlProviderImpl;
-use Boson\Http\Url\UrlProviderInterface;
 
 /**
- * An implementation of immutable request instance.
- *
  * @phpstan-import-type MethodInputType from MutableMethodProviderInterface
- * @phpstan-import-type MethodOutputType from MethodProviderInterface
  * @phpstan-import-type UrlInputType from MutableUrlProviderInterface
- * @phpstan-import-type UrlOutputType from UrlProviderInterface
- * @phpstan-import-type HeadersListInputType from MutableHeadersProviderInterface
- * @phpstan-import-type HeadersListOutputType from HeadersProviderInterface
  * @phpstan-import-type BodyInputType from MutableBodyProviderInterface
- * @phpstan-import-type BodyOutputType from BodyProviderInterface
+ * @phpstan-import-type HeadersListInputType from MutableHeadersProviderInterface
+ * @phpstan-import-type MutableMethodOutputType from MutableMethodProviderInterface
+ * @phpstan-import-type MutableUrlOutputType from MutableUrlProviderInterface
  */
-final readonly class Request implements RequestInterface
+class MutableRequest implements MutableRequestInterface
 {
-    use MethodProviderImpl;
-    use UrlProviderImpl;
-    use HeadersProviderImpl;
-    use BodyProviderImpl;
+    use MutableMethodProviderImpl;
+    use MutableUrlProviderImpl;
+    use MutableHeadersProviderImpl;
+    use MutableBodyProviderImpl;
 
     /**
      * @param MethodInputType $method
@@ -48,10 +40,10 @@ final readonly class Request implements RequestInterface
         iterable $headers = MutableHeadersProviderInterface::DEFAULT_HEADERS,
         string|\Stringable $body = MutableBodyProviderInterface::DEFAULT_BODY,
     ) {
-        $this->method = self::castMethod($method);
-        $this->url = self::castUrl($url);
-        $this->headers = self::castHeaders($headers);
-        $this->body = self::castBody($body);
+        $this->method = $method;
+        $this->url = $url;
+        $this->headers = $headers;
+        $this->body = $body;
     }
 
     /**
@@ -75,11 +67,6 @@ final readonly class Request implements RequestInterface
 
     public function __clone(): void
     {
-        /**
-         * @link https://wiki.php.net/rfc/readonly_amendments
-         *
-         * @phpstan-ignore-next-line : PHPStan does not support PHP 8.3 clone feature
-         */
         $this->headers = clone $this->headers;
     }
 }

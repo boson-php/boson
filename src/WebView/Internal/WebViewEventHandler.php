@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView\Internal;
 
 use Boson\Dispatcher\EventDispatcherInterface;
-use Boson\Http\Uri\Factory\UriFactoryInterface;
+use Boson\Http\Request;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerPolicy;
 use Boson\Internal\Saucer\SaucerState;
@@ -54,7 +54,6 @@ final class WebViewEventHandler
         private readonly LibSaucer $api,
         private readonly WebView $webview,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly UriFactoryInterface $uris,
         /**
          * @phpstan-ignore property.onlyWritten
          */
@@ -122,7 +121,7 @@ final class WebViewEventHandler
     {
         $this->dispatcher->dispatch(new WebViewNavigated(
             subject: $this->webview,
-            url: $this->uris->createUriFromString($url),
+            url: Request::castUrl($url),
         ));
     }
 
@@ -130,13 +129,11 @@ final class WebViewEventHandler
     {
         $this->changeState(State::Navigating);
 
-        $uri = $this->uris->createUriFromString(
-            uri: \FFI::string($this->api->saucer_navigation_url($navigation)),
-        );
+        $url = \FFI::string($this->api->saucer_navigation_url($navigation));
 
         $intention = $this->dispatcher->dispatch(new WebViewNavigating(
             subject: $this->webview,
-            url: $uri,
+            url: Request::castUrl($url),
             isNewWindow: $this->api->saucer_navigation_new_window($navigation),
             isRedirection: $this->api->saucer_navigation_redirection($navigation),
             isUserInitiated: $this->api->saucer_navigation_user_initiated($navigation),

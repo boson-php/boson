@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Internal;
 
-use Boson\Http\Headers\HeadersFactoryInterface;
 use Boson\Http\HeadersInterface;
-use Boson\Http\Method;
-use Boson\Http\Method\MethodFactoryInterface;
-use Boson\Http\MethodInterface;
+use Boson\Http\HeadersMap;
+use Boson\Http\Request;
 use Boson\Http\RequestInterface;
-use Boson\Http\Uri\Factory\UriFactoryInterface;
-use Boson\Http\UriInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use FFI\CData;
 
@@ -21,42 +17,40 @@ use FFI\CData;
  */
 final class LazyInitializedRequest implements RequestInterface
 {
-    public MethodInterface $method {
-        get => $this->method ??= $this->fetchMethod();
+    /**
+     * @var non-empty-uppercase-string
+     */
+    public string $method {
+        get => $this->method ??= Request::castMethod(
+            method: $this->fetchRawMethodString(),
+        );
     }
 
-    public UriInterface $url {
-        get => $this->url ??= $this->fetchUri();
+    /**
+     * @var non-empty-string
+     */
+    public string $url {
+        get => $this->url ??= Request::castUrl(
+            url: $this->fetchRawUriString(),
+        );
     }
 
     public HeadersInterface $headers {
-        get => $this->headers ??= $this->fetchHeaders();
+        get => $this->headers ??= HeadersMap::createFromIterable(
+            headers: $this->fetchRawHeadersIterable(),
+        );
     }
 
     public string $body {
-        get => $this->body ??= $this->fetchBodyString();
+        get => $this->body ??= $this->fetchRawBodyString();
     }
 
     public function __construct(
         private readonly LibSaucer $api,
         private readonly CData $ptr,
-        private readonly UriFactoryInterface $uriFactory,
-        private readonly MethodFactoryInterface $methodFactory,
-        private readonly HeadersFactoryInterface $headersFactory,
     ) {}
 
-    private function fetchMethod(): MethodInterface
-    {
-        $method = $this->fetchMethodString();
-
-        if ($method === '') {
-            return Method::Get;
-        }
-
-        return $this->methodFactory->createMethodFromString($method);
-    }
-
-    private function fetchMethodString(): string
+    private function fetchRawMethodString(): string
     {
         $method = $this->api->saucer_scheme_request_method($this->ptr);
 
@@ -67,14 +61,7 @@ final class LazyInitializedRequest implements RequestInterface
         }
     }
 
-    private function fetchUri(): UriInterface
-    {
-        return $this->uriFactory->createUriFromString(
-            uri: $this->fetchUriString(),
-        );
-    }
-
-    private function fetchUriString(): string
+    private function fetchRawUriString(): string
     {
         $url = $this->api->saucer_scheme_request_url($this->ptr);
 
@@ -85,17 +72,10 @@ final class LazyInitializedRequest implements RequestInterface
         }
     }
 
-    private function fetchHeaders(): HeadersInterface
-    {
-        return $this->headersFactory->createHeadersFromIterable(
-            headers: $this->fetchHeaderLines(),
-        );
-    }
-
     /**
-     * @return iterable<non-empty-string, string|\Stringable>
+     * @return iterable<non-empty-string, string>
      */
-    private function fetchHeaderLines(): iterable
+    private function fetchRawHeadersIterable(): iterable
     {
         $headers = $this->api->new('char**');
         $values = $this->api->new('char**');
@@ -119,7 +99,7 @@ final class LazyInitializedRequest implements RequestInterface
         }
     }
 
-    private function fetchBodyString(): string
+    private function fetchRawBodyString(): string
     {
         $stash = $this->api->saucer_scheme_request_content($this->ptr);
 

@@ -11,14 +11,6 @@ use Boson\Event\ApplicationStarting;
 use Boson\Event\ApplicationStopped;
 use Boson\Event\ApplicationStopping;
 use Boson\Exception\NoDefaultWindowException;
-use Boson\Http\Headers\HeadersFactory;
-use Boson\Http\Headers\HeadersFactoryInterface;
-use Boson\Http\Method\MemoizedMethodFactory;
-use Boson\Http\Method\MethodFactory;
-use Boson\Http\Method\MethodFactoryInterface;
-use Boson\Http\Uri\Factory\MemoizedUriFactory;
-use Boson\Http\Uri\Factory\UriFactory;
-use Boson\Http\Uri\Factory\UriFactoryInterface;
 use Boson\Internal\DebugEnvResolver;
 use Boson\Internal\DeferRunner\DeferRunnerInterface;
 use Boson\Internal\DeferRunner\NativeShutdownFunctionRunner;
@@ -145,21 +137,6 @@ final class Application
     private readonly ProcessUnlockPlaceholder $placeholder;
 
     /**
-     * Gets an internal URI factory implementation.
-     */
-    private readonly UriFactoryInterface $uris;
-
-    /**
-     * Gets an internal HTTP method factory implementation.
-     */
-    private readonly MethodFactoryInterface $methods;
-
-    /**
-     * Gets an internal HTTP headers factory implementation.
-     */
-    private readonly HeadersFactoryInterface $headers;
-
-    /**
      * @param PsrEventDispatcherInterface|null $dispatcher an optional event
      *        dispatcher for handling application events
      */
@@ -180,16 +157,6 @@ final class Application
             api: $this->api,
             app: $this,
         );
-
-        $this->uris = new MemoizedUriFactory(
-            delegate: new UriFactory(),
-        );
-
-        $this->methods = new MemoizedMethodFactory(
-            delegate: new MethodFactory(),
-        );
-
-        $this->headers = new HeadersFactory();
 
         $this->registerSchemes();
         $this->registerDefaultEventListeners();
@@ -213,9 +180,6 @@ final class Application
             api: $this->api,
             app: $this,
             placeholder: $this->placeholder,
-            uris: $this->uris,
-            methods: $this->methods,
-            headers: $this->headers,
             info: $this->info->window,
             dispatcher: $this->events,
         );

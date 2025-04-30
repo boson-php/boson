@@ -5,27 +5,45 @@ declare(strict_types=1);
 namespace Boson\Http;
 
 /**
- * @template-extends \Traversable<non-empty-lowercase-string, \Stringable|string>
- * @template-extends \ArrayAccess<non-empty-lowercase-string, list<\Stringable|string>>
+ * @template-extends \Traversable<non-empty-lowercase-string, string>
  */
-interface HeadersInterface extends \Traversable, \ArrayAccess, \Countable
+interface HeadersInterface extends \Traversable, \Countable
 {
     /**
-     * @param non-empty-string $name
+     * Returns the first header by name or the default one.
      *
-     * @return ($default is null ? \Stringable|string|null : \Stringable|string)
+     * @param non-empty-string $name case-insensitive header field name to find
      */
-    public function first(string $name, \Stringable|string|null $default = null): \Stringable|string|null;
+    public function first(string $name, ?string $default = null): ?string;
 
     /**
-     * @param non-empty-string $name
+     * Returns headers list by name.
      *
-     * @return iterable<array-key, \Stringable|string>
+     * @param non-empty-string $name case-insensitive header field name to find
+     *
+     * @return list<string>
      */
-    public function all(string $name): iterable;
+    public function all(string $name): array;
 
     /**
-     * @param non-empty-string $name
+     * Returns {@see true} if the HTTP header is defined.
+     *
+     * @param non-empty-string $name case-insensitive header field name to find
      */
-    public function contains(string $name): bool;
+    public function has(string $name): bool;
+
+    /**
+     * Returns {@see true} if the given HTTP header contains
+     * the given case sensitive value.
+     *
+     * @param non-empty-string $name case-insensitive header field name to find
+     */
+    public function contains(string $name, string $value): bool;
+
+    /**
+     * Gets count of the headers.
+     *
+     * @return int<0, max>
+     */
+    public function count(): int;
 }

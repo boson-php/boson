@@ -8,9 +8,6 @@ use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListener;
-use Boson\Http\Headers\HeadersFactoryInterface;
-use Boson\Http\Method\MethodFactoryInterface;
-use Boson\Http\Uri\Factory\UriFactoryInterface;
 use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\GarbageCollector\ObservableWeakSet;
@@ -59,9 +56,6 @@ final class WindowManager implements
         private readonly LibSaucer $api,
         private readonly Application $app,
         private readonly ProcessUnlockPlaceholder $placeholder,
-        private readonly UriFactoryInterface $uris,
-        private readonly MethodFactoryInterface $methods,
-        private readonly HeadersFactoryInterface $headers,
         WindowCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
@@ -96,9 +90,6 @@ final class WindowManager implements
         $this->windows->attach($window = new Window(
             api: $this->api,
             placeholder: $this->placeholder,
-            uris: $this->uris,
-            methods: $this->methods,
-            headers: $this->headers,
             app: $this->app,
             info: $info,
             dispatcher: $this->events,

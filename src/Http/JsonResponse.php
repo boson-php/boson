@@ -4,65 +4,86 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
+use Boson\Http\Body\MutableBodyProviderInterface;
+use Boson\Http\Headers\MutableHeadersProviderInterface;
+use Boson\Http\StatusCode\MutableStatusCodeProviderInterface;
+
 /**
- * @template TStatusCode of int = int
- * @template-extends Response<TStatusCode>
+ * @phpstan-type JsonEncodingFlagsType int<0, max>
+ *
+ * @phpstan-import-type StatusCodeInputType from MutableStatusCodeProviderInterface
+ * @phpstan-import-type HeadersListInputType from MutableHeadersProviderInterface
+ * @phpstan-import-type BodyInputType from MutableBodyProviderInterface
+ * @phpstan-import-type MutableHeadersListOutputType from MutableHeadersProviderInterface
  */
-readonly class JsonResponse extends Response
+class JsonResponse extends Response
 {
+    /**
+     * @var non-empty-lowercase-string
+     */
+    protected const string DEFAULT_JSON_CONTENT_TYPE = 'application/json';
+
     /**
      * Encode <, >, ', &, and " characters in the JSON, making
      * it also safe to be embedded into HTML.
+     *
+     * @var JsonEncodingFlagsType
      */
-    protected const int DEFAULT_JSON_ENCODING_OPTIONS = \JSON_HEX_TAG
+    protected const int DEFAULT_JSON_ENCODING_FLAGS = \JSON_HEX_TAG
         | \JSON_HEX_APOS
         | \JSON_HEX_AMP
         | \JSON_HEX_QUOT;
 
     /**
-     * @param StatusCodeInterface<TStatusCode>|TStatusCode $status
-     * @param HeadersInterface|iterable<non-empty-string, string> $headers
+     * @param HeadersListInputType $headers
+     * @param StatusCodeInputType $status
      *
      * @throws \JsonException
      */
     public function __construct(
         mixed $data = null,
-        HeadersInterface|iterable $headers = [],
-        /** @phpstan-ignore-next-line : Known issue */
-        StatusCodeInterface|int $status = StatusCode::OK,
+        iterable $headers = [],
+        int $status = MutableResponseInterface::DEFAULT_STATUS_CODE,
         /**
-         * JSON encoding options
+         * JSON body encoding flags bit-mask.
+         *
+         * @var JsonEncodingFlagsType
          */
-        protected int $jsonEncodingOptions = self::DEFAULT_JSON_ENCODING_OPTIONS,
+        protected int $jsonEncodingFlags = self::DEFAULT_JSON_ENCODING_FLAGS,
     ) {
-        $json = $this->formatJsonBody($data);
-
-        $headers = $this->formatHeaders($headers);
-        $headers = $this->extendJsonHeaders($headers);
-
-        parent::__construct($json, $headers, $status);
+        parent::__construct(
+            body: $this->formatJsonBody($data),
+            headers: $headers,
+            status: $status,
+        );
     }
 
     /**
      * Extend headers by the "application/json" content type
      * in case of content-type header has not been defined.
+     *
+     * @param MutableHeadersListOutputType $headers
+     *
+     * @return MutableHeadersListOutputType
      */
-    protected function extendJsonHeaders(EvolvableHeadersInterface $headers): EvolvableHeadersInterface
+    #[\Override]
+    protected function extendHeaders(MutableHeadersInterface $headers): MutableHeadersInterface
     {
-        if ($headers->contains('content-type')) {
-            return $headers;
+        if (!$headers->has('content-type')) {
+            $headers->add('content-type', self::DEFAULT_JSON_CONTENT_TYPE);
         }
 
-        return $headers->withHeader('content-type', 'application/json');
+        return parent::extendHeaders($headers);
     }
 
     /**
      * Encode passed data payload to a json string.
      *
+     * @return BodyInputType
      * @throws \JsonException
      */
-    protected function formatJsonBody(mixed $data): string
+    protected function formatJsonBody(mixed $data): string|\Stringable
     {
-        return \json_encode($data, $this->jsonEncodingOptions | \JSON_THROW_ON_ERROR);
+        return \json_encode($data, $this->jsonEncodingFlags | \JSON_THROW_ON_ERROR);
     }
 }

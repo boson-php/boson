@@ -2,78 +2,6 @@
 
 namespace PHPSTORM_META {
 
-    registerArgumentsSet('boson_mime_type',
-        // registered chromimum type
-        'video/webm',
-        'application/wasm',
-        'application/x-chrome-extension',
-        'application/xhtml+xml',
-        'audio/flac',
-        'audio/mp3',
-        'audio/ogg',
-        'audio/wav',
-        'audio/x-m4a',
-        'image/avif',
-        'image/gif',
-        'image/jpeg',
-        'image/png',
-        'image/apng',
-        'image/svg+xml',
-        'image/webp',
-        'multipart/related',
-        'text/css',
-        'text/html',
-        'text/javascript',
-        'text/xml',
-        'video/mp4',
-        'video/ogg',
-        'text/csv',
-        'image/x-icon',
-        'application/epub+zip',
-        'application/font-woff',
-        'application/gzip',
-        'application/javascript',
-        'application/json',
-        'application/msword',
-        'application/octet-stream',
-        'application/pdf',
-        'application/pkcs7-mime',
-        'application/pkcs7-signature',
-        'application/postscript',
-        'application/rdf+xml',
-        'application/rss+xml',
-        'application/rtf',
-        'application/vnd.android.package-archive',
-        'application/vnd.mozilla.xul+xml',
-        'application/vnd.ms-excel',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/x-mpegurl',
-        'application/x-shockwave-flash',
-        'application/x-tar',
-        'application/x-x509-ca-cert',
-        'application/x-x509-ca-cert',
-        'application/zip',
-        'audio/webm',
-        'image/bmp',
-        'image/jpeg',
-        'image/tiff',
-        'image/x-xbitmap',
-        'message/rfc822',
-        'text/calendar',
-        'text/html',
-        'text/plain',
-        'text/vtt',
-        'text/x-sh',
-        'text/xml',
-        'video/mpeg',
-        // form elements
-        'multipart/form-data',
-        'application/x-www-form-urlencoded',
-    );
-
     registerArgumentsSet('boson_http_header_name',
         'accept-ch',
         'accept-encoding',
@@ -231,19 +159,73 @@ namespace PHPSTORM_META {
         'x-xss-protection'
     );
 
+    registerArgumentsSet('boson_http_method',
+        'GET',
+        'HEAD',
+        'OPTIONS',
+        'TRACE',
+        'PUT',
+        'DELETE',
+        'POST',
+        'PATCH',
+        'CONNECT'
+    );
+
+    registerArgumentsSet('boson_http_status_code',
+        100, 101, 102, 103,
+        110, 111, 112, 113, 199,
+        200, 201, 202, 203, 204, 205, 206, 207, 208,
+        214, 226, 299,
+        300, 301, 302, 303, 304, 305, 306, 307, 308,
+        400, 401, 402, 403, 404, 405, 406, 407, 408, 409,
+        410, 411, 412, 413, 414, 415, 416, 417, 418,
+        421, 422, 423, 424, 425, 426, 428, 429,
+        431, 444, 451, 499,
+        500, 501, 502, 503, 504, 505, 506, 507, 508,
+        510, 511, 599
+    );
+
+    registerArgumentsSet('boson_http_json_encoding_flags', JSON_HEX_QUOT
+        | JSON_HEX_TAG
+        | JSON_HEX_AMP
+        | JSON_HEX_APOS
+        | JSON_NUMERIC_CHECK
+        | JSON_PRETTY_PRINT
+        | JSON_UNESCAPED_SLASHES
+        | JSON_FORCE_OBJECT
+        | JSON_PRESERVE_ZERO_FRACTION
+        | JSON_UNESCAPED_UNICODE
+        | JSON_PARTIAL_OUTPUT_ON_ERROR
+        | JSON_UNESCAPED_LINE_TERMINATORS
+        | JSON_THROW_ON_ERROR
+    );
+
     expectedArguments(\Boson\Http\HeadersInterface::first(), 0, argumentsSet('boson_http_header_name'));
     expectedArguments(\Boson\Http\HeadersInterface::all(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\HeadersInterface::has(), 0, argumentsSet('boson_http_header_name'));
     expectedArguments(\Boson\Http\HeadersInterface::contains(), 0, argumentsSet('boson_http_header_name'));
 
-    expectedArguments(\Boson\Http\Headers::first(), 0, argumentsSet('boson_http_header_name'));
-    expectedArguments(\Boson\Http\Headers::all(), 0, argumentsSet('boson_http_header_name'));
-    expectedArguments(\Boson\Http\Headers::contains(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\HeadersMap::first(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\HeadersMap::all(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\HeadersMap::has(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\HeadersMap::contains(), 0, argumentsSet('boson_http_header_name'));
 
-    expectedArguments(\Boson\Http\EvolvableHeadersInterface::withHeader(), 0, argumentsSet('boson_http_header_name'));
-    expectedArguments(\Boson\Http\EvolvableHeadersInterface::withAddedHeader(), 0, argumentsSet('boson_http_header_name'));
-    expectedArguments(\Boson\Http\EvolvableHeadersInterface::withoutHeader(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\MutableHeadersInterface::set(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\MutableHeadersInterface::add(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\MutableHeadersInterface::remove(), 0, argumentsSet('boson_http_header_name'));
 
-    expectedArguments(\Boson\Http\EvolvableHeaders::withHeader(), 0, argumentsSet('boson_http_header_name'));
-    expectedArguments(\Boson\Http\EvolvableHeaders::withAddedHeader(), 0, argumentsSet('boson_http_header_name'));
-    expectedArguments(\Boson\Http\EvolvableHeaders::withoutHeader(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\MutableHeadersMap::set(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\MutableHeadersMap::add(), 0, argumentsSet('boson_http_header_name'));
+    expectedArguments(\Boson\Http\MutableHeadersMap::remove(), 0, argumentsSet('boson_http_header_name'));
+
+    expectedArguments(\Boson\Http\Request::__construct(), 0, argumentsSet('boson_http_method'));
+    expectedArguments(\Boson\Http\MutableRequest::__construct(), 0, argumentsSet('boson_http_method'));
+
+    expectedArguments(\Boson\Http\Response::__construct(), 2, argumentsSet('boson_http_status_code'));
+    expectedReturnValues(\Boson\Http\Response::$status, argumentsSet('boson_http_status_code'));
+    expectedArguments(\Boson\Http\JsonResponse::__construct(), 2, argumentsSet('boson_http_status_code'));
+    expectedReturnValues(\Boson\Http\JsonResponse::$status, argumentsSet('boson_http_status_code'));
+    expectedArguments(\Boson\Http\JsonResponse::__construct(), 3, argumentsSet('boson_http_json_encoding_flags'));
+
+    exitPoint(\Boson\Application::run());
 }
