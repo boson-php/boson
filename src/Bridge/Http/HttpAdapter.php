@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Http;
 
-use Boson\Bridge\Http\Server\BodyDecoder;
-use Boson\Bridge\Http\Server\BodyDecoder\FormUrlEncodedDecoded;
-use Boson\Bridge\Http\Server\BodyDecoder\MultipartFormDataDecoder;
-use Boson\Bridge\Http\Server\GlobalsDecoderInterface;
-use Boson\Bridge\Http\Server\ServerGlobalsDecoder;
+use Boson\Bridge\Http\Body\BodyDecoderFactory;
+use Boson\Bridge\Http\Body\BodyDecoderInterface;
+use Boson\Bridge\Http\Body\MultipartFormDataDecoder;
+use Boson\Bridge\Http\Body\NativeFormUrlEncodedDecoded;
+use Boson\Bridge\Http\Server\DefaultServerGlobalsProvider;
+use Boson\Bridge\Http\Server\ServerGlobalsProviderInterface;
+use Boson\Bridge\Http\Server\StaticServerGlobalsProvider;
+use Boson\Http\RequestInterface;
 
 /**
  * @template-covariant TRequest of object
@@ -21,43 +24,61 @@ abstract readonly class HttpAdapter implements
     RequestAdapterInterface,
     ResponseAdapterInterface
 {
-    /**
-     * @var GlobalsDecoderInterface<scalar>
-     */
-    protected GlobalsDecoderInterface $server;
+    protected ServerGlobalsProviderInterface $server;
+    protected BodyDecoderInterface $post;
 
-    /**
-     * @var GlobalsDecoderInterface<mixed>
-     */
-    protected GlobalsDecoderInterface $post;
-
-    /**
-     * @param GlobalsDecoderInterface<scalar>|null $server
-     * @param GlobalsDecoderInterface<mixed>|null $post
-     */
     public function __construct(
-        ?GlobalsDecoderInterface $server = null,
-        ?GlobalsDecoderInterface $post = null,
+        ?ServerGlobalsProviderInterface $server = null,
+        ?BodyDecoderInterface $body = null,
     ) {
         $this->server = $server ?? $this->createServerGlobalsDecoder();
-        $this->post = $post ?? $this->createPostGlobalsDecoder();
+        $this->post = $body ?? $this->createPostGlobalsDecoder();
     }
 
     /**
-     * @return GlobalsDecoderInterface<scalar>
+     * @return array<non-empty-string, scalar|array<array-key, mixed>|null>
      */
-    protected function createServerGlobalsDecoder(): GlobalsDecoderInterface
+    protected function getDecodedBody(RequestInterface $request): array
     {
-        return new ServerGlobalsDecoder();
+        return $this->post->decode($request);
     }
 
     /**
-     * @return GlobalsDecoderInterface<mixed>
+     * @return array<non-empty-string, scalar>
      */
-    protected function createPostGlobalsDecoder(): GlobalsDecoderInterface
+    protected function getServerParameters(RequestInterface $request): array
     {
-        return new BodyDecoder([
-            new FormUrlEncodedDecoded(),
+        return $this->server->getServerGlobals($request);
+    }
+
+    /**
+     * @return array<non-empty-string, string|array<array-key, string>>
+     */
+    protected function getQueryParameters(RequestInterface $request): array
+    {
+        $query = \parse_url($request->url, \PHP_URL_QUERY);
+
+        if (!\is_string($query) || $query === '') {
+            return [];
+        }
+
+        \parse_str($query, $result);
+
+        /** @var array<non-empty-string, string|array<array-key, string>> */
+        return $result;
+    }
+
+    protected function createServerGlobalsDecoder(): ServerGlobalsProviderInterface
+    {
+        return new DefaultServerGlobalsProvider(
+            delegate: new StaticServerGlobalsProvider(),
+        );
+    }
+
+    protected function createPostGlobalsDecoder(): BodyDecoderInterface
+    {
+        return new BodyDecoderFactory([
+            new NativeFormUrlEncodedDecoded(),
             new MultipartFormDataDecoder(),
         ]);
     }

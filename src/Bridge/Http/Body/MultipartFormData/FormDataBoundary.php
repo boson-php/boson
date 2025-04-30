@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Http\Server\BodyDecoder\MultipartFormData;
+namespace Boson\Bridge\Http\Body\MultipartFormData;
 
 use Boson\Http\RequestInterface;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Boson\Bridge\Server\BodyDecoder
+ * @psalm-internal Boson\Bridge\Http\Body
  */
 final readonly class FormDataBoundary
 {

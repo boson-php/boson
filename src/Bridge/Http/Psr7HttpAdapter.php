@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Http;
 
-use Boson\Bridge\Http\Server\GlobalsDecoderInterface;
+use Boson\Bridge\Http\Body\BodyDecoderInterface;
+use Boson\Bridge\Http\Server\ServerGlobalsProviderInterface;
 use Boson\Http\RequestInterface;
 use Boson\Http\Response;
 use Boson\Http\ResponseInterface;
@@ -20,36 +21,37 @@ use Psr\Http\Message\ServerRequestInterface as Psr7ServerRequestInterface;
  */
 readonly class Psr7HttpAdapter extends HttpAdapter
 {
-    /**
-     * @param GlobalsDecoderInterface<scalar>|null $server
-     * @param GlobalsDecoderInterface<mixed>|null $post
-     */
     public function __construct(
         private Psr17ServerRequestFactoryInterface $requests,
-        ?GlobalsDecoderInterface $server = null,
-        ?GlobalsDecoderInterface $post = null,
+        ?ServerGlobalsProviderInterface $server = null,
+        ?BodyDecoderInterface $body = null,
     ) {
-        parent::__construct($server, $post);
+        parent::__construct($server, $body);
     }
 
     public function createRequest(RequestInterface $request): Psr7ServerRequestInterface
     {
         /** @var Psr7ServerRequestInterface $result */
         $result = $this->requests->createServerRequest(
-            $request->method->name,
-            $request->url->toString(),
-            $this->server->decode($request),
+            $request->method,
+            $request->url,
+            $this->getServerParameters($request),
         );
 
-        $result = $result->withQueryParams((array) $request->url->query);
-
+        // Extend headers list
         foreach ($request->headers as $name => $value) {
-            $result = $result->withAddedHeader($name, (string) $value);
+            $result = $result->withAddedHeader($name, $value);
         }
 
-        if (($parsedBody = $this->post->decode($request)) !== []) {
-            $result = $result->withParsedBody($parsedBody);
-        }
+        // Extend query params
+        $result = $result->withQueryParams(
+            query: $this->getQueryParameters($request),
+        );
+
+        // Extend body parameters
+        $result = $result->withParsedBody(
+            data: $this->getDecodedBody($request),
+        );
 
         /** @var TRequest */
         return $result;
@@ -61,26 +63,9 @@ readonly class Psr7HttpAdapter extends HttpAdapter
 
         return new Response(
             body: (string) $response->getBody(),
-            headers: $this->psrResponseHeadersToIterable($response->getHeaders()),
+            /** @phpstan-ignore-next-line : Allow PSR headers */
+            headers: $response->getHeaders(),
             status: $response->getStatusCode(),
         );
-    }
-
-    /**
-     * @param array<array-key, array<mixed, string>> $headers
-     *
-     * @return iterable<non-empty-string, string>
-     */
-    private function psrResponseHeadersToIterable(array $headers): iterable
-    {
-        foreach ($headers as $name => $values) {
-            foreach ($values as $value) {
-                if (!\is_string($value) || $name === '' || !\is_string($name)) {
-                    continue;
-                }
-
-                yield $name => $value;
-            }
-        }
     }
 }

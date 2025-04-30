@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Http\Server\BodyDecoder\MultipartFormData;
+namespace Boson\Bridge\Http\Body\MultipartFormData;
 
-use Boson\Bridge\Http\Server\BodyDecoder\Exception\ParsingException;
-use Boson\Bridge\Server\BodyDecoder\MultipartFormData\file;
-use Boson\Http\Headers\HeadersFactory;
-use Boson\Http\Headers\HeadersFactoryInterface;
+use Boson\Bridge\Http\Body\Exception\ParsingException;
 use Boson\Http\HeadersInterface;
+use Boson\Http\HeadersMap;
 
+/**
+ * @internal this is an internal library class, please do not use it in your code
+ * @psalm-internal Boson\Bridge\Http\Body
+ */
 final readonly class StreamingParser
 {
     /**
@@ -41,7 +43,6 @@ final readonly class StreamingParser
         int $headersSize = FormDataHeadersParser::DEFAULT_MAX_HEADER_SIZE,
         int $headersMaxCount = FormDataHeadersParser::DEFAULT_MAX_HEADERS_COUNT,
         ?int $bodyMaxSize = null,
-        private HeadersFactoryInterface $headers = new HeadersFactory(),
     ) {
         $this->headersStream = new FormDataHeadersParser($chunkSize, $headersSize, $headersMaxCount);
         $this->bodyStream = new FormDataBodyParser($chunkSize, $bodyMaxSize);
@@ -51,10 +52,10 @@ final readonly class StreamingParser
      * @param resource $stream
      * @param non-empty-string $boundary
      *
-     * @return iterable<HeadersInterface, string>
+     * @return \Iterator<HeadersInterface, string>
      * @throws \Throwable
      */
-    public function parse(mixed $stream, string $boundary): iterable
+    public function parse(mixed $stream, string $boundary): \Iterator
     {
         $finalized = false;
 
@@ -87,7 +88,7 @@ final readonly class StreamingParser
      */
     private function getHeaders($stream): HeadersInterface
     {
-        return $this->headers->createHeadersFromIterable(
+        return HeadersMap::createFromIterable(
             headers: $this->headersStream->parse($stream),
         );
     }
