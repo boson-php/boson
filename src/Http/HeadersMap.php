@@ -123,7 +123,7 @@ class HeadersMap implements HeadersInterface, \IteratorAggregate
     {
         $formatted = self::getFormattedHeaderName($name);
 
-        return \in_array($value, $this->lines[$formatted], true);
+        return \in_array($value, $this->lines[$formatted] ?? [], true);
     }
 
     public function getIterator(): \Traversable
