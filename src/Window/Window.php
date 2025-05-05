@@ -391,6 +391,39 @@ final class Window
     }
 
     /**
+     * Contains window "always on top" option.
+     */
+    public bool $isAlwaysOnTop {
+        /**
+         * Gets current window "always on top" option.
+         *
+         * ```
+         * if ($window->isAlwaysOnTop) {
+         *     echo 'Window is always on top';
+         * } else {
+         *     echo 'Window is not always on top';
+         * }
+         * ```
+         */
+        get => $this->api->saucer_window_always_on_top($this->id->ptr);
+        /**
+         * Sets window "always on top" feature in case of property was be set
+         * to {@see true} or disable this feature in case of {@see false}.
+         *
+         * ```
+         * // Make window always on top
+         * $window->isAlwaysOnTop = true;
+         *
+         * // Disable window always on top feature
+         * $window->isVisible = false;
+         * ```
+         */
+        set {
+            $this->api->saucer_window_set_always_on_top($this->id->ptr, $value);
+        }
+    }
+
+    /**
      * Gets current window closed state.
      *
      * ```
@@ -556,6 +589,10 @@ final class Window
 
             if ($info->resizable === false) {
                 $this->api->saucer_window_set_resizable($handle, false);
+            }
+
+            if ($info->alwaysOnTop === true) {
+                $this->api->saucer_window_set_always_on_top($handle, true);
             }
 
             $this->api->saucer_window_set_size($handle, $info->width, $info->height);

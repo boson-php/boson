@@ -55,6 +55,10 @@ final readonly class WindowCreateInfo
          */
         public bool $resizable = true,
         /**
+         * Sets the window to always be on top.
+         */
+        public bool $alwaysOnTop = false,
+        /**
          * Manage window decorations.
          *
          * Enable or disable title bar, minimize, maximize, exit buttons,
