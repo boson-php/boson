@@ -400,6 +400,9 @@ final class Application
 
         $this->registerQuitHandlersIfNotRegistered();
 
+        // Resolve main window lazy proxy
+        $_ = $this->window->isClosed;
+
         $this->events->dispatch(new ApplicationStarted($this));
 
         do {

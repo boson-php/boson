@@ -17,6 +17,12 @@ use Boson\Window\Window;
 use Boson\Window\WindowCreateInfo;
 
 /**
+ * Manages the lifecycle and collection of windows in the application.
+ *
+ * Implements the window collection interface and factory pattern,
+ * providing functionality to create, track, and manage windows throughout
+ * their lifecycle.
+ *
  * @template-implements \IteratorAggregate<array-key, Window>
  */
 final class WindowManager implements
@@ -66,44 +72,83 @@ final class WindowManager implements
 
         $this->registerDefaultEventListeners();
 
-        $this->default = $this->createDeferred($info);
+        $this->default = $this->create($info, true);
     }
 
-    private function createDeferred(WindowCreateInfo $info): Window
+    /**
+     * Registers default event listeners for window events.
+     */
+    private function registerDefaultEventListeners(): void
     {
-        $reflection = new \ReflectionClass(Window::class);
+        $this->events->addEventListener(WindowClosed::class, function (WindowClosed $event) {
+            $this->windows->detach($event->subject);
 
-        /** @var Window */
-        return $reflection->newLazyProxy(function () use ($info) {
-            return $this->create($info);
+            // Recalculate default window in case of
+            // previous default window was closed.
+            if ($this->default === $event->subject) {
+                $this->default = $this->windows->count() > 0 ? $this->windows->current() : null;
+            }
         });
     }
 
-    private function registerDefaultEventListeners(): void
+    public function create(WindowCreateInfo $info = new WindowCreateInfo(), bool $defer = false): Window
     {
-        $this->events->addEventListener(WindowClosed::class, $this->onWindowClosed(...));
+        $instance = $defer
+            ? $this->createWindowProxy($info)
+            : $this->createWindowInstance($info);
+
+        $this->windows->attach($instance, $info);
+
+        return $instance;
     }
 
-    private function onWindowClosed(WindowClosed $event): void
+    /**
+     * Creates a window proxy that will be initialized later.
+     */
+    private function createWindowProxy(WindowCreateInfo $info): Window
     {
-        $this->windows->detach($event->subject);
+        /** @var Window */
+        return new \ReflectionClass(Window::class)
+            ->newLazyProxy(function() use ($info): Window {
+                $instance = $this->createWindowInstance($info);
 
-        // Recalculate default window in case of
-        // previous default window was closed.
-        if ($this->default === $event->subject) {
-            $this->default = $this->windows->count() > 0 ? $this->windows->current() : null;
+                $this->swapWindowProxy($info, $instance);
+
+                return $instance;
+            });
+    }
+
+    /**
+     * Swaps a window proxy with its actual instance.
+     *
+     * The problem is that the proxy ID in the storage and the real instance
+     * are different. Therefore, it is necessary to change the window proxy
+     * to the real instance after it initializing.
+     */
+    private function swapWindowProxy(WindowCreateInfo $info, Window $window): void
+    {
+        foreach ($this->windows as $proxy) {
+            if ($this->windows->getInfo() === $info) {
+                $this->windows->detach($proxy);
+                $this->windows->attach($window, $info);
+
+                return;
+            }
         }
     }
 
-    public function create(WindowCreateInfo $info = new WindowCreateInfo()): Window
+    /**
+     * Creates a new real window instance with the given information.
+     */
+    private function createWindowInstance(WindowCreateInfo $info): Window
     {
-        $this->windows->attach($window = new Window(
+        $window = new Window(
             api: $this->api,
             placeholder: $this->placeholder,
             app: $this->app,
             info: $info,
             dispatcher: $this->events,
-        ));
+        );
 
         $this->memory->watch($window, function (Window $window): void {
             $this->api->saucer_webview_clear_scripts($window->id->ptr);
