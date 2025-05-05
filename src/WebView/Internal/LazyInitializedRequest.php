@@ -120,8 +120,6 @@ final class LazyInitializedRequest implements RequestInterface
 
     public function __destruct()
     {
-        // TODO expects implementation https://github.com/saucer/bindings/pull/2
-        // $this->api->saucer_scheme_request_free($this->ptr);
-        \FFI::free($this->ptr);
+        $this->api->saucer_scheme_request_free($this->ptr);
     }
 }

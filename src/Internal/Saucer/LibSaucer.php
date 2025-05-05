@@ -368,8 +368,7 @@ saucer_scheme_response *saucer_scheme_response_new(saucer_stash *data, const cha
 void saucer_scheme_response_free(saucer_scheme_response *);
 void saucer_scheme_response_set_status(saucer_scheme_response *, int status);
 void saucer_scheme_response_add_header(saucer_scheme_response *, const char *header, const char *value);
-// @see https://github.com/saucer/bindings/pull/2
-// void saucer_scheme_request_free(saucer_scheme_request *);
+void saucer_scheme_request_free(saucer_scheme_request *);
 /*[[sc::requires_free]]*/ char *saucer_scheme_request_url(saucer_scheme_request *);
 /*[[sc::requires_free]]*/ char *saucer_scheme_request_method(saucer_scheme_request *);
 /*[[sc::requires_free]]*/ saucer_stash *saucer_scheme_request_content(saucer_scheme_request *);
