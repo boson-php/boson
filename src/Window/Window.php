@@ -698,6 +698,16 @@ final class Window
     }
 
     /**
+     * Focus the window.
+     *
+     * @api
+     */
+    public function focus(): void
+    {
+        $this->api->saucer_window_focus($this->id->ptr);
+    }
+
+    /**
      * Makes this window visible.
      *
      * Note: The same can be done using the window's visibility
