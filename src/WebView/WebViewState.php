@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView;
 
-enum State
+enum WebViewState
 {
     /**
      * The state indicating navigation to a new URL.

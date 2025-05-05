@@ -91,7 +91,7 @@ final class WebView
     /**
      * Gets webview status.
      */
-    public private(set) State $state = State::Loading;
+    public private(set) WebViewState $state = WebViewState::Loading;
 
     /**
      * Internal window's webview pointer (handle).

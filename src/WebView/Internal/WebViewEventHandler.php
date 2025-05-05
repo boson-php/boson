@@ -19,7 +19,7 @@ use Boson\WebView\Event\WebViewNavigated;
 use Boson\WebView\Event\WebViewNavigating;
 use Boson\WebView\Event\WebViewTitleChanged;
 use Boson\WebView\Event\WebViewTitleChanging;
-use Boson\WebView\State;
+use Boson\WebView\WebViewState;
 use Boson\WebView\WebView;
 use FFI\CData;
 
@@ -57,14 +57,14 @@ final class WebViewEventHandler
         /**
          * @phpstan-ignore property.onlyWritten
          */
-        private State &$state,
+        private WebViewState &$state,
     ) {
         $this->handlers = $this->createEventHandlers();
 
         $this->listenEvents();
     }
 
-    private function changeState(State $state): void
+    private function changeState(WebViewState $state): void
     {
         $this->state = $state;
     }
@@ -127,7 +127,7 @@ final class WebViewEventHandler
 
     private function onNavigating(CData $_, CData $navigation): int
     {
-        $this->changeState(State::Navigating);
+        $this->changeState(WebViewState::Navigating);
 
         $url = \FFI::string($this->api->saucer_navigation_url($navigation));
 
@@ -180,11 +180,11 @@ final class WebViewEventHandler
     private function onLoad(CData $_, CData $state): void
     {
         if ($state[0] === SaucerState::SAUCER_STATE_STARTED) {
-            $this->changeState(State::Loading);
+            $this->changeState(WebViewState::Loading);
 
             return;
         }
 
-        $this->changeState(State::Ready);
+        $this->changeState(WebViewState::Ready);
     }
 }
