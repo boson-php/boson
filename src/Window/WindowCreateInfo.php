@@ -59,6 +59,10 @@ final readonly class WindowCreateInfo
          */
         public bool $alwaysOnTop = false,
         /**
+         * Sets the mode for disabling mouse event capture.
+         */
+        public bool $clickThrough = false,
+        /**
          * Manage window decorations.
          *
          * Enable or disable title bar, minimize, maximize, exit buttons,

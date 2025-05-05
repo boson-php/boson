@@ -387,6 +387,39 @@ final class Window
     }
 
     /**
+     * Contains window "click through" option.
+     */
+    public bool $isClickThrough {
+        /**
+         * Gets current window "click through" option.
+         *
+         * ```
+         * if ($window->isClickThrough) {
+         *     echo 'Window DOES NOT intercept mouse events';
+         * } else {
+         *     echo 'Window intercepts mouse events';
+         * }
+         * ```
+         */
+        get => $this->api->saucer_window_click_through($this->id->ptr);
+        /**
+         * Sets window "click through" feature in case of property was be set
+         * to {@see true} or disable this feature in case of {@see false}.
+         *
+         * ```
+         * // MMakes the window inaccessible for mouse control
+         * $window->isClickThrough = true;
+         *
+         * // Disable "click through" feature
+         * $window->isClickThrough = false;
+         * ```
+         */
+        set {
+            $this->api->saucer_window_set_click_through($this->id->ptr, $value);
+        }
+    }
+
+    /**
      * Gets current window closed state.
      *
      * ```
@@ -556,6 +589,10 @@ final class Window
 
             if ($info->alwaysOnTop === true) {
                 $this->api->saucer_window_set_always_on_top($handle, true);
+            }
+
+            if ($info->clickThrough === true) {
+                $this->api->saucer_window_set_click_through($handle, true);
             }
 
             $this->api->saucer_window_set_size($handle, $info->width, $info->height);
