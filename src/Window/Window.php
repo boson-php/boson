@@ -317,43 +317,6 @@ final class Window
     }
 
     /**
-     * Contains window dark mode option.
-     *
-     * In case of {@see true} then the dark mode is forcibly enabled,
-     * or {@see false} instead.
-     */
-    public bool $isDarkModeEnabled {
-        /**
-         * Gets current window dark mode.
-         *
-         * ```
-         * if ($window->isDarkModeEnabled) {
-         *     echo 'Dark mode is enabled';
-         * } else {
-         *     echo 'Dark mode is disabled';
-         * }
-         * ```
-         */
-        get {
-            return $this->isDarkModeEnabled
-                ??= $this->api->saucer_webview_force_dark_mode($this->id->ptr);
-        }
-        /**
-         * Updates current window dark mode.
-         *
-         * ```
-         * $window->isDarkModeEnabled = true;
-         * ```
-         */
-        set {
-            $this->api->saucer_webview_set_force_dark_mode(
-                $this->id->ptr,
-                $this->isDarkModeEnabled = $value,
-            );
-        }
-    }
-
-    /**
      * Contains window visibility option.
      */
     public bool $isVisible {
