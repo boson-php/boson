@@ -9,6 +9,7 @@ use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
 use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
+use Boson\Internal\Saucer\SaucerWindowEdge;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Internal\WebViewCreateInfo\FlagsListFormatter;
 use Boson\WebView\WebView;
@@ -732,6 +733,39 @@ final class Window
         }
 
         $this->size->height = $height;
+    }
+
+    /**
+     * Start window dragging.
+     *
+     * @api
+     */
+    public function startDrag(): void
+    {
+        $this->api->saucer_window_start_drag($this->id->ptr);
+    }
+
+    /**
+     * Start window resizing.
+     *
+     * @api
+     */
+    public function startResize(WindowEdge|WindowCorner $direction): void
+    {
+        $this->api->saucer_window_start_resize($this->id->ptr, match ($direction) {
+            WindowEdge::Top => SaucerWindowEdge::SAUCER_WINDOW_EDGE_TOP,
+            WindowEdge::Right => SaucerWindowEdge::SAUCER_WINDOW_EDGE_RIGHT,
+            WindowEdge::Bottom => SaucerWindowEdge::SAUCER_WINDOW_EDGE_BOTTOM,
+            WindowEdge::Left => SaucerWindowEdge::SAUCER_WINDOW_EDGE_LEFT,
+            WindowCorner::TopRight => SaucerWindowEdge::SAUCER_WINDOW_EDGE_TOP
+                | SaucerWindowEdge::SAUCER_WINDOW_EDGE_RIGHT,
+            WindowCorner::BottomRight => SaucerWindowEdge::SAUCER_WINDOW_EDGE_BOTTOM
+                | SaucerWindowEdge::SAUCER_WINDOW_EDGE_RIGHT,
+            WindowCorner::BottomLeft => SaucerWindowEdge::SAUCER_WINDOW_EDGE_BOTTOM
+                | SaucerWindowEdge::SAUCER_WINDOW_EDGE_LEFT,
+            WindowCorner::TopLeft => SaucerWindowEdge::SAUCER_WINDOW_EDGE_TOP
+                | SaucerWindowEdge::SAUCER_WINDOW_EDGE_LEFT,
+        });
     }
 
     /**
