@@ -66,7 +66,17 @@ final class WindowManager implements
 
         $this->registerDefaultEventListeners();
 
-        $this->default = $this->create($info);
+        $this->default = $this->createDeferred($info);
+    }
+
+    private function createDeferred(WindowCreateInfo $info): Window
+    {
+        $reflection = new \ReflectionClass(Window::class);
+
+        /** @var Window */
+        return $reflection->newLazyProxy(function () use ($info) {
+            return $this->create($info);
+        });
     }
 
     private function registerDefaultEventListeners(): void
