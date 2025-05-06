@@ -15,35 +15,58 @@ use Boson\WebView\Internal\Rpc\RpcResponderInterface;
 use Boson\WebView\Scripts\WebViewScriptsSet;
 
 /**
+ * Manages the binding between PHP callbacks and JavaScript functions.
+ *
+ * This class provides functionality to create and manage JavaScript functions
+ * that are bound to PHP callbacks. It handles the registration, execution,
+ * and cleanup of these bindings, as well as the communication between
+ * JavaScript and PHP through a message-based RPC system.
+ *
  * @template-implements \IteratorAggregate<non-empty-string, \Closure(mixed...):mixed>
  */
 final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
 {
     /**
+     * Default RPC context name for JavaScript communication.
+     *
+     * This constant defines the default context (variable name) used for
+     * RPC communication between JavaScript and PHP.
+     *
+     * Context name defined in the {@link ./resources/src/main.ts} source.
+     *
      * @var non-empty-string
      */
     public const string DEFAULT_RPC_CONTEXT = DefaultRpcResponder::DEFAULT_CONTEXT;
 
     /**
+     * Default context name for JavaScript function registration.
+     *
+     * This constant defines the default context (window) where JavaScript
+     * functions will be registered.
+     *
      * @var non-empty-string
      */
     public const string DEFAULT_CONTEXT = 'window';
 
+    /**
+     * RPC responder instance for handling JavaScript-PHP communication.
+     */
     private RpcResponderInterface $responder;
 
     /**
+     * Map of registered function names to their PHP callbacks.
+     *
      * @var array<non-empty-string, \Closure(mixed...):mixed>
      */
     private array $functions = [];
 
     /**
+     * Cache of compiled JavaScript function definitions.
+     *
      * @var array<non-empty-string, non-empty-string>
      */
     private array $compiledFunctions = [];
 
-    /**
-     * @param non-empty-string $rpcContext
-     */
     public function __construct(
         private readonly WebViewScriptsSet $scriptsApi,
         private readonly EventListenerInterface $events,
@@ -64,6 +87,12 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
         $this->registerDefaultEventListeners();
     }
 
+    /**
+     * Registers default event listeners for webview events.
+     *
+     * This method sets up listeners for message reception and navigation events
+     * to handle function registration and RPC communication.
+     */
     private function registerDefaultEventListeners(): void
     {
         $this->events->addEventListener(WebViewMessageReceived::class, $this->onMessageReceived(...));
@@ -71,7 +100,10 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Add all registered functions to client after navigation.
+     * Handles navigation events by re-registering all functions.
+     *
+     * This method is called when the webview navigates to a new page,
+     * ensuring that all registered functions are available in the new context.
      */
     private function onNavigated(): void
     {
@@ -81,7 +113,10 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Listen message received event.
+     * Handles incoming messages from JavaScript.
+     *
+     * This method processes RPC calls from JavaScript, validates the message
+     * format, and executes the corresponding PHP callback.
      */
     private function onMessageReceived(WebViewMessageReceived $event): void
     {
@@ -124,7 +159,12 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param array<array-key, mixed> $params
+     * Calls a registered PHP callback with the given parameters.
+     *
+     * @param non-empty-string $function The name of the function to call
+     * @param array<array-key, mixed> $params The parameters to pass to the function
+     *
+     * @throws InvalidFunctionException if the function is not defined
      */
     private function call(string $function, array $params): mixed
     {
@@ -136,9 +176,11 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param non-empty-string $name
+     * Creates a JavaScript function wrapper string for RPC calls.
      *
-     * @return non-empty-string
+     * @param non-empty-string $name The name of the function
+     *
+     * @return non-empty-string The JavaScript function definition
      */
     private function packFunction(string $name): string
     {
@@ -149,26 +191,30 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param non-empty-string $previous
-     * @param non-empty-string $current
-     * @param non-empty-string|null $name
+     * Creates a JavaScript function definition for nested object properties.
      *
-     * @return non-empty-string
+     * @param non-empty-string $previous The parent object path
+     * @param non-empty-string $current The current property name
+     * @param non-empty-string $name The full function name
+     *
+     * @return non-empty-string The JavaScript function definition
      */
-    private function packStackFunction(string $previous, string $current, ?string $name = null): string
+    private function packStackFunction(string $previous, string $current, string $name): string
     {
         return \vsprintf('%s["%s"] = %s;', [
             $previous,
             \addcslashes($current, '"'),
-            $this->packFunction($name ?? $current),
+            $this->packFunction($name),
         ]);
     }
 
     /**
-     * @param non-empty-string $previous
-     * @param non-empty-string $current
+     * Creates a JavaScript object definition for nested properties.
      *
-     * @return non-empty-string
+     * @param non-empty-string $previous The parent object path
+     * @param non-empty-string $current The current property name
+     *
+     * @return non-empty-string The JavaScript object definition
      */
     private function packStackElement(string $previous, string $current): string
     {
@@ -179,9 +225,11 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param non-empty-string $name
+     * Creates a JavaScript function definition for nested namespaces.
      *
-     * @return non-empty-string
+     * @param non-empty-string $name The full function name with namespace
+     *
+     * @return non-empty-string The JavaScript function definition
      */
     private function packNestedFunction(string $name): string
     {
@@ -207,7 +255,9 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param non-empty-string $name
+     * Registers a function in the JavaScript context.
+     *
+     * @param non-empty-string $name The name of the function to register
      */
     private function registerClientFunction(string $name): void
     {
@@ -219,15 +269,17 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     /**
      * Binds a PHP callback to a new global JavaScript function.
      *
-     * Internally, JS glue code is injected to create the JS
-     * function by the given name
+     * This method creates a JavaScript function that can be called from the
+     * webview, which will execute the provided PHP callback. The function can
+     * be registered in nested namespaces using dot notation
+     * (e.g., "app.functions.myFunction").
      *
      * @api
      *
-     * @param non-empty-string $function The name of the JS function
-     * @param \Closure(mixed...):mixed $callback Callback function
+     * @param non-empty-string $function The name of the JavaScript function
+     * @param \Closure(mixed...):mixed $callback The PHP callback to execute
      *
-     * @throws FunctionAlreadyDefinedException in case of function binding error
+     * @throws FunctionAlreadyDefinedException if the function is already defined
      */
     public function bind(string $function, \Closure $callback): void
     {
@@ -241,7 +293,9 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param non-empty-string $name
+     * Unregisters a function from the JavaScript context.
+     *
+     * @param non-empty-string $name The name of the function to unregister
      */
     private function unregisterClientFunction(string $name): void
     {
@@ -251,13 +305,14 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     }
 
     /**
-     * Removes a binding created with {@see WebViewFunctionsMap::bind()}
+     * Unbinds a previously bound JavaScript function.
      *
-     * @api
+     * This method removes the function binding and cleans up the JavaScript
+     * function from the webview context.
      *
-     * @param non-empty-string $function The name of the JS function
+     * @param non-empty-string $function The name of the function to unbind
      *
-     * @throws FunctionNotDefinedException in case of function unbinding error
+     * @throws FunctionNotDefinedException if the function is not defined
      */
     public function unbind(string $function): void
     {
@@ -270,16 +325,20 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
         $this->unregisterClientFunction($function);
     }
 
+    /**
+     * Gets an iterator for the registered functions.
+     *
+     * @return \Traversable<non-empty-string, \Closure(mixed...):mixed>
+     */
     public function getIterator(): \Traversable
     {
-        /** @var \ArrayIterator<non-empty-string, \Closure(mixed...):mixed> */
         return new \ArrayIterator($this->functions);
     }
 
     /**
-     * The number of registered functions.
+     * Gets the count of registered functions.
      *
-     * @return int<0, max>
+     * @return int<0, max> The number of registered functions
      */
     public function count(): int
     {
