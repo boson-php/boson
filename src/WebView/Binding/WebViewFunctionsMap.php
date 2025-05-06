@@ -137,6 +137,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
 
     /**
      * @param non-empty-string $name
+     *
      * @return non-empty-string
      */
     private function packFunction(string $name): string
@@ -151,6 +152,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
      * @param non-empty-string $previous
      * @param non-empty-string $current
      * @param non-empty-string|null $name
+     *
      * @return non-empty-string
      */
     private function packStackFunction(string $previous, string $current, ?string $name = null): string
@@ -165,6 +167,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     /**
      * @param non-empty-string $previous
      * @param non-empty-string $current
+     *
      * @return non-empty-string
      */
     private function packStackElement(string $previous, string $current): string
@@ -177,6 +180,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
 
     /**
      * @param non-empty-string $name
+     *
      * @return non-empty-string
      */
     private function packNestedFunction(string $name): string

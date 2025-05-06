@@ -7,7 +7,7 @@ namespace Boson\WebView\Internal\Rpc;
 use Boson\WebView\Scripts\WebViewScriptsSet;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
 final readonly class DefaultRpcResponder implements RpcResponderInterface
@@ -37,6 +37,7 @@ final readonly class DefaultRpcResponder implements RpcResponderInterface
      * Returns JavaScript code for resolving.
      *
      * @param non-empty-string $id
+     *
      * @return non-empty-string
      * @throws \Throwable
      */
@@ -66,6 +67,7 @@ final readonly class DefaultRpcResponder implements RpcResponderInterface
      * Returns JavaScript code for rejection.
      *
      * @param non-empty-string $id
+     *
      * @return non-empty-string
      */
     private function packRejectAction(string $id, \Throwable $reason): string

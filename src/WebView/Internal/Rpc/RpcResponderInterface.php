@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView\Internal\Rpc;
 
 /**
- * @internal This is an internal library interface, please do not use it in your code.
+ * @internal this is an internal library interface, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
 interface RpcResponderInterface

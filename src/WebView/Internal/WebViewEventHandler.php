@@ -19,8 +19,8 @@ use Boson\WebView\Event\WebViewNavigated;
 use Boson\WebView\Event\WebViewNavigating;
 use Boson\WebView\Event\WebViewTitleChanged;
 use Boson\WebView\Event\WebViewTitleChanging;
-use Boson\WebView\WebViewState;
 use Boson\WebView\WebView;
+use Boson\WebView\WebViewState;
 use FFI\CData;
 
 /**
