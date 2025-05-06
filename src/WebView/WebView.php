@@ -212,6 +212,8 @@ final class WebView
      */
     private function bootWebView(): void
     {
+        $this->loadRuntimeScripts();
+
         foreach ($this->info->functions as $function => $callback) {
             $this->functions->bind($function, $callback);
         }
@@ -227,13 +229,22 @@ final class WebView
         if ($this->info->html !== null) {
             $this->html = $this->info->html;
         }
+    }
 
-        foreach ((array) \glob(self::PRELOADED_SCRIPTS_PATTERN) as $script) {
+    /**
+     * Loads predefined scripts list
+     */
+    private function loadRuntimeScripts(): void
+    {
+        /** @var list<non-empty-string> $scripts */
+        $scripts = (array) \glob(self::PRELOADED_SCRIPTS_PATTERN);
+
+        foreach ($scripts as $script) {
             if (\is_string($script) && \is_readable($script)) {
                 $code = \file_get_contents($script);
 
                 if (\is_string($code) && $code !== '') {
-                    $this->scripts->preload($code);
+                    $this->scripts->preload($code, true);
                 }
             }
         }

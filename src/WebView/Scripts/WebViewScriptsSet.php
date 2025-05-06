@@ -60,14 +60,19 @@ final readonly class WebViewScriptsSet implements \IteratorAggregate, \Countable
      *
      * @param string $code A JavaScript code for execution
      */
-    public function preload(#[Language('JavaScript')] string $code): WebViewScript
+    public function preload(#[Language('JavaScript')] string $code, bool $permanent = false): WebViewScript
     {
         $handle = $this->api->saucer_script_new($code, SaucerLoadTime::SAUCER_LOAD_TIME_CREATION);
+
+        if ($permanent) {
+            $this->api->saucer_script_set_permanent($handle, true);
+        }
 
         $this->registerAndInject($script = new WebViewScript(
             api: $this->api,
             id: WebViewScriptId::fromScriptHandle($this->api, $handle),
             code: $code,
+            isPermanent: $permanent,
             time: WebViewScriptLoadingTime::OnCreated,
         ));
 
@@ -92,6 +97,7 @@ final readonly class WebViewScriptsSet implements \IteratorAggregate, \Countable
             api: $this->api,
             id: WebViewScriptId::fromScriptHandle($this->api, $handle),
             code: $code,
+            isPermanent: false,
             time: WebViewScriptLoadingTime::OnReady,
         ));
 

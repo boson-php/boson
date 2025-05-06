@@ -14,6 +14,7 @@ final readonly class WebViewScript implements \Stringable
         public WebViewScriptId $id,
         #[Language('JavaScript')]
         public string $code,
+        public bool $isPermanent,
         public WebViewScriptLoadingTime $time,
     ) {}
 
