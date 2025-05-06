@@ -228,8 +228,14 @@ final class WebView
             $this->html = $this->info->html;
         }
 
-        foreach (\glob(self::PRELOADED_SCRIPTS_PATTERN) as $script) {
-            $this->scripts->preload(\file_get_contents($script));
+        foreach ((array) \glob(self::PRELOADED_SCRIPTS_PATTERN) as $script) {
+            if (\is_string($script) && \is_readable($script)) {
+                $code = \file_get_contents($script);
+
+                if (\is_string($code) && $code !== '') {
+                    $this->scripts->preload($code);
+                }
+            }
         }
     }
 

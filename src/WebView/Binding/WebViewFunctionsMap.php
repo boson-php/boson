@@ -51,6 +51,9 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
          * @var non-empty-string
          */
         private readonly string $rpcContext = self::DEFAULT_RPC_CONTEXT,
+        /**
+         * @var non-empty-string
+         */
         private readonly string $functionContext = self::DEFAULT_CONTEXT,
     ) {
         $this->responder = new DefaultRpcResponder(
@@ -90,7 +93,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
         }
 
         // Skip in case of payload did not contain id, method or params
-        if (!isset($data['id'], $data['method'], $data['params'])) {
+        if (!\is_array($data) || !isset($data['id'], $data['method'], $data['params'])) {
             return;
         }
 
@@ -184,6 +187,10 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
         $context = $this->functionContext;
 
         foreach (\explode('.', $name) as $index => $segment) {
+            if ($segment === '') {
+                continue;
+            }
+
             $statements[] = $indexAt === $index
                 ? $this->packStackFunction($context, $segment, $name)
                 : $this->packStackElement($context, $segment);
@@ -191,6 +198,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
             $context = $segment;
         }
 
+        /** @var non-empty-string */
         return \implode(';', $statements);
     }
 
