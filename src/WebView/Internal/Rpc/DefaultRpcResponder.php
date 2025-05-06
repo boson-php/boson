@@ -18,7 +18,7 @@ final readonly class DefaultRpcResponder implements RpcResponderInterface
     public const string DEFAULT_CONTEXT = 'window.boson.rpc';
 
     public function __construct(
-        private WebViewScriptsSet $scripts,
+        private WebViewScriptsSet $scriptsApi,
         /**
          * @var non-empty-string
          */
@@ -82,7 +82,7 @@ final readonly class DefaultRpcResponder implements RpcResponderInterface
         try {
             $action = $this->packResolveAction($id, $result);
 
-            $this->scripts->eval($action);
+            $this->scriptsApi->eval($action);
         } catch (\Throwable $e) {
             $this->reject($id, $e);
         }
@@ -92,6 +92,6 @@ final readonly class DefaultRpcResponder implements RpcResponderInterface
     {
         $action = $this->packRejectAction($id, $reason);
 
-        $this->scripts->eval($action);
+        $this->scriptsApi->eval($action);
     }
 }

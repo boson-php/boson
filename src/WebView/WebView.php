@@ -6,13 +6,11 @@ namespace Boson\WebView;
 
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
-use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Binding\WebViewFunctionsMap;
 use Boson\WebView\Internal\WebViewEventHandler;
-use Boson\WebView\Internal\WebViewRpcHandler;
 use Boson\WebView\Internal\WebViewSchemeHandler;
 use Boson\WebView\Requests\WebViewRequests;
 use Boson\WebView\Scripts\WebViewScriptsSet;
@@ -145,11 +143,6 @@ final class WebView
          */
         private readonly LibSaucer $api,
         /**
-         * Contains an internal application placeholder to unlock the
-         * webview process workflow.
-         */
-        private readonly ProcessUnlockPlaceholder $placeholder,
-        /**
          * Gets parent application window instance to which
          * this webview instance belongs.
          */
@@ -185,17 +178,14 @@ final class WebView
     private function createFunctionsApi(): WebViewFunctionsMap
     {
         return new WebViewFunctionsMap(
-            scripts: $this->scripts,
+            scriptsApi: $this->scripts,
             events: $this->events,
         );
     }
 
     private function createRequestApi(): WebViewRequests
     {
-        return new WebViewRequests(
-            webview: $this,
-            placeholder: $this->placeholder,
-        );
+        return new WebViewRequests($this);
     }
 
     private function createWebViewSchemeHandler(): WebViewSchemeHandler

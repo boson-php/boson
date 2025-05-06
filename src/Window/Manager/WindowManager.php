@@ -8,7 +8,6 @@ use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListener;
-use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\GarbageCollector\ObservableWeakSet;
 use Boson\Window\Event\WindowClosed;
@@ -61,7 +60,6 @@ final class WindowManager implements
     public function __construct(
         private readonly LibSaucer $api,
         private readonly Application $app,
-        private readonly ProcessUnlockPlaceholder $placeholder,
         WindowCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
@@ -141,7 +139,6 @@ final class WindowManager implements
     {
         $window = new Window(
             api: $this->api,
-            placeholder: $this->placeholder,
             app: $this->app,
             info: $info,
             dispatcher: $this->events,

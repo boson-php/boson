@@ -131,10 +131,10 @@ final class Application
     private bool $deferRunnerIsRegistered = false;
 
     /**
-     * Gets an internal application placeholder to unlock the
+     * Gets an internal application poller to unlock the
      * webview process workflow.
      */
-    private readonly ProcessUnlockPlaceholder $placeholder;
+    public readonly ApplicationPollerInterface $poller;
 
     /**
      * @param PsrEventDispatcherInterface|null $dispatcher an optional event
@@ -153,7 +153,7 @@ final class Application
         $this->events = $this->createEventListener($dispatcher);
         $this->id = $this->createApplicationId($this->info->name, $this->info->threads);
 
-        $this->placeholder = new ProcessUnlockPlaceholder(
+        $this->poller = new ProcessUnlockPlaceholder(
             api: $this->api,
             app: $this,
         );
@@ -179,7 +179,6 @@ final class Application
         return new WindowManager(
             api: $this->api,
             app: $this,
-            placeholder: $this->placeholder,
             info: $this->info->window,
             dispatcher: $this->events,
         );

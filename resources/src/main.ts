@@ -5,6 +5,7 @@ import TransportFactory, {type TransportInterface} from "./transport";
 export type BosonApi = {
     io: TransportInterface,
     rpc: BosonRpc,
+    respond: (id: string, result: any) => void,
 }
 
 declare const window: {

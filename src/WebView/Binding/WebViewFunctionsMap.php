@@ -37,10 +37,15 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
     private array $functions = [];
 
     /**
+     * @var array<non-empty-string, non-empty-string>
+     */
+    private array $compiledFunctions = [];
+
+    /**
      * @param non-empty-string $rpcContext
      */
     public function __construct(
-        private readonly WebViewScriptsSet $scripts,
+        private readonly WebViewScriptsSet $scriptsApi,
         private readonly EventListenerInterface $events,
         /**
          * @var non-empty-string
@@ -49,7 +54,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
         private readonly string $functionContext = self::DEFAULT_CONTEXT,
     ) {
         $this->responder = new DefaultRpcResponder(
-            scripts: $this->scripts,
+            scriptsApi: $this->scriptsApi,
             context: $rpcContext,
         );
 
@@ -169,28 +174,34 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
 
     /**
      * @param non-empty-string $name
+     * @return non-empty-string
+     */
+    private function packNestedFunction(string $name): string
+    {
+        $statements = [];
+
+        $indexAt = \substr_count($name, '.');
+        $context = $this->functionContext;
+
+        foreach (\explode('.', $name) as $index => $segment) {
+            $statements[] = $indexAt === $index
+                ? $this->packStackFunction($context, $segment, $name)
+                : $this->packStackElement($context, $segment);
+
+            $context = $segment;
+        }
+
+        return \implode(';', $statements);
+    }
+
+    /**
+     * @param non-empty-string $name
      */
     private function registerClientFunction(string $name): void
     {
-        $context = $this->functionContext;
-        $statements = [];
+        $script = $this->compiledFunctions[$name] ??= $this->packNestedFunction($name);
 
-        if (\str_contains($name, '.')) {
-            $segments = \explode('.', $name);
-            $lastSegmentIndex = \count($segments) - 1;
-
-            foreach ($segments as $i => $segment) {
-                $statements[] = $lastSegmentIndex === $i
-                    ? $this->packStackFunction($context, $segment, $name)
-                    : $this->packStackElement($context, $segment);
-
-                $context = $segment;
-            }
-        } else {
-            $statements[] = $this->packStackFunction($context, $name);
-        }
-
-        $this->scripts->eval(\implode(';', $statements));
+        $this->scriptsApi->eval($script);
     }
 
     /**
@@ -222,7 +233,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
      */
     private function unregisterClientFunction(string $name): void
     {
-        $this->scripts->eval(\vsprintf('delete window["%s"];', [
+        $this->scriptsApi->eval(\vsprintf('delete window["%s"];', [
             \addcslashes($name, '"'),
         ]));
     }
@@ -242,7 +253,7 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
             throw FunctionNotDefinedException::becauseFunctionNotDefined($function);
         }
 
-        unset($this->functions[$function]);
+        unset($this->functions[$function], $this->compiledFunctions[$function]);
 
         $this->unregisterClientFunction($function);
     }

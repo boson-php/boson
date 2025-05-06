@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\Internal;
 
 use Boson\Application;
+use Boson\ApplicationPollerInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use FFI\CData;
 
@@ -14,7 +15,7 @@ use FFI\CData;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson
  */
-final readonly class ProcessUnlockPlaceholder
+final readonly class ProcessUnlockPlaceholder implements ApplicationPollerInterface
 {
     private CData $ptr;
 

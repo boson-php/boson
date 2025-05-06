@@ -7,7 +7,6 @@ namespace Boson\Window;
 use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
-use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerWindowEdge;
 use Boson\Shared\Marker\RequiresDealloc;
@@ -458,11 +457,6 @@ final class Window
          */
         private readonly LibSaucer $api,
         /**
-         * Contains an internal application placeholder to unlock the
-         * webview process workflow.
-         */
-        private readonly ProcessUnlockPlaceholder $placeholder,
-        /**
          * Gets parent application instance to which this window belongs.
          */
         public readonly Application $app,
@@ -516,7 +510,6 @@ final class Window
     {
         return new WebView(
             api: $this->api,
-            placeholder: $this->placeholder,
             window: $this,
             info: $this->info->webview,
             dispatcher: $this->events,

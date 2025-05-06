@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Requests;
 
-use Boson\Internal\ProcessUnlockPlaceholder;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
 use Boson\Shared\IdValueGenerator\IntValueGenerator;
 use Boson\Shared\Marker\BlockingOperation;
@@ -20,12 +19,7 @@ final class WebViewRequests
     /**
      * @var non-empty-string
      */
-    private const string METHOD_NAME = '__bosonSendResponse';
-
-    private const string BOSON_RESPONSE = <<<'JS'
-        %s("%s", eval(`%s`));
-        JS;
-
+    private const string METHOD_NAME = 'boson.respond';
     /**
      * Contains request ID generator
      *
@@ -52,7 +46,6 @@ final class WebViewRequests
          * Parent WebView context
          */
         private readonly WebView $webview,
-        private readonly ProcessUnlockPlaceholder $placeholder,
         private readonly float $timeout = self::DEFAULT_REQUEST_TIMEOUT,
     ) {
         $this->idGenerator = IntValueGenerator::createFromEnvironment();
@@ -86,7 +79,9 @@ final class WebViewRequests
         $this->webview->eval($this->pack($id, $code));
         $this->lastRequestSentTime = \microtime(true);
 
-        while ($this->placeholder->next()) {
+        $poller = $this->webview->window->app->poller;
+
+        while ($poller->next()) {
             if (!\array_key_exists($id, $this->results)) {
                 if (($timeLeft = $this->timeLeft) < 0) {
                     throw StalledRequestException::becauseRequestIsStalled(
@@ -113,10 +108,10 @@ final class WebViewRequests
      */
     private function pack(string|int $id, string $code): string
     {
-        return \vsprintf(self::BOSON_RESPONSE, [
+        return \vsprintf('%s("%s", (function() { return %s; })());', [
             self::METHOD_NAME,
             \addcslashes((string) $id, '"'),
-            \addcslashes($code, '`'),
+            $code,
         ]);
     }
 
