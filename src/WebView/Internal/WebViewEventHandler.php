@@ -14,7 +14,7 @@ use Boson\Internal\WebView\CSaucerWebViewEventsStruct;
 use Boson\WebView\Event\WebViewDomReady;
 use Boson\WebView\Event\WebViewFaviconChanged;
 use Boson\WebView\Event\WebViewFaviconChanging;
-use Boson\WebView\Event\WebViewMessageReceiving;
+use Boson\WebView\Event\WebViewMessageReceived;
 use Boson\WebView\Event\WebViewNavigated;
 use Boson\WebView\Event\WebViewNavigating;
 use Boson\WebView\Event\WebViewTitleChanged;
@@ -102,12 +102,12 @@ final class WebViewEventHandler
 
     private function onMessageReceived(string $message): bool
     {
-        $intention = $this->dispatcher->dispatch(new WebViewMessageReceiving(
+        $intention = $this->dispatcher->dispatch(new WebViewMessageReceived(
             subject: $this->webview,
             message: $message,
         ));
 
-        return $intention->isCancelled;
+        return $intention->isPropagationStopped;
     }
 
     private function onDomReady(CData $_): void

@@ -75,9 +75,6 @@ final class WindowManager implements
         $this->default = $this->create($info, true);
     }
 
-    /**
-     * Registers default event listeners for window events.
-     */
     private function registerDefaultEventListeners(): void
     {
         $this->events->addEventListener(WindowClosed::class, function (WindowClosed $event) {

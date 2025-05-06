@@ -8,7 +8,7 @@ use Boson\Shared\Marker\AsWebViewEvent;
 use Boson\WebView\WebView;
 
 #[AsWebViewEvent]
-final class WebViewMessageReceiving extends WebViewIntention
+final class WebViewMessageReceived extends WebViewEvent
 {
     public function __construct(
         WebView $subject,
@@ -21,6 +21,5 @@ final class WebViewMessageReceiving extends WebViewIntention
     public function ack(): void
     {
         $this->stopPropagation();
-        $this->cancel();
     }
 }

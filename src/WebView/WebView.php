@@ -12,6 +12,7 @@ use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Binding\WebViewFunctionsMap;
 use Boson\WebView\Internal\WebViewEventHandler;
+use Boson\WebView\Internal\WebViewRpcHandler;
 use Boson\WebView\Internal\WebViewSchemeHandler;
 use Boson\WebView\Requests\WebViewRequests;
 use Boson\WebView\Scripts\WebViewScriptsSet;
@@ -22,6 +23,11 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class WebView
 {
+    /**
+     * @var non-empty-string
+     */
+    private const string PRELOADED_SCRIPTS_PATTERN = __DIR__ . '/../../resources/dist/*.js';
+
     /**
      * Gets access to the listener of the webview events
      * and intention subscriptions.
@@ -230,6 +236,10 @@ final class WebView
 
         if ($this->info->html !== null) {
             $this->html = $this->info->html;
+        }
+
+        foreach (\glob(self::PRELOADED_SCRIPTS_PATTERN) as $script) {
+            $this->scripts->preload(\file_get_contents($script));
         }
     }
 

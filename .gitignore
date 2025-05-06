@@ -5,6 +5,7 @@
 # Composer
 /composer.lock
 /vendor
+/node_modules
 /build
 
 # Testing

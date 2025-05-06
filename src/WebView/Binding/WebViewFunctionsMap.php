@@ -8,7 +8,10 @@ use Boson\Dispatcher\EventListenerInterface;
 use Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Binding\Exception\FunctionNotDefinedException;
 use Boson\WebView\Binding\Exception\InvalidFunctionException;
-use Boson\WebView\Event\WebViewMessageReceiving;
+use Boson\WebView\Event\WebViewMessageReceived;
+use Boson\WebView\Event\WebViewNavigated;
+use Boson\WebView\Internal\Rpc\DefaultRpcResponder;
+use Boson\WebView\Internal\Rpc\RpcResponderInterface;
 use Boson\WebView\Scripts\WebViewScriptsSet;
 
 /**
@@ -16,178 +19,178 @@ use Boson\WebView\Scripts\WebViewScriptsSet;
  */
 final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
 {
-    private const string BOSON_RPC = <<<'JS'
-        const crypto = window.crypto || window.msCrypto;
-        const saucer = window.saucer;
-
-        class BosonRpc {
-            #messages = {};
-
-            #generateId() {
-                return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-                    .map(b => b.toString(16).padStart(2, '0'))
-                    .join('');
-            }
-
-            __resolve(id, result) {
-                if (this.#messages[id]) {
-                    this.#messages[id].resolve(result);
-                    delete this.#messages[id];
-                }
-            }
-
-            __reject(id, error) {
-                if (this.#messages[id]) {
-                    this.#messages[id].reject(error);
-                    delete this.#messages[id];
-                }
-            }
-
-            call(method, params) {
-                const id = this.#generateId();
-
-                let promise = new Promise((resolve, reject) =>
-                    this.#messages[id] = {resolve, reject}
-                );
-
-                saucer.internal.send_message('%s' + JSON.stringify({id, method, params}));
-
-                return promise;
-            }
-        }
-
-        window.boson = window.boson || {};
-        boson.rpc = new BosonRpc();
-        JS;
-
-    private const string BOSON_RESOLVING = <<<'JS'
-        window.boson.rpc.__resolve("%s", %s);
-        JS;
-
-    private const string BOSON_REJECTION = <<<'JS'
-        window.boson.rpc.__reject("%s", Error(`%s`));
-        JS;
-
-    private const string BOSON_BIND = <<<'JS'
-        window["%s"] = function () {
-            return window.boson.rpc.call("%1$s", Array.prototype.slice.call(arguments));
-        };
-        JS;
-
-    private const string BOSON_UNBIND = <<<'JS'
-        delete window["%s"];
-        JS;
+    /**
+     * @var non-empty-string
+     */
+    public const string DEFAULT_RPC_CONTEXT = DefaultRpcResponder::DEFAULT_CONTEXT;
 
     /**
      * @var non-empty-string
      */
-    private readonly string $prefix;
+    public const string DEFAULT_CONTEXT = 'window';
+
+    private RpcResponderInterface $responder;
 
     /**
      * @var array<non-empty-string, \Closure(mixed...):mixed>
      */
     private array $functions = [];
 
+    /**
+     * @param non-empty-string $rpcContext
+     */
     public function __construct(
         private readonly WebViewScriptsSet $scripts,
         private readonly EventListenerInterface $events,
+        /**
+         * @var non-empty-string
+         */
+        private readonly string $rpcContext = self::DEFAULT_RPC_CONTEXT,
+        private readonly string $functionContext = self::DEFAULT_CONTEXT,
     ) {
-        $this->prefix = '__boson_rpc_' . \spl_object_id($this);
+        $this->responder = new DefaultRpcResponder(
+            scripts: $this->scripts,
+            context: $rpcContext,
+        );
 
-        $this->registerDefaultScripts();
         $this->registerDefaultEventListeners();
-    }
-
-    private function registerDefaultScripts(): void
-    {
-        $this->scripts->preload(\sprintf(
-            self::BOSON_RPC,
-            $this->prefix,
-        ));
     }
 
     private function registerDefaultEventListeners(): void
     {
-        $this->events->addEventListener(WebViewMessageReceiving::class, $this->onMessage(...));
+        $this->events->addEventListener(WebViewMessageReceived::class, $this->onMessageReceived(...));
+        $this->events->addEventListener(WebViewNavigated::class, $this->onNavigated(...));
     }
 
-    private function onMessage(WebViewMessageReceiving $event): void
+    /**
+     * Add all registered functions to client after navigation.
+     */
+    private function onNavigated(): void
     {
-        $isRpcCall = \str_starts_with($event->message, $this->prefix);
-
-        if (!$isRpcCall) {
-            return;
+        foreach ($this->functions as $name => $callback) {
+            $this->registerClientFunction($name);
         }
+    }
 
-        $json = \substr($event->message, \strlen($this->prefix));
-
+    /**
+     * Listen message received event.
+     */
+    private function onMessageReceived(WebViewMessageReceived $event): void
+    {
+        // Skip in case of payload is not JSON
         try {
-            [
-                'id' => $id,
-                'method' => $method,
-                'params' => $params,
-            ] = (array) \json_decode($json, true, flags: \JSON_THROW_ON_ERROR);
-
-            assert(\is_string($id) && $id !== '');
-            assert(\is_string($method) && $method !== '');
-            assert(\is_array($params));
+            $data = \json_decode($event->message, true, flags: \JSON_THROW_ON_ERROR);
         } catch (\Throwable) {
-            // Could not decode RPC message
             return;
         }
 
-        try {
-            $result = $this->onCall($method, $params);
+        // Skip in case of payload did not contain id, method or params
+        if (!isset($data['id'], $data['method'], $data['params'])) {
+            return;
+        }
 
-            $this->resolve($id, $result);
-        } catch (\Throwable $e) {
-            $this->reject($id, $e);
+        // Skip in case of "id" is not non-empty string
+        if (!\is_string($id = $data['id']) || $id === '') {
+            return;
+        }
+
+        // Skip in case of "method" is not non-empty string
+        if (!\is_string($method = $data['method']) || $method === '') {
+            return;
+        }
+
+        // Skip in case of "params" is not array
+        if (!\is_array($params = $data['params'])) {
+            return;
         }
 
         $event->ack();
-    }
 
-    private function reject(string $id, \Throwable $error): void
-    {
-        $message = \vsprintf('%s: %s in %s on line %d', [
-            $error::class,
-            $error->getMessage(),
-            $error->getFile(),
-            $error->getLine(),
-        ]);
-
-        $this->scripts->eval(\vsprintf(self::BOSON_REJECTION, [
-            \addcslashes($id, '"'),
-            \addcslashes($message, '`\\'),
-        ]));
-    }
-
-    private function resolve(string $id, mixed $data): void
-    {
         try {
-            $json = \json_encode($data, \JSON_THROW_ON_ERROR);
+            $result = $this->call($method, $params);
+
+            $this->responder->resolve($id, $result);
         } catch (\Throwable $e) {
-            $this->reject($id, $e);
-
-            return;
+            $this->responder->reject($id, $e);
         }
-
-        $this->scripts->eval(\vsprintf(self::BOSON_RESOLVING, [
-            \addcslashes($id, '"'),
-            $json,
-        ]));
     }
 
     /**
      * @param array<array-key, mixed> $params
      */
-    private function onCall(string $function, array $params): mixed
+    private function call(string $function, array $params): mixed
     {
         if (!isset($this->functions[$function])) {
             throw InvalidFunctionException::becauseFunctionNotDefined($function);
         }
 
         return $this->functions[$function](...$params);
+    }
+
+    /**
+     * @param non-empty-string $name
+     * @return non-empty-string
+     */
+    private function packFunction(string $name): string
+    {
+        return \vsprintf('function () { return %s.call("%s", Array.prototype.slice.call(arguments)); }', [
+            $this->rpcContext,
+            \addcslashes($name, '"'),
+        ]);
+    }
+
+    /**
+     * @param non-empty-string $previous
+     * @param non-empty-string $current
+     * @param non-empty-string|null $name
+     * @return non-empty-string
+     */
+    private function packStackFunction(string $previous, string $current, ?string $name = null): string
+    {
+        return \vsprintf('%s["%s"] = %s;', [
+            $previous,
+            \addcslashes($current, '"'),
+            $this->packFunction($name ?? $current),
+        ]);
+    }
+
+    /**
+     * @param non-empty-string $previous
+     * @param non-empty-string $current
+     * @return non-empty-string
+     */
+    private function packStackElement(string $previous, string $current): string
+    {
+        return \vsprintf('%s["%s"] = %1$s["%2$s"] || {};', [
+            $previous,
+            \addcslashes($current, '"'),
+        ]);
+    }
+
+    /**
+     * @param non-empty-string $name
+     */
+    private function registerClientFunction(string $name): void
+    {
+        $context = $this->functionContext;
+        $statements = [];
+
+        if (\str_contains($name, '.')) {
+            $segments = \explode('.', $name);
+            $lastSegmentIndex = \count($segments) - 1;
+
+            foreach ($segments as $i => $segment) {
+                $statements[] = $lastSegmentIndex === $i
+                    ? $this->packStackFunction($context, $segment, $name)
+                    : $this->packStackElement($context, $segment);
+
+                $context = $segment;
+            }
+        } else {
+            $statements[] = $this->packStackFunction($context, $name);
+        }
+
+        $this->scripts->eval(\implode(';', $statements));
     }
 
     /**
@@ -211,10 +214,17 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
 
         $this->functions[$function] = $callback;
 
-        $this->scripts->eval(\sprintf(
-            self::BOSON_BIND,
-            \addcslashes($function, '"'),
-        ));
+        $this->registerClientFunction($function);
+    }
+
+    /**
+     * @param non-empty-string $name
+     */
+    private function unregisterClientFunction(string $name): void
+    {
+        $this->scripts->eval(\vsprintf('delete window["%s"];', [
+            \addcslashes($name, '"'),
+        ]));
     }
 
     /**
@@ -232,12 +242,9 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
             throw FunctionNotDefinedException::becauseFunctionNotDefined($function);
         }
 
-        $this->scripts->eval(\sprintf(
-            self::BOSON_UNBIND,
-            \addcslashes($function, '"'),
-        ));
-
         unset($this->functions[$function]);
+
+        $this->unregisterClientFunction($function);
     }
 
     public function getIterator(): \Traversable

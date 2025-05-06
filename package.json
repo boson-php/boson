@@ -1,0 +1,10 @@
+{
+    "private": true,
+    "scripts": {
+        "build": "tsc && vite build"
+    },
+    "devDependencies": {
+        "typescript": "^5.8",
+        "vite": "^6.3"
+    }
+}
