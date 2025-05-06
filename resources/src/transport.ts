@@ -59,20 +59,6 @@ export class ChromePostMessageTransport extends PostMessageTransport {
     }
 }
 
-export class ChromePostMessageTransport extends PostMessageTransport {
-    static #findGlobalExecutor(): Optional<PostMessageExecutor> {
-        return window.chrome?.webview?.postMessage;
-    }
-
-    static createFromGlobals(): ChromePostMessageTransport {
-        return new ChromePostMessageTransport(this.#findGlobalExecutor());
-    }
-
-    static isSupported(): boolean {
-        return this.#findGlobalExecutor() !== null;
-    }
-}
-
 export class SaucerPostMessageTransport extends PostMessageTransport {
     static #findGlobalExecutor(): Optional<PostMessageExecutor> {
         return window.saucer?.internal?.send_message;
