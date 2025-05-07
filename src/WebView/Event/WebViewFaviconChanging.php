@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Event;
 
-use Boson\Shared\Marker\AsWebViewEvent;
+use Boson\Shared\Marker\AsWebViewIntention;
 
-#[AsWebViewEvent]
+#[AsWebViewIntention]
 final class WebViewFaviconChanging extends WebViewIntention {}

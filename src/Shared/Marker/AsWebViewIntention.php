@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Shared\Marker;
 
 /**
- * Marks any class as being a webview event.
+ * Marks any class as being a webview intention.
  */
 #[\Attribute(\Attribute::TARGET_CLASS)]
-readonly class AsWebViewEvent {}
+readonly class AsWebViewIntention extends AsWebViewEvent {}

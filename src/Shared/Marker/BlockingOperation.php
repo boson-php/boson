@@ -9,4 +9,4 @@ namespace Boson\Shared\Marker;
  * the work and make it impossible to continue.
  */
 #[\Attribute(\Attribute::TARGET_METHOD)]
-final readonly class BlockingOperation {}
+readonly class BlockingOperation {}

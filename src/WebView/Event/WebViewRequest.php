@@ -6,10 +6,10 @@ namespace Boson\WebView\Event;
 
 use Boson\Http\RequestInterface;
 use Boson\Http\ResponseInterface;
-use Boson\Shared\Marker\AsWebViewEvent;
+use Boson\Shared\Marker\AsWebViewIntention;
 use Boson\WebView\WebView;
 
-#[AsWebViewEvent]
+#[AsWebViewIntention]
 final class WebViewRequest extends WebViewIntention
 {
     public function __construct(

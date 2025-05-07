@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Event;
 
-use Boson\Shared\Marker\AsWebViewEvent;
+use Boson\Shared\Marker\AsWebViewIntention;
 use Boson\WebView\WebView;
 
-#[AsWebViewEvent]
+#[AsWebViewIntention]
 final class WebViewNavigating extends WebViewIntention
 {
     public function __construct(
