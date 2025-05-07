@@ -7,4 +7,4 @@ namespace Boson\WebView\Event;
 use Boson\Shared\Marker\AsWebViewEvent;
 
 #[AsWebViewEvent]
-final class WebViewDomReady extends WebViewEvent {}
+final class WebViewDomReady extends WebViewDomEvent {}
