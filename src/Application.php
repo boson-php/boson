@@ -41,6 +41,20 @@ final class Application implements EventListenerProviderInterface
     use EventListenerProvider;
 
     /**
+     * List of error types that block the application
+     * from starting automatically.
+     *
+     * @var non-empty-list<int>
+     */
+    private const array NOT_RUNNABLE_ERROR_TYPES = [
+        \E_ERROR,
+        \E_PARSE,
+        \E_CORE_ERROR,
+        \E_COMPILE_ERROR,
+        \E_USER_ERROR,
+    ];
+
+    /**
      * Unique application identifier.
      *
      * It is worth noting that the destruction of this object
@@ -385,6 +399,13 @@ final class Application implements EventListenerProviderInterface
      */
     private function shouldNotStart(): bool
     {
+        $error = \error_get_last();
+
+        // The application cannot be run if there are errors.
+        if (\in_array($error['type'] ?? 0, self::NOT_RUNNABLE_ERROR_TYPES, true)) {
+            return true;
+        }
+
         $intention = $this->dispatcher->dispatch(new ApplicationStarting($this));
 
         return $intention->isCancelled;
