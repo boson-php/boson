@@ -8,6 +8,7 @@ use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListener;
+use Boson\Dispatcher\EventListenerInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\GarbageCollector\ObservableWeakSet;
 use Boson\Window\Event\WindowClosed;
@@ -55,7 +56,12 @@ final class WindowManager implements
      * Gets access to the listener of ANY window events
      * and intention subscriptions.
      */
-    public readonly EventListener $events;
+    public readonly EventListenerInterface $events;
+
+    /**
+     * Windows list aware event dispatcher.
+     */
+    private readonly EventDispatcherInterface $dispatcher;
 
     public function __construct(
         private readonly LibSaucer $api,
@@ -66,7 +72,7 @@ final class WindowManager implements
         $this->windows = new \SplObjectStorage();
         $this->memory = new ObservableWeakSet();
 
-        $this->events = new DelegateEventListener($dispatcher);
+        $this->events = $this->dispatcher = new DelegateEventListener($dispatcher);
 
         $this->registerDefaultEventListeners();
 
@@ -150,7 +156,7 @@ final class WindowManager implements
             $this->api->saucer_free($window->id->ptr);
         });
 
-        $this->events->dispatch(new WindowCreated($window));
+        $this->dispatcher->dispatch(new WindowCreated($window));
 
         return $window;
     }

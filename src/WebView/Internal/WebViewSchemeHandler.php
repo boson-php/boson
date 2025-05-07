@@ -23,7 +23,7 @@ final readonly class WebViewSchemeHandler
     public function __construct(
         private LibSaucer $api,
         private WebView $webview,
-        private EventDispatcherInterface $events,
+        private EventDispatcherInterface $dispatcher,
     ) {
         $this->mimeTypes = new MimeTypeReader();
 
@@ -42,7 +42,7 @@ final readonly class WebViewSchemeHandler
                 $this->webview->window->id->ptr,
                 $scheme,
                 function (CData $handle, CData $request, CData $executor): void {
-                    $intention = $this->events->dispatch(new WebViewRequest(
+                    $intention = $this->dispatcher->dispatch(new WebViewRequest(
                         subject: $this->webview,
                         request: $this->createRequest($request),
                     ));

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Boson;
 
 use Boson\Dispatcher\DelegateEventListener;
+use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListener;
+use Boson\Dispatcher\EventListenerInterface;
 use Boson\Event\ApplicationStarted;
 use Boson\Event\ApplicationStarting;
 use Boson\Event\ApplicationStopped;
@@ -52,7 +54,12 @@ final class Application
      * Gets access to the listener of the window events
      * and intention subscriptions.
      */
-    public readonly EventListener $events;
+    public readonly EventListenerInterface $events;
+
+    /**
+     * Application-aware event dispatcher.
+     */
+    private readonly EventDispatcherInterface $dispatcher;
 
     /**
      * Provides more convenient and faster access to the
@@ -150,7 +157,7 @@ final class Application
     ) {
         $this->api = new LibSaucer($this->info->library);
         $this->isDebug = DebugEnvResolver::resolve($this->info->debug);
-        $this->events = $this->createEventListener($dispatcher);
+        $this->events = $this->dispatcher = $this->createEventListener($dispatcher);
         $this->id = $this->createApplicationId($this->info->name, $this->info->threads);
 
         $this->poller = new ProcessUnlockPlaceholder(
@@ -180,7 +187,7 @@ final class Application
             api: $this->api,
             app: $this,
             info: $this->info->window,
-            dispatcher: $this->events,
+            dispatcher: $this->dispatcher,
         );
     }
 
@@ -374,7 +381,7 @@ final class Application
      */
     private function shouldNotStart(): bool
     {
-        $intention = $this->events->dispatch(new ApplicationStarting($this));
+        $intention = $this->dispatcher->dispatch(new ApplicationStarting($this));
 
         return $intention->isCancelled;
     }
@@ -402,7 +409,7 @@ final class Application
         // Resolve main window lazy proxy
         $_ = $this->window->isClosed;
 
-        $this->events->dispatch(new ApplicationStarted($this));
+        $this->dispatcher->dispatch(new ApplicationStarted($this));
 
         do {
             $this->api->saucer_application_run_once($this->id->ptr);
@@ -417,7 +424,7 @@ final class Application
      */
     private function shouldNotStop(): bool
     {
-        $intention = $this->events->dispatch(new ApplicationStopping($this));
+        $intention = $this->dispatcher->dispatch(new ApplicationStopping($this));
 
         return $intention->isCancelled;
     }
@@ -437,7 +444,7 @@ final class Application
         $this->isRunning = false;
         $this->api->saucer_application_quit($this->id->ptr);
 
-        $this->events->dispatch(new ApplicationStopped($this));
+        $this->dispatcher->dispatch(new ApplicationStopped($this));
     }
 
     /**

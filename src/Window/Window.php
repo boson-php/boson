@@ -6,7 +6,8 @@ namespace Boson\Window;
 
 use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
-use Boson\Dispatcher\EventListener;
+use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListenerInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerWindowEdge;
 use Boson\Shared\Marker\RequiresDealloc;
@@ -22,7 +23,6 @@ use Boson\Window\Internal\Size\ManagedWindowSize;
 use Boson\Window\Internal\WindowEventHandler;
 use Boson\Window\Manager\WindowFactoryInterface;
 use FFI\CData;
-use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @api
@@ -47,7 +47,12 @@ final class Window
      * Gets access to the listener of the window events
      * and intention subscriptions.
      */
-    public readonly EventListener $events;
+    public readonly EventListenerInterface $events;
+
+    /**
+     * Window aware event dispatcher.
+     */
+    private readonly EventDispatcherInterface $dispatcher;
 
     /**
      * The title of the specified window encoded as UTF-8.
@@ -67,7 +72,7 @@ final class Window
         set {
             // Dispatch only if the state has changed
             if ($this->state !== $value) {
-                $this->events->dispatch(new WindowStateChanged(
+                $this->dispatcher->dispatch(new WindowStateChanged(
                     subject: $this,
                     state: $value,
                     previous: $this->state,
@@ -124,7 +129,7 @@ final class Window
 
             $this->updateDecoration($value);
 
-            $this->events->dispatch(new WindowDecorationChanged(
+            $this->dispatcher->dispatch(new WindowDecorationChanged(
                 subject: $this,
                 decoration: $value,
                 previous: $this->decoration,
@@ -468,7 +473,7 @@ final class Window
     ) {
         $this->id = $this->createWindowId($this->info);
 
-        $this->events = new DelegateEventListener($dispatcher);
+        $this->events = $this->dispatcher = new DelegateEventListener($dispatcher);
         $this->size = new ManagedWindowSize($this->api, $this->id->ptr);
         $this->min = new ManagedWindowMinBounds($this->api, $this->id->ptr);
         $this->max = new ManagedWindowMaxBounds($this->api, $this->id->ptr);
@@ -477,7 +482,7 @@ final class Window
         $this->handler = new WindowEventHandler(
             api: $this->api,
             window: $this,
-            dispatcher: $this->events,
+            dispatcher: $this->dispatcher,
         );
 
         $this->decoration = $this->info->decoration;
@@ -512,7 +517,7 @@ final class Window
             api: $this->api,
             window: $this,
             info: $this->info->webview,
-            dispatcher: $this->events,
+            dispatcher: $this->dispatcher,
         );
     }
 

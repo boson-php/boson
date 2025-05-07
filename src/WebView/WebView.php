@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView;
 
 use Boson\Dispatcher\DelegateEventListener;
+use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListenerInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
@@ -21,7 +22,6 @@ use Boson\WebView\Internal\WebViewSchemeHandler;
 use Boson\Window\Window;
 use FFI\CData;
 use JetBrains\PhpStorm\Language;
-use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class WebView
 {
@@ -206,7 +206,7 @@ final class WebView
         return new WebViewSchemeHandler(
             api: $this->api,
             webview: $this,
-            events: $this->events,
+            dispatcher: $this->events,
         );
     }
 
