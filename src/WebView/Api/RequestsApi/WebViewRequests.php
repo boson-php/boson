@@ -10,7 +10,7 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
 use Boson\Shared\IdValueGenerator\IntValueGenerator;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\ApiProvider;
+use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Api\RequestsApi\Exception\StalledRequestException;
 use Boson\WebView\Api\RequestsApi\Exception\UnprocessableRequestException;
 use Boson\WebView\Api\RequestsApiInterface;
@@ -35,7 +35,7 @@ enum WebViewRequestsResultStatus
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewRequests extends ApiProvider implements RequestsApiInterface
+final class WebViewRequests extends WebViewApi implements RequestsApiInterface
 {
     /**
      * Default timeout for request processing in seconds.

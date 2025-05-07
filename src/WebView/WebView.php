@@ -11,7 +11,7 @@ use Boson\Dispatcher\EventListenerProvider;
 use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\ApiProvider;
+use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Api\FunctionsApi\WebViewFunctionsMap;
 use Boson\WebView\Api\FunctionsApiInterface;
@@ -190,13 +190,13 @@ final class WebView implements EventListenerProviderInterface
     }
 
     /**
-     * @template TArgApiProvider of ApiProvider
+     * @template TArgApiProvider of WebViewApi
      *
      * @param class-string<TArgApiProvider> $class
      *
      * @return TArgApiProvider
      */
-    private function createApi(string $class): ApiProvider
+    private function createApi(string $class): WebViewApi
     {
         return new $class(
             api: $this->api,

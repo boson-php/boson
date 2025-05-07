@@ -7,7 +7,7 @@ namespace Boson\WebView\Api\ScriptsApi;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerLoadTime;
-use Boson\WebView\Api\ApiProvider;
+use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Api\ScriptsApiInterface;
 use Boson\WebView\WebView;
 use JetBrains\PhpStorm\Language;
@@ -18,7 +18,7 @@ use JetBrains\PhpStorm\Language;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewScriptsSet extends ApiProvider implements
+final class WebViewScriptsSet extends WebViewApi implements
     ScriptsApiInterface,
     \IteratorAggregate
 {

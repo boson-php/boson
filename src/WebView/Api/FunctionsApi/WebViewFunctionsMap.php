@@ -6,7 +6,7 @@ namespace Boson\WebView\Api\FunctionsApi;
 
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
-use Boson\WebView\Api\ApiProvider;
+use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Api\FunctionsApi\Exception\FunctionNotDefinedException;
 use Boson\WebView\Api\FunctionsApi\Exception\InvalidFunctionException;
@@ -23,7 +23,7 @@ use Boson\WebView\WebView;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewFunctionsMap extends ApiProvider implements
+final class WebViewFunctionsMap extends WebViewApi implements
     FunctionsApiInterface,
     \IteratorAggregate
 {

@@ -12,7 +12,7 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\WebView\WebView;
 use FFI\CData;
 
-abstract class ApiProvider
+abstract class WebViewApi
 {
     protected readonly CData $ptr;
 
