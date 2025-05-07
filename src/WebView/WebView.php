@@ -308,20 +308,20 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Requests arbitrary data from webview using JavaScript code.
      *
-     * Note: This is facade method of the {@see WebViewRequests::send()},
+     * Note: This is facade method of the {@see WebViewRequests::get()},
      *       that provides by the {@see $requests} field. This means that
      *       calling `$webview->requests->send(...)` should have the same effect.
      *
-     * @api
+     *@uses WebViewRequests::get() WebView Requests API
      *
-     * @uses WebViewRequests::send() WebView Requests API
+     * @api
      *
      * @param string $code A JavaScript code for execution
      */
     #[BlockingOperation]
     public function request(#[Language('JavaScript')] string $code): mixed
     {
-        return $this->requests->send($code);
+        return $this->requests->get($code);
     }
 
     /**

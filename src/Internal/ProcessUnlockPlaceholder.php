@@ -32,8 +32,6 @@ final readonly class ProcessUnlockPlaceholder implements ApplicationPollerInterf
             return false;
         }
 
-        \usleep(1);
-
         $this->api->saucer_application_run_once($this->ptr);
 
         return true;

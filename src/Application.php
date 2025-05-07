@@ -436,11 +436,9 @@ final class Application implements EventListenerProviderInterface
 
         $this->dispatcher->dispatch(new ApplicationStarted($this));
 
-        do {
-            $this->api->saucer_application_run_once($this->id->ptr);
-
+        while ($this->poller->next()) {
             \usleep(1);
-        } while ($this->isRunning);
+        }
     }
 
     /**

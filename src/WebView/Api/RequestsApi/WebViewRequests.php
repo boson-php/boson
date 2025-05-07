@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\RequestsApi;
 
+use Boson\ApplicationPollerInterface;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
@@ -16,6 +17,19 @@ use Boson\WebView\Api\RequestsApiInterface;
 use Boson\WebView\Internal\Timeout;
 use Boson\WebView\WebView;
 use JetBrains\PhpStorm\Language;
+use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
+
+use function React\Promise\resolve;
+
+/**
+ * @internal this is an internal library class, please do not use it in your code
+ * @psalm-internal Boson\WebView\Api\RequestsApi
+ */
+enum WebViewRequestsResultStatus
+{
+    case Pending;
+}
 
 /**
  * @internal this is an internal library class, please do not use it in your code
@@ -47,17 +61,22 @@ final class WebViewRequests extends ApiProvider implements RequestsApiInterface
      *
      * @var IdValueGeneratorInterface<array-key>
      */
-    private readonly IdValueGeneratorInterface $idGenerator;
+    private readonly IdValueGeneratorInterface $ids;
 
     /**
      * Registry of pending request results.
      *
-     * This array stores the results of pending requests, indexed by their
-     * request IDs.
+     * This array stores the deferred promises for pending requests,
+     * indexed by their request IDs.
      *
-     * @var array<array-key, mixed>
+     * @var array<array-key, Deferred<mixed>>
      */
-    private array $results = [];
+    private array $requests = [];
+
+    /**
+     * Application poller for handling timeouts.
+     */
+    private readonly ApplicationPollerInterface $poller;
 
     public function __construct(
         LibSaucer $api,
@@ -67,45 +86,83 @@ final class WebViewRequests extends ApiProvider implements RequestsApiInterface
     ) {
         parent::__construct($api, $webview, $dispatcher);
 
-        $this->idGenerator = IntValueGenerator::createFromEnvironment();
+        $this->poller = $this->webview->window->app->poller;
 
+        $this->ids = IntValueGenerator::createFromEnvironment();
         $this->webview->bind(self::METHOD_NAME, $this->onResponseReceived(...));
     }
 
+    /**
+     * Retrieves and removes a pending request from the registry.
+     *
+     * @param array-key $id The request ID to retrieve
+     *
+     * @return Deferred<mixed>|null The deferred promise for the request, or
+     *        {@see null} if not found
+     */
+    private function pull(string|int $id): ?Deferred
+    {
+        try {
+            return $this->requests[$id] ?? null;
+        } finally {
+            unset($this->requests[$id]);
+        }
+    }
+
+    public function send(#[Language('JavaScript')] string $code): PromiseInterface
+    {
+        if ($code === '') {
+            return resolve('');
+        }
+
+        $id = $this->ids->nextId();
+
+        $this->requests[$id] = $deferred = new Deferred(function () use ($id) {
+            $this->pull($id);
+        });
+
+        $this->webview->eval($this->pack($id, $code));
+
+        return $deferred->promise();
+    }
+
     #[BlockingOperation]
-    public function send(#[Language('JavaScript')] string $code): mixed
+    public function get(#[Language('JavaScript')] string $code): mixed
     {
         if ($code === '') {
             return '';
         }
 
-        $id = $this->idGenerator->nextId();
+        $promise = $this->send($code);
+
+        $result = WebViewRequestsResultStatus::Pending;
+        $promise->then(static function (mixed $input) use (&$result): mixed {
+            return $result = $input;
+        });
 
         $timeout = new Timeout();
 
-        $this->webview->eval($this->pack($id, $code));
-
-        $poller = $this->webview->window->app->poller;
-
-        while ($poller->next()) {
-            if (\array_key_exists($id, $this->results)) {
-                try {
-                    return $this->results[$id];
-                } finally {
-                    unset($this->results[$id]);
-                }
+        while ($this->poller->next()) {
+            if ($result !== WebViewRequestsResultStatus::Pending) {
+                return $result;
             }
 
-            if ($timeout->isExceeded($this->timeout)) {
-                throw StalledRequestException::becauseRequestIsStalled($code, $this->timeout);
+            if (!$timeout->isExceeded($this->timeout)) {
+                continue;
             }
+
+            throw StalledRequestException::becauseRequestIsStalled($code, $this->timeout);
         }
 
         throw UnprocessableRequestException::becauseRequestIsUnprocessable($code);
     }
 
     /**
-     * @param array-key $id
+     * Creates a JavaScript function call string for sending requests.
+     *
+     * @param array-key $id The request ID
+     * @param string $code The JavaScript code to execute
+     * @return string The formatted JavaScript function call
      */
     private function pack(string|int $id, string $code): string
     {
@@ -120,13 +177,17 @@ final class WebViewRequests extends ApiProvider implements RequestsApiInterface
      * Handles responses received from JavaScript.
      *
      * This method is called when a response is received from the JavaScript
-     * context. It processes the response and stores it in the results registry.
+     * context. It processes the response and resolves the corresponding promise.
      *
      * @param array-key $id The request ID
      * @param mixed $result The response data
      */
     private function onResponseReceived(string|int $id, mixed $result): void
     {
-        $this->results[$id] = $result;
+        if (($deferred = $this->pull($id)) === null) {
+            return;
+        }
+
+        $deferred->resolve($result);
     }
 }
