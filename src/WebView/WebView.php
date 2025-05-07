@@ -64,7 +64,7 @@ final class WebView
          * Gets current webview URI instance.
          *
          * ```
-         * echo $webview->url;          // http://example.com
+         * echo $webview->url; // http://example.com
          * ```
          */
         get {
