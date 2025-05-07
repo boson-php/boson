@@ -310,6 +310,8 @@ final class WebViewFunctionsMap implements \IteratorAggregate, \Countable
      * This method removes the function binding and cleans up the JavaScript
      * function from the webview context.
      *
+     * @api
+     *
      * @param non-empty-string $function The name of the function to unbind
      *
      * @throws FunctionNotDefinedException if the function is not defined
