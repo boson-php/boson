@@ -33,17 +33,26 @@ final class WebView
     public readonly EventListener $events;
 
     /**
-     * Gets access to the scripts API of the webview.
+     * Gets access to the Scripts API of the webview.
+     *
+     * Provides the ability to register a JavaScript code
+     * in the webview.
      */
     public readonly WebViewScriptsSet $scripts;
 
     /**
-     * Gets access to the functions API of the webview.
+     * Gets access to the Functions API of the webview.
+     *
+     * Provides the ability to register PHP functions
+     * in the webview.
      */
     public readonly WebViewFunctionsMap $functions;
 
     /**
-     * Gets access to the requests API of the webview.
+     * Gets access to the Requests API of the webview.
+     *
+     * Provides the ability to receive variant data from
+     * the current document.
      */
     public readonly WebViewRequests $requests;
 
