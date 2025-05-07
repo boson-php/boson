@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Scripts;
+namespace Boson\WebView\Api\ScriptsApi;
 
 use Boson\Internal\Saucer\LibSaucer;
 use JetBrains\PhpStorm\Language;
 
-final readonly class WebViewScript implements \Stringable
+final readonly class LoadedScript implements \Stringable
 {
     public function __construct(
         private LibSaucer $api,
-        public WebViewScriptId $id,
+        public LoadedScriptId $id,
         #[Language('JavaScript')]
         public string $code,
         public bool $isPermanent,
-        public WebViewScriptLoadingTime $time,
+        public LoadedScriptLoadingTime $time,
     ) {}
 
     public function __toString(): string

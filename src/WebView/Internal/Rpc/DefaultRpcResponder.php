@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Internal\Rpc;
 
-use Boson\WebView\Scripts\WebViewScriptsSet;
+use Boson\WebView\Api\ScriptsApiInterface;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
@@ -18,7 +18,7 @@ final readonly class DefaultRpcResponder implements RpcResponderInterface
     public const string DEFAULT_CONTEXT = 'window.boson.rpc';
 
     public function __construct(
-        private WebViewScriptsSet $scriptsApi,
+        private ScriptsApiInterface $scriptsApi,
         /**
          * @var non-empty-string
          */

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Requests\Exception;
+namespace Boson\WebView\Api\RequestsApi\Exception;
 
-final class StalledRequestException extends RequestException
+class StalledRequestException extends RequestException
 {
     public static function becauseRequestIsStalled(string $code, float $timeout, ?\Throwable $previous = null): self
     {

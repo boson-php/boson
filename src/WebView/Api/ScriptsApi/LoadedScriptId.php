@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Scripts;
+namespace Boson\WebView\Api\ScriptsApi;
 
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Id\StructPointerId;
 use FFI\CData;
 
-final readonly class WebViewScriptId extends StructPointerId
+final readonly class LoadedScriptId extends StructPointerId
 {
     /**
-     * Returns new {@see WebViewScriptId} instance from given
+     * Returns new {@see LoadedScriptId} instance from given
      * `saucer_script*` struct pointer.
      *
      * @api

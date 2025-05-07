@@ -5,15 +5,19 @@ declare(strict_types=1);
 namespace Boson\WebView;
 
 use Boson\Dispatcher\DelegateEventListener;
-use Boson\Dispatcher\EventListener;
+use Boson\Dispatcher\EventListenerInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Binding\Exception\FunctionAlreadyDefinedException;
-use Boson\WebView\Binding\WebViewFunctionsMap;
+use Boson\WebView\Api\ApiProvider;
+use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Api\FunctionsApi\WebViewFunctionsMap;
+use Boson\WebView\Api\FunctionsApiInterface;
+use Boson\WebView\Api\RequestsApi\WebViewRequests;
+use Boson\WebView\Api\RequestsApiInterface;
+use Boson\WebView\Api\ScriptsApi\WebViewScriptsSet;
+use Boson\WebView\Api\ScriptsApiInterface;
 use Boson\WebView\Internal\WebViewEventHandler;
 use Boson\WebView\Internal\WebViewSchemeHandler;
-use Boson\WebView\Requests\WebViewRequests;
-use Boson\WebView\Scripts\WebViewScriptsSet;
 use Boson\Window\Window;
 use FFI\CData;
 use JetBrains\PhpStorm\Language;
@@ -30,7 +34,12 @@ final class WebView
      * Gets access to the listener of the webview events
      * and intention subscriptions.
      */
-    public readonly EventListener $events;
+    public readonly EventListenerInterface $events;
+
+    /**
+     * WebView-aware event dispatcher.
+     */
+    private readonly EventDispatcherInterface $dispatcher;
 
     /**
      * Gets access to the Scripts API of the webview.
@@ -38,7 +47,7 @@ final class WebView
      * Provides the ability to register a JavaScript code
      * in the webview.
      */
-    public readonly WebViewScriptsSet $scripts;
+    public readonly ScriptsApiInterface $scripts;
 
     /**
      * Gets access to the Functions API of the webview.
@@ -46,7 +55,7 @@ final class WebView
      * Provides the ability to register PHP functions
      * in the webview.
      */
-    public readonly WebViewFunctionsMap $functions;
+    public readonly FunctionsApiInterface $functions;
 
     /**
      * Gets access to the Requests API of the webview.
@@ -54,7 +63,7 @@ final class WebView
      * Provides the ability to receive variant data from
      * the current document.
      */
-    public readonly WebViewRequests $requests;
+    public readonly RequestsApiInterface $requests;
 
     /**
      * Contains webview URI instance.
@@ -162,13 +171,13 @@ final class WebView
         public readonly WebViewCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
-        $this->events = new DelegateEventListener($dispatcher);
+        $this->events = $this->dispatcher = new DelegateEventListener($dispatcher);
         // The WebView handle pointer is the same as the Window pointer.
         $this->ptr = $this->window->id->ptr;
 
-        $this->scripts = $this->createWebViewScriptsApi();
-        $this->functions = $this->createFunctionsApi();
-        $this->requests = $this->createRequestApi();
+        $this->scripts = $this->createApi(WebViewScriptsSet::class);
+        $this->functions = $this->createApi(WebViewFunctionsMap::class);
+        $this->requests = $this->createApi(WebViewRequests::class);
 
         $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
         $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
@@ -176,25 +185,20 @@ final class WebView
         $this->bootWebView();
     }
 
-    private function createWebViewScriptsApi(): WebViewScriptsSet
+    /**
+     * @template TArgApiProvider of ApiProvider
+     *
+     * @param class-string<TArgApiProvider> $class
+     *
+     * @return TArgApiProvider
+     */
+    private function createApi(string $class): ApiProvider
     {
-        return new WebViewScriptsSet(
+        return new $class(
             api: $this->api,
             webview: $this,
+            dispatcher: $this->dispatcher,
         );
-    }
-
-    private function createFunctionsApi(): WebViewFunctionsMap
-    {
-        return new WebViewFunctionsMap(
-            scriptsApi: $this->scripts,
-            events: $this->events,
-        );
-    }
-
-    private function createRequestApi(): WebViewRequests
-    {
-        return new WebViewRequests($this);
     }
 
     private function createWebViewSchemeHandler(): WebViewSchemeHandler

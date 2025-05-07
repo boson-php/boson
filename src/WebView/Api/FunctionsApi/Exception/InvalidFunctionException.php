@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Binding\Exception;
+namespace Boson\WebView\Api\FunctionsApi\Exception;
 
-final class FunctionNotDefinedException extends WebViewBindingException
+class InvalidFunctionException extends FunctionsApiException
 {
     public static function becauseFunctionNotDefined(string $name, ?\Throwable $previous = null): self
     {
-        $message = \sprintf('Cannot remove undefined function %s()', $name);
+        $message = \sprintf('RPC function "%s" has not been defined', $name);
 
         return new self($message, 0, $previous);
     }

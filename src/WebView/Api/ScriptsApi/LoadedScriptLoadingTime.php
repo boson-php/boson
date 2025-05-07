@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Scripts;
+namespace Boson\WebView\Api\ScriptsApi;
 
-enum WebViewScriptLoadingTime
+enum LoadedScriptLoadingTime
 {
     /**
      * The script will be loaded as soon as the document is created.

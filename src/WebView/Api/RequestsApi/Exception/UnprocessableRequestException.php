@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Requests\Exception;
+namespace Boson\WebView\Api\RequestsApi\Exception;
 
-final class UnprocessableRequestException extends RequestException
+class UnprocessableRequestException extends RequestException
 {
     public static function becauseRequestIsUnprocessable(string $code, ?\Throwable $previous = null): self
     {
