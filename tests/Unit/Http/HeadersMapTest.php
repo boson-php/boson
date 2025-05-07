@@ -8,7 +8,7 @@ use Boson\Http\HeadersMap;
 use Boson\Tests\Unit\TestCase;
 use PHPUnit\Framework\Attributes\Group;
 
-#[Group('serafim/boson')]
+#[Group('boson-php/runtime')]
 final class HeadersMapTest extends TestCase
 {
     public function testCreateEmpty(): void
@@ -120,4 +120,4 @@ final class HeadersMapTest extends TestCase
         self::assertTrue($headers->has('Content-Type'));
         self::assertTrue($headers->has('X-CUSTOM-HEADER'));
     }
-} 
+}

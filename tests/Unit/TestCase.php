@@ -7,7 +7,7 @@ namespace Boson\Tests\Unit;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
-#[Group('serafim/boson')]
+#[Group('boson-php/runtime')]
 abstract class TestCase extends BaseTestCase
 {
     protected function setUp(): void
