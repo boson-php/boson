@@ -8,6 +8,8 @@ use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerInterface;
+use Boson\Dispatcher\EventListenerProvider;
+use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Event\ApplicationStarted;
 use Boson\Event\ApplicationStarting;
 use Boson\Event\ApplicationStopped;
@@ -34,8 +36,10 @@ use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 /**
  * @api
  */
-final class Application
+final class Application implements EventListenerProviderInterface
 {
+    use EventListenerProvider;
+
     /**
      * Unique application identifier.
      *

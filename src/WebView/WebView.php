@@ -7,6 +7,8 @@ namespace Boson\WebView;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListenerInterface;
+use Boson\Dispatcher\EventListenerProvider;
+use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Api\ApiProvider;
@@ -23,8 +25,10 @@ use Boson\Window\Window;
 use FFI\CData;
 use JetBrains\PhpStorm\Language;
 
-final class WebView
+final class WebView implements EventListenerProviderInterface
 {
+    use EventListenerProvider;
+
     /**
      * @var non-empty-string
      */

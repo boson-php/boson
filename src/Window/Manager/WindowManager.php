@@ -9,6 +9,8 @@ use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerInterface;
+use Boson\Dispatcher\EventListenerProvider;
+use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\GarbageCollector\ObservableWeakSet;
 use Boson\Window\Event\WindowClosed;
@@ -26,10 +28,13 @@ use Boson\Window\WindowCreateInfo;
  * @template-implements \IteratorAggregate<array-key, Window>
  */
 final class WindowManager implements
+    EventListenerProviderInterface,
     WindowCollectionInterface,
     WindowFactoryInterface,
     \IteratorAggregate
 {
+    use EventListenerProvider;
+
     /**
      * Gets default window instance.
      *

@@ -8,6 +8,8 @@ use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListenerInterface;
+use Boson\Dispatcher\EventListenerProvider;
+use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerWindowEdge;
 use Boson\Shared\Marker\RequiresDealloc;
@@ -27,8 +29,10 @@ use FFI\CData;
 /**
  * @api
  */
-final class Window
+final class Window implements EventListenerProviderInterface
 {
+    use EventListenerProvider;
+
     /**
      * Unique window identifier.
      *
