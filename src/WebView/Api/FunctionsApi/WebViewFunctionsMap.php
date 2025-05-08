@@ -6,11 +6,11 @@ namespace Boson\WebView\Api\FunctionsApi;
 
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
-use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Api\FunctionsApi\Exception\FunctionNotDefinedException;
 use Boson\WebView\Api\FunctionsApi\Exception\InvalidFunctionException;
 use Boson\WebView\Api\FunctionsApiInterface;
+use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Event\WebViewMessageReceived;
 use Boson\WebView\Event\WebViewNavigated;
 use Boson\WebView\Internal\Rpc\DefaultRpcResponder;

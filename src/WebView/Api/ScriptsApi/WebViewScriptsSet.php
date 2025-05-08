@@ -7,8 +7,8 @@ namespace Boson\WebView\Api\ScriptsApi;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerLoadTime;
-use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Api\ScriptsApiInterface;
+use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\WebView;
 use JetBrains\PhpStorm\Language;
 

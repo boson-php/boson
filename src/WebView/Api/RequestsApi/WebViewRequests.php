@@ -10,10 +10,10 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
 use Boson\Shared\IdValueGenerator\IntValueGenerator;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Api\RequestsApi\Exception\StalledRequestException;
 use Boson\WebView\Api\RequestsApi\Exception\UnprocessableRequestException;
 use Boson\WebView\Api\RequestsApiInterface;
+use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Internal\Timeout;
 use Boson\WebView\WebView;
 use JetBrains\PhpStorm\Language;
@@ -162,6 +162,7 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
      *
      * @param array-key $id The request ID
      * @param string $code The JavaScript code to execute
+     *
      * @return string The formatted JavaScript function call
      */
     private function pack(string|int $id, string $code): string
