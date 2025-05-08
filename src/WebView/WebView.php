@@ -9,6 +9,7 @@ use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListenerInterface;
 use Boson\Dispatcher\EventListenerProvider;
 use Boson\Dispatcher\EventListenerProviderInterface;
+use Boson\Exception\BosonException;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
@@ -23,6 +24,7 @@ use Boson\WebView\Internal\WebViewEventHandler;
 use Boson\WebView\Internal\WebViewSchemeHandler;
 use Boson\Window\Window;
 use FFI\CData;
+use FilesystemIterator;
 use JetBrains\PhpStorm\Language;
 
 final class WebView implements EventListenerProviderInterface
@@ -32,7 +34,7 @@ final class WebView implements EventListenerProviderInterface
     /**
      * @var non-empty-string
      */
-    private const string PRELOADED_SCRIPTS_PATTERN = __DIR__ . '/../../resources/dist/*.js';
+    private const string PRELOADED_SCRIPTS_DIRECTORY = __DIR__ . '/../../resources/dist';
 
     /**
      * Gets access to the listener of the webview events
@@ -253,17 +255,20 @@ final class WebView implements EventListenerProviderInterface
      */
     private function loadRuntimeScripts(): void
     {
-        /** @var list<non-empty-string> $scripts */
-        $scripts = (array) \glob(self::PRELOADED_SCRIPTS_PATTERN);
+        $filesystem = new \FilesystemIterator(self::PRELOADED_SCRIPTS_DIRECTORY);
 
-        foreach ($scripts as $script) {
-            if (\is_string($script) && \is_readable($script)) {
-                $code = \file_get_contents($script);
-
-                if (\is_string($code) && $code !== '') {
-                    $this->scripts->preload($code, true);
-                }
+        foreach ($filesystem as $script) {
+            if (!$script->isFile()) {
+                continue;
             }
+
+            $code = @\file_get_contents($script->getPathname());
+
+            if ($code === false) {
+                throw new BosonException(\sprintf('Unable to read %s', $script->getPathname()));
+            }
+
+            $this->scripts->preload($code, true);
         }
     }
 
