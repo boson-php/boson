@@ -24,7 +24,6 @@ use Boson\WebView\Internal\WebViewEventHandler;
 use Boson\WebView\Internal\WebViewSchemeHandler;
 use Boson\Window\Window;
 use FFI\CData;
-use FilesystemIterator;
 use JetBrains\PhpStorm\Language;
 
 final class WebView implements EventListenerProviderInterface
@@ -258,7 +257,7 @@ final class WebView implements EventListenerProviderInterface
         $filesystem = new \FilesystemIterator(self::PRELOADED_SCRIPTS_DIRECTORY);
 
         foreach ($filesystem as $script) {
-            if (!$script->isFile()) {
+            if (!$script instanceof \SplFileInfo || !$script->isFile()) {
                 continue;
             }
 
