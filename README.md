@@ -514,7 +514,7 @@ $app = new Application();
 $app->webview->html = '<button>Do Not Click Me!</button>';
 
 $app->events->addEventListener(WebViewDomReady::class, function () use ($app) {
-    $html = $app->webview->request('document.body.innerHTML');
+    $html = $app->webview->get('document.body.innerHTML');
     
     var_dump($html);
 });
@@ -749,7 +749,7 @@ You can directly get data from WebView context.
 $app = new Boson\Application();
 
 $app->events->addEventListener(WebViewDomReady::class, function () use ($app) {
-    var_dump($app->webview->request('document.location')); 
+    var_dump($app->webview->get('document.location')); 
     // array:10 [
     //   "ancestorOrigins" => []
     //   "href" => "https://nesk.me/"
@@ -773,7 +773,7 @@ application is not running.
 ```php
 $app = new Boson\Application();
 
-var_dump($app->webview->request('document.location'));
+var_dump($app->webview->get('document.location'));
 //
 // Uncaught Boson\WebView\Requests\Exception\UnprocessableRequestException:
 //      Request "document.location" could not be processed

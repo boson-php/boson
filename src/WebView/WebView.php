@@ -319,7 +319,7 @@ final class WebView implements EventListenerProviderInterface
      * @param string $code A JavaScript code for execution
      */
     #[BlockingOperation]
-    public function request(#[Language('JavaScript')] string $code): mixed
+    public function get(#[Language('JavaScript')] string $code): mixed
     {
         return $this->requests->get($code);
     }
