@@ -12,7 +12,7 @@ namespace Boson\Shared\GarbageCollector;
  * // ObservableWeakSet<ExampleObject>
  * $set = new ObservableWeakSet();
  *
- * $set->watch($object, function(ExampleObject $ref) {
+ * $set->watch($object, function (ExampleObject $ref) {
  *      echo vsprintf('ExampleObject(%d) has been destroyed', [
  *          get_object_id($ref),
  *      ]);

@@ -12,7 +12,7 @@ namespace Boson\Shared\GarbageCollector;
  * // ObservableWeakMap<ExampleId, CData>
  * $map = new ObservableWeakMap();
  *
- * $map->watch($id, $data, function(CData $ref) {
+ * $map->watch($id, $data, function (CData $ref) {
  *     echo vsprintf('ID has been destroyed, something can be done with its reference %s(%d)', [
  *         $ref::class,
  *         get_object_id($ref),

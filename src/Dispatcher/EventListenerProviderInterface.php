@@ -19,20 +19,20 @@ interface EventListenerProviderInterface
      *
      * Option to register listener without a name:
      * ```
-     * $ctx->on(function(ExampleEvent $e): void {
+     * $ctx->on(function (ExampleEvent $e): void {
      *     var_dump($e);
      * });
      * ```
      *
      * Option to register listener with name:
      * ```
-     * $ctx->on(ExampleEvent::class, function(ExampleEvent $e): void {
+     * $ctx->on(ExampleEvent::class, function (ExampleEvent $e): void {
      *     var_dump($e);
      * });
      *
      * // or
      *
-     * $ctx->on(ExampleEvent::class, function(): void {
+     * $ctx->on(ExampleEvent::class, function (): void {
      *     var_dump('ExampleEvent fired!');
      * });
      * ```

@@ -51,7 +51,7 @@ interface RequestsApiInterface
      * Example usage:
      * ```
      * $requests->send('document.location')
-     *     ->then(function(array $result): void {
+     *     ->then(function (array $result): void {
      *         var_dump($result);
      *     });
      * ```
