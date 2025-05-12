@@ -15,6 +15,7 @@ use Boson\WebView\Event\WebViewMessageReceived;
 use Boson\WebView\Event\WebViewNavigated;
 use Boson\WebView\Internal\Rpc\DefaultRpcResponder;
 use Boson\WebView\Internal\Rpc\RpcResponderInterface;
+use Boson\WebView\Internal\WebViewContextPacker;
 use Boson\WebView\WebView;
 
 /**
@@ -47,12 +48,24 @@ final class WebViewFunctionsMap extends WebViewApi implements
      *
      * @var non-empty-string
      */
-    public const string DEFAULT_CONTEXT = 'window';
+    public const string DEFAULT_CONTEXT = WebViewContextPacker::DEFAULT_ROOT_CONTEXT;
+
+    /**
+     * Default context delimiter for JavaScript function registration.
+     *
+     * @var non-empty-string
+     */
+    public const string DEFAULT_DELIMITER = WebViewContextPacker::DEFAULT_DELIMITER;
 
     /**
      * RPC responder instance for handling JavaScript-PHP communication.
      */
-    private RpcResponderInterface $responder;
+    private readonly RpcResponderInterface $responder;
+
+    /**
+     * Provides context packer utils
+     */
+    private readonly WebViewContextPacker $packer;
 
     /**
      * Map of registered function names to their PHP callbacks.
@@ -80,8 +93,17 @@ final class WebViewFunctionsMap extends WebViewApi implements
          * @var non-empty-string
          */
         private readonly string $functionContext = self::DEFAULT_CONTEXT,
+        /**
+         * @var non-empty-string
+         */
+        private readonly string $functionDelimiter = self::DEFAULT_DELIMITER,
     ) {
         parent::__construct($api, $webview, $dispatcher);
+
+        $this->packer = new WebViewContextPacker(
+            delimiter: $this->functionDelimiter,
+            context: $this->functionContext,
+        );
 
         $this->responder = new DefaultRpcResponder(
             scriptsApi: $this->webview->scripts,
@@ -195,77 +217,16 @@ final class WebViewFunctionsMap extends WebViewApi implements
     }
 
     /**
-     * Creates a JavaScript function definition for nested object properties.
-     *
-     * @param non-empty-string $previous The parent object path
-     * @param non-empty-string $current The current property name
-     * @param non-empty-string $name The full function name
-     *
-     * @return non-empty-string The JavaScript function definition
-     */
-    private function packStackFunction(string $previous, string $current, string $name): string
-    {
-        return \vsprintf('%s["%s"] = %s;', [
-            $previous,
-            \addcslashes($current, '"'),
-            $this->packFunction($name),
-        ]);
-    }
-
-    /**
-     * Creates a JavaScript object definition for nested properties.
-     *
-     * @param non-empty-string $previous The parent object path
-     * @param non-empty-string $current The current property name
-     *
-     * @return non-empty-string The JavaScript object definition
-     */
-    private function packStackElement(string $previous, string $current): string
-    {
-        return \vsprintf('%s["%s"] = %1$s["%2$s"] || {};', [
-            $previous,
-            \addcslashes($current, '"'),
-        ]);
-    }
-
-    /**
-     * Creates a JavaScript function definition for nested namespaces.
-     *
-     * @param non-empty-string $name The full function name with namespace
-     *
-     * @return non-empty-string The JavaScript function definition
-     */
-    private function packNestedFunction(string $name): string
-    {
-        $statements = [];
-
-        $indexAt = \substr_count($name, '.');
-        $context = $this->functionContext;
-
-        foreach (\explode('.', $name) as $index => $segment) {
-            if ($segment === '') {
-                continue;
-            }
-
-            $statements[] = $indexAt === $index
-                ? $this->packStackFunction($context, $segment, $name)
-                : $this->packStackElement($context, $segment);
-
-            $context = $segment;
-        }
-
-        /** @var non-empty-string */
-        return \implode(';', $statements);
-    }
-
-    /**
      * Registers a function in the JavaScript context.
      *
      * @param non-empty-string $name The name of the function to register
      */
     private function registerClientFunction(string $name): void
     {
-        $script = $this->compiledFunctions[$name] ??= $this->packNestedFunction($name);
+        $script = $this->compiledFunctions[$name] ??= $this->packer->pack(
+            path: $name,
+            code: $this->packFunction($name),
+        );
 
         $this->webview->scripts->eval($script);
     }
