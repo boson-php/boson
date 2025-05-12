@@ -37,20 +37,6 @@ interface FunctionsApiInterface extends \Traversable, \Countable
     public function bind(string $function, \Closure $callback): void;
 
     /**
-     * Unbinds a previously bound JavaScript function.
-     *
-     * This method removes the function binding and cleans up the JavaScript
-     * function from the webview context.
-     *
-     * @api
-     *
-     * @param non-empty-string $function The name of the function to unbind
-     *
-     * @throws FunctionNotDefinedException if the function is not defined
-     */
-    public function unbind(string $function): void;
-
-    /**
      * Gets the count of registered functions.
      *
      * @return int<0, max> The number of registered functions

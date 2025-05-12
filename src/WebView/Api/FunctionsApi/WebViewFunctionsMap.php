@@ -7,12 +7,10 @@ namespace Boson\WebView\Api\FunctionsApi;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
-use Boson\WebView\Api\FunctionsApi\Exception\FunctionNotDefinedException;
 use Boson\WebView\Api\FunctionsApi\Exception\InvalidFunctionException;
 use Boson\WebView\Api\FunctionsApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Event\WebViewMessageReceived;
-use Boson\WebView\Event\WebViewNavigated;
 use Boson\WebView\Internal\Rpc\DefaultRpcResponder;
 use Boson\WebView\Internal\Rpc\RpcResponderInterface;
 use Boson\WebView\Internal\WebViewContextPacker;
@@ -74,13 +72,6 @@ final class WebViewFunctionsMap extends WebViewApi implements
      */
     private array $functions = [];
 
-    /**
-     * Cache of compiled JavaScript function definitions.
-     *
-     * @var array<non-empty-string, non-empty-string>
-     */
-    private array $compiledFunctions = [];
-
     public function __construct(
         LibSaucer $api,
         WebView $webview,
@@ -122,20 +113,6 @@ final class WebViewFunctionsMap extends WebViewApi implements
     private function registerDefaultEventListeners(): void
     {
         $this->listen(WebViewMessageReceived::class, $this->onMessageReceived(...));
-        $this->listen(WebViewNavigated::class, $this->onNavigated(...));
-    }
-
-    /**
-     * Handles navigation events by re-registering all functions.
-     *
-     * This method is called when the webview navigates to a new page,
-     * ensuring that all registered functions are available in the new context.
-     */
-    private function onNavigated(): void
-    {
-        foreach ($this->functions as $name => $callback) {
-            $this->registerClientFunction($name);
-        }
     }
 
     /**
@@ -223,12 +200,10 @@ final class WebViewFunctionsMap extends WebViewApi implements
      */
     private function registerClientFunction(string $name): void
     {
-        $script = $this->compiledFunctions[$name] ??= $this->packer->pack(
+        $this->webview->scripts->add($this->packer->pack(
             path: $name,
             code: $this->packFunction($name),
-        );
-
-        $this->webview->scripts->eval($script);
+        ));
     }
 
     public function bind(string $function, \Closure $callback): void
@@ -240,29 +215,6 @@ final class WebViewFunctionsMap extends WebViewApi implements
         $this->functions[$function] = $callback;
 
         $this->registerClientFunction($function);
-    }
-
-    /**
-     * Unregisters a function from the JavaScript context.
-     *
-     * @param non-empty-string $name The name of the function to unregister
-     */
-    private function unregisterClientFunction(string $name): void
-    {
-        $this->webview->scripts->eval(\vsprintf('delete window["%s"];', [
-            \addcslashes($name, '"'),
-        ]));
-    }
-
-    public function unbind(string $function): void
-    {
-        if (!isset($this->functions[$function])) {
-            throw FunctionNotDefinedException::becauseFunctionNotDefined($function);
-        }
-
-        unset($this->functions[$function], $this->compiledFunctions[$function]);
-
-        $this->unregisterClientFunction($function);
     }
 
     public function getIterator(): \Traversable
