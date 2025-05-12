@@ -45,37 +45,56 @@ final readonly class LibSaucer
 
         $this->ffi = \FFI::cdef(
             code: (string) \file_get_contents(__FILE__, offset: __COMPILER_HALT_OFFSET__),
-            lib: $library ?? match ($os = OperatingSystem::current()) {
-                OperatingSystem::Windows => match ($arch = Architecture::current()) {
-                    Architecture::x86,
-                    Architecture::Amd64 => self::DEFAULT_BIN_DIR . '/libboson-windows-x86_64.dll',
-                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
-                        architecture: $arch->value ?? 'unknown',
-                    ),
-                },
-                OperatingSystem::Linux => match ($arch = Architecture::current()) {
-                    Architecture::x86,
-                    Architecture::Amd64 => self::DEFAULT_BIN_DIR . '/libboson-linux-x86_64.so',
-                    Architecture::Arm64 => self::DEFAULT_BIN_DIR . '/libboson-linux-aarch64.so',
-                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
-                        architecture: $arch->value ?? 'unknown',
-                    ),
-                },
-                OperatingSystem::MacOS => match ($arch = Architecture::current()) {
-                    Architecture::x86,
-                    Architecture::Amd64,
-                    Architecture::Arm64 => self::DEFAULT_BIN_DIR . '/libboson-darwin-universal.dylib',
-                    default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
-                        architecture: $arch->value ?? 'unknown',
-                    ),
-                },
-                default => throw UnsupportedOperatingSystemException::becauseOperatingSystemIsInvalid(
-                    os: $os->value ?? 'unknown',
-                ),
-            },
+            lib: $library ?? $this->getLibrary(),
         );
 
         $this->assertVersionCompatibility();
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private function getLibrary(): string
+    {
+        $os = OperatingSystem::current();
+        $arch = Architecture::current();
+
+        $result = match ($os) {
+            OperatingSystem::Windows => match ($arch) {
+                Architecture::x86,
+                Architecture::Amd64 => 'libboson-windows-x86_64.dll',
+                default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
+                    architecture: $arch->value ?? 'unknown',
+                ),
+            },
+            OperatingSystem::Linux => match ($arch = Architecture::current()) {
+                Architecture::x86,
+                Architecture::Amd64 => 'libboson-linux-x86_64.so',
+                Architecture::Arm64 => 'libboson-linux-aarch64.so',
+                default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
+                    architecture: $arch->value ?? 'unknown',
+                ),
+            },
+            OperatingSystem::MacOS => match ($arch = Architecture::current()) {
+                Architecture::x86,
+                Architecture::Amd64,
+                Architecture::Arm64 => 'libboson-darwin-universal.dylib',
+                default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
+                    architecture: $arch->value ?? 'unknown',
+                ),
+            },
+            default => throw UnsupportedOperatingSystemException::becauseOperatingSystemIsInvalid(
+                os: $os->value ?? 'unknown',
+            ),
+        };
+
+        if (\extension_loaded('phar') && \Phar::running() !== '') {
+            \Phar::mount($result, self::DEFAULT_BIN_DIR . '/libboson-windows-x86_64.dll');
+
+            return $result;
+        }
+
+        return self::DEFAULT_BIN_DIR . '/' . $result;
     }
 
     private function assertVersionCompatibility(): void
