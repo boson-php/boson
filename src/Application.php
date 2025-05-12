@@ -15,6 +15,8 @@ use Boson\Event\ApplicationStarting;
 use Boson\Event\ApplicationStopped;
 use Boson\Event\ApplicationStopping;
 use Boson\Exception\NoDefaultWindowException;
+use Boson\Internal\BootHandler\BootHandlerInterface;
+use Boson\Internal\BootHandler\WindowsDetachConsoleBootHandler;
 use Boson\Internal\DebugEnvResolver;
 use Boson\Internal\DeferRunner\DeferRunnerInterface;
 use Boson\Internal\DeferRunner\NativeShutdownFunctionRunner;
@@ -173,6 +175,8 @@ final class Application implements EventListenerProviderInterface
         public readonly ApplicationCreateInfo $info = new ApplicationCreateInfo(),
         ?PsrEventDispatcherInterface $dispatcher = null,
     ) {
+        $this->boot();
+
         $this->api = new LibSaucer($this->info->library);
         $this->isDebug = DebugEnvResolver::resolve($this->info->debug);
         $this->events = $this->dispatcher = $this->createEventListener($dispatcher);
@@ -190,6 +194,26 @@ final class Application implements EventListenerProviderInterface
 
         if ($this->info->autorun) {
             $this->registerDeferRunnerIfNotRegistered();
+        }
+    }
+
+    /**
+     * Returns a list of boot handlers for the application.
+     *
+     * @return iterable<array-key, BootHandlerInterface>
+     */
+    private function getBootHandlers(): iterable
+    {
+        yield new WindowsDetachConsoleBootHandler();
+    }
+
+    /**
+     * Boot application handlers.
+     */
+    private function boot(): void
+    {
+        foreach ($this->getBootHandlers() as $handler) {
+            $handler->boot();
         }
     }
 
