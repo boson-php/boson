@@ -7,7 +7,7 @@ namespace Boson\WebView\Internal;
 /**
  * Packs the specified code into the given context.
  *
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
 final readonly class WebViewContextPacker
@@ -23,14 +23,20 @@ final readonly class WebViewContextPacker
     public const string DEFAULT_DELIMITER = '.';
 
     public function __construct(
+        /**
+         * @var non-empty-string
+         */
         private string $delimiter = self::DEFAULT_DELIMITER,
+        /**
+         * @var non-empty-string
+         */
         private string $context = self::DEFAULT_ROOT_CONTEXT,
     ) {}
 
     /**
      * @param non-empty-list<non-empty-string> $context
      * @param non-empty-string $name
-     * @param non-empty-string $code
+     *
      * @return non-empty-string
      */
     private function packFunction(array $context, string $name, string $code): string
@@ -45,6 +51,7 @@ final readonly class WebViewContextPacker
     /**
      * @param non-empty-list<non-empty-string> $context
      * @param non-empty-string $name
+     *
      * @return non-empty-string
      */
     private function packElement(array $context, string $name): string
@@ -57,7 +64,7 @@ final readonly class WebViewContextPacker
 
     /**
      * @param non-empty-list<string> $segments
-     * @param non-empty-string $code
+     *
      * @return list<non-empty-string>
      */
     private function packSegments(array $segments, string $code): array
@@ -77,7 +84,6 @@ final readonly class WebViewContextPacker
             $result[] = $indexAt === $index
                 ? $this->packFunction($packed, $segment, $code)
                 : $this->packElement($packed, $segment);
-
 
             $context = $segment;
         }
@@ -102,16 +108,25 @@ final readonly class WebViewContextPacker
      * ```
      *
      * @param non-empty-string $path
+     *
      * @return non-empty-string
      */
     public function pack(string $path, string $code): string
     {
         if (!\str_contains($path, $this->delimiter)) {
-            return $this->packFunction($this->context, $path, $code);
+            return $this->packFunction([$this->context], $path, $code);
         }
 
-        $segments = $this->packSegments(\explode($this->delimiter, $path), $code);
+        $segments = \explode($this->delimiter, $path);
+        $packedSegments = $this->packSegments($segments, $code);
 
-        return \implode(';', \iterator_to_array($segments));
+        if ($packedSegments === []) {
+            throw new \InvalidArgumentException(\sprintf(
+                'Invalid function name "%s"',
+                \addcslashes($path, '"'),
+            ));
+        }
+
+        return \implode(';', $packedSegments);
     }
 }
