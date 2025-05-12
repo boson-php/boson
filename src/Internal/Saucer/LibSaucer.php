@@ -89,8 +89,6 @@ final readonly class LibSaucer
         };
 
         if (\extension_loaded('phar') && \Phar::running() !== '') {
-            \Phar::mount($result, self::DEFAULT_BIN_DIR . '/libboson-windows-x86_64.dll');
-
             return $result;
         }
 
