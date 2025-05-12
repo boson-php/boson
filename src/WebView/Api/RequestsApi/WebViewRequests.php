@@ -13,6 +13,7 @@ use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Api\RequestsApi\Exception\StalledRequestException;
 use Boson\WebView\Api\RequestsApi\Exception\UnprocessableRequestException;
 use Boson\WebView\Api\RequestsApiInterface;
+use Boson\WebView\Api\RequestsCreateInfo;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Internal\Timeout;
 use Boson\WebView\WebView;
@@ -24,35 +25,10 @@ use function React\Promise\resolve;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Boson\WebView\Api\RequestsApi
- */
-enum WebViewRequestsResultStatus
-{
-    case Pending;
-}
-
-/**
- * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
 final class WebViewRequests extends WebViewApi implements RequestsApiInterface
 {
-    /**
-     * Default timeout for request processing in seconds.
-     *
-     * This constant defines how long the system will wait for a response
-     * before considering the request stalled.
-     */
-    private const float DEFAULT_REQUEST_TIMEOUT = 0.1;
-
-    /**
-     * JavaScript method name for response handling.
-     *
-     * This constant defines the name of the JavaScript function that will
-     * be used to send responses back to PHP.
-     */
-    private const string METHOD_NAME = 'boson.respond';
-
     /**
      * Request ID generator for tracking requests.
      *
@@ -78,18 +54,32 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
      */
     private readonly ApplicationPollerInterface $poller;
 
+    /**
+     * @see RequestsCreateInfo::$timeout
+     */
+    private readonly float $timeout;
+
+    /**
+     * @see RequestsCreateInfo::$callback
+     *
+     * @var non-empty-string
+     */
+    private readonly string $callback;
+
     public function __construct(
         LibSaucer $api,
         WebView $webview,
         EventDispatcherInterface $dispatcher,
-        private readonly float $timeout = self::DEFAULT_REQUEST_TIMEOUT,
     ) {
         parent::__construct($api, $webview, $dispatcher);
+
+        $this->timeout = $webview->info->requests->timeout;
+        $this->callback = $webview->info->requests->callback;
 
         $this->poller = $this->webview->window->app->poller;
 
         $this->ids = IntValueGenerator::createFromEnvironment();
-        $this->webview->bind(self::METHOD_NAME, $this->onResponseReceived(...));
+        $this->webview->bind($this->callback, $this->onResponseReceived(...));
     }
 
     /**
@@ -168,7 +158,7 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
     private function pack(string|int $id, string $code): string
     {
         return \vsprintf('%s("%s", (function() { return %s; })());', [
-            self::METHOD_NAME,
+            $this->callback,
             \addcslashes((string) $id, '"'),
             $code,
         ]);

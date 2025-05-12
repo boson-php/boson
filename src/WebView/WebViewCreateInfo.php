@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Boson\WebView;
 
 use Boson\Application;
+use Boson\WebView\Api\FunctionsCreateInfo;
+use Boson\WebView\Api\RequestsCreateInfo;
+use Boson\WebView\Api\WebComponentsCreateInfo;
 use Boson\WebView\Internal\WebViewCreateInfo\StorageDirectoryResolver;
 
 /**
@@ -66,21 +69,6 @@ final readonly class WebViewCreateInfo
     public array $flags;
 
     /**
-     * List of scripts which will always be loaded on any page
-     * (executed after DOM has been ready).
-     *
-     * @var list<string>
-     */
-    public array $scripts;
-
-    /**
-     * List of global functions that will be added to the WebView.
-     *
-     * @var array<non-empty-string, \Closure(mixed...):mixed>
-     */
-    public array $functions;
-
-    /**
      * @param iterable<mixed, string> $scripts see the {@see $scripts} property
      *        description for information
      * @param iterable<non-empty-string, \Closure(mixed...):mixed> $functions
@@ -99,26 +87,6 @@ final readonly class WebViewCreateInfo
      *        See the {@see $flags} property description for information
      */
     public function __construct(
-        /**
-         * An URL/URI that should be loaded when creating a webview.
-         *
-         * Note: You can specify either {@see $url} OR {@see $html},
-         *       but NOT both.
-         *
-         * @var non-empty-string|null
-         */
-        public ?string $url = null,
-        /**
-         * HTML content that should be loaded when creating a webview.
-         *
-         * Note: You can specify either {@see $url} OR {@see $html},
-         *       but NOT both.
-         *
-         * @var non-empty-string|null
-         */
-        public ?string $html = null,
-        iterable $scripts = [],
-        iterable $functions = [],
         /**
          * This option may be set to customize "user-agent" browser header.
          *
@@ -147,14 +115,20 @@ final readonly class WebViewCreateInfo
          *  - Dev Tools will bew disabled if debug mode is disabled.
          */
         public ?bool $devTools = null,
+        /**
+         * Configuration DTO for Functions API
+         */
+        public FunctionsCreateInfo $functions = new FunctionsCreateInfo(),
+        /**
+         * Configuration DTO for Requests API
+         */
+        public RequestsCreateInfo $requests = new RequestsCreateInfo(),
+        /**
+         * Configuration DTO for WebComponents API
+         */
+        public WebComponentsCreateInfo $webComponents = new WebComponentsCreateInfo(),
     ) {
-        assert($url === null || $html === null, new \InvalidArgumentException(
-            message: 'You can specify either $url or $html, but not both',
-        ));
-
         $this->storage = StorageDirectoryResolver::resolve($storage);
         $this->flags = \iterator_to_array($flags, true);
-        $this->functions = \iterator_to_array($functions, true);
-        $this->scripts = \iterator_to_array($scripts, false);
     }
 }

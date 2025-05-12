@@ -96,6 +96,10 @@
             <collection name="WebView [intention]" />
             <stopCompletion />
         </classMethod>
+
+        <classMethod class="\Boson\WebView\Api\WebComponentsApi\WebViewWebComponents" method="add" argument="0">
+            <collection name="Web Component" />
+        </classMethod>
     </definitions>
     <collections>
         <attributeClass name="Application [event]" class="\Boson\Shared\Marker\AsApplicationEvent" />
@@ -104,5 +108,7 @@
         <attributeClass name="Window [intention]" class="\Boson\Shared\Marker\AsWindowIntention" />
         <attributeClass name="WebView [event]" class="\Boson\Shared\Marker\AsWebViewEvent" />
         <attributeClass name="WebView [intention]" class="\Boson\Shared\Marker\AsWebViewIntention" />
+
+        <attributeClass name="Web Component" class="\Boson\WebView\Api\WebComponentsApi\Attribute\AsWebComponent" />
     </collections>
 </meta-storm>

@@ -1,5 +1,5 @@
 
-import CryptoIdGenerator, {type IdGeneratorInterface} from "./id-generator";
+import {type IdGeneratorInterface} from "./id-generator";
 import type {TransportInterface} from "./transport";
 
 /**
@@ -77,7 +77,7 @@ export default class BosonRpc implements BosonRpcInterface, BosonRpcResponderInt
      */
     constructor(
         io: TransportInterface,
-        ids: IdGeneratorInterface = new CryptoIdGenerator(),
+        ids: IdGeneratorInterface,
     ) {
         this.#io = io;
         this.#ids = ids;

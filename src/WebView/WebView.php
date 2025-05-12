@@ -12,6 +12,8 @@ use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Exception\BosonException;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
+use Boson\WebView\Api\WebComponentsApi\WebViewWebComponents;
+use Boson\WebView\Api\WebComponentsApiInterface;
 use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Api\FunctionsApi\WebViewFunctionsMap;
 use Boson\WebView\Api\FunctionsApiInterface;
@@ -69,6 +71,11 @@ final class WebView implements EventListenerProviderInterface
      * the current document.
      */
     public readonly RequestsApiInterface $requests;
+
+    /**
+     * Gets access to the Components API of the webview.
+     */
+    public readonly WebComponentsApiInterface $components;
 
     /**
      * Contains webview URI instance.
@@ -183,11 +190,12 @@ final class WebView implements EventListenerProviderInterface
         $this->scripts = $this->createApi(WebViewScriptsSet::class);
         $this->functions = $this->createApi(WebViewFunctionsMap::class);
         $this->requests = $this->createApi(WebViewRequests::class);
+        $this->components = $this->createApi(WebViewWebComponents::class);
 
         $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
         $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
 
-        $this->bootWebView();
+        $this->loadRuntimeScripts();
     }
 
     /**
@@ -223,30 +231,6 @@ final class WebView implements EventListenerProviderInterface
             dispatcher: $this->events,
             state: $this->state,
         );
-    }
-
-    /**
-     * Load configured payload to the webview
-     */
-    private function bootWebView(): void
-    {
-        $this->loadRuntimeScripts();
-
-        foreach ($this->info->functions as $function => $callback) {
-            $this->functions->bind($function, $callback);
-        }
-
-        foreach ($this->info->scripts as $script) {
-            $this->scripts->add($script);
-        }
-
-        if ($this->info->url !== null) {
-            $this->url = $this->info->url;
-        }
-
-        if ($this->info->html !== null) {
-            $this->html = $this->info->html;
-        }
     }
 
     /**

@@ -27,33 +27,9 @@ final class WebViewFunctionsMap extends WebViewApi implements
     \IteratorAggregate
 {
     /**
-     * Default RPC context name for JavaScript communication.
-     *
-     * This constant defines the default context (variable name) used for
-     * RPC communication between JavaScript and PHP.
-     *
-     * Context name defined in the {@link ./resources/src/main.ts} source.
-     *
      * @var non-empty-string
      */
-    public const string DEFAULT_RPC_CONTEXT = DefaultRpcResponder::DEFAULT_CONTEXT;
-
-    /**
-     * Default context name for JavaScript function registration.
-     *
-     * This constant defines the default context (window) where JavaScript
-     * functions will be registered.
-     *
-     * @var non-empty-string
-     */
-    public const string DEFAULT_CONTEXT = WebViewContextPacker::DEFAULT_ROOT_CONTEXT;
-
-    /**
-     * Default context delimiter for JavaScript function registration.
-     *
-     * @var non-empty-string
-     */
-    public const string DEFAULT_DELIMITER = WebViewContextPacker::DEFAULT_DELIMITER;
+    private readonly string $rpcContext;
 
     /**
      * RPC responder instance for handling JavaScript-PHP communication.
@@ -76,29 +52,19 @@ final class WebViewFunctionsMap extends WebViewApi implements
         LibSaucer $api,
         WebView $webview,
         EventDispatcherInterface $dispatcher,
-        /**
-         * @var non-empty-string
-         */
-        private readonly string $rpcContext = self::DEFAULT_RPC_CONTEXT,
-        /**
-         * @var non-empty-string
-         */
-        private readonly string $functionContext = self::DEFAULT_CONTEXT,
-        /**
-         * @var non-empty-string
-         */
-        private readonly string $functionDelimiter = self::DEFAULT_DELIMITER,
     ) {
         parent::__construct($api, $webview, $dispatcher);
 
+        $this->rpcContext = $webview->info->functions->rpcContext;
+
         $this->packer = new WebViewContextPacker(
-            delimiter: $this->functionDelimiter,
-            context: $this->functionContext,
+            delimiter: $webview->info->functions->functionDelimiter,
+            context: $webview->info->functions->functionContext,
         );
 
         $this->responder = new DefaultRpcResponder(
-            scriptsApi: $this->webview->scripts,
-            context: $rpcContext,
+            scriptsApi: $webview->scripts,
+            context: $this->rpcContext,
         );
 
         $this->registerDefaultEventListeners();
