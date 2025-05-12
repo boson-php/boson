@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\Metadata\Reader;
 
+use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\Attributes\AttributeAttributesReader;
+use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\Attributes\AttributesReaderInterface;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ClassName\AttributeClassNameReader;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ClassName\ClassNameReaderInterface;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ClassName\NativeClassNameReader;
-use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\Attributes\AttributeAttributesReader;
-use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\Attributes\AttributesReaderInterface;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ConnectMethod\AttributeConnectMethodReader;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ConnectMethod\ConnectMethodReaderInterface;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ConnectMethod\NativeConnectMethodReader;

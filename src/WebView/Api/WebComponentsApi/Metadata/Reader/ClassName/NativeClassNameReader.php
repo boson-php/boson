@@ -10,6 +10,7 @@ final readonly class NativeClassNameReader implements ClassNameReaderInterface
     {
         $formatted = \trim($component, '\\');
 
+        /** @var non-empty-string */
         return \str_replace('\\', '_', $formatted);
     }
 }

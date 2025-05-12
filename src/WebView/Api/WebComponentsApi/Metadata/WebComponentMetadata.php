@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\WebComponentsApi\Metadata;
 
 /**
- * @template TComponent of object
+ * @template TComponent of object = object
  */
 final readonly class WebComponentMetadata
 {
@@ -62,6 +62,8 @@ final readonly class WebComponentMetadata
     }
 
     /**
+     * @api
+     *
      * @return list<non-empty-string>
      */
     public function getAttributeNames(): array
@@ -73,14 +75,17 @@ final readonly class WebComponentMetadata
      * @api
      *
      * @param non-empty-string $attribute
+     *
      * @return non-empty-string|null
      */
     public function findPropertyByAttributeName(string $attribute): ?string
     {
-        return $this->attributesToMetadata[$attribute]?->property;
+        return $this->attributesToMetadata[$attribute]->property ?? null;
     }
 
     /**
+     * @api
+     *
      * @return list<non-empty-string>
      */
     public function geetPropertyNames(): array
@@ -91,11 +96,12 @@ final readonly class WebComponentMetadata
     /**
      * @api
      *
-     * @param non-empty-string $attribute
+     * @param non-empty-string $property
+     *
      * @return non-empty-string|null
      */
     public function findAttributeByPropertyName(string $property): ?string
     {
-        return $this->propertiesToMetadata[$property]?->attribute;
+        return $this->propertiesToMetadata[$property]->attribute ?? null;
     }
 }

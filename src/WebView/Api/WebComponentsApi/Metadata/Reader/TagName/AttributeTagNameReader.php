@@ -14,11 +14,7 @@ final readonly class AttributeTagNameReader implements TagNameReaderInterface
 
     public function getTagName(string $component): string
     {
-        try {
-            $reflection = new \ReflectionClass($component);
-        } catch (\ReflectionException) {
-            return $this->delegate->getTagName($component);
-        }
+        $reflection = new \ReflectionClass($component);
 
         foreach ($this->getClassAttributes($reflection) as $attribute) {
             if ($attribute->tag !== null) {
@@ -30,6 +26,8 @@ final readonly class AttributeTagNameReader implements TagNameReaderInterface
     }
 
     /**
+     * @param \ReflectionClass<object> $reflection
+     *
      * @return list<AsWebComponent>
      */
     private function getClassAttributes(\ReflectionClass $reflection): array

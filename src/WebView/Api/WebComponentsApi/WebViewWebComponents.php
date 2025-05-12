@@ -7,8 +7,8 @@ namespace Boson\WebView\Api\WebComponentsApi;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\WebView\Api\WebComponentsApi\Exception\ComponentAlreadyDefinedExceptionWeb;
-use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentMetadata;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\WebComponentMetadataReaderInterface;
+use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentMetadata;
 use Boson\WebView\Api\WebComponentsApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Event\WebViewNavigating;
@@ -19,7 +19,7 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
     /**
      * A map containing a link between a tag name and a metadata object.
      *
-     * @var array<non-empty-string, WebComponentMetadata>
+     * @var array<non-empty-string, WebComponentMetadata<object>>
      */
     private array $components = [];
 
@@ -63,29 +63,55 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
         $this->webview->bind('boson.components.attributeChanged', $this->onAttributeChanged(...));
     }
 
+    /**
+     * @param non-empty-string $tag
+     * @param non-empty-string $id
+     */
     private function onCreated(string $tag, string $id): void
     {
         $metadata = $this->components[$tag] ?? null;
 
-        if ($metadata === null) {
+        if ($metadata === null || $id === '') {
             return;
         }
 
         $this->instances->create($id, $metadata);
     }
 
+    /**
+     * @param non-empty-string $id
+     */
     private function onConnected(string $id): ?string
     {
+        if ($id === '') {
+            return null;
+        }
+
         return $this->instances->notifyConnect($id);
     }
 
+    /**
+     * @param non-empty-string $id
+     */
     private function onDisconnected(string $id): void
     {
+        if ($id === '') {
+            return;
+        }
+
         $this->instances->notifyDisconnect($id);
     }
 
+    /**
+     * @param non-empty-string $id
+     * @param non-empty-string $name
+     */
     private function onAttributeChanged(string $id, string $name, ?string $value, ?string $previous): void
     {
+        if ($id === '' || $name === '') {
+            return;
+        }
+
         $this->instances->notifyAttributeChange($id, $name, $value, $previous);
     }
 

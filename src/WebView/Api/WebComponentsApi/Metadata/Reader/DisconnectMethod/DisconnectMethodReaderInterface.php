@@ -8,6 +8,7 @@ interface DisconnectMethodReaderInterface
 {
     /**
      * @param class-string $component
+     *
      * @return non-empty-string|null
      */
     public function findDisconnectMethod(string $component): ?string;

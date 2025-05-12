@@ -8,6 +8,7 @@ interface ClassNameReaderInterface
 {
     /**
      * @param class-string $component
+     *
      * @return non-empty-string
      */
     public function getClassName(string $component): string;

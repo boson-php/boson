@@ -14,11 +14,7 @@ final readonly class AttributeClassNameReader implements ClassNameReaderInterfac
 
     public function getClassName(string $component): string
     {
-        try {
-            $reflection = new \ReflectionClass($component);
-        } catch (\ReflectionException) {
-            return $this->delegate->getClassName($component);
-        }
+        $reflection = new \ReflectionClass($component);
 
         foreach ($this->getClassAttributes($reflection) as $attribute) {
             if ($attribute->class !== null) {
@@ -30,7 +26,8 @@ final readonly class AttributeClassNameReader implements ClassNameReaderInterfac
     }
 
     /**
-     * @param \ReflectionClass $reflection
+     * @param \ReflectionClass<object> $reflection
+     *
      * @return list<AsWebComponent>
      */
     private function getClassAttributes(\ReflectionClass $reflection): array

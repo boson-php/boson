@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\Metadata\Reader;
 
+use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\Attributes\AttributesReaderInterface;
+use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ClassName\ClassNameReaderInterface;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ConnectMethod\ConnectMethodReaderInterface;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\DisconnectMethod\DisconnectMethodReaderInterface;
+use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\TagName\TagNameReaderInterface;
 use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\Template\TemplateReaderInterface;
 use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentMetadata;
-use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\ClassName\ClassNameReaderInterface;
-use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\Attributes\AttributesReaderInterface;
-use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\TagName\TagNameReaderInterface;
 
 abstract readonly class CompositeWebComponentMetadataReader implements WebComponentMetadataReaderInterface
 {

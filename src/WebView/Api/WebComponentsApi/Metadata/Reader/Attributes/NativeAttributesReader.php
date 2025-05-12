@@ -10,16 +10,12 @@ final readonly class NativeAttributesReader implements AttributesReaderInterface
 {
     public function getAttributes(string $component): array
     {
-        try {
-            $reflection = new \ReflectionClass($component);
-        } catch (\ReflectionException) {
-            return [];
-        }
+        $reflection = new \ReflectionClass($component);
 
         $result = [];
 
         foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if ($property->isStatic()) {
+            if ($property->isStatic() || $property->name === '') {
                 continue;
             }
 

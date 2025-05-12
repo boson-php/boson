@@ -10,6 +10,7 @@ interface AttributesReaderInterface
 {
     /**
      * @param class-string $component
+     *
      * @return list<WebComponentAttributeMetadata>
      */
     public function getAttributes(string $component): array;

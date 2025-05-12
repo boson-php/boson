@@ -15,7 +15,7 @@ use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentTemplateMetadata;
 /**
  * Provides components instances
  *
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api
  */
 final class WebViewComponentInstances
@@ -34,6 +34,7 @@ final class WebViewComponentInstances
 
     /**
      * @param non-empty-string $id
+     * @param WebComponentMetadata<object> $meta
      */
     public function create(string $id, WebComponentMetadata $meta): void
     {
@@ -43,6 +44,9 @@ final class WebViewComponentInstances
         );
     }
 
+    /**
+     * @param non-empty-string $id
+     */
     public function notifyConnect(string $id): ?string
     {
         $instance = $this->instances[$id] ?? null;
@@ -52,6 +56,7 @@ final class WebViewComponentInstances
         }
 
         if ($instance->meta->onConnect !== null) {
+            /** @phpstan-ignore-next-line : Known dynamic method call */
             $instance->instance->{$instance->meta->onConnect}();
         }
 
@@ -79,16 +84,29 @@ final class WebViewComponentInstances
         return $meta->html;
     }
 
-    private function renderPropertyTemplate(object $context, WebComponentPropertyTemplateMetadata $meta): string
+    private function renderPropertyTemplate(object $context, WebComponentPropertyTemplateMetadata $meta): ?string
     {
+        /**
+         * @var string|null
+         *
+         * @phpstan-ignore-next-line : Known dynamic property fetch
+         */
         return $context->{$meta->name};
     }
 
-    private function renderMethodTemplate(object $context, WebComponentMethodTemplateMetadata $meta): string
+    private function renderMethodTemplate(object $context, WebComponentMethodTemplateMetadata $meta): ?string
     {
+        /**
+         * @var string|null
+         *
+         * @phpstan-ignore-next-line : Known dynamic method call
+         */
         return $context->{$meta->name}();
     }
 
+    /**
+     * @param non-empty-string $id
+     */
     public function notifyDisconnect(string $id): void
     {
         $instance = $this->instances[$id] ?? null;
@@ -98,17 +116,29 @@ final class WebViewComponentInstances
         }
 
         if ($instance->meta->onDisconnect !== null) {
+            /** @phpstan-ignore-next-line : Known dynamic method call */
             $instance->instance->{$instance->meta->onDisconnect}();
         }
     }
 
+    /**
+     * @param non-empty-string $id
+     * @param non-empty-string $name
+     *
+     * @throws \Throwable
+     */
     public function notifyAttributeChange(string $id, string $name, ?string $value, ?string $previous): void
     {
         $instance = $this->instances[$id] ?? null;
-        $property = $instance?->meta->findPropertyByAttributeName($name);
 
         // Check that instance is present
-        // And such attribute is observable
+        if ($instance === null) {
+            return;
+        }
+
+        $property = $instance->meta->findPropertyByAttributeName($name);
+
+        // Check that such attribute is observable
         if ($property === null) {
             return;
         }

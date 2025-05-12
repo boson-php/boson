@@ -11,15 +11,14 @@ final readonly class AttributeAttributesReader implements AttributesReaderInterf
 {
     public function getAttributes(string $component): array
     {
-        try {
-            $reflection = new \ReflectionClass($component);
-        } catch (\ReflectionException) {
-            return [];
-        }
-
+        $reflection = new \ReflectionClass($component);
         $result = [];
 
         foreach ($reflection->getProperties() as $property) {
+            if ($property->name === '') {
+                continue;
+            }
+
             foreach ($this->getPropertyAttributes($property) as $attribute) {
                 $result[] = new WebComponentAttributeMetadata(
                     property: $property->name,

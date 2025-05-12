@@ -8,6 +8,7 @@ interface ConnectMethodReaderInterface
 {
     /**
      * @param class-string $component
+     *
      * @return non-empty-string|null
      */
     public function findConnectMethod(string $component): ?string;

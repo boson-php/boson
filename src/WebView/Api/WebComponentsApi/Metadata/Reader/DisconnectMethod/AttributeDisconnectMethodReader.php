@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\WebComponentsApi\Metadata\Reader\DisconnectMethod;
 
 use Boson\WebView\Api\WebComponentsApi\Attribute\AsDisconnectHandler;
-use Boson\WebView\Api\WebComponentsApi\Attribute\AsTemplate;
 
 final readonly class AttributeDisconnectMethodReader implements DisconnectMethodReaderInterface
 {
@@ -15,11 +14,7 @@ final readonly class AttributeDisconnectMethodReader implements DisconnectMethod
 
     public function findDisconnectMethod(string $component): ?string
     {
-        try {
-            $reflection = new \ReflectionClass($component);
-        } catch (\ReflectionException) {
-            return $this->delegate?->findDisconnectMethod($component);
-        }
+        $reflection = new \ReflectionClass($component);
 
         foreach ($reflection->getMethods() as $method) {
             foreach ($this->getMethodAttributes($method) as $_) {
@@ -31,7 +26,7 @@ final readonly class AttributeDisconnectMethodReader implements DisconnectMethod
     }
 
     /**
-     * @return list<AsTemplate>
+     * @return list<AsDisconnectHandler>
      */
     private function getMethodAttributes(\ReflectionMethod $reflection): array
     {

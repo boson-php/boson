@@ -12,6 +12,7 @@ interface WebComponentInstantiatorInterface
      * @template TArgComponent of object
      *
      * @param WebComponentMetadata<TArgComponent> $component
+     *
      * @return TArgComponent
      */
     public function create(WebComponentMetadata $component): object;

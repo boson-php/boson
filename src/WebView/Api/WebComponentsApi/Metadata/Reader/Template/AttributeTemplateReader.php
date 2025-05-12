@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\Metadata\Reader\Template;
 
-use Boson\WebView\Api\WebComponentsApi\Attribute\AsWebComponent;
 use Boson\WebView\Api\WebComponentsApi\Attribute\AsTemplate;
+use Boson\WebView\Api\WebComponentsApi\Attribute\AsWebComponent;
 use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentHtmlTemplateMetadata;
 use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentMethodTemplateMetadata;
 use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentPropertyTemplateMetadata;
@@ -19,11 +19,7 @@ final readonly class AttributeTemplateReader implements TemplateReaderInterface
 
     public function findTemplate(string $component): ?WebComponentTemplateMetadata
     {
-        try {
-            $reflection = new \ReflectionClass($component);
-        } catch (\ReflectionException) {
-            return $this->delegate?->findTemplate($component);
-        }
+        $reflection = new \ReflectionClass($component);
 
         foreach ($this->getClassAttributes($reflection) as $attribute) {
             if ($attribute->template === null) {
@@ -36,6 +32,10 @@ final readonly class AttributeTemplateReader implements TemplateReaderInterface
         }
 
         foreach ($reflection->getProperties() as $property) {
+            if ($property->name === '') {
+                continue;
+            }
+
             foreach ($this->getPropertyAttributes($property) as $_) {
                 return new WebComponentPropertyTemplateMetadata(
                     name: $property->name,
@@ -44,6 +44,10 @@ final readonly class AttributeTemplateReader implements TemplateReaderInterface
         }
 
         foreach ($reflection->getMethods() as $method) {
+            if ($method->name === '') {
+                continue;
+            }
+
             foreach ($this->getMethodAttributes($method) as $_) {
                 return new WebComponentMethodTemplateMetadata(
                     name: $method->name,
@@ -69,6 +73,8 @@ final readonly class AttributeTemplateReader implements TemplateReaderInterface
     }
 
     /**
+     * @param \ReflectionClass<object> $reflection
+     *
      * @return list<AsWebComponent>
      */
     private function getClassAttributes(\ReflectionClass $reflection): array
