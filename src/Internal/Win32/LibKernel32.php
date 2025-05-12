@@ -25,6 +25,27 @@ final readonly class LibKernel32
             lib: 'kernel32.dll',
         );
     }
+
+    /**
+     * @param non-empty-string $method
+     * @param array<non-empty-string|int<0, max>, mixed> $args
+     */
+    public function __call(string $method, array $args): mixed
+    {
+        assert($method !== '', 'Method name MUST not be empty');
+
+        return $this->ffi->$method(...$args);
+    }
+
+    public function __serialize(): array
+    {
+        throw new \LogicException('Cannot serialize library');
+    }
+
+    public function __clone()
+    {
+        throw new \LogicException('Cannot clone library');
+    }
 }
 
 __halt_compiler();
