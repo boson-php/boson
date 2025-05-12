@@ -22,7 +22,7 @@ final readonly class FlagsListFormatter
     public static function format(iterable $flags): iterable
     {
         foreach ($flags as $name => $value) {
-            if (!\is_string($value)) {
+            if (!\is_string($name)) {
                 $result = self::formatFlagValue($name, $value);
 
                 if ($result !== '') {
@@ -63,7 +63,7 @@ final readonly class FlagsListFormatter
         return match (true) {
             $value === true => 'true',
             $value === false => 'false',
-            \is_string($value) => \var_export(\trim($value), true),
+            \is_string($value) => \sprintf('"%s"', \addcslashes(\trim($value), '"')),
             \is_float($value),
             \is_int($value) => \var_export($value, true),
             \is_array($value) => self::formatFlagsListValue($name, $value),
