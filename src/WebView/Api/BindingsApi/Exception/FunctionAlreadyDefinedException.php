@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api\FunctionsApi\Exception;
+namespace Boson\WebView\Api\BindingsApi\Exception;
 
-class FunctionAlreadyDefinedException extends FunctionsApiException
+class FunctionAlreadyDefinedException extends BindingsApiException
 {
     public static function becauseFunctionAlreadyDefined(string $name, ?\Throwable $previous = null): self
     {

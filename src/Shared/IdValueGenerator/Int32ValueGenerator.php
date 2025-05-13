@@ -9,7 +9,7 @@ namespace Boson\Shared\IdValueGenerator;
  *
  * @template-extends IntValueGenerator<int<0, 2147483647>>
  */
-final class Int32Generator extends IntValueGenerator
+final class Int32ValueGenerator extends IntValueGenerator
 {
     public readonly int $initial;
 

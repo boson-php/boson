@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api\RequestsApi;
+namespace Boson\WebView\Api\DataApi;
 
 /**
  * @internal this is an internal library class, please do not use it in your code

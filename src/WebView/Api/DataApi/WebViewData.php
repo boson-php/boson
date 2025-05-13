@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api\RequestsApi;
+namespace Boson\WebView\Api\DataApi;
 
 use Boson\ApplicationPollerInterface;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
-use Boson\Shared\IdValueGenerator\IntValueGenerator;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\RequestsApi\Exception\StalledRequestException;
-use Boson\WebView\Api\RequestsApi\Exception\UnprocessableRequestException;
-use Boson\WebView\Api\RequestsApiInterface;
-use Boson\WebView\Api\RequestsCreateInfo;
+use Boson\WebView\Api\DataApi\Exception\StalledRequestException;
+use Boson\WebView\Api\DataApi\Exception\UnprocessableRequestException;
+use Boson\WebView\Api\DataApiCreateInfo;
+use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Internal\Timeout;
 use Boson\WebView\WebView;
@@ -27,8 +26,20 @@ use function React\Promise\resolve;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewRequests extends WebViewApi implements RequestsApiInterface
+final class WebViewData extends WebViewApi implements DataApiInterface
 {
+    /**
+     * @see DataApiCreateInfo::$timeout
+     */
+    private readonly float $timeout;
+
+    /**
+     * @see DataApiCreateInfo::$callback
+     *
+     * @var non-empty-string
+     */
+    private readonly string $callback;
+
     /**
      * Request ID generator for tracking requests.
      *
@@ -54,18 +65,6 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
      */
     private readonly ApplicationPollerInterface $poller;
 
-    /**
-     * @see RequestsCreateInfo::$timeout
-     */
-    private readonly float $timeout;
-
-    /**
-     * @see RequestsCreateInfo::$callback
-     *
-     * @var non-empty-string
-     */
-    private readonly string $callback;
-
     public function __construct(
         LibSaucer $api,
         WebView $webview,
@@ -73,12 +72,11 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
     ) {
         parent::__construct($api, $webview, $dispatcher);
 
-        $this->timeout = $webview->info->requests->timeout;
-        $this->callback = $webview->info->requests->callback;
-
         $this->poller = $this->webview->window->app->poller;
+        $this->ids = $webview->info->data->ids;
+        $this->callback = $webview->info->data->callback;
+        $this->timeout = $webview->info->data->timeout;
 
-        $this->ids = IntValueGenerator::createFromEnvironment();
         $this->webview->bind($this->callback, $this->onResponseReceived(...));
     }
 
@@ -99,7 +97,7 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
         }
     }
 
-    public function send(#[Language('JavaScript')] string $code): PromiseInterface
+    public function defer(#[Language('JavaScript')] string $code): PromiseInterface
     {
         if ($code === '') {
             return resolve('');
@@ -123,7 +121,7 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
             return '';
         }
 
-        $promise = $this->send($code);
+        $promise = $this->defer($code);
 
         $result = WebViewRequestsResultStatus::Pending;
         $promise->then(static function (mixed $input) use (&$result): mixed {

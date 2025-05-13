@@ -12,15 +12,13 @@ use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Exception\BosonException;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
-use Boson\WebView\Api\FunctionsApi\WebViewFunctionsMap;
-use Boson\WebView\Api\FunctionsApiInterface;
-use Boson\WebView\Api\RequestsApi\WebViewRequests;
-use Boson\WebView\Api\RequestsApiInterface;
+use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Api\BindingsApi\WebViewBindingsMap;
+use Boson\WebView\Api\BindingsApiInterface;
+use Boson\WebView\Api\DataApi\WebViewData;
+use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\ScriptsApi\WebViewScriptsSet;
 use Boson\WebView\Api\ScriptsApiInterface;
-use Boson\WebView\Api\WebComponentsApi\WebViewWebComponents;
-use Boson\WebView\Api\WebComponentsApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Internal\WebViewEventHandler;
 use Boson\WebView\Internal\WebViewSchemeHandler;
@@ -57,12 +55,12 @@ final class WebView implements EventListenerProviderInterface
     public readonly ScriptsApiInterface $scripts;
 
     /**
-     * Gets access to the Functions API of the webview.
+     * Gets access to the Bindings API of the webview.
      *
      * Provides the ability to register PHP functions
      * in the webview.
      */
-    public readonly FunctionsApiInterface $functions;
+    public readonly BindingsApiInterface $bindings;
 
     /**
      * Gets access to the Requests API of the webview.
@@ -70,12 +68,7 @@ final class WebView implements EventListenerProviderInterface
      * Provides the ability to receive variant data from
      * the current document.
      */
-    public readonly RequestsApiInterface $requests;
-
-    /**
-     * Gets access to the Components API of the webview.
-     */
-    public readonly WebComponentsApiInterface $components;
+    public readonly DataApiInterface $requests;
 
     /**
      * Contains webview URI instance.
@@ -136,8 +129,6 @@ final class WebView implements EventListenerProviderInterface
      * Contains an internal bridge between {@see LibSaucer} events system
      * and the PSR {@see WebView::$events} dispatcher.
      *
-     * @noinspection PhpPropertyOnlyWrittenInspection
-     *
      * @phpstan-ignore property.onlyWritten
      */
     private readonly WebViewEventHandler $internalWebViewEventHandler;
@@ -145,8 +136,6 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Contains an internal bridge between {@see LibSaucer} scheme interception
      * system and the PSR {@see WebView::$events} dispatcher.
-     *
-     * @noinspection PhpPropertyOnlyWrittenInspection
      *
      * @phpstan-ignore property.onlyWritten
      */
@@ -188,14 +177,13 @@ final class WebView implements EventListenerProviderInterface
         $this->ptr = $this->window->id->ptr;
 
         $this->scripts = $this->createApi(WebViewScriptsSet::class);
-        $this->functions = $this->createApi(WebViewFunctionsMap::class);
-        $this->requests = $this->createApi(WebViewRequests::class);
-        $this->components = $this->createApi(WebViewWebComponents::class);
+        $this->bindings = $this->createApi(WebViewBindingsMap::class);
+        $this->requests = $this->createApi(WebViewData::class);
 
         $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
         $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
 
-        $this->loadRuntimeScripts();
+        $this->bootWebView();
     }
 
     /**
@@ -234,6 +222,26 @@ final class WebView implements EventListenerProviderInterface
     }
 
     /**
+     * Load configured payload to the webview
+     */
+    private function bootWebView(): void
+    {
+        $this->loadRuntimeScripts();
+
+        foreach ($this->info->scripts as $script) {
+            $this->scripts->add($script);
+        }
+
+        if ($this->info->url !== null) {
+            $this->url = $this->info->url;
+        }
+
+        if ($this->info->html !== null) {
+            $this->html = $this->info->html;
+        }
+    }
+
+    /**
      * Loads predefined scripts list
      */
     private function loadRuntimeScripts(): void
@@ -258,21 +266,21 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Binds a PHP callback to a new global JavaScript function.
      *
-     * Note: This is facade method of the {@see WebViewFunctionsMap::bind()},
-     *       that provides by the {@see $functions} field. This means that
+     * Note: This is facade method of the {@see WebViewBindingsMap::bind()},
+     *       that provides by the {@see $bindings} field. This means that
      *       calling `$webview->functions->bind(...)` should have the same effect.
      *
      * @api
      *
-     * @uses WebViewFunctionsMap::bind() WebView Functions API
-     *
      * @param non-empty-string $function
      *
      * @throws FunctionAlreadyDefinedException in case of function binding error
+     *
+     * @uses WebViewBindingsMap::bind() WebView Functions API
      */
     public function bind(string $function, \Closure $callback): void
     {
-        $this->functions->bind($function, $callback);
+        $this->bindings->bind($function, $callback);
     }
 
     /**
@@ -296,15 +304,15 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Requests arbitrary data from webview using JavaScript code.
      *
-     * Note: This is facade method of the {@see WebViewRequests::get()},
+     * Note: This is facade method of the {@see WebViewData::get()},
      *       that provides by the {@see $requests} field. This means that
      *       calling `$webview->requests->send(...)` should have the same effect.
-     *
-     *@uses WebViewRequests::get() WebView Requests API
      *
      * @api
      *
      * @param string $code A JavaScript code for execution
+     *
+     * @uses WebViewData::get() WebView Requests API
      */
     #[BlockingOperation]
     public function get(#[Language('JavaScript')] string $code): mixed

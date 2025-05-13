@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Environment\Exception;
+namespace Boson\Internal\Environment\Exception;
 
 final class UnsupportedOperatingSystemException extends EnvironmentException
 {

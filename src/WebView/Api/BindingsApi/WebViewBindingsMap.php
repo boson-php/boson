@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api\FunctionsApi;
+namespace Boson\WebView\Api\BindingsApi;
 
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
-use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
-use Boson\WebView\Api\FunctionsApi\Exception\InvalidFunctionException;
-use Boson\WebView\Api\FunctionsApiInterface;
+use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Api\BindingsApi\Exception\InvalidFunctionException;
+use Boson\WebView\Api\BindingsApiCreateInfo;
+use Boson\WebView\Api\BindingsApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Event\WebViewMessageReceived;
 use Boson\WebView\Internal\Rpc\DefaultRpcResponder;
@@ -22,11 +23,13 @@ use Boson\WebView\WebView;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewFunctionsMap extends WebViewApi implements
-    FunctionsApiInterface,
+final class WebViewBindingsMap extends WebViewApi implements
+    BindingsApiInterface,
     \IteratorAggregate
 {
     /**
+     * @see BindingsApiCreateInfo::$rpcContext
+     *
      * @var non-empty-string
      */
     private readonly string $rpcContext;
@@ -55,16 +58,14 @@ final class WebViewFunctionsMap extends WebViewApi implements
     ) {
         parent::__construct($api, $webview, $dispatcher);
 
-        $this->rpcContext = $webview->info->functions->rpcContext;
-
         $this->packer = new WebViewContextPacker(
-            delimiter: $webview->info->functions->functionDelimiter,
-            context: $webview->info->functions->functionContext,
+            delimiter: $webview->info->bindings->functionDelimiter,
+            context: $webview->info->bindings->functionContext,
         );
 
         $this->responder = new DefaultRpcResponder(
-            scriptsApi: $webview->scripts,
-            context: $this->rpcContext,
+            scriptsApi: $this->webview->scripts,
+            context: $this->rpcContext = $webview->info->bindings->rpcContext,
         );
 
         $this->registerDefaultEventListeners();

@@ -7,32 +7,32 @@ namespace Boson\Shared\IdValueGenerator;
 use Boson\Shared\IdValueGenerator\Exception\IdOverflowException;
 
 /**
- * @template TInteger of int<min, max>
- * @template-implements IdValueGeneratorInterface<TInteger>
+ * @template TIntValue of int
+ * @template-implements IntIdValueGeneratorInterface<TIntValue>
  */
-abstract class IntValueGenerator implements IdValueGeneratorInterface
+abstract class IntValueGenerator implements IntIdValueGeneratorInterface
 {
     /**
-     * @var TInteger
+     * @var TIntValue
      */
     protected int $current;
 
     /**
      * Gets initial value of generator
      *
-     * @var TInteger
+     * @var TIntValue
      */
     abstract public int $initial { get; }
 
     /**
      * Gets maximum supported generator value
      *
-     * @var TInteger
+     * @var TIntValue
      */
     abstract public int $maximum { get; }
 
     public function __construct(
-        private readonly OverflowBehaviour $onOverflow = OverflowBehaviour::Reset,
+        private readonly OverflowBehaviour $onOverflow = OverflowBehaviour::DEFAULT,
     ) {
         $this->current = $this->initial;
     }
@@ -44,10 +44,10 @@ abstract class IntValueGenerator implements IdValueGeneratorInterface
         OverflowBehaviour $onOverflow = OverflowBehaviour::Reset,
     ): IdValueGeneratorInterface {
         if (\PHP_INT_SIZE >= 8) {
-            return new Int64Generator($onOverflow);
+            return new Int64ValueGenerator($onOverflow);
         }
 
-        return new Int32Generator($onOverflow);
+        return new Int32ValueGenerator($onOverflow);
     }
 
     /**
@@ -63,7 +63,7 @@ abstract class IntValueGenerator implements IdValueGeneratorInterface
     }
 
     /**
-     * @return TInteger
+     * @return TIntValue
      * @throws IdOverflowException
      */
     public function nextId(): int
@@ -74,7 +74,7 @@ abstract class IntValueGenerator implements IdValueGeneratorInterface
             $this->reset();
         }
 
-        /** @var TInteger */
+        /** @var TIntValue */
         return $value;
     }
 }
