@@ -9,7 +9,7 @@ use Boson\Shared\IdValueGenerator\Exception\IdNotSupportedException;
 /**
  * @template-extends IntValueGenerator<int<0, 9223372036854775807>>
  */
-final class Int64Generator extends IntValueGenerator
+final class Int64ValueGenerator extends IntValueGenerator
 {
     public readonly int $initial;
 
@@ -19,7 +19,7 @@ final class Int64Generator extends IntValueGenerator
      * @throws IdNotSupportedException in case of the current platform is not supported
      */
     public function __construct(
-        OverflowBehaviour $onOverflow = OverflowBehaviour::Reset,
+        OverflowBehaviour $onOverflow = OverflowBehaviour::DEFAULT,
     ) {
         if (\PHP_INT_SIZE !== 8) {
             throw IdNotSupportedException::becauseInvalidPlatform('int64', 'int32');

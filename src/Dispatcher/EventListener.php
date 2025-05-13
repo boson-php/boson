@@ -9,6 +9,7 @@ use Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
 use Boson\Dispatcher\Subscription\SubscriptionInterface;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
 use Boson\Shared\IdValueGenerator\IntValueGenerator;
+use Boson\Shared\IdValueGenerator\PlatformDependentIntValueGenerator;
 use Psr\EventDispatcher\StoppableEventInterface;
 
 class EventListener implements EventListenerInterface, EventDispatcherInterface
@@ -25,7 +26,7 @@ class EventListener implements EventListenerInterface, EventDispatcherInterface
 
     public function __construct()
     {
-        $this->idGenerator = IntValueGenerator::createFromEnvironment();
+        $this->idGenerator = new PlatformDependentIntValueGenerator();
     }
 
     public function getListenersForEvent(object $event): iterable
