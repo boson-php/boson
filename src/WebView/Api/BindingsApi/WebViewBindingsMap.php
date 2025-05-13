@@ -9,7 +9,7 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Api\BindingsApi\Exception\InvalidFunctionException;
 use Boson\WebView\Api\BindingsApiInterface;
-use Boson\WebView\Api\BindingsCreateInfo;
+use Boson\WebView\Api\BindingsApiCreateInfo;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Event\WebViewMessageReceived;
 use Boson\WebView\Internal\Rpc\DefaultRpcResponder;
@@ -28,7 +28,7 @@ final class WebViewBindingsMap extends WebViewApi implements
     \IteratorAggregate
 {
     /**
-     * @see BindingsCreateInfo::$rpcContext
+     * @see BindingsApiCreateInfo::$rpcContext
      *
      * @var non-empty-string
      */

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api\RequestsApi;
+namespace Boson\WebView\Api\DataApi;
 
 use Boson\ApplicationPollerInterface;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
-use Boson\Shared\IdValueGenerator\IntValueGenerator;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\RequestsApi\Exception\StalledRequestException;
-use Boson\WebView\Api\RequestsApi\Exception\UnprocessableRequestException;
-use Boson\WebView\Api\RequestsApiInterface;
+use Boson\WebView\Api\DataApi\Exception\StalledRequestException;
+use Boson\WebView\Api\DataApi\Exception\UnprocessableRequestException;
+use Boson\WebView\Api\DataApiCreateInfo;
+use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Internal\Timeout;
 use Boson\WebView\WebView;
@@ -24,34 +24,21 @@ use function React\Promise\resolve;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Boson\WebView\Api\RequestsApi
- */
-enum WebViewRequestsResultStatus
-{
-    case Pending;
-}
-
-/**
- * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewRequests extends WebViewApi implements RequestsApiInterface
+final class WebViewData extends WebViewApi implements DataApiInterface
 {
     /**
-     * Default timeout for request processing in seconds.
-     *
-     * This constant defines how long the system will wait for a response
-     * before considering the request stalled.
+     * @see DataApiCreateInfo::$timeout
      */
-    private const float DEFAULT_REQUEST_TIMEOUT = 0.1;
+    private readonly float $timeout;
 
     /**
-     * JavaScript method name for response handling.
+     * @see DataApiCreateInfo::$callback
      *
-     * This constant defines the name of the JavaScript function that will
-     * be used to send responses back to PHP.
+     * @var non-empty-string
      */
-    private const string METHOD_NAME = 'boson.respond';
+    private readonly string $callback;
 
     /**
      * Request ID generator for tracking requests.
@@ -82,14 +69,15 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
         LibSaucer $api,
         WebView $webview,
         EventDispatcherInterface $dispatcher,
-        private readonly float $timeout = self::DEFAULT_REQUEST_TIMEOUT,
     ) {
         parent::__construct($api, $webview, $dispatcher);
 
         $this->poller = $this->webview->window->app->poller;
+        $this->ids = $webview->info->data->ids;
+        $this->callback = $webview->info->data->callback;
+        $this->timeout = $webview->info->data->timeout;
 
-        $this->ids = IntValueGenerator::createFromEnvironment();
-        $this->webview->bind(self::METHOD_NAME, $this->onResponseReceived(...));
+        $this->webview->bind($this->callback, $this->onResponseReceived(...));
     }
 
     /**
@@ -109,7 +97,7 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
         }
     }
 
-    public function send(#[Language('JavaScript')] string $code): PromiseInterface
+    public function defer(#[Language('JavaScript')] string $code): PromiseInterface
     {
         if ($code === '') {
             return resolve('');
@@ -133,7 +121,7 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
             return '';
         }
 
-        $promise = $this->send($code);
+        $promise = $this->defer($code);
 
         $result = WebViewRequestsResultStatus::Pending;
         $promise->then(static function (mixed $input) use (&$result): mixed {
@@ -168,7 +156,7 @@ final class WebViewRequests extends WebViewApi implements RequestsApiInterface
     private function pack(string|int $id, string $code): string
     {
         return \vsprintf('%s("%s", (function() { return %s; })());', [
-            self::METHOD_NAME,
+            $this->callback,
             \addcslashes((string) $id, '"'),
             $code,
         ]);

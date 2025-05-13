@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace Boson\WebView\Api;
 
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\RequestsApi\Exception\StalledRequestException;
-use Boson\WebView\Api\RequestsApi\Exception\UnprocessableRequestException;
+use Boson\WebView\Api\DataApi\Exception\StalledRequestException;
+use Boson\WebView\Api\DataApi\Exception\UnprocessableRequestException;
 use JetBrains\PhpStorm\Language;
 use React\Promise\PromiseInterface;
 
 /**
- * Managing requests between PHP and JavaScript in the WebView.
+ * Managing data between PHP and JavaScript in the WebView.
  *
  * Defines the contract for sending JavaScript code to the WebView
  * and receiving responses.
  */
-interface RequestsApiInterface
+interface DataApiInterface
 {
     /**
-     * Synchronously requests data from the WebView using JavaScript code.
+     * Synchronously retrieve data from the WebView using JavaScript code.
      *
      * This method sends JavaScript code to the WebView and blocks until
      * a response is received or a timeout occurs. It's suitable for simple,
@@ -27,12 +27,12 @@ interface RequestsApiInterface
      *
      * Example usage:
      * ```
-     * $location = $requests->get('document.location');
+     * $location = $webview->data->get('document.location');
      * ```
      *
      * @api
      *
-     * @param string $code The JavaScript code to execute
+     * @param string $code The JavaScript code to retrieve
      *
      * @return mixed The response from the JavaScript execution
      * @throws UnprocessableRequestException if the request cannot be processed
@@ -42,7 +42,7 @@ interface RequestsApiInterface
     public function get(#[Language('JavaScript')] string $code): mixed;
 
     /**
-     * Asynchronously requests data from the WebView using JavaScript code.
+     * Asynchronously retrieve data from the WebView using JavaScript code.
      *
      * This method sends JavaScript code to the WebView and returns a promise t
      * hat resolves with the response. It's suitable for operations that
@@ -50,7 +50,7 @@ interface RequestsApiInterface
      *
      * Example usage:
      * ```
-     * $requests->send('document.location')
+     * $webview->data->defer('document.location')
      *     ->then(function (array $result): void {
      *         var_dump($result);
      *     });
@@ -58,11 +58,11 @@ interface RequestsApiInterface
      *
      * @api
      *
-     * @param string $code The JavaScript code to execute
+     * @param string $code The JavaScript code to retrieve
      *
      * @return PromiseInterface<mixed> A promise that resolves with the response
      * @throws UnprocessableRequestException if the request cannot be processed
      * @throws StalledRequestException if the request times out
      */
-    public function send(#[Language('JavaScript')] string $code): PromiseInterface;
+    public function defer(#[Language('JavaScript')] string $code): PromiseInterface;
 }

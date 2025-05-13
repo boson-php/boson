@@ -7,7 +7,7 @@ namespace Boson\WebView\Api;
 use Boson\WebView\Internal\Rpc\DefaultRpcResponder;
 use Boson\WebView\Internal\WebViewContextPacker;
 
-final readonly class BindingsCreateInfo
+final readonly class BindingsApiCreateInfo
 {
     /**
      * Default RPC context name for JavaScript communication.

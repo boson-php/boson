@@ -15,8 +15,8 @@ use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Api\BindingsApi\WebViewBindingsMap;
 use Boson\WebView\Api\BindingsApiInterface;
-use Boson\WebView\Api\RequestsApi\WebViewRequests;
-use Boson\WebView\Api\RequestsApiInterface;
+use Boson\WebView\Api\DataApi\WebViewData;
+use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\ScriptsApi\WebViewScriptsSet;
 use Boson\WebView\Api\ScriptsApiInterface;
 use Boson\WebView\Api\WebViewApi;
@@ -68,7 +68,7 @@ final class WebView implements EventListenerProviderInterface
      * Provides the ability to receive variant data from
      * the current document.
      */
-    public readonly RequestsApiInterface $requests;
+    public readonly DataApiInterface $requests;
 
     /**
      * Contains webview URI instance.
@@ -182,7 +182,7 @@ final class WebView implements EventListenerProviderInterface
 
         $this->scripts = $this->createApi(WebViewScriptsSet::class);
         $this->bindings = $this->createApi(WebViewBindingsMap::class);
-        $this->requests = $this->createApi(WebViewRequests::class);
+        $this->requests = $this->createApi(WebViewData::class);
 
         $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
         $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
@@ -231,10 +231,6 @@ final class WebView implements EventListenerProviderInterface
     private function bootWebView(): void
     {
         $this->loadRuntimeScripts();
-
-        foreach ($this->info->functions as $function => $callback) {
-            $this->bindings->bind($function, $callback);
-        }
 
         foreach ($this->info->scripts as $script) {
             $this->scripts->add($script);
@@ -312,15 +308,15 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Requests arbitrary data from webview using JavaScript code.
      *
-     * Note: This is facade method of the {@see WebViewRequests::get()},
+     * Note: This is facade method of the {@see WebViewData::get()},
      *       that provides by the {@see $requests} field. This means that
      *       calling `$webview->requests->send(...)` should have the same effect.
      *
-     *@uses WebViewRequests::get() WebView Requests API
+     *@param string $code A JavaScript code for execution
+     *@api
      *
-     * @api
+     * @uses WebViewData::get() WebView Requests API
      *
-     * @param string $code A JavaScript code for execution
      */
     #[BlockingOperation]
     public function get(#[Language('JavaScript')] string $code): mixed
