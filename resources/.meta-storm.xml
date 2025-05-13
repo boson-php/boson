@@ -97,7 +97,7 @@
             <stopCompletion />
         </classMethod>
 
-        <classMethod class="\Boson\WebView\Api\WebComponentsApi\WebViewWebComponents" method="add" argument="0">
+        <classMethod class="WebComponentsApi" method="add" argument="0">
             <collection name="Web Component" />
         </classMethod>
     </definitions>

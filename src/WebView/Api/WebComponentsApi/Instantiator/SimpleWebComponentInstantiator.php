@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\Instantiator;
 
-use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentMetadata;
+use Boson\WebView\Api\WebComponentsApi\WebComponentContext;
 
 final class SimpleWebComponentInstantiator implements WebComponentInstantiatorInterface
 {
-    public function create(WebComponentMetadata $component): object
+    public function create(WebComponentContext $context): object
     {
-        $class = $component->component;
+        $class = $context->component;
 
-        return new $class();
+        return new $class($context);
     }
 }

@@ -6,20 +6,78 @@ namespace Boson\WebView\Api\WebComponentsApi;
 
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
-use Boson\WebView\Api\WebComponentsApi\Exception\ComponentAlreadyDefinedExceptionWeb;
-use Boson\WebView\Api\WebComponentsApi\Metadata\Reader\WebComponentMetadataReaderInterface;
-use Boson\WebView\Api\WebComponentsApi\Metadata\WebComponentMetadata;
+use Boson\WebView\Api\WebComponentsApi\Exception\BuiltinComponentNameException;
+use Boson\WebView\Api\WebComponentsApi\Exception\ComponentAlreadyDefinedException;
+use Boson\WebView\Api\WebComponentsApi\Exception\InvalidComponentNameException;
+use Boson\WebView\Api\WebComponentsApi\Internal\WebViewComponentBuilder;
+use Boson\WebView\Api\WebComponentsApi\Internal\WebViewComponentInstances;
 use Boson\WebView\Api\WebComponentsApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Event\WebViewNavigating;
 use Boson\WebView\WebView;
 
-final class WebViewWebComponents extends WebViewApi implements WebComponentsApiInterface
+/**
+ * @template-implements \IteratorAggregate<non-empty-string, class-string>
+ */
+final class WebViewWebComponents extends WebViewApi implements WebComponentsApiInterface, \IteratorAggregate
 {
     /**
-     * A map containing a link between a tag name and a metadata object.
+     * ```
+     * PCENChar
+     *  ::= '-' | '.' | [0-9] | '_' | [a-z] | #xB7 | [#xC0-#xD6] | [#xD8-#xF6]
+     *    | [#xF8-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x203F-#x2040]
+     *    | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF]
+     *    | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
+     * ```
      *
-     * @var array<non-empty-string, WebComponentMetadata<object>>
+     * @link https://html.spec.whatwg.org/multipage/custom-elements.html#prod-pcenchar
+     *
+     * @var non-empty-string
+     */
+    private const string CE_PCEN_CHAR = '[-._\xB70-9a-z\xC0-\xD6\xD8-\xF6\xF8-\x{037D}\x{037F}-\x{1FFF}\x{200C}-\x{200D}\x{203F}-\x{2040}\x{2070}-\x{218F}\x{2C00}-\x{2FEF}\x{3001}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFFD}\x{010000}-\x{0EFFFF}]';
+
+    /**
+     * ```
+     * PotentialCustomElementName
+     *      ::= [a-z] (PCENChar)* '-' (PCENChar)*
+     * ```
+     *
+     * @link https://html.spec.whatwg.org/multipage/custom-elements.html#prod-potentialcustomelementname
+     */
+    private const string CE_POTENTIAL_CUSTOM_ELEMENT_NAME = '[a-z]'
+        . '(?:' . self::CE_PCEN_CHAR . ')*'
+        . '\-'
+        . '(?:' . self::CE_PCEN_CHAR . ')*';
+
+    /**
+     * @link https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
+     *
+     * @var non-empty-string
+     */
+    private const string CUSTOM_ELEMENT_NAME_PCRE = '/^' . self::CE_POTENTIAL_CUSTOM_ELEMENT_NAME . '$/u';
+
+    /**
+     * List of builtin tag names.
+     *
+     * @link https://www.webcomponents.org/community/articles/how-should-i-name-my-element
+     *
+     * @var non-empty-list<non-empty-lowercase-string>
+     */
+    private const array BUILTIN_CUSTOM_ELEMENT_NAMES = [
+        'annotation-xml',
+        'color-profile',
+        'font-face',
+        'font-face-src',
+        'font-face-uri',
+        'font-face-format',
+        'font-face-name',
+        'missing-glyph',
+    ];
+
+    /**
+     * A map containing a link between a tag name and a component class.
+     *
+     * @var array<non-empty-lowercase-string, class-string>
      */
     private array $components = [];
 
@@ -28,20 +86,19 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
      */
     private readonly WebViewComponentInstances $instances;
 
-    /**
-     * Component metadata reader.
-     */
-    private readonly WebComponentMetadataReaderInterface $meta;
+    private readonly WebViewComponentBuilder $builder;
 
     public function __construct(LibSaucer $api, WebView $webview, EventDispatcherInterface $dispatcher)
     {
         parent::__construct($api, $webview, $dispatcher);
 
-        $this->meta = $this->webview->info->webComponents->metadataReader;
-
         $this->instances = new WebViewComponentInstances(
+            scripts: $this->webview->scripts,
             instantiator: $this->webview->info->webComponents->instantiator,
-            accessor: $this->webview->info->webComponents->propertyAccessor,
+        );
+
+        $this->builder = new WebViewComponentBuilder(
+            app: $webview->window->app,
         );
 
         $this->registerDefaultEventListener();
@@ -69,13 +126,13 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
      */
     private function onCreated(string $tag, string $id): void
     {
-        $metadata = $this->components[$tag] ?? null;
+        $component = $this->components[$tag] ?? null;
 
-        if ($metadata === null || $id === '') {
+        if ($component === null || $id === '') {
             return;
         }
 
-        $this->instances->create($id, $metadata);
+        $this->instances->create($id, $tag, $component);
     }
 
     /**
@@ -105,6 +162,8 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
     /**
      * @param non-empty-string $id
      * @param non-empty-string $name
+     *
+     * @throws \Throwable
      */
     private function onAttributeChanged(string $id, string $name, ?string $value, ?string $previous): void
     {
@@ -116,68 +175,61 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
     }
 
     /**
-     * @param class-string $component
+     * Returns {@see true} in case of custom element name is valid.
+     *
+     * @link https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
      */
-    public function add(string $component): void
+    private function isValidWebComponentTagName(string $name): bool
     {
-        $metadata = $this->meta->getMetadata($component);
-
-        if (isset($this->components[$metadata->tagName])) {
-            throw ComponentAlreadyDefinedExceptionWeb::becauseComponentAlreadyDefined(
-                tag: $metadata->tagName,
-                component: $metadata->component,
-            );
-        }
-
-        $this->webview->scripts->add($this->pack(
-            meta: $this->components[$metadata->tagName] = $this->meta->getMetadata($component),
-        ));
+        return \preg_match(self::CUSTOM_ELEMENT_NAME_PCRE, $name) >= 1;
     }
 
-    private function pack(WebComponentMetadata $meta): string
+    /**
+     * Returns {@see true} in case of component tag name is builtin.
+     *
+     * @link https://www.webcomponents.org/community/articles/how-should-i-name-my-element
+     *
+     * @param non-empty-lowercase-string $name
+     */
+    private function isBuiltinComponentTagName(string $name): bool
     {
-        $attributes = \json_encode($meta->getAttributeNames());
+        return \in_array($name, self::BUILTIN_CUSTOM_ELEMENT_NAMES, true);
+    }
 
-        return <<<JS
-            class {$meta->className} extends HTMLElement {
-                #id;
-                #internals;
-                static observedAttributes = {$attributes};
+    public function add(string $name, string $component): void
+    {
+        $lower = \strtolower($name);
 
-                constructor() {
-                    super();
+        if ($this->has($lower)) {
+            throw ComponentAlreadyDefinedException::becauseComponentAlreadyDefined($name, $component);
+        }
 
-                    this.#internals = this.attachInternals();
-                    this.#id = window.boson.ids.generate();
+        if (!$this->isValidWebComponentTagName($lower)) {
+            throw InvalidComponentNameException::becauseComponentNameIsInvalid($name);
+        }
 
-                    window.boson.components.created("{$meta->tagName}", this.#id);
-                    window.boson.components.instances[this.#id] = this;
-                }
+        if ($this->isBuiltinComponentTagName($lower)) {
+            throw BuiltinComponentNameException::becauseComponentNameIsBuiltin($name);
+        }
 
-                connectedCallback() {
-                    const self = this;
+        $this->components[$lower] = $component;
 
-                    window.boson.components.connected(this.#id)
-                        .then(function (value) {
-                            if (value !== null) {
-                                self.attachShadow({ mode: "open" })
-                                    .innerHTML = value;
-                            }
-                        });
-                }
+        $this->webview->scripts->add($this->builder->build($lower, $component));
+    }
 
-                disconnectedCallback() {
-                    delete window.boson.components.instances[this.#id];
+    public function has(string $name): bool
+    {
+        return isset($this->components[\strtolower($name)]);
+    }
 
-                    window.boson.components.disconnected(this.#id);
-                }
+    public function getIterator(): \Traversable
+    {
+        /** @var \ArrayIterator<non-empty-lowercase-string, class-string> */
+        return new \ArrayIterator($this->components);
+    }
 
-                attributeChangedCallback(name, oldValue, newValue) {
-                    window.boson.components.attributeChanged(this.#id, name, newValue, oldValue);
-                }
-            }
-
-            customElements.define("{$meta->tagName}", {$meta->className});
-            JS;
+    public function count(): int
+    {
+        return \count($this->components);
     }
 }

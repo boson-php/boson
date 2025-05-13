@@ -15,10 +15,12 @@ use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Api\BindingsApi\WebViewBindingsMap;
 use Boson\WebView\Api\BindingsApiInterface;
-use Boson\WebView\Api\DataApi\WebViewData;
+use Boson\WebView\Api\DataApi\WebViewDataApi;
 use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\ScriptsApi\WebViewScriptsSet;
 use Boson\WebView\Api\ScriptsApiInterface;
+use Boson\WebView\Api\WebComponentsApi\WebViewWebComponents;
+use Boson\WebView\Api\WebComponentsApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Internal\WebViewEventHandler;
 use Boson\WebView\Internal\WebViewSchemeHandler;
@@ -63,12 +65,17 @@ final class WebView implements EventListenerProviderInterface
     public readonly BindingsApiInterface $bindings;
 
     /**
-     * Gets access to the Requests API of the webview.
+     * Gets access to the Data API of the webview.
      *
      * Provides the ability to receive variant data from
      * the current document.
      */
-    public readonly DataApiInterface $requests;
+    public readonly DataApiInterface $data;
+
+    /**
+     * Gets access to the Web Components API of the webview.
+     */
+    public readonly WebComponentsApiInterface $components;
 
     /**
      * Contains webview URI instance.
@@ -178,12 +185,13 @@ final class WebView implements EventListenerProviderInterface
 
         $this->scripts = $this->createApi(WebViewScriptsSet::class);
         $this->bindings = $this->createApi(WebViewBindingsMap::class);
-        $this->requests = $this->createApi(WebViewData::class);
+        $this->data = $this->createApi(WebViewDataApi::class);
+        $this->components = $this->createApi(WebViewWebComponents::class);
 
         $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
         $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
 
-        $this->bootWebView();
+        $this->loadRuntimeScripts();
     }
 
     /**
@@ -219,26 +227,6 @@ final class WebView implements EventListenerProviderInterface
             dispatcher: $this->events,
             state: $this->state,
         );
-    }
-
-    /**
-     * Load configured payload to the webview
-     */
-    private function bootWebView(): void
-    {
-        $this->loadRuntimeScripts();
-
-        foreach ($this->info->scripts as $script) {
-            $this->scripts->add($script);
-        }
-
-        if ($this->info->url !== null) {
-            $this->url = $this->info->url;
-        }
-
-        if ($this->info->html !== null) {
-            $this->html = $this->info->html;
-        }
     }
 
     /**
@@ -304,20 +292,20 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Requests arbitrary data from webview using JavaScript code.
      *
-     * Note: This is facade method of the {@see WebViewData::get()},
-     *       that provides by the {@see $requests} field. This means that
+     * Note: This is facade method of the {@see WebViewDataApi::get()},
+     *       that provides by the {@see $data} field. This means that
      *       calling `$webview->requests->send(...)` should have the same effect.
      *
      * @api
      *
      * @param string $code A JavaScript code for execution
      *
-     * @uses WebViewData::get() WebView Requests API
+     * @uses WebViewDataApi::get() WebView Requests API
      */
     #[BlockingOperation]
     public function get(#[Language('JavaScript')] string $code): mixed
     {
-        return $this->requests->get($code);
+        return $this->data->get($code);
     }
 
     /**
