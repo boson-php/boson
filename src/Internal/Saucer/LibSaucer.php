@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\Internal\Saucer;
 
-use Boson\Environment\Architecture;
-use Boson\Environment\Exception\UnsupportedArchitectureException;
-use Boson\Environment\Exception\UnsupportedOperatingSystemException;
-use Boson\Environment\OperatingSystem;
+use Boson\Internal\Environment\Architecture;
+use Boson\Internal\Environment\Exception\UnsupportedArchitectureException;
+use Boson\Internal\Environment\Exception\UnsupportedOperatingSystemException;
+use Boson\Internal\Environment\OperatingSystem;
 use FFI\Env\Runtime;
 
 /**

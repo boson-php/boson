@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Environment;
+namespace Boson\Internal\Environment;
 
 enum OperatingSystem: string
 {
