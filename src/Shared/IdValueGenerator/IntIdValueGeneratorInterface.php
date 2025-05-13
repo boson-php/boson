@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Shared\IdValueGenerator;
 
 /**
- * @template TIntValue of int
+ * @template-covariant TIntValue of int
  *
  * @template-extends IdValueGeneratorInterface<TIntValue>
  */
@@ -13,17 +13,23 @@ interface IntIdValueGeneratorInterface extends IdValueGeneratorInterface
 {
     /**
      * Gets initial value of generator.
-     *
-     * @var TIntValue
      */
-    public int $initial { get; }
+    public int $initial {
+        /**
+         * @return TIntValue
+         */
+        get;
+    }
 
     /**
      * Gets maximum supported generator value.
-     *
-     * @var TIntValue
      */
-    public int $maximum { get; }
+    public int $maximum {
+        /**
+         * @return TIntValue
+         */
+        get;
+    }
 
     /**
      * @return TIntValue

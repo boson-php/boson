@@ -5,25 +5,16 @@ declare(strict_types=1);
 namespace Boson\Shared\IdValueGenerator;
 
 /**
- * @template TIntValue of int = int
- *
- * @template-implements IdValueGeneratorInterface<TIntValue>
+ * @template-implements IntIdValueGeneratorInterface<int>
  */
 final readonly class PlatformDependentIntValueGenerator implements IntIdValueGeneratorInterface
 {
     /**
-     * @var IdValueGeneratorInterface<TIntValue>
+     * @var IntIdValueGeneratorInterface<int>
      */
-    private IdValueGeneratorInterface $generator;
+    private IntIdValueGeneratorInterface $generator;
 
-    /**
-     * @var TIntValue
-     */
     public int $initial;
-
-    /**
-     * @var TIntValue
-     */
     public int $maximum;
 
     public function __construct(OverflowBehaviour $onOverflow = OverflowBehaviour::DEFAULT)
@@ -35,7 +26,7 @@ final readonly class PlatformDependentIntValueGenerator implements IntIdValueGen
     }
 
     /**
-     * @return IntIdValueGeneratorInterface<TIntValue>
+     * @return IntIdValueGeneratorInterface<int>
      */
     private function createFromPlatform(OverflowBehaviour $onOverflow): IntIdValueGeneratorInterface
     {
