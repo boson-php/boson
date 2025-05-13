@@ -129,8 +129,6 @@ final class WebView implements EventListenerProviderInterface
      * Contains an internal bridge between {@see LibSaucer} events system
      * and the PSR {@see WebView::$events} dispatcher.
      *
-     * @noinspection PhpPropertyOnlyWrittenInspection
-     *
      * @phpstan-ignore property.onlyWritten
      */
     private readonly WebViewEventHandler $internalWebViewEventHandler;
@@ -138,8 +136,6 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Contains an internal bridge between {@see LibSaucer} scheme interception
      * system and the PSR {@see WebView::$events} dispatcher.
-     *
-     * @noinspection PhpPropertyOnlyWrittenInspection
      *
      * @phpstan-ignore property.onlyWritten
      */
@@ -274,13 +270,13 @@ final class WebView implements EventListenerProviderInterface
      *       that provides by the {@see $bindings} field. This means that
      *       calling `$webview->functions->bind(...)` should have the same effect.
      *
+     * @api
+     *
      * @param non-empty-string $function
      *
      * @throws FunctionAlreadyDefinedException in case of function binding error
-     *@api
      *
      * @uses WebViewBindingsMap::bind() WebView Functions API
-     *
      */
     public function bind(string $function, \Closure $callback): void
     {
@@ -312,11 +308,11 @@ final class WebView implements EventListenerProviderInterface
      *       that provides by the {@see $requests} field. This means that
      *       calling `$webview->requests->send(...)` should have the same effect.
      *
-     *@param string $code A JavaScript code for execution
-     *@api
+     * @api
+     *
+     * @param string $code A JavaScript code for execution
      *
      * @uses WebViewData::get() WebView Requests API
-     *
      */
     #[BlockingOperation]
     public function get(#[Language('JavaScript')] string $code): mixed
