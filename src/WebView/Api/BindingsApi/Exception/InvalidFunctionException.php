@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api\FunctionsApi\Exception;
+namespace Boson\WebView\Api\BindingsApi\Exception;
 
-class InvalidFunctionException extends FunctionsApiException
+class InvalidFunctionException extends BindingsApiException
 {
     public static function becauseFunctionNotDefined(string $name, ?\Throwable $previous = null): self
     {

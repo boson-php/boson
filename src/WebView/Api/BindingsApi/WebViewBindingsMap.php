@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api\FunctionsApi;
+namespace Boson\WebView\Api\BindingsApi;
 
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
-use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
-use Boson\WebView\Api\FunctionsApi\Exception\InvalidFunctionException;
-use Boson\WebView\Api\FunctionsApiInterface;
+use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Api\BindingsApi\Exception\InvalidFunctionException;
+use Boson\WebView\Api\BindingsApiInterface;
+use Boson\WebView\Api\BindingsCreateInfo;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Event\WebViewMessageReceived;
 use Boson\WebView\Internal\Rpc\DefaultRpcResponder;
@@ -22,38 +23,16 @@ use Boson\WebView\WebView;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewFunctionsMap extends WebViewApi implements
-    FunctionsApiInterface,
+final class WebViewBindingsMap extends WebViewApi implements
+    BindingsApiInterface,
     \IteratorAggregate
 {
     /**
-     * Default RPC context name for JavaScript communication.
-     *
-     * This constant defines the default context (variable name) used for
-     * RPC communication between JavaScript and PHP.
-     *
-     * Context name defined in the {@link ./resources/src/main.ts} source.
+     * @see BindingsCreateInfo::$rpcContext
      *
      * @var non-empty-string
      */
-    public const string DEFAULT_RPC_CONTEXT = DefaultRpcResponder::DEFAULT_CONTEXT;
-
-    /**
-     * Default context name for JavaScript function registration.
-     *
-     * This constant defines the default context (window) where JavaScript
-     * functions will be registered.
-     *
-     * @var non-empty-string
-     */
-    public const string DEFAULT_CONTEXT = WebViewContextPacker::DEFAULT_ROOT_CONTEXT;
-
-    /**
-     * Default context delimiter for JavaScript function registration.
-     *
-     * @var non-empty-string
-     */
-    public const string DEFAULT_DELIMITER = WebViewContextPacker::DEFAULT_DELIMITER;
+    private readonly string $rpcContext;
 
     /**
      * RPC responder instance for handling JavaScript-PHP communication.
@@ -76,29 +55,17 @@ final class WebViewFunctionsMap extends WebViewApi implements
         LibSaucer $api,
         WebView $webview,
         EventDispatcherInterface $dispatcher,
-        /**
-         * @var non-empty-string
-         */
-        private readonly string $rpcContext = self::DEFAULT_RPC_CONTEXT,
-        /**
-         * @var non-empty-string
-         */
-        private readonly string $functionContext = self::DEFAULT_CONTEXT,
-        /**
-         * @var non-empty-string
-         */
-        private readonly string $functionDelimiter = self::DEFAULT_DELIMITER,
     ) {
         parent::__construct($api, $webview, $dispatcher);
 
         $this->packer = new WebViewContextPacker(
-            delimiter: $this->functionDelimiter,
-            context: $this->functionContext,
+            delimiter: $webview->info->bindings->functionDelimiter,
+            context: $webview->info->bindings->functionContext,
         );
 
         $this->responder = new DefaultRpcResponder(
             scriptsApi: $this->webview->scripts,
-            context: $rpcContext,
+            context: $this->rpcContext = $webview->info->bindings->rpcContext,
         );
 
         $this->registerDefaultEventListeners();

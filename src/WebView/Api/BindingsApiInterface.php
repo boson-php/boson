@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api;
 
-use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
 
 /**
  * Manages the binding between PHP callbacks and JavaScript functions.
@@ -16,7 +16,7 @@ use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
  *
  * @template-extends \Traversable<non-empty-string, \Closure(mixed...):mixed>
  */
-interface FunctionsApiInterface extends \Traversable, \Countable
+interface BindingsApiInterface extends \Traversable, \Countable
 {
     /**
      * Binds a PHP callback to a new global JavaScript function.

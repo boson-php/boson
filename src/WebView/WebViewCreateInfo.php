@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView;
 
 use Boson\Application;
+use Boson\WebView\Api\BindingsCreateInfo;
 use Boson\WebView\Internal\WebViewCreateInfo\StorageDirectoryResolver;
 
 /**
@@ -74,17 +75,8 @@ final readonly class WebViewCreateInfo
     public array $scripts;
 
     /**
-     * List of global functions that will be added to the WebView.
-     *
-     * @var array<non-empty-string, \Closure(mixed...):mixed>
-     */
-    public array $functions;
-
-    /**
      * @param iterable<mixed, string> $scripts see the {@see $scripts} property
      *        description for information
-     * @param iterable<non-empty-string, \Closure(mixed...):mixed> $functions
-     *        See the {@see $functions} property description for information.
      * @param non-empty-string|null $storage See {@see WebViewCreateInfo::$storage}
      *        field description.
      *
@@ -118,7 +110,6 @@ final readonly class WebViewCreateInfo
          */
         public ?string $html = null,
         iterable $scripts = [],
-        iterable $functions = [],
         /**
          * This option may be set to customize "user-agent" browser header.
          *
@@ -147,6 +138,10 @@ final readonly class WebViewCreateInfo
          *  - Dev Tools will bew disabled if debug mode is disabled.
          */
         public ?bool $devTools = null,
+        /**
+         * Contains Bindings API configuration options.
+         */
+        public BindingsCreateInfo $bindings = new BindingsCreateInfo(),
     ) {
         assert($url === null || $html === null, new \InvalidArgumentException(
             message: 'You can specify either $url or $html, but not both',
@@ -154,7 +149,6 @@ final readonly class WebViewCreateInfo
 
         $this->storage = StorageDirectoryResolver::resolve($storage);
         $this->flags = \iterator_to_array($flags, true);
-        $this->functions = \iterator_to_array($functions, true);
         $this->scripts = \iterator_to_array($scripts, false);
     }
 }

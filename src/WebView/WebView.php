@@ -12,9 +12,9 @@ use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Exception\BosonException;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\FunctionsApi\Exception\FunctionAlreadyDefinedException;
-use Boson\WebView\Api\FunctionsApi\WebViewFunctionsMap;
-use Boson\WebView\Api\FunctionsApiInterface;
+use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Api\BindingsApi\WebViewBindingsMap;
+use Boson\WebView\Api\BindingsApiInterface;
 use Boson\WebView\Api\RequestsApi\WebViewRequests;
 use Boson\WebView\Api\RequestsApiInterface;
 use Boson\WebView\Api\ScriptsApi\WebViewScriptsSet;
@@ -55,12 +55,12 @@ final class WebView implements EventListenerProviderInterface
     public readonly ScriptsApiInterface $scripts;
 
     /**
-     * Gets access to the Functions API of the webview.
+     * Gets access to the Bindings API of the webview.
      *
      * Provides the ability to register PHP functions
      * in the webview.
      */
-    public readonly FunctionsApiInterface $functions;
+    public readonly BindingsApiInterface $bindings;
 
     /**
      * Gets access to the Requests API of the webview.
@@ -181,7 +181,7 @@ final class WebView implements EventListenerProviderInterface
         $this->ptr = $this->window->id->ptr;
 
         $this->scripts = $this->createApi(WebViewScriptsSet::class);
-        $this->functions = $this->createApi(WebViewFunctionsMap::class);
+        $this->bindings = $this->createApi(WebViewBindingsMap::class);
         $this->requests = $this->createApi(WebViewRequests::class);
 
         $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
@@ -233,7 +233,7 @@ final class WebView implements EventListenerProviderInterface
         $this->loadRuntimeScripts();
 
         foreach ($this->info->functions as $function => $callback) {
-            $this->functions->bind($function, $callback);
+            $this->bindings->bind($function, $callback);
         }
 
         foreach ($this->info->scripts as $script) {
@@ -274,21 +274,21 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Binds a PHP callback to a new global JavaScript function.
      *
-     * Note: This is facade method of the {@see WebViewFunctionsMap::bind()},
-     *       that provides by the {@see $functions} field. This means that
+     * Note: This is facade method of the {@see WebViewBindingsMap::bind()},
+     *       that provides by the {@see $bindings} field. This means that
      *       calling `$webview->functions->bind(...)` should have the same effect.
-     *
-     * @api
-     *
-     * @uses WebViewFunctionsMap::bind() WebView Functions API
      *
      * @param non-empty-string $function
      *
      * @throws FunctionAlreadyDefinedException in case of function binding error
+     *@api
+     *
+     * @uses WebViewBindingsMap::bind() WebView Functions API
+     *
      */
     public function bind(string $function, \Closure $callback): void
     {
-        $this->functions->bind($function, $callback);
+        $this->bindings->bind($function, $callback);
     }
 
     /**
