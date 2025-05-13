@@ -7,6 +7,7 @@ namespace Boson\WebView;
 use Boson\Application;
 use Boson\WebView\Api\BindingsApiCreateInfo;
 use Boson\WebView\Api\DataApiCreateInfo;
+use Boson\WebView\Api\WebComponentsCreateInfo;
 use Boson\WebView\Internal\WebViewCreateInfo\StorageDirectoryResolver;
 
 /**
@@ -147,6 +148,10 @@ final readonly class WebViewCreateInfo
          * Contains Data API configuration options.
          */
         public DataApiCreateInfo $data = new DataApiCreateInfo(),
+        /**
+         * Contains Web Components API configuration options.
+         */
+        public WebComponentsCreateInfo $webComponents = new WebComponentsCreateInfo(),
     ) {
         assert($url === null || $html === null, new \InvalidArgumentException(
             message: 'You can specify either $url or $html, but not both',
