@@ -9,12 +9,12 @@ use Boson\WebView\Api\WebComponentsApi\ReactiveElementContext;
 final readonly class SimpleWebComponentInstantiator implements WebComponentInstantiatorInterface
 {
     /**
-     * @var null|\Closure(ReactiveElementContext<object>):object
+     * @var (\Closure(ReactiveElementContext<object>):object)|null
      */
     private ?\Closure $callback;
 
     /**
-     * @param null|callable(ReactiveElementContext<object>):object $callback
+     * @param (callable(ReactiveElementContext<object>):object)|null $callback
      */
     public function __construct(
         ?callable $callback = null,

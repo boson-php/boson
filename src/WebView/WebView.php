@@ -318,8 +318,8 @@ final class WebView implements EventListenerProviderInterface
      * @param non-empty-string $name The component name (tag)
      * @param class-string $component The fully qualified class name of the component
      *
-     * @throws ComponentAlreadyDefinedException If a component with the given name is already registered.
-     * @throws WebComponentsApiException If any other registration error occurs.
+     * @throws ComponentAlreadyDefinedException if a component with the given name is already registered
+     * @throws WebComponentsApiException if any other registration error occurs
      *
      * @uses WebComponentsApiInterface::add() WebView Web Components API
      */

@@ -23,8 +23,8 @@ interface WebComponentsApiInterface extends \Traversable, \Countable
      * @param non-empty-string $name The component name (tag)
      * @param class-string $component The fully qualified class name of the component
      *
-     * @throws ComponentAlreadyDefinedException If a component with the given name is already registered.
-     * @throws WebComponentsApiException If any other registration error occurs.
+     * @throws ComponentAlreadyDefinedException if a component with the given name is already registered
+     * @throws WebComponentsApiException if any other registration error occurs
      */
     public function add(string $name, string $component): void;
 
@@ -33,15 +33,15 @@ interface WebComponentsApiInterface extends \Traversable, \Countable
      *
      * @param non-empty-string $name The component name (tag)
      *
-     * @return bool Returns {@see true} if the component is
-     *         registered, {@see false} otherwise.
+     * @return bool returns {@see true} if the component is
+     *         registered, {@see false} otherwise
      */
     public function has(string $name): bool;
 
     /**
      * Returns the number of registered components.
      *
-     * @return int<0, max> The number of registered components (zero or greater).
+     * @return int<0, max> the number of registered components (zero or greater)
      */
     public function count(): int;
 }
