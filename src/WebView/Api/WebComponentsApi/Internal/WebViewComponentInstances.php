@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\Internal;
 
-use Boson\WebView\Api\DataApiInterface;
-use Boson\WebView\Api\ScriptsApiInterface;
 use Boson\WebView\Api\WebComponentsApi\HasLifecycleCallbacksInterface;
 use Boson\WebView\Api\WebComponentsApi\HasMethodsInterface;
 use Boson\WebView\Api\WebComponentsApi\HasObservedAttributesInterface;
