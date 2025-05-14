@@ -13,6 +13,7 @@ use Boson\WebView\Api\WebComponentsApi\HasShadowDomInterface;
 use Boson\WebView\Api\WebComponentsApi\HasTemplateInterface;
 use Boson\WebView\Api\WebComponentsApi\Instantiator\WebComponentInstantiatorInterface;
 use Boson\WebView\Api\WebComponentsApi\ReactiveElementContext;
+use Boson\WebView\WebView;
 
 /**
  * Provides components instances
@@ -30,8 +31,7 @@ final class WebViewComponentInstances
     private array $instances = [];
 
     public function __construct(
-        private readonly DataApiInterface $data,
-        private readonly ScriptsApiInterface $scripts,
+        private readonly WebView $webview,
         private readonly WebComponentInstantiatorInterface $instantiator,
     ) {}
 
@@ -46,8 +46,8 @@ final class WebViewComponentInstances
 
         $interactor = new ElementInteractor(
             id: $id,
-            data: $this->data,
-            scripts: $this->scripts,
+            data: $this->webview->data,
+            scripts: $this->webview->scripts,
         );
 
         $context = new ReactiveElementContext(
@@ -59,7 +59,7 @@ final class WebViewComponentInstances
                 : new ReactiveTemplateContainer($interactor),
         );
 
-        $this->instances[$id] = $instance = $this->instantiator->create($context);
+        $this->instances[$id] = $instance = $this->instantiator->create($this->webview, $context);
 
         if ($hasShadowDom === false && $instance instanceof HasTemplateInterface) {
             return $instance->render();
