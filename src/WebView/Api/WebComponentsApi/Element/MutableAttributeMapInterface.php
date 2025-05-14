@@ -14,6 +14,7 @@ interface MutableAttributeMapInterface extends AttributeMapInterface
      * name is qualifiedName to value.
      *
      * @link https://developer.mozilla.org/docs/Web/API/Element/setAttribute
+     *
      * @param non-empty-string $attribute
      */
     public function set(string $attribute, string $value): void;
@@ -22,6 +23,7 @@ interface MutableAttributeMapInterface extends AttributeMapInterface
      * Removes element's first attribute whose qualified name is qualifiedName.
      *
      * @link https://developer.mozilla.org/docs/Web/API/Element/removeAttribute
+     *
      * @param non-empty-string $attribute
      */
     public function remove(string $attribute): void;

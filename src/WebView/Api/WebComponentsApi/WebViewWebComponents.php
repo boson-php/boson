@@ -284,6 +284,7 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
     /**
      * @param non-empty-string $name
      * @param class-string $component
+     *
      * @return non-empty-lowercase-string
      */
     private function getTagName(string $name, string $component): string

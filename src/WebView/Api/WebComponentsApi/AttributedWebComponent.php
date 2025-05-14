@@ -8,8 +8,8 @@ use Boson\WebView\Api\WebComponentsApi\Attribute\AsAttribute;
 use Boson\WebView\Api\WebComponentsApi\Attribute\AsMethod;
 use Boson\WebView\Api\WebComponentsApi\Attribute\AsTemplate;
 use Boson\WebView\Api\WebComponentsApi\Attribute\AsWebComponent;
-use Boson\WebView\Api\WebComponentsApi\AttributedWebComponent\MethodMetadata;
 use Boson\WebView\Api\WebComponentsApi\AttributedWebComponent\AttributeMetadata;
+use Boson\WebView\Api\WebComponentsApi\AttributedWebComponent\MethodMetadata;
 
 abstract class AttributedWebComponent extends WebComponent
 {
@@ -19,12 +19,12 @@ abstract class AttributedWebComponent extends WebComponent
     private ?\Closure $render = null;
 
     /**
-     * @var array<non-empty-string, MethodMetadata>
+     * @var array<class-string, array<non-empty-string, MethodMetadata>>
      */
     private static array $registeredComponentMethods = [];
 
     /**
-     * @var array<non-empty-string, AttributeMetadata>
+     * @var array<class-string, array<non-empty-string, AttributeMetadata>>
      */
     private static array $registeredComponentAttributes = [];
 

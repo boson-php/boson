@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi;
 
+use Boson\WebView\Api\WebComponentsApi\Element\AttributeMapInterface;
 use Boson\WebView\Api\WebComponentsApi\Element\MutableAttributeMapInterface;
 use Boson\WebView\Api\WebComponentsApi\Element\MutableTemplateContainerInterface;
-use Boson\WebView\Api\WebComponentsApi\Element\AttributeMapInterface;
 
 abstract class WebComponent implements
     HasClassNameInterface,
@@ -26,7 +26,9 @@ abstract class WebComponent implements
 
     /**
      * @api
+     *
      * @link https://developer.mozilla.org/docs/Web/API/Element/innerHTML
+     *
      * @uses MutableTemplateContainerInterface::$html
      */
     public string $innerHtml {
@@ -38,7 +40,9 @@ abstract class WebComponent implements
 
     /**
      * @api
+     *
      * @link https://developer.mozilla.org/docs/Web/API/Node/textContent
+     *
      * @uses MutableTemplateContainerInterface::$text
      */
     public string $textContent {
@@ -48,17 +52,23 @@ abstract class WebComponent implements
         }
     }
 
-    public function __construct(ReactiveElementContext $element)
+    /**
+     * @param ReactiveElementContext<$this> $ctx
+     */
+    public function __construct(ReactiveElementContext $ctx)
     {
-        $this->tagName = $element->name;
-        $this->attributes = $element->attributes;
-        $this->content = $element->content;
+        $this->tagName = $ctx->name;
+        $this->attributes = $ctx->attributes;
+        $this->content = $ctx->content;
     }
 
     /**
      * @api
+     *
      * @link https://developer.mozilla.org/docs/Web/API/Element/hasAttribute
+     *
      * @uses AttributeMapInterface::has()
+     *
      * @param non-empty-string $name
      */
     public function hasAttribute(string $name): bool
@@ -68,7 +78,9 @@ abstract class WebComponent implements
 
     /**
      * @api
+     *
      * @link https://developer.mozilla.org/docs/Web/API/Element/hasAttributes
+     *
      * @uses AttributeMapInterface::count()
      */
     public function hasAttributes(): bool
@@ -78,8 +90,11 @@ abstract class WebComponent implements
 
     /**
      * @api
+     *
      * @link https://developer.mozilla.org/docs/Web/API/Element/removeAttribute
+     *
      * @uses MutableAttributeMapInterface::remove()
+     *
      * @param non-empty-string $name
      */
     public function removeAttribute(string $name): void
@@ -89,8 +104,11 @@ abstract class WebComponent implements
 
     /**
      * @api
+     *
      * @link https://developer.mozilla.org/docs/Web/API/Element/getAttribute
+     *
      * @uses MutableAttributeMapInterface::get()
+     *
      * @param non-empty-string $name
      */
     public function getAttribute(string $name): ?string
@@ -100,8 +118,11 @@ abstract class WebComponent implements
 
     /**
      * @api
+     *
      * @link https://developer.mozilla.org/docs/Web/API/Element/setAttribute
+     *
      * @uses MutableAttributeMapInterface::set()
+     *
      * @param non-empty-string $name
      */
     public function setAttribute(string $name, string $value): void

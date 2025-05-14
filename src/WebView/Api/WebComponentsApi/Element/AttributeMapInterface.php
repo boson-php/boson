@@ -16,6 +16,7 @@ interface AttributeMapInterface extends \Traversable, \Countable
      * and {@see null} if there is no such attribute otherwise.
      *
      * @link https://developer.mozilla.org/docs/Web/API/Element/getAttribute
+     *
      * @param non-empty-string $attribute
      */
     public function get(string $attribute): ?string;
@@ -25,6 +26,7 @@ interface AttributeMapInterface extends \Traversable, \Countable
      * is qualifiedName, and {@see false} otherwise.
      *
      * @link https://developer.mozilla.org/docs/Web/API/Element/hasAttribute
+     *
      * @param non-empty-string $attribute
      */
     public function has(string $attribute): bool;

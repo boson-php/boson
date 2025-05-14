@@ -51,7 +51,7 @@ final class WebViewComponentInstances
         );
 
         $context = new ReactiveElementContext(
-            name: $name,
+            name: \strtolower($name),
             component: $component,
             attributes: new ReactiveAttributeMap($interactor),
             content: $hasShadowDom

@@ -9,7 +9,7 @@ use Boson\WebView\Api\ScriptsApiInterface;
 use JetBrains\PhpStorm\Language;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api\WebComponentsApi
  */
 final readonly class ElementInteractor

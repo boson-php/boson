@@ -14,8 +14,7 @@ final readonly class SimpleWebComponentInstantiator implements WebComponentInsta
     private ?\Closure $callback;
 
     /**
-     * @template TArgComponent of object
-     * @param null|\Closure(ReactiveElementContext<TArgComponent>):TArgComponent $callback
+     * @param null|callable(ReactiveElementContext<object>):object $callback
      */
     public function __construct(
         ?callable $callback = null,
