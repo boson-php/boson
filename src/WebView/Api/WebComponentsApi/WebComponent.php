@@ -5,21 +5,25 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\WebComponentsApi;
 
 abstract class WebComponent implements
+    HasClassNameInterface,
     HasObservedAttributesInterface,
     HasMethodsInterface,
     HasLifecycleCallbacksInterface,
     HasShadowDomInterface,
     AttributeChangerInterface
 {
-    protected readonly \ReflectionObject $reflection;
-
     public function __construct(
         /**
          * @var WebComponentContext<$this>
          */
         protected readonly WebComponentContext $context,
-    ) {
-        $this->reflection = new \ReflectionObject($this);
+    ) {}
+
+    public static function getClassName(): string
+    {
+        $name = \str_replace('\\', '_', static::class);
+
+        return 'BosonWebComponent$' . $name;
     }
 
     public function onConnect(): void

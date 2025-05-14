@@ -9,7 +9,16 @@ use Boson\WebView\Api\WebComponentsApi\Instantiator\WebComponentInstantiatorInte
 
 final readonly class WebComponentsCreateInfo
 {
+    /**
+     * @var non-empty-string
+     */
+    public const string DEFAULT_CLASS_PREFIX = 'BosonWebComponent$';
+
     public function __construct(
+        /**
+         * Prefix for web component classes
+         */
+        public string $classNamePrefix = self::DEFAULT_CLASS_PREFIX,
         /**
          * Contain instantiator of components for Web Components API.
          */

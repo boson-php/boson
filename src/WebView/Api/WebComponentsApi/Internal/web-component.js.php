@@ -23,6 +23,10 @@ class <?=$className?> extends HTMLElement {
      */
     #internals;
 
+<?php if ($isDebug): ?>
+    #debugPrefix = '\x1B[37;3m[boson(debug:true)]\x1B[m ';
+<?php endif ?>
+
 <?php if ($hasObservedAttributes): ?>
     /**
      * Contains a list of attribute subscriptions.
@@ -42,7 +46,8 @@ class <?=$className?> extends HTMLElement {
         this.#id = window.boson.ids.generate();
 
 <?php if ($isDebug): ?>
-        console.info(`[boson] <<?=$tagName?> /> created`);
+        // You may set ApplicationCreateInfo::$debug to false to diable this logs
+        console.log(`${this.#debugPrefix}<<?=$tagName?> /> created`);
 <?php endif ?>
 
         // Attach element to globals registry
@@ -66,7 +71,8 @@ class <?=$className?> extends HTMLElement {
         window.boson.components.instances[this.#id] = this;
 
 <?php if ($isDebug): ?>
-        console.info(`[boson] <<?=$tagName?> /> connected`);
+        // You may set ApplicationCreateInfo::$debug to false to diable this logs
+        console.log(`${this.#debugPrefix}<<?=$tagName?> /> connected`);
 <?php endif ?>
 
         // Send a notification about the element connection
@@ -85,7 +91,8 @@ class <?=$className?> extends HTMLElement {
         delete window.boson.components.instances[this.#id];
 
 <?php if ($isDebug): ?>
-        console.info(`[boson] <<?=$tagName?> /> disconnected`);
+        // You may set ApplicationCreateInfo::$debug to false to diable this logs
+        console.log(`${this.#debugPrefix}<<?=$tagName?> /> disconnected`);
 <?php endif ?>
 
         // Send a notification about the element disconnection
@@ -94,7 +101,8 @@ class <?=$className?> extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
 <?php if ($isDebug): ?>
-        console.info(`[boson] <<?=$tagName?> ${name}="${newValue}" /> attribute changed`);
+        // You may set ApplicationCreateInfo::$debug to false to diable this logs
+        console.log(`${this.#debugPrefix}<<?=$tagName?> ${name}="${newValue}" /> attribute changed`);
 <?php endif ?>
 
         // Send a notification about the element attribute change

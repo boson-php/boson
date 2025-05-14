@@ -16,6 +16,7 @@ use Boson\WebView\Api\WebComponentsApi\Exception\InvalidComponentPropertyNameExc
 use Boson\WebView\Api\WebComponentsApi\Internal\WebViewComponentBuilder;
 use Boson\WebView\Api\WebComponentsApi\Internal\WebViewComponentInstances;
 use Boson\WebView\Api\WebComponentsApiInterface;
+use Boson\WebView\Api\WebComponentsCreateInfo;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Event\WebViewNavigating;
 use Boson\WebView\WebView;
@@ -97,6 +98,11 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
     ];
 
     /**
+     * @see WebComponentsCreateInfo::$classNamePrefix
+     */
+    private readonly string $classNamePrefix;
+
+    /**
      * A map containing a link between a tag name and a component class.
      *
      * @var array<non-empty-lowercase-string, class-string>
@@ -113,6 +119,8 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
     public function __construct(LibSaucer $api, WebView $webview, EventDispatcherInterface $dispatcher)
     {
         parent::__construct($api, $webview, $dispatcher);
+
+        $this->classNamePrefix = $webview->info->webComponents->classNamePrefix;
 
         $this->instances = new WebViewComponentInstances(
             scripts: $this->webview->scripts,
@@ -233,17 +241,9 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
 
     public function add(string $name, string $component): void
     {
-        $lower = \strtolower($name);
+        $name = $this->getTagName($name, $component);
 
-        if ($this->has($lower)) {
-            throw ComponentAlreadyDefinedException::becauseComponentAlreadyDefined($name, $component);
-        }
-
-        if (!$this->isValidComponentTagName($lower)) {
-            throw InvalidComponentNameException::becauseComponentNameIsInvalid($name);
-        }
-
-        if ($this->isBuiltinComponentTagName($lower)) {
+        if ($this->isBuiltinComponentTagName($name)) {
             throw BuiltinComponentNameException::becauseComponentNameIsBuiltin($name);
         }
 
@@ -271,9 +271,47 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
             }
         }
 
-        $this->components[$lower] = $component;
+        $this->components[$name] = $component;
 
-        $this->webview->scripts->add($this->builder->build($lower, $component));
+        $this->webview->scripts->add($this->builder->build(
+            tagName: $name,
+            className: $this->getClassName($component),
+            component: $component,
+        ));
+    }
+
+    /**
+     * @param non-empty-string $name
+     * @param class-string $component
+     * @return non-empty-lowercase-string
+     */
+    private function getTagName(string $name, string $component): string
+    {
+        $lower = \strtolower($name);
+
+        if ($this->has($lower)) {
+            throw ComponentAlreadyDefinedException::becauseComponentAlreadyDefined($name, $component);
+        }
+
+        if (!$this->isValidComponentTagName($lower)) {
+            throw InvalidComponentNameException::becauseComponentNameIsInvalid($name);
+        }
+
+        return $lower;
+    }
+
+    /**
+     * @param non-empty-string $component
+     *
+     * @return non-empty-string
+     */
+    private function getClassName(string $component): string
+    {
+        if (\is_subclass_of($component, HasClassNameInterface::class, true)) {
+            return $component::getClassName();
+        }
+
+        return $this->classNamePrefix . \str_replace('\\', '_', $component);
     }
 
     public function has(string $name): bool

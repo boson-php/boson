@@ -14,30 +14,9 @@ use Boson\WebView\Api\WebComponentsApi\HasObservedAttributesInterface;
  */
 final readonly class WebViewComponentBuilder
 {
-    /**
-     * @var non-empty-string
-     */
-    private const string DEFAULT_CLASS_PREFIX = '__BosonWebComponent';
-
     public function __construct(
         private Application $app,
-        /**
-         * @var non-empty-string
-         */
-        private string $classPrefix = self::DEFAULT_CLASS_PREFIX,
     ) {}
-
-    /**
-     * @param non-empty-string $component
-     *
-     * @return non-empty-string
-     */
-    private function getClassName(string $component): string
-    {
-        $trimmed = \trim($component, '\\');
-
-        return $this->classPrefix . \str_replace('\\', '_', $trimmed);
-    }
 
     /**
      * @param class-string $component
@@ -57,14 +36,14 @@ final readonly class WebViewComponentBuilder
 
     /**
      * @param non-empty-string $tagName
+     * @param non-empty-string $className
      * @param class-string $component
      *
      * @return non-empty-string
      */
-    public function build(string $tagName, string $component): string
+    public function build(string $tagName, string $className, string $component): string
     {
         $isDebug = $this->app->isDebug;
-        $className = $this->getClassName($component);
 
         $hasObservedAttributes = $this->hasObservedAttributes($component)
             && $component::getObservedAttributeNames() !== [];
