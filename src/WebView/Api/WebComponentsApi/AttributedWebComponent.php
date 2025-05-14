@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi;
 
-use Boson\WebView\Api\WebComponentsApi\Attribute\AsClientAttribute;
-use Boson\WebView\Api\WebComponentsApi\Attribute\AsClientMethod;
+use Boson\WebView\Api\WebComponentsApi\Attribute\AsAttribute;
+use Boson\WebView\Api\WebComponentsApi\Attribute\AsMethod;
 use Boson\WebView\Api\WebComponentsApi\Attribute\AsTemplate;
 use Boson\WebView\Api\WebComponentsApi\Attribute\AsWebComponent;
 use Boson\WebView\Api\WebComponentsApi\AttributedWebComponent\MethodMetadata;
-use Boson\WebView\Api\WebComponentsApi\AttributedWebComponent\PropertyMetadata;
+use Boson\WebView\Api\WebComponentsApi\AttributedWebComponent\AttributeMetadata;
 
 abstract class AttributedWebComponent extends WebComponent
 {
@@ -21,12 +21,12 @@ abstract class AttributedWebComponent extends WebComponent
     /**
      * @var array<non-empty-string, MethodMetadata>
      */
-    private static array $methods = [];
+    private static array $registeredComponentMethods = [];
 
     /**
-     * @var array<non-empty-string, PropertyMetadata>
+     * @var array<non-empty-string, AttributeMetadata>
      */
-    private static array $clientAttributes = [];
+    private static array $registeredComponentAttributes = [];
 
     private static function getAsWebComponentAttribute(): ?AsWebComponent
     {
@@ -53,13 +53,13 @@ abstract class AttributedWebComponent extends WebComponent
 
     public function onMethodCalled(string $method, array $args = []): mixed
     {
-        $info = self::$methods[$method] ?? null;
+        $info = self::$registeredComponentMethods[$method] ?? null;
 
         if ($info === null) {
             throw new \BadMethodCallException(\sprintf(
                 'The "%s" method of <%s /> is not defined',
                 $method,
-                $this->element->name,
+                $this->tagName,
             ));
         }
 
@@ -74,8 +74,8 @@ abstract class AttributedWebComponent extends WebComponent
 
     public static function getMethodNames(): array
     {
-        if (self::$methods !== []) {
-            return \array_keys(self::$methods);
+        if (self::$registeredComponentMethods !== []) {
+            return \array_keys(self::$registeredComponentMethods);
         }
 
         $reflection = new \ReflectionClass(static::class);
@@ -86,29 +86,29 @@ abstract class AttributedWebComponent extends WebComponent
                 continue;
             }
 
-            foreach ($method->getAttributes(AsClientMethod::class) as $attribute) {
-                /** @var AsClientMethod $instance */
+            foreach ($method->getAttributes(AsMethod::class) as $attribute) {
+                /** @var AsMethod $instance */
                 $instance = $attribute->newInstance();
 
-                self::$methods[$instance->name ?? $method->name] = new MethodMetadata(
+                self::$registeredComponentMethods[$instance->name ?? $method->name] = new MethodMetadata(
                     method: $method,
                     renderAfterCall: $instance->renderAfterCall,
                 );
             }
         }
 
-        return \array_keys(self::$methods);
+        return \array_keys(self::$registeredComponentMethods);
     }
 
     public function onAttributeChanged(string $attribute, ?string $value, ?string $previous): void
     {
-        $info = self::$clientAttributes[$attribute] ?? null;
+        $info = self::$registeredComponentAttributes[$attribute] ?? null;
 
         if ($info === null) {
             throw new \BadMethodCallException(\sprintf(
                 'The "%s" attribute of <%s /> is not observable',
                 $attribute,
-                $this->element->name,
+                $this->tagName,
             ));
         }
 
@@ -127,8 +127,8 @@ abstract class AttributedWebComponent extends WebComponent
 
     public static function getObservedAttributeNames(): array
     {
-        if (self::$clientAttributes !== []) {
-            return \array_keys(self::$clientAttributes);
+        if (self::$registeredComponentAttributes !== []) {
+            return \array_keys(self::$registeredComponentAttributes);
         }
 
         $reflection = new \ReflectionClass(static::class);
@@ -139,11 +139,11 @@ abstract class AttributedWebComponent extends WebComponent
                 continue;
             }
 
-            foreach ($property->getAttributes(AsClientAttribute::class) as $attribute) {
-                /** @var AsClientAttribute $instance */
+            foreach ($property->getAttributes(AsAttribute::class) as $attribute) {
+                /** @var AsAttribute $instance */
                 $instance = $attribute->newInstance();
 
-                self::$clientAttributes[$instance->name ?? $property->name] = new PropertyMetadata(
+                self::$registeredComponentAttributes[$instance->name ?? $property->name] = new AttributeMetadata(
                     property: $property,
                     enableHooks: $instance->enableHooks,
                     renderAfterCall: $instance->renderAfterCall,
@@ -151,7 +151,7 @@ abstract class AttributedWebComponent extends WebComponent
             }
         }
 
-        return \array_keys(self::$clientAttributes);
+        return \array_keys(self::$registeredComponentAttributes);
     }
 
     /**

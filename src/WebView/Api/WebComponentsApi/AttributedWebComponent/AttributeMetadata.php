@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\AttributedWebComponent;
 
-final readonly class PropertyMetadata
+final readonly class AttributeMetadata
 {
     public function __construct(
         /**

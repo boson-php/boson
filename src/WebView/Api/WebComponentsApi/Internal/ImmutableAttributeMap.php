@@ -7,6 +7,9 @@ namespace Boson\WebView\Api\WebComponentsApi\Internal;
 use Boson\WebView\Api\WebComponentsApi\Element\AttributeMapInterface;
 
 /**
+ * @internal this is an internal library class, please do not use it in your code.
+ * @psalm-internal Boson\WebView\Api\WebComponentsApi
+ *
  * @template-implements \IteratorAggregate<non-empty-string, string>
  */
 readonly class ImmutableAttributeMap implements AttributeMapInterface, \IteratorAggregate

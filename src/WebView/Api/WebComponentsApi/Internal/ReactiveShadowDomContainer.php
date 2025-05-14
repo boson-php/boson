@@ -6,6 +6,10 @@ namespace Boson\WebView\Api\WebComponentsApi\Internal;
 
 use Boson\WebView\Api\WebComponentsApi\Element\MutableTemplateContainerInterface;
 
+/**
+ * @internal this is an internal library class, please do not use it in your code.
+ * @psalm-internal Boson\WebView\Api\WebComponentsApi
+ */
 final class ReactiveShadowDomContainer extends ImmutableShadowDomContainer implements
     MutableTemplateContainerInterface
 {

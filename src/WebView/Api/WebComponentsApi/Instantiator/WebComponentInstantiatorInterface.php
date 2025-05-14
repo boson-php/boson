@@ -9,11 +9,7 @@ use Boson\WebView\Api\WebComponentsApi\ReactiveElement;
 interface WebComponentInstantiatorInterface
 {
     /**
-     * @template TArgComponent of object
-     *
-     * @param ReactiveElement<TArgComponent> $context
-     *
-     * @return TArgComponent
+     * @param ReactiveElement<object> $context
      */
     public function create(ReactiveElement $context): object;
 }
