@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\Instantiator;
 
-use Boson\WebView\Api\WebComponentsApi\ReactiveElement;
+use Boson\WebView\Api\WebComponentsApi\ReactiveElementContext;
 
 final readonly class SimpleWebComponentInstantiator implements WebComponentInstantiatorInterface
 {
     /**
-     * @var null|\Closure(ReactiveElement<object>):object
+     * @var null|\Closure(ReactiveElementContext<object>):object
      */
     private ?\Closure $callback;
 
     /**
      * @template TArgComponent of object
-     * @param null|\Closure(ReactiveElement<TArgComponent>):TArgComponent $callback
+     * @param null|\Closure(ReactiveElementContext<TArgComponent>):TArgComponent $callback
      */
     public function __construct(
         ?callable $callback = null,
@@ -23,7 +23,7 @@ final readonly class SimpleWebComponentInstantiator implements WebComponentInsta
         $this->callback = $callback === null ? null : $callback(...);
     }
 
-    public function create(ReactiveElement $context): object
+    public function create(ReactiveElementContext $context): object
     {
         $class = $context->component;
 

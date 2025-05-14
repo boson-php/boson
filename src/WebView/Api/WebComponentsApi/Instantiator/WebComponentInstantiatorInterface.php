@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\Instantiator;
 
-use Boson\WebView\Api\WebComponentsApi\ReactiveElement;
+use Boson\WebView\Api\WebComponentsApi\ReactiveElementContext;
 
 interface WebComponentInstantiatorInterface
 {
     /**
-     * @param ReactiveElement<object> $context
+     * @param ReactiveElementContext<object> $context
      */
-    public function create(ReactiveElement $context): object;
+    public function create(ReactiveElementContext $context): object;
 }

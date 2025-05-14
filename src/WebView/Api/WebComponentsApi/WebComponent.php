@@ -48,7 +48,7 @@ abstract class WebComponent implements
         }
     }
 
-    public function __construct(ReactiveElement $element)
+    public function __construct(ReactiveElementContext $element)
     {
         $this->tagName = $element->name;
         $this->attributes = $element->attributes;

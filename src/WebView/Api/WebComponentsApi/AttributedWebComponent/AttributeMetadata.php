@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\AttributedWebComponent;
 
+/**
+ * @internal this is an internal library class, please do not use it in your code.
+ * @psalm-internal Boson\WebView\Api\WebComponentsApi
+ */
 final readonly class AttributeMetadata
 {
     public function __construct(

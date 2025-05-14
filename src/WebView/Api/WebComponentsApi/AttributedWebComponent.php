@@ -41,11 +41,11 @@ abstract class AttributedWebComponent extends WebComponent
 
     public static function getClassName(): string
     {
-        $asWebComponent = self::getAsWebComponentAttribute();
+        $attribute = self::getAsWebComponentAttribute();
 
         // Try to fetch class name from attribute
-        if ($asWebComponent?->className !== null) {
-            return $asWebComponent->className;
+        if ($attribute?->className !== null) {
+            return $attribute->className;
         }
 
         return parent::getClassName();
@@ -53,7 +53,7 @@ abstract class AttributedWebComponent extends WebComponent
 
     public function onMethodCalled(string $method, array $args = []): mixed
     {
-        $info = self::$registeredComponentMethods[$method] ?? null;
+        $info = self::$registeredComponentMethods[static::class][$method] ?? null;
 
         if ($info === null) {
             throw new \BadMethodCallException(\sprintf(
@@ -74,8 +74,10 @@ abstract class AttributedWebComponent extends WebComponent
 
     public static function getMethodNames(): array
     {
-        if (self::$registeredComponentMethods !== []) {
-            return \array_keys(self::$registeredComponentMethods);
+        self::$registeredComponentMethods[static::class] ??= [];
+
+        if (self::$registeredComponentMethods[static::class] !== []) {
+            return \array_keys(self::$registeredComponentMethods[static::class]);
         }
 
         $reflection = new \ReflectionClass(static::class);
@@ -90,19 +92,20 @@ abstract class AttributedWebComponent extends WebComponent
                 /** @var AsMethod $instance */
                 $instance = $attribute->newInstance();
 
-                self::$registeredComponentMethods[$instance->name ?? $method->name] = new MethodMetadata(
-                    method: $method,
-                    renderAfterCall: $instance->renderAfterCall,
-                );
+                self::$registeredComponentMethods[static::class][$instance->name ?? $method->name]
+                    = new MethodMetadata(
+                        method: $method,
+                        renderAfterCall: $instance->renderAfterCall,
+                    );
             }
         }
 
-        return \array_keys(self::$registeredComponentMethods);
+        return \array_keys(self::$registeredComponentMethods[static::class]);
     }
 
     public function onAttributeChanged(string $attribute, ?string $value, ?string $previous): void
     {
-        $info = self::$registeredComponentAttributes[$attribute] ?? null;
+        $info = self::$registeredComponentAttributes[static::class][$attribute] ?? null;
 
         if ($info === null) {
             throw new \BadMethodCallException(\sprintf(
@@ -127,8 +130,10 @@ abstract class AttributedWebComponent extends WebComponent
 
     public static function getObservedAttributeNames(): array
     {
-        if (self::$registeredComponentAttributes !== []) {
-            return \array_keys(self::$registeredComponentAttributes);
+        self::$registeredComponentAttributes[static::class] ??= [];
+
+        if (self::$registeredComponentAttributes[static::class] !== []) {
+            return \array_keys(self::$registeredComponentAttributes[static::class]);
         }
 
         $reflection = new \ReflectionClass(static::class);
@@ -143,15 +148,16 @@ abstract class AttributedWebComponent extends WebComponent
                 /** @var AsAttribute $instance */
                 $instance = $attribute->newInstance();
 
-                self::$registeredComponentAttributes[$instance->name ?? $property->name] = new AttributeMetadata(
-                    property: $property,
-                    enableHooks: $instance->enableHooks,
-                    renderAfterCall: $instance->renderAfterCall,
-                );
+                self::$registeredComponentAttributes[static::class][$instance->name ?? $property->name]
+                    = new AttributeMetadata(
+                        property: $property,
+                        enableHooks: $instance->enableHooks,
+                        renderAfterCall: $instance->renderAfterCall,
+                    );
             }
         }
 
-        return \array_keys(self::$registeredComponentAttributes);
+        return \array_keys(self::$registeredComponentAttributes[static::class]);
     }
 
     /**
@@ -159,11 +165,11 @@ abstract class AttributedWebComponent extends WebComponent
      */
     private function getRenderCallback(): \Closure
     {
-        $asWebComponent = self::getAsWebComponentAttribute();
+        $attribute = self::getAsWebComponentAttribute();
 
         // Try to fetch template from attribute
-        if ($asWebComponent?->template !== null) {
-            return static fn(): string => $asWebComponent->template;
+        if ($attribute?->template !== null) {
+            return static fn(): string => $attribute->template;
         }
 
         $reflection = new \ReflectionClass(static::class);
