@@ -112,6 +112,8 @@ final class WebViewEventHandler
 
     private function onDomReady(CData $_): void
     {
+        $this->changeState(WebViewState::Ready);
+
         $this->dispatcher->dispatch(new WebViewDomReady(
             subject: $this->webview,
         ));

@@ -102,7 +102,12 @@ export default class BosonRpc implements BosonRpcInterface, BosonRpcResponderInt
     }
 
     resolve(id: string, result: any): void {
-        this.#fetch(id)?.resolve(result);
+        if (result instanceof Promise) {
+            result.then(successful => this.resolve(id, successful))
+                .catch(rejection => this.reject(id, rejection));
+        } else {
+            this.#fetch(id)?.resolve(result);
+        }
     }
 
     reject(id: string, error: Error): void {

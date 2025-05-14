@@ -26,8 +26,20 @@ use function React\Promise\resolve;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewDataApi extends WebViewApi implements DataApiInterface
+final class WebViewData extends WebViewApi implements DataApiInterface
 {
+    private const string DATA_REQUEST_TEMPLATE = <<<'JS'
+        var __result%s = (function() {
+            return %s;
+        })();
+
+        if (__result%1$s instanceof Promise) {
+            __result%1$s.then(data => %s("%1$s", data));
+        } else {
+            %3$s("%1$s", __result%1$s);
+        }
+        JS;
+
     /**
      * @see DataApiCreateInfo::$timeout
      */
@@ -155,10 +167,10 @@ final class WebViewDataApi extends WebViewApi implements DataApiInterface
      */
     private function pack(string|int $id, string $code): string
     {
-        return \vsprintf('%s("%s", (function() { return %s; })());', [
-            $this->callback,
+        return \vsprintf(self::DATA_REQUEST_TEMPLATE, [
             \addcslashes((string) $id, '"'),
             $code,
+            $this->callback,
         ]);
     }
 

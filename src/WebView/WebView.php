@@ -12,10 +12,12 @@ use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Exception\BosonException;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\Marker\BlockingOperation;
+use Boson\WebView\Api\BatteryApi\WebViewBattery;
+use Boson\WebView\Api\BatteryApiInterface;
 use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
 use Boson\WebView\Api\BindingsApi\WebViewBindingsMap;
 use Boson\WebView\Api\BindingsApiInterface;
-use Boson\WebView\Api\DataApi\WebViewDataApi;
+use Boson\WebView\Api\DataApi\WebViewData;
 use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\ScriptsApi\WebViewScriptsSet;
 use Boson\WebView\Api\ScriptsApiInterface;
@@ -78,6 +80,11 @@ final class WebView implements EventListenerProviderInterface
      * Gets access to the Web Components API of the webview.
      */
     public readonly WebComponentsApiInterface $components;
+
+    /**
+     * Gets access to the Battery API of the webview.
+     */
+    public readonly BatteryApiInterface $battery;
 
     /**
      * Contains webview URI instance.
@@ -187,8 +194,9 @@ final class WebView implements EventListenerProviderInterface
 
         $this->scripts = $this->createApi(WebViewScriptsSet::class);
         $this->bindings = $this->createApi(WebViewBindingsMap::class);
-        $this->data = $this->createApi(WebViewDataApi::class);
+        $this->data = $this->createApi(WebViewData::class);
         $this->components = $this->createApi(WebViewWebComponents::class);
+        $this->battery = $this->createApi(WebViewBattery::class);
 
         $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
         $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
@@ -294,7 +302,7 @@ final class WebView implements EventListenerProviderInterface
     /**
      * Requests arbitrary data from webview using JavaScript code.
      *
-     * Note: This is facade method of the {@see WebViewDataApi::get()},
+     * Note: This is facade method of the {@see WebViewData::get()},
      *       that provides by the {@see $data} field. This means that
      *       calling `$webview->requests->send(...)` should have the same effect.
      *
