@@ -7,6 +7,7 @@ namespace Boson\WebView\Api\WebComponentsApi\Internal;
 use Boson\Application;
 use Boson\WebView\Api\WebComponentsApi\HasMethodsInterface;
 use Boson\WebView\Api\WebComponentsApi\HasObservedAttributesInterface;
+use Boson\WebView\Api\WebComponentsApi\HasShadowDomInterface;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
@@ -34,6 +35,11 @@ final readonly class WebViewComponentBuilder
         return \is_subclass_of($component, HasMethodsInterface::class, true);
     }
 
+    private function hasShadowRoot(string $component): bool
+    {
+        return \is_subclass_of($component, HasShadowDomInterface::class, true);
+    }
+
     /**
      * @param non-empty-string $tagName
      * @param non-empty-string $className
@@ -45,6 +51,7 @@ final readonly class WebViewComponentBuilder
     {
         $isDebug = $this->app->isDebug;
 
+        $hasShadowRoot = $this->hasShadowRoot($component);
         $hasObservedAttributes = $this->hasObservedAttributes($component)
             && $component::getObservedAttributeNames() !== [];
 

@@ -11,18 +11,24 @@ use JetBrains\PhpStorm\Language;
 final readonly class WebViewComponentTemplateChanger implements TemplateChangerInterface
 {
     private const string HTML_CONTENT_TEMPLATE = <<<'JS'
-        const instance = window.boson.components.instances["%s"];
-
-        if (instance) {
-            instance.innerHTML = `%s`;
+        try {
+            var __%s = window.boson.components.instances["%1$s"];
+            if (__%1$s) {
+                __%1$s.innerHTML = `%s`;
+            }
+        } catch (e) {
+            console.error(e);
         }
         JS;
 
     private const string SHADOW_DOM_TEMPLATE = <<<'JS'
-        const instance = window.boson.components.instances["%s"];
-
-        if (instance) {
-            instance.shadowRoot.innerHTML = `%s`;
+        try {
+            var __%s = window.boson.components.instances["%1$s"];
+            if (__%1$s && __%1$s.shadowRoot) {
+                __%1$s.shadowRoot.innerHTML = `%s`;
+            }
+        } catch (e) {
+            console.error(e);
         }
         JS;
 

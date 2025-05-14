@@ -4,6 +4,7 @@
  * @var non-empty-string $className
  * @var class-string $component
  * @var bool $hasObservedAttributes
+ * @var bool $hasShadowRoot
  * @var list<non-empty-string> $methodNames
  * @var bool $isDebug
  */
@@ -49,6 +50,10 @@ class <?=$className?> extends HTMLElement {
         // You may set ApplicationCreateInfo::$debug to false to diable this logs
         console.log(`${this.#debugPrefix}<<?=$tagName?> /> created`);
 <?php endif ?>
+
+        <?php if ($hasShadowRoot): ?>
+        this.attachShadow({mode: 'open'});
+        <?php endif; ?>
 
         // Attach element to globals registry
         window.boson.components.instances[this.#id] = this;
@@ -99,7 +104,7 @@ class <?=$className?> extends HTMLElement {
                 console.log(`${this.#debugPrefix}<<?=$tagName?> /> render shadow ${value}`);
 <?php endif ?>
 
-                this.attachShadow({mode: 'open'}).innerHTML = value;
+                this.shadowRoot.innerHTML = value;
             });
     }
 
