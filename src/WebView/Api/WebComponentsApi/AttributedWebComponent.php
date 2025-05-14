@@ -14,7 +14,7 @@ use Boson\WebView\Api\WebComponentsApi\AttributedWebComponent\PropertyMetadata;
 abstract class AttributedWebComponent extends WebComponent
 {
     /**
-     * @var null|\Closure():string
+     * @var \Closure():string|null
      */
     private ?\Closure $render = null;
 
@@ -26,7 +26,7 @@ abstract class AttributedWebComponent extends WebComponent
     /**
      * @var array<non-empty-string, PropertyMetadata>
      */
-    private static array $attributes = [];
+    private static array $clientAttributes = [];
 
     private static function getAsWebComponentAttribute(): ?AsWebComponent
     {
@@ -59,7 +59,7 @@ abstract class AttributedWebComponent extends WebComponent
             throw new \BadMethodCallException(\sprintf(
                 'The "%s" method of <%s /> is not defined',
                 $method,
-                $this->context->name,
+                $this->element->name,
             ));
         }
 
@@ -102,13 +102,13 @@ abstract class AttributedWebComponent extends WebComponent
 
     public function onAttributeChanged(string $attribute, ?string $value, ?string $previous): void
     {
-        $info = self::$attributes[$attribute] ?? null;
+        $info = self::$clientAttributes[$attribute] ?? null;
 
         if ($info === null) {
             throw new \BadMethodCallException(\sprintf(
                 'The "%s" attribute of <%s /> is not observable',
                 $attribute,
-                $this->context->name,
+                $this->element->name,
             ));
         }
 
@@ -127,8 +127,8 @@ abstract class AttributedWebComponent extends WebComponent
 
     public static function getObservedAttributeNames(): array
     {
-        if (self::$attributes !== []) {
-            return \array_keys(self::$attributes);
+        if (self::$clientAttributes !== []) {
+            return \array_keys(self::$clientAttributes);
         }
 
         $reflection = new \ReflectionClass(static::class);
@@ -143,7 +143,7 @@ abstract class AttributedWebComponent extends WebComponent
                 /** @var AsClientAttribute $instance */
                 $instance = $attribute->newInstance();
 
-                self::$attributes[$instance->name ?? $property->name] = new PropertyMetadata(
+                self::$clientAttributes[$instance->name ?? $property->name] = new PropertyMetadata(
                     property: $property,
                     enableHooks: $instance->enableHooks,
                     renderAfterCall: $instance->renderAfterCall,
@@ -151,9 +151,8 @@ abstract class AttributedWebComponent extends WebComponent
             }
         }
 
-        return \array_keys(self::$attributes);
+        return \array_keys(self::$clientAttributes);
     }
-
 
     /**
      * @return \Closure():string

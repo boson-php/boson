@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi\Internal;
 
+use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\ScriptsApiInterface;
 use Boson\WebView\Api\WebComponentsApi\HasLifecycleCallbacksInterface;
 use Boson\WebView\Api\WebComponentsApi\HasMethodsInterface;
@@ -11,7 +12,7 @@ use Boson\WebView\Api\WebComponentsApi\HasObservedAttributesInterface;
 use Boson\WebView\Api\WebComponentsApi\HasShadowDomInterface;
 use Boson\WebView\Api\WebComponentsApi\HasTemplateInterface;
 use Boson\WebView\Api\WebComponentsApi\Instantiator\WebComponentInstantiatorInterface;
-use Boson\WebView\Api\WebComponentsApi\WebComponentContext;
+use Boson\WebView\Api\WebComponentsApi\ReactiveElement;
 
 /**
  * Provides components instances
@@ -29,6 +30,7 @@ final class WebViewComponentInstances
     private array $instances = [];
 
     public function __construct(
+        private readonly DataApiInterface $data,
         private readonly ScriptsApiInterface $scripts,
         private readonly WebComponentInstantiatorInterface $instantiator,
     ) {}
@@ -42,18 +44,19 @@ final class WebViewComponentInstances
     {
         $hasShadowDom = \is_subclass_of($component, HasShadowDomInterface::class, true);
 
-        $context = new WebComponentContext(
+        $interactor = new ElementInteractor(
+            id: $id,
+            data: $this->data,
+            scripts: $this->scripts,
+        );
+
+        $context = new ReactiveElement(
             name: $name,
             component: $component,
-            attributeChanger: new WebViewComponentAttributeChanger(
-                scripts: $this->scripts,
-                id: $id,
-            ),
-            templateChanger: new WebViewComponentTemplateChanger(
-                scripts: $this->scripts,
-                id: $id,
-                useShadowDom: $hasShadowDom,
-            ),
+            attributes: new ReactiveAttributeMap($interactor),
+            content: $hasShadowDom
+                ? new ReactiveShadowDomContainer($interactor)
+                : new ReactiveTemplateContainer($interactor),
         );
 
         $this->instances[$id] = $instance = $this->instantiator->create($context);

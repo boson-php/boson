@@ -123,6 +123,7 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
         $this->classNamePrefix = $webview->info->webComponents->classNamePrefix;
 
         $this->instances = new WebViewComponentInstances(
+            data: $this->webview->data,
             scripts: $this->webview->scripts,
             instantiator: $this->webview->info->webComponents->instantiator,
         );
