@@ -10,7 +10,7 @@ use Boson\WebView\Api\WebComponentsApi\Element\MutableTemplateContainerInterface
 /**
  * @template TComponent of object
  */
-final readonly class ReactiveElementContext
+final readonly class ReactiveContext
 {
     public function __construct(
         /**

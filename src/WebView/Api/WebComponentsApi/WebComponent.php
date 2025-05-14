@@ -54,11 +54,11 @@ abstract class WebComponent implements
     }
 
     /**
-     * @param ReactiveElementContext<$this> $ctx
+     * @param ReactiveContext<$this> $ctx
      */
     public function __construct(
+        ReactiveContext $ctx,
         protected readonly WebView $webview,
-        ReactiveElementContext $ctx,
     ) {
         $this->tagName = $ctx->name;
         $this->attributes = $ctx->attributes;

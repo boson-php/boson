@@ -12,7 +12,7 @@ use Boson\WebView\Api\WebComponentsApi\HasObservedAttributesInterface;
 use Boson\WebView\Api\WebComponentsApi\HasShadowDomInterface;
 use Boson\WebView\Api\WebComponentsApi\HasTemplateInterface;
 use Boson\WebView\Api\WebComponentsApi\Instantiator\WebComponentInstantiatorInterface;
-use Boson\WebView\Api\WebComponentsApi\ReactiveElementContext;
+use Boson\WebView\Api\WebComponentsApi\ReactiveContext;
 use Boson\WebView\WebView;
 
 /**
@@ -50,7 +50,7 @@ final class WebViewComponentInstances
             scripts: $this->webview->scripts,
         );
 
-        $context = new ReactiveElementContext(
+        $context = new ReactiveContext(
             name: \strtolower($name),
             component: $component,
             attributes: new ReactiveAttributeMap($interactor),
