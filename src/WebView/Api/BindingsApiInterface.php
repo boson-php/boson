@@ -26,14 +26,19 @@ interface BindingsApiInterface extends \Traversable, \Countable
      * be registered in nested namespaces using dot notation
      * (e.g., "app.functions.myFunction").
      *
-     * @api
-     *
      * @param non-empty-string $function The name of the JavaScript function
      * @param \Closure(mixed...):mixed $callback The PHP callback to execute
      *
      * @throws FunctionAlreadyDefinedException if the function is already defined
      */
     public function bind(string $function, \Closure $callback): void;
+
+    /**
+     * Returns {@see true} in case of passed function is bound.
+     *
+     * @param non-empty-string $function
+     */
+    public function isBound(string $function): bool;
 
     /**
      * Gets the count of registered functions.

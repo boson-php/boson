@@ -26,7 +26,7 @@ use function React\Promise\resolve;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewData extends WebViewApi implements DataApiInterface
+final class WebViewDataApi extends WebViewApi implements DataApiInterface
 {
     /**
      * @see DataApiCreateInfo::$timeout

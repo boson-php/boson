@@ -175,13 +175,18 @@ final class WebViewBindingsMap extends WebViewApi implements
 
     public function bind(string $function, \Closure $callback): void
     {
-        if (isset($this->functions[$function])) {
+        if ($this->isBound($function)) {
             throw FunctionAlreadyDefinedException::becauseFunctionAlreadyDefined($function);
         }
 
         $this->functions[$function] = $callback;
 
         $this->registerClientFunction($function);
+    }
+
+    public function isBound(string $function): bool
+    {
+        return isset($this->functions[$function]);
     }
 
     public function getIterator(): \Traversable
