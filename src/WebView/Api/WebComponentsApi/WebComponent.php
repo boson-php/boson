@@ -7,6 +7,7 @@ namespace Boson\WebView\Api\WebComponentsApi;
 use Boson\WebView\Api\WebComponentsApi\Element\AttributeMapInterface;
 use Boson\WebView\Api\WebComponentsApi\Element\MutableAttributeMapInterface;
 use Boson\WebView\Api\WebComponentsApi\Element\MutableTemplateContainerInterface;
+use Boson\WebView\WebView;
 
 abstract class WebComponent implements
     HasClassNameInterface,
@@ -55,8 +56,10 @@ abstract class WebComponent implements
     /**
      * @param ReactiveElementContext<$this> $ctx
      */
-    public function __construct(ReactiveElementContext $ctx)
-    {
+    public function __construct(
+        protected readonly WebView $webview,
+        ReactiveElementContext $ctx,
+    ) {
         $this->tagName = $ctx->name;
         $this->attributes = $ctx->attributes;
         $this->content = $ctx->content;
