@@ -55,7 +55,7 @@ export class ChromePostMessageTransport extends PostMessageTransport {
     }
 
     static isSupported(): boolean {
-        return this.#findGlobalExecutor() !== null;
+        return this.#findGlobalExecutor() !== undefined;
     }
 }
 
@@ -69,7 +69,7 @@ export class SaucerPostMessageTransport extends PostMessageTransport {
     }
 
     static isSupported(): boolean {
-        return this.#findGlobalExecutor() !== null;
+        return this.#findGlobalExecutor() !== undefined;
     }
 }
 
