@@ -19,6 +19,8 @@ use Boson\WebView\Api\DataApi\WebViewDataApi;
 use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\ScriptsApi\WebViewScriptsSet;
 use Boson\WebView\Api\ScriptsApiInterface;
+use Boson\WebView\Api\WebComponentsApi\Exception\ComponentAlreadyDefinedException;
+use Boson\WebView\Api\WebComponentsApi\Exception\WebComponentsApiException;
 use Boson\WebView\Api\WebComponentsApi\WebViewWebComponents;
 use Boson\WebView\Api\WebComponentsApiInterface;
 use Boson\WebView\Api\WebViewApi;
@@ -264,7 +266,7 @@ final class WebView implements EventListenerProviderInterface
      *
      * @throws FunctionAlreadyDefinedException in case of function binding error
      *
-     * @uses WebViewBindingsMap::bind() WebView Functions API
+     * @uses BindingsApiInterface::bind() WebView Functions API
      */
     public function bind(string $function, \Closure $callback): void
     {
@@ -280,7 +282,7 @@ final class WebView implements EventListenerProviderInterface
      *
      * @api
      *
-     * @uses WebViewScriptsSet::eval() WebView Scripts API
+     * @uses ScriptsApiInterface::eval() WebView Scripts API
      *
      * @param string $code A JavaScript code for execution
      */
@@ -300,12 +302,30 @@ final class WebView implements EventListenerProviderInterface
      *
      * @param string $code A JavaScript code for execution
      *
-     * @uses WebViewDataApi::get() WebView Requests API
+     * @uses DataApiInterface::get() WebView Requests API
      */
     #[BlockingOperation]
     public function get(#[Language('JavaScript')] string $code): mixed
     {
         return $this->data->get($code);
+    }
+
+    /**
+     * Registers a new component with the given tag name and component class.
+     *
+     * @api
+     *
+     * @param non-empty-string $name The component name (tag)
+     * @param class-string $component The fully qualified class name of the component
+     *
+     * @throws ComponentAlreadyDefinedException If a component with the given name is already registered.
+     * @throws WebComponentsApiException If any other registration error occurs.
+     *
+     * @uses WebComponentsApiInterface::add() WebView Web Components API
+     */
+    public function defineComponent(string $name, string $component): void
+    {
+        $this->components->add($name, $component);
     }
 
     /**
