@@ -12,8 +12,12 @@ final readonly class WebViewComponentAttributeChanger implements AttributeChange
     private const string ATTR_UPDATE_TEMPLATE = <<<'JS'
         try {
             var __%s = window.boson.components.instances["%1$s"];
-            if (__%1$s && __%1$s["%s"] !== %s) {
-                __%1$s["%2$s"] = %3$s;
+            if (__%1$s && __%1$s.getAttribute("%s") !== %s) {
+                if (%3$s === null) {
+                    __%1$s.removeAttribute("%2$s", %3$s);
+                } else {
+                    __%1$s.setAttribute("%2$s", %3$s);
+                }
             }
         } catch (e) {
             console.error(e);
@@ -34,7 +38,7 @@ final readonly class WebViewComponentAttributeChanger implements AttributeChange
             self::ATTR_UPDATE_TEMPLATE,
             $this->id,
             $name,
-            $value,
+            \json_encode($value),
         ));
     }
 }
