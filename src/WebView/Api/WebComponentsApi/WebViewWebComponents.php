@@ -151,15 +151,15 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
         $this->webview->bind('boson.components.invoke', $this->onInvoke(...));
     }
 
-    private function onCreated(string $tag, string $id): void
+    private function onCreated(string $tag, string $id): ?string
     {
         $component = $this->components[$tag] ?? null;
 
         if ($component === null || $id === '' || $tag === '') {
-            return;
+            return null;
         }
 
-        $this->instances->create($id, $tag, $component);
+        return $this->instances->create($id, $tag, $component);
     }
 
     /**

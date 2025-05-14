@@ -19,5 +19,6 @@ final readonly class WebComponentContext
          */
         public string $component,
         public AttributeChangerInterface $attributeChanger,
+        public TemplateChangerInterface $templateChanger,
     ) {}
 }

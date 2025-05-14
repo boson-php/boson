@@ -9,6 +9,7 @@ use Boson\WebView\Api\WebComponentsApi\HasLifecycleCallbacksInterface;
 use Boson\WebView\Api\WebComponentsApi\HasMethodsInterface;
 use Boson\WebView\Api\WebComponentsApi\HasObservedAttributesInterface;
 use Boson\WebView\Api\WebComponentsApi\HasShadowDomInterface;
+use Boson\WebView\Api\WebComponentsApi\HasTemplateInterface;
 use Boson\WebView\Api\WebComponentsApi\Instantiator\WebComponentInstantiatorInterface;
 use Boson\WebView\Api\WebComponentsApi\WebComponentContext;
 
@@ -37,8 +38,10 @@ final class WebViewComponentInstances
      * @param non-empty-string $name
      * @param class-string $component
      */
-    public function create(string $id, string $name, string $component): void
+    public function create(string $id, string $name, string $component): ?string
     {
+        $hasShadowDom = \is_subclass_of($component, HasShadowDomInterface::class, true);
+
         $context = new WebComponentContext(
             name: $name,
             component: $component,
@@ -46,9 +49,20 @@ final class WebViewComponentInstances
                 scripts: $this->scripts,
                 id: $id,
             ),
+            templateChanger: new WebViewComponentTemplateChanger(
+                scripts: $this->scripts,
+                id: $id,
+                useShadowDom: $hasShadowDom,
+            ),
         );
 
-        $this->instances[$id] = $this->instantiator->create($context);
+        $this->instances[$id] = $instance = $this->instantiator->create($context);
+
+        if ($hasShadowDom === false && $instance instanceof HasTemplateInterface) {
+            return $instance->render();
+        }
+
+        return null;
     }
 
     /**

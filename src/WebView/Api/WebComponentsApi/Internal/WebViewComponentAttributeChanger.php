@@ -10,7 +10,7 @@ use Boson\WebView\Api\WebComponentsApi\AttributeChangerInterface;
 final readonly class WebViewComponentAttributeChanger implements AttributeChangerInterface
 {
     private const string ATTR_UPDATE_TEMPLATE = <<<'JS'
-        const instance = window.boson.instances["%s"];
+        const instance = window.boson.components.instances["%s"];
 
         if (instance && instance["%s"] !== %s) {
             instance["%2$s"] = %3$s;

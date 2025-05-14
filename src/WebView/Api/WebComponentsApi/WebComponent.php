@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponentsApi;
 
+use JetBrains\PhpStorm\Language;
+
 abstract class WebComponent implements
     HasClassNameInterface,
     HasObservedAttributesInterface,
     HasMethodsInterface,
     HasLifecycleCallbacksInterface,
-    HasShadowDomInterface,
-    AttributeChangerInterface
+    HasTemplateInterface,
+    AttributeChangerInterface,
+    TemplateChangerInterface
 {
     public function __construct(
         /**
@@ -38,7 +41,7 @@ abstract class WebComponent implements
 
     public function onAttributeChanged(string $attribute, ?string $value, ?string $previous): void
     {
-        // Can be overridden
+        $this->changeTemplate($this->render());
     }
 
     public function changeAttribute(string $name, ?string $value): void
@@ -54,7 +57,8 @@ abstract class WebComponent implements
 
     public function onMethodCalled(string $method, array $args = []): mixed
     {
-        // Can be overridden
+        $this->changeTemplate($this->render());
+
         return null;
     }
 
@@ -66,7 +70,16 @@ abstract class WebComponent implements
 
     public function render(): string
     {
+        if ($this instanceof \Stringable) {
+            return (string) $this;
+        }
+
         // Can be overridden
         return '<slot />';
+    }
+
+    public function changeTemplate(#[Language('HTML')] string $html): void
+    {
+        $this->context->templateChanger->changeTemplate($html);
     }
 }

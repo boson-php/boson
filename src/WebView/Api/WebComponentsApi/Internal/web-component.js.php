@@ -53,7 +53,19 @@ class <?=$className?> extends HTMLElement {
         // Attach element to globals registry
         window.boson.components.instances[this.#id] = this;
         // Sending a notification about the creation of an element
-        window.boson.components.created("<?=$tagName?>", this.#id);
+        window.boson.components.created("<?=$tagName?>", this.#id)
+            .then((value) => {
+                if (value === null) {
+                    return;
+                }
+
+<?php if ($isDebug): ?>
+                // You may set ApplicationCreateInfo::$debug to false to diable this logs
+                console.log(`${this.#debugPrefix}<<?=$tagName?> /> render raw ${value}`);
+<?php endif ?>
+
+                this.innerHTML = value;
+            });
 
         return this;
     }
@@ -81,6 +93,11 @@ class <?=$className?> extends HTMLElement {
                 if (value === null) {
                     return;
                 }
+
+<?php if ($isDebug): ?>
+                // You may set ApplicationCreateInfo::$debug to false to diable this logs
+                console.log(`${this.#debugPrefix}<<?=$tagName?> /> render shadow ${value}`);
+<?php endif ?>
 
                 this.attachShadow({mode: 'open'}).innerHTML = value;
             });
