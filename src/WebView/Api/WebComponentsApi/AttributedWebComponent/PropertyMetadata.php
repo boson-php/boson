@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Boson\WebView\Api\WebComponentsApi\AttributedWebComponent;
+
+final readonly class PropertyMetadata
+{
+    public function __construct(
+        /**
+         * Contain property reflection
+         */
+        public \ReflectionProperty $property,
+        public bool $enableHooks,
+        /**
+         * Should refresh template after method call
+         */
+        public bool $renderAfterCall,
+    ) {}
+}

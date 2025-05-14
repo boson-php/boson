@@ -78,6 +78,11 @@ abstract class WebComponent implements
         return '<slot />';
     }
 
+    protected function refresh(): void
+    {
+        $this->changeTemplate($this->render());
+    }
+
     public function changeTemplate(#[Language('HTML')] string $html): void
     {
         $this->context->templateChanger->changeTemplate($html);
