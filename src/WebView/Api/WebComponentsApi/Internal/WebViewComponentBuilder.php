@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\WebComponentsApi\Internal;
 
 use Boson\Application;
+use Boson\WebView\Api\WebComponentsApi\HasMethodsInterface;
 use Boson\WebView\Api\WebComponentsApi\HasObservedAttributesInterface;
 
 /**
@@ -47,6 +48,14 @@ final readonly class WebViewComponentBuilder
     }
 
     /**
+     * @param class-string $component
+     */
+    private function hasMethods(string $component): bool
+    {
+        return \is_subclass_of($component, HasMethodsInterface::class, true);
+    }
+
+    /**
      * @param non-empty-string $tagName
      * @param class-string $component
      *
@@ -54,9 +63,17 @@ final readonly class WebViewComponentBuilder
      */
     public function build(string $tagName, string $component): string
     {
-        $className = $this->getClassName($component);
-        $hasObservedAttributes = $this->hasObservedAttributes($component);
         $isDebug = $this->app->isDebug;
+        $className = $this->getClassName($component);
+
+        $hasObservedAttributes = $this->hasObservedAttributes($component)
+            && $component::getObservedAttributeNames() !== [];
+
+        $methodNames = [];
+
+        if ($this->hasMethods($component)) {
+            $methodNames = $component::getMethodNames();
+        }
 
         \ob_start();
         require __DIR__ . '/web-component.js.php';

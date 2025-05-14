@@ -6,16 +6,21 @@ namespace Boson\WebView\Api\WebComponentsApi;
 
 abstract class WebComponent implements
     HasObservedAttributesInterface,
+    HasMethodsInterface,
     HasLifecycleCallbacksInterface,
     HasShadowDomInterface,
     AttributeChangerInterface
 {
+    protected readonly \ReflectionObject $reflection;
+
     public function __construct(
         /**
          * @var WebComponentContext<$this>
          */
         protected readonly WebComponentContext $context,
-    ) {}
+    ) {
+        $this->reflection = new \ReflectionObject($this);
+    }
 
     public function onConnect(): void
     {
@@ -39,11 +44,25 @@ abstract class WebComponent implements
 
     public static function getObservedAttributeNames(): array
     {
+        // Can be overridden
+        return [];
+    }
+
+    public function onMethodCalled(string $method, array $args = []): mixed
+    {
+        // Can be overridden
+        return null;
+    }
+
+    public static function getMethodNames(): array
+    {
+        // Can be overridden
         return [];
     }
 
     public function render(): string
     {
+        // Can be overridden
         return '<slot />';
     }
 }

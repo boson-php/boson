@@ -6,6 +6,7 @@ namespace Boson\WebView\Api\WebComponentsApi\Internal;
 
 use Boson\WebView\Api\ScriptsApiInterface;
 use Boson\WebView\Api\WebComponentsApi\HasLifecycleCallbacksInterface;
+use Boson\WebView\Api\WebComponentsApi\HasMethodsInterface;
 use Boson\WebView\Api\WebComponentsApi\HasObservedAttributesInterface;
 use Boson\WebView\Api\WebComponentsApi\HasShadowDomInterface;
 use Boson\WebView\Api\WebComponentsApi\Instantiator\WebComponentInstantiatorInterface;
@@ -74,6 +75,22 @@ final class WebViewComponentInstances
 
     /**
      * @param non-empty-string $id
+     * @param non-empty-string $method
+     * @param array<array-key, mixed> $arguments
+     */
+    public function notifyInvoke(string $id, string $method, array $arguments): mixed
+    {
+        $instance = $this->instances[$id] ?? null;
+
+        if (!$instance instanceof HasMethodsInterface) {
+            return null;
+        }
+
+        return $instance->onMethodCalled($method, $arguments);
+    }
+
+    /**
+     * @param non-empty-string $id
      */
     public function notifyDisconnect(string $id): void
     {
@@ -89,8 +106,6 @@ final class WebViewComponentInstances
     /**
      * @param non-empty-string $id
      * @param non-empty-string $name
-     *
-     * @throws \Throwable
      */
     public function notifyAttributeChange(string $id, string $name, ?string $value, ?string $previous): void
     {

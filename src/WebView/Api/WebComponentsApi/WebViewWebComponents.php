@@ -6,9 +6,13 @@ namespace Boson\WebView\Api\WebComponentsApi;
 
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
+use Boson\WebView\Api\WebComponentsApi\Exception\BuiltinComponentMethodNameException;
 use Boson\WebView\Api\WebComponentsApi\Exception\BuiltinComponentNameException;
+use Boson\WebView\Api\WebComponentsApi\Exception\BuiltinComponentPropertyNameException;
 use Boson\WebView\Api\WebComponentsApi\Exception\ComponentAlreadyDefinedException;
+use Boson\WebView\Api\WebComponentsApi\Exception\InvalidComponentMethodNameException;
 use Boson\WebView\Api\WebComponentsApi\Exception\InvalidComponentNameException;
+use Boson\WebView\Api\WebComponentsApi\Exception\InvalidComponentPropertyNameException;
 use Boson\WebView\Api\WebComponentsApi\Internal\WebViewComponentBuilder;
 use Boson\WebView\Api\WebComponentsApi\Internal\WebViewComponentInstances;
 use Boson\WebView\Api\WebComponentsApiInterface;
@@ -75,6 +79,24 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
     ];
 
     /**
+     * List of builtin element property and methods (properties with functions) names.
+     *
+     * @var non-empty-list<non-empty-string>
+     */
+    private const array BUILTIN_CUSTOM_ELEMENT_PROPERTIES = [
+        'shadowRoot',
+        'formAssociated',
+        'observedAttributes',
+        // Methods
+        'constructor',
+        'connectedCallback',
+        'disconnectedCallback',
+        'attributeChangedCallback',
+        'adoptedCallback',
+        'connectedMoveCallback',
+    ];
+
+    /**
      * A map containing a link between a tag name and a component class.
      *
      * @var array<non-empty-lowercase-string, class-string>
@@ -118,17 +140,14 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
         $this->webview->bind('boson.components.connected', $this->onConnected(...));
         $this->webview->bind('boson.components.disconnected', $this->onDisconnected(...));
         $this->webview->bind('boson.components.attributeChanged', $this->onAttributeChanged(...));
+        $this->webview->bind('boson.components.invoke', $this->onInvoke(...));
     }
 
-    /**
-     * @param non-empty-string $tag
-     * @param non-empty-string $id
-     */
     private function onCreated(string $tag, string $id): void
     {
         $component = $this->components[$tag] ?? null;
 
-        if ($component === null || $id === '') {
+        if ($component === null || $id === '' || $tag === '') {
             return;
         }
 
@@ -136,8 +155,17 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
     }
 
     /**
-     * @param non-empty-string $id
+     * @param array<array-key, mixed> $arguments
      */
+    private function onInvoke(string $id, string $method, array $arguments): mixed
+    {
+        if ($id === '' || $method === '') {
+            return null;
+        }
+
+        return $this->instances->notifyInvoke($id, $method, $arguments);
+    }
+
     private function onConnected(string $id): ?string
     {
         if ($id === '') {
@@ -147,9 +175,6 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
         return $this->instances->notifyConnect($id);
     }
 
-    /**
-     * @param non-empty-string $id
-     */
     private function onDisconnected(string $id): void
     {
         if ($id === '') {
@@ -159,12 +184,6 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
         $this->instances->notifyDisconnect($id);
     }
 
-    /**
-     * @param non-empty-string $id
-     * @param non-empty-string $name
-     *
-     * @throws \Throwable
-     */
     private function onAttributeChanged(string $id, string $name, ?string $value, ?string $previous): void
     {
         if ($id === '' || $name === '') {
@@ -179,7 +198,7 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
      *
      * @link https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name
      */
-    private function isValidWebComponentTagName(string $name): bool
+    private function isValidComponentTagName(string $name): bool
     {
         return \preg_match(self::CUSTOM_ELEMENT_NAME_PCRE, $name) >= 1;
     }
@@ -196,6 +215,22 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
         return \in_array($name, self::BUILTIN_CUSTOM_ELEMENT_NAMES, true);
     }
 
+    /**
+     * @link https://tc39.es/ecma262/multipage/ecmascript-language-lexical-grammar.html#prod-IdentifierName
+     */
+    private function isValidComponentPropertyName(string $name): bool
+    {
+        return \preg_match('/^[_$a-zA-Z\xA0-\x{FFFF}][_$a-zA-Z0-9\xA0-\x{FFFF}]*$/u', $name) >= 1;
+    }
+
+    /**
+     * @param non-empty-string $name
+     */
+    private function isBuiltinComponentPropertyName(string $name): bool
+    {
+        return \in_array($name, self::BUILTIN_CUSTOM_ELEMENT_PROPERTIES, true);
+    }
+
     public function add(string $name, string $component): void
     {
         $lower = \strtolower($name);
@@ -204,12 +239,36 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
             throw ComponentAlreadyDefinedException::becauseComponentAlreadyDefined($name, $component);
         }
 
-        if (!$this->isValidWebComponentTagName($lower)) {
+        if (!$this->isValidComponentTagName($lower)) {
             throw InvalidComponentNameException::becauseComponentNameIsInvalid($name);
         }
 
         if ($this->isBuiltinComponentTagName($lower)) {
             throw BuiltinComponentNameException::becauseComponentNameIsBuiltin($name);
+        }
+
+        if (\is_subclass_of($component, HasMethodsInterface::class, true)) {
+            foreach ($component::getMethodNames() as $method) {
+                if (!$this->isValidComponentPropertyName($method)) {
+                    throw InvalidComponentMethodNameException::becauseMethodNameIsInvalid($name, $method);
+                }
+
+                if ($this->isBuiltinComponentPropertyName($method)) {
+                    throw BuiltinComponentMethodNameException::becauseMethodNameIsInvalid($name, $method);
+                }
+            }
+        }
+
+        if (\is_subclass_of($component, HasObservedAttributesInterface::class, true)) {
+            foreach ($component::getObservedAttributeNames() as $property) {
+                if (!$this->isValidComponentPropertyName($property)) {
+                    throw InvalidComponentPropertyNameException::becausePropertyNameIsInvalid($name, $property);
+                }
+
+                if ($this->isBuiltinComponentPropertyName($property)) {
+                    throw BuiltinComponentPropertyNameException::becausePropertyNameIsBuiltin($name, $property);
+                }
+            }
         }
 
         $this->components[$lower] = $component;

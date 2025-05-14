@@ -12,6 +12,7 @@ export type BosonApi = {
         created?: (id: string, tag: string) => void,
         connected?: (id: string) => void,
         disconnected?: (id: string) => void,
+        invoke?: (id: string, method: string, args: any) => Promise<any>,
         attributeChanged?: (id: string, attribute: string, value: any, previous: any) => void,
         instances: { [key: string]: HTMLElement }
     },
