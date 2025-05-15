@@ -21,6 +21,8 @@ use Boson\WebView\Api\DataApi\WebViewData;
 use Boson\WebView\Api\DataApiInterface;
 use Boson\WebView\Api\ScriptsApi\WebViewScriptsSet;
 use Boson\WebView\Api\ScriptsApiInterface;
+use Boson\WebView\Api\SecurityApi\WebViewSecurity;
+use Boson\WebView\Api\SecurityApiInterface;
 use Boson\WebView\Api\WebComponentsApi\Exception\ComponentAlreadyDefinedException;
 use Boson\WebView\Api\WebComponentsApi\Exception\WebComponentsApiException;
 use Boson\WebView\Api\WebComponentsApi\WebViewWebComponents;
@@ -75,6 +77,11 @@ final class WebView implements EventListenerProviderInterface
      * the current document.
      */
     public readonly DataApiInterface $data;
+
+    /**
+     * Gets access to the Security API of the webview.
+     */
+    public readonly SecurityApiInterface $security;
 
     /**
      * Gets access to the Web Components API of the webview.
@@ -195,6 +202,7 @@ final class WebView implements EventListenerProviderInterface
         $this->scripts = $this->createApi(WebViewScriptsSet::class);
         $this->bindings = $this->createApi(WebViewBindingsMap::class);
         $this->data = $this->createApi(WebViewData::class);
+        $this->security = $this->createApi(WebViewSecurity::class);
         $this->components = $this->createApi(WebViewWebComponents::class);
         $this->battery = $this->createApi(WebViewBattery::class);
 

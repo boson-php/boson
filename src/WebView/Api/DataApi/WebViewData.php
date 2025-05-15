@@ -29,14 +29,18 @@ use function React\Promise\resolve;
 final class WebViewData extends WebViewApi implements DataApiInterface
 {
     private const string DATA_REQUEST_TEMPLATE = <<<'JS'
-        var __result%s = (function() {
-            return %s;
-        })();
+        try {
+            var __result%s = (function() {
+                return %s;
+            })();
 
-        if (__result%1$s instanceof Promise) {
-            __result%1$s.then(data => %s("%1$s", data));
-        } else {
-            %3$s("%1$s", __result%1$s);
+            if (__result%1$s instanceof Promise) {
+                __result%1$s.then(data => %s("%1$s", data));
+            } else {
+                %3$s("%1$s", __result%1$s);
+            }
+        } catch (e) {
+            console.error(e);
         }
         JS;
 

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api;
 
+use Boson\WebView\Api\BatteryApi\Exception\BatteryNotAvailableException;
+use Boson\WebView\Api\BatteryApi\Exception\BatteryNotReadyException;
+
 interface BatteryApiInterface
 {
     /**
@@ -14,6 +17,10 @@ interface BatteryApiInterface
      * about to be suspended. A value of 1.0 means the battery is full.
      */
     public float $level {
+        /**
+         * @throws BatteryNotReadyException in case the API is not ready
+         * @throws BatteryNotAvailableException in case the API is not available
+         */
         get;
     }
 
@@ -23,6 +30,10 @@ interface BatteryApiInterface
      * device's battery is currently being charged.
      */
     public bool $isCharging {
+        /**
+         * @throws BatteryNotReadyException in case the API is not ready
+         * @throws BatteryNotAvailableException in case the API is not available
+         */
         get;
     }
 
@@ -32,6 +43,10 @@ interface BatteryApiInterface
      * fully charged, or 0 if the battery is already fully charged.
      */
     public int $chargingTime {
+        /**
+         * @throws BatteryNotReadyException in case the API is not ready
+         * @throws BatteryNotAvailableException in case the API is not available
+         */
         get;
     }
 
@@ -42,6 +57,10 @@ interface BatteryApiInterface
      * currently charging rather than discharging.
      */
     public ?int $dischargingTime {
+        /**
+         * @throws BatteryNotReadyException in case the API is not ready
+         * @throws BatteryNotAvailableException in case the API is not available
+         */
         get;
     }
 }

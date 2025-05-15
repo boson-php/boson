@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\BatteryApi;
 
+use Boson\WebView\Api\BatteryApi\Exception\BatteryNotAvailableException;
+use Boson\WebView\Api\BatteryApi\Exception\BatteryNotReadyException;
+use Boson\WebView\Api\BatteryApi\Exception\InsecureBatteryContextException;
 use Boson\WebView\Api\BatteryApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\WebViewState;
@@ -50,11 +53,15 @@ final class WebViewBattery extends WebViewApi implements BatteryApiInterface
     private function get(): array
     {
         if ($this->webview->state !== WebViewState::Ready) {
-            throw new \RuntimeException(
-                'Obtaining battery information is only available after '
-                    . 'the document is ready, but currently document in ['
-                    . $this->webview->state->name . '] state'
-            );
+            throw BatteryNotReadyException::becauseBatteryNotReady($this->webview->state);
+        }
+
+        if (!$this->webview->security->isSecureContext) {
+            throw InsecureBatteryContextException::becauseContextIsInsecure();
+        }
+
+        if ($this->webview->data->get('navigator.getBattery instanceof Function') !== true) {
+            throw BatteryNotAvailableException::becauseBatteryNotAvailable();
         }
 
         /** @var BatteryInfoType */
@@ -64,6 +71,6 @@ final class WebViewBattery extends WebViewApi implements BatteryApiInterface
                 charging: manager.charging,
                 chargingTime: manager.chargingTime,
                 dischargingTime: manager.dischargingTime,
-            }))');
+            })) || {}');
     }
 }
