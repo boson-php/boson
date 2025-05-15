@@ -39,7 +39,7 @@ interface DataApiInterface
      * @throws StalledRequestException if the request times out
      */
     #[BlockingOperation]
-    public function get(#[Language('JavaScript')] string $code): mixed;
+    public function get(#[Language('JavaScript')] string $code, ?float $timeout = null): mixed;
 
     /**
      * Asynchronously retrieve data from the WebView using JavaScript code.

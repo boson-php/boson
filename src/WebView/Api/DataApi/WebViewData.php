@@ -141,25 +141,23 @@ final class WebViewData extends WebViewApi implements DataApiInterface
     }
 
     #[BlockingOperation]
-    public function get(#[Language('JavaScript')] string $code): mixed
+    public function get(#[Language('JavaScript')] string $code, ?float $timeout = null): mixed
     {
         if ($code === '') {
             return '';
         }
 
-        $promise = $this->defer($code);
-
         $result = WebViewRequestsResultStatus::Pending;
+        $this->defer($code)
+            ->then(static function (mixed $input) use (&$result): mixed {
+                return $result = $input;
+            })
+            ->catch(static function (\Throwable $e) use (&$result): \Throwable {
+                return $result = $e;
+            });
 
-        $promise->then(static function (mixed $input) use (&$result): mixed {
-            return $result = $input;
-        });
-
-        $promise->catch(static function (\Throwable $e) use (&$result): \Throwable {
-            return $result = $e;
-        });
-
-        $timeout = new Timeout();
+        $timeout ??= $this->timeout;
+        $timer = new Timeout();
 
         while ($this->poller->next()) {
             if ($result !== WebViewRequestsResultStatus::Pending) {
@@ -170,11 +168,11 @@ final class WebViewData extends WebViewApi implements DataApiInterface
                 return $result;
             }
 
-            if (!$timeout->isExceeded($this->timeout)) {
+            if (!$timer->isExceeded($timeout)) {
                 continue;
             }
 
-            throw StalledRequestException::becauseRequestIsStalled($code, $this->timeout);
+            throw StalledRequestException::becauseRequestIsStalled($code, $timeout);
         }
 
         throw UnprocessableRequestException::becauseRequestIsUnprocessable($code);
