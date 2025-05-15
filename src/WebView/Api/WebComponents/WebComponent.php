@@ -20,6 +20,8 @@ abstract class WebComponent implements
 
     public readonly MutableTemplateContainerInterface $content;
 
+    public readonly MutableTemplateContainerInterface $shadow;
+
     /**
      * @var non-empty-lowercase-string
      */
@@ -63,6 +65,7 @@ abstract class WebComponent implements
         $this->tagName = $ctx->name;
         $this->attributes = $ctx->attributes;
         $this->content = $ctx->content;
+        $this->shadow = $ctx->shadow;
     }
 
     /**
@@ -186,6 +189,10 @@ abstract class WebComponent implements
 
     protected function refresh(): void
     {
-        $this->content->html = $this->render();
+        if ($this instanceof HasShadowDomInterface) {
+            $this->shadow->html = $this->render();
+        } else {
+            $this->content->html = $this->render();
+        }
     }
 }

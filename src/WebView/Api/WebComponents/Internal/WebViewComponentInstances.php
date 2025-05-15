@@ -52,9 +52,8 @@ final class WebViewComponentInstances
             name: \strtolower($name),
             component: $component,
             attributes: new ReactiveAttributeMap($interactor),
-            content: $hasShadowDom
-                ? new ReactiveShadowDomContainer($interactor)
-                : new ReactiveTemplateContainer($interactor),
+            content: new ReactiveTemplateContainer($interactor),
+            shadow: new ReactiveShadowDomContainer($interactor),
         );
 
         $this->instances[$id] = $instance = $this->instantiator->create($this->webview, $context);

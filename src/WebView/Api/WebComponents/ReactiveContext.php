@@ -31,6 +31,13 @@ final readonly class ReactiveContext
          */
         public string $component,
         public MutableAttributeMapInterface $attributes,
+        /**
+         * Gets access to real component content
+         */
         public MutableTemplateContainerInterface $content,
+        /**
+         * Gets access to shadow component content
+         */
+        public MutableTemplateContainerInterface $shadow,
     ) {}
 }
