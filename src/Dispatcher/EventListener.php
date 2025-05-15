@@ -18,12 +18,26 @@ class EventListener implements EventListenerInterface, EventDispatcherInterface
      */
     protected array $listeners = [];
 
+    /**
+     * @var array<class-string, class-string>
+     */
+    private static array $aliases = [];
+
     public function __construct(
         /**
          * @var IdValueGeneratorInterface<array-key>
          */
         protected readonly IdValueGeneratorInterface $ids = new PlatformDependentIntValueGenerator(),
     ) {}
+
+    /**
+     * @param class-string $class
+     * @param class-string $willBeDefinedAs
+     */
+    public static function addEventAlias(string $class, string $willBeDefinedAs): void
+    {
+        self::$aliases[$class] = $willBeDefinedAs;
+    }
 
     public function getListenersForEvent(object $event): iterable
     {
@@ -36,6 +50,8 @@ class EventListener implements EventListenerInterface, EventDispatcherInterface
 
     public function addEventListener(string $event, callable $listener): CancellableSubscriptionInterface
     {
+        $event = self::$aliases[$event] ?? $event;
+
         $subscription = new CancellableSubscription(
             id: $this->ids->nextId(),
             name: $event,

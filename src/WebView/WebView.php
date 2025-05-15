@@ -19,6 +19,8 @@ use Boson\WebView\Api\Bindings\WebViewBindingsMap;
 use Boson\WebView\Api\BindingsApiInterface;
 use Boson\WebView\Api\Data\WebViewData;
 use Boson\WebView\Api\DataApiInterface;
+use Boson\WebView\Api\Schemes\WebViewSchemeHandler;
+use Boson\WebView\Api\SchemesApiInterface;
 use Boson\WebView\Api\Scripts\WebViewScriptsSet;
 use Boson\WebView\Api\ScriptsApiInterface;
 use Boson\WebView\Api\Security\WebViewSecurity;
@@ -29,7 +31,6 @@ use Boson\WebView\Api\WebComponents\WebViewWebComponents;
 use Boson\WebView\Api\WebComponentsApiInterface;
 use Boson\WebView\Api\WebViewApi;
 use Boson\WebView\Internal\WebViewEventHandler;
-use Boson\WebView\Internal\WebViewSchemeHandler;
 use Boson\Window\Window;
 use FFI\CData;
 use JetBrains\PhpStorm\Language;
@@ -92,6 +93,11 @@ final class WebView implements EventListenerProviderInterface
      * Gets access to the Battery API of the webview.
      */
     public readonly BatteryApiInterface $battery;
+
+    /**
+     * Gets access to the Schemes API of the webview.
+     */
+    public readonly SchemesApiInterface $schemes;
 
     /**
      * Contains webview URI instance.
@@ -157,14 +163,6 @@ final class WebView implements EventListenerProviderInterface
     private readonly WebViewEventHandler $internalWebViewEventHandler;
 
     /**
-     * Contains an internal bridge between {@see LibSaucer} scheme interception
-     * system and the PSR {@see WebView::$events} dispatcher.
-     *
-     * @phpstan-ignore property.onlyWritten
-     */
-    private readonly WebViewSchemeHandler $internalWebViewSchemeHandler;
-
-    /**
      * @internal Please do not use the constructor directly. There is a
      *           corresponding {@see WindowFactoryInterface::create()} method
      *           for creating new windows with single webview child instance,
@@ -205,8 +203,8 @@ final class WebView implements EventListenerProviderInterface
         $this->security = $this->createApi(WebViewSecurity::class);
         $this->components = $this->createApi(WebViewWebComponents::class);
         $this->battery = $this->createApi(WebViewBattery::class);
+        $this->schemes = $this->createApi(WebViewSchemeHandler::class);
 
-        $this->internalWebViewSchemeHandler = $this->createWebViewSchemeHandler();
         $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
 
         $this->loadRuntimeScripts();
@@ -225,15 +223,6 @@ final class WebView implements EventListenerProviderInterface
             api: $this->api,
             webview: $this,
             dispatcher: $this->dispatcher,
-        );
-    }
-
-    private function createWebViewSchemeHandler(): WebViewSchemeHandler
-    {
-        return new WebViewSchemeHandler(
-            api: $this->api,
-            webview: $this,
-            dispatcher: $this->events,
         );
     }
 

@@ -28,6 +28,8 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\ThreadsCountResolver;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\Shared\Marker\RequiresDealloc;
+use Boson\WebView\Api\Schemes\Event\SchemeRequestReceived;
+use Boson\WebView\Event\WebViewRequest;
 use Boson\WebView\WebView;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
@@ -239,6 +241,8 @@ final class Application implements EventListenerProviderInterface
      */
     private function registerSchemes(): void
     {
+        EventListener::addEventAlias(WebViewRequest::class, SchemeRequestReceived::class);
+
         foreach ($this->info->schemes as $scheme) {
             $this->api->saucer_register_scheme($scheme);
         }

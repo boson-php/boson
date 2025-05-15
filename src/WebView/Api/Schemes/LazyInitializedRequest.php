@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Internal;
+namespace Boson\WebView\Api\Schemes;
 
 use Boson\Http\HeadersInterface;
 use Boson\Http\HeadersMap;

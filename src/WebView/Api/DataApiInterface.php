@@ -30,7 +30,7 @@ interface DataApiInterface
      * $location = $webview->data->get('document.location');
      * ```
      *
-     *@api
+     * @api
      *
      * @param string $code The JavaScript code to retrieve
      *
@@ -56,7 +56,7 @@ interface DataApiInterface
      *     });
      * ```
      *
-     *@api
+     * @api
      *
      * @param string $code The JavaScript code to retrieve
      *
