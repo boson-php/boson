@@ -321,9 +321,9 @@ final class WebView implements EventListenerProviderInterface
      * @uses DataApiInterface::get() WebView Requests API
      */
     #[BlockingOperation]
-    public function get(#[Language('JavaScript')] string $code): mixed
+    public function get(#[Language('JavaScript')] string $code, ?float $timeout = null): mixed
     {
-        return $this->data->get($code);
+        return $this->data->get($code, $timeout);
     }
 
     /**
