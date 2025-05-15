@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Internal;
 
+use Boson\ApplicationPollerInterface;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Http\Request;
 use Boson\Internal\Saucer\LibSaucer;
@@ -50,6 +51,11 @@ final class WebViewEventHandler
      */
     private readonly CData $handlers;
 
+    /**
+     * Contains application-aware poller instance.
+     */
+    private readonly ApplicationPollerInterface $poller;
+
     public function __construct(
         private readonly LibSaucer $api,
         private readonly WebView $webview,
@@ -59,6 +65,8 @@ final class WebViewEventHandler
          */
         private WebViewState &$state,
     ) {
+        $this->poller = $this->webview->window->app->poller;
+
         $this->handlers = $this->createEventHandlers();
 
         $this->listenEvents();
@@ -73,12 +81,12 @@ final class WebViewEventHandler
     {
         $struct = $this->api->new(self::HANDLER_STRUCT);
 
-        $struct->onDomReady = $this->onDomReady(...);
-        $struct->onNavigated = $this->onNavigated(...);
-        $struct->onNavigating = $this->onNavigating(...);
-        $struct->onFaviconChanged = $this->onFaviconChanged(...);
-        $struct->onTitleChanged = $this->onTitleChanged(...);
-        $struct->onLoad = $this->onLoad(...);
+        $struct->onDomReady = $this->onSafeDomReady(...);
+        $struct->onNavigated = $this->onSafeNavigated(...);
+        $struct->onNavigating = $this->onSafeNavigating(...);
+        $struct->onFaviconChanged = $this->onSafeFaviconChanged(...);
+        $struct->onTitleChanged = $this->onSafeTitleChanged(...);
+        $struct->onLoad = $this->onSafeLoad(...);
 
         return $struct;
     }
@@ -97,7 +105,7 @@ final class WebViewEventHandler
         $this->api->saucer_webview_on($ptr, Event::SAUCER_WEB_EVENT_TITLE, $ctx->onTitleChanged);
         $this->api->saucer_webview_on($ptr, Event::SAUCER_WEB_EVENT_LOAD, $ctx->onLoad);
 
-        $this->api->saucer_webview_on_message($ptr, $this->onMessageReceived(...));
+        $this->api->saucer_webview_on_message($ptr, $this->onSafeMessageReceived(...));
     }
 
     private function onMessageReceived(string $message): bool
@@ -110,6 +118,17 @@ final class WebViewEventHandler
         return $intention->isPropagationStopped;
     }
 
+    private function onSafeMessageReceived(string $message): bool
+    {
+        try {
+            return $this->onMessageReceived($message);
+        } catch (\Throwable $e) {
+            $this->poller->fail($e);
+        }
+
+        return true;
+    }
+
     private function onDomReady(CData $_): void
     {
         $this->changeState(WebViewState::Ready);
@@ -119,12 +138,34 @@ final class WebViewEventHandler
         ));
     }
 
+    private function onSafeDomReady(CData $_): void
+    {
+        try {
+            $this->onDomReady($_);
+        } catch (\Throwable $e) {
+            $this->poller->fail($e);
+        }
+    }
+
     private function onNavigated(CData $_, string $url): void
     {
-        $this->dispatcher->dispatch(new WebViewNavigated(
-            subject: $this->webview,
-            url: Request::castUrl($url),
-        ));
+        try {
+            $this->dispatcher->dispatch(new WebViewNavigated(
+                subject: $this->webview,
+                url: Request::castUrl($url),
+            ));
+        } catch (\Throwable $e) {
+            $this->poller->fail($e);
+        }
+    }
+
+    private function onSafeNavigated(CData $_, string $url): void
+    {
+        try {
+            $this->onNavigated($_, $url);
+        } catch (\Throwable $e) {
+            $this->poller->fail($e);
+        }
     }
 
     private function onNavigating(CData $_, CData $navigation): int
@@ -133,19 +174,32 @@ final class WebViewEventHandler
 
         $url = \FFI::string($this->api->saucer_navigation_url($navigation));
 
-        $intention = $this->dispatcher->dispatch(new WebViewNavigating(
-            subject: $this->webview,
-            url: Request::castUrl($url),
-            isNewWindow: $this->api->saucer_navigation_new_window($navigation),
-            isRedirection: $this->api->saucer_navigation_redirection($navigation),
-            isUserInitiated: $this->api->saucer_navigation_user_initiated($navigation),
-        ));
+        try {
+            $intention = $this->dispatcher->dispatch(new WebViewNavigating(
+                subject: $this->webview,
+                url: Request::castUrl($url),
+                isNewWindow: $this->api->saucer_navigation_new_window($navigation),
+                isRedirection: $this->api->saucer_navigation_redirection($navigation),
+                isUserInitiated: $this->api->saucer_navigation_user_initiated($navigation),
+            ));
 
-        $this->api->saucer_navigation_free($navigation);
+            return $intention->isCancelled
+                ? SaucerPolicy::SAUCER_POLICY_BLOCK
+                : SaucerPolicy::SAUCER_POLICY_ALLOW;
+        } finally {
+            $this->api->saucer_navigation_free($navigation);
+        }
+    }
 
-        return $intention->isCancelled
-            ? SaucerPolicy::SAUCER_POLICY_BLOCK
-            : SaucerPolicy::SAUCER_POLICY_ALLOW;
+    private function onSafeNavigating(CData $_, CData $navigation): int
+    {
+        try {
+            return $this->onNavigating($_, $navigation);
+        } catch (\Throwable $e) {
+            $this->poller->fail($e);
+
+            return SaucerPolicy::SAUCER_POLICY_BLOCK;
+        }
     }
 
     private function onFaviconChanged(CData $ptr, CData $icon): void
@@ -164,6 +218,15 @@ final class WebViewEventHandler
         }
     }
 
+    private function onSafeFaviconChanged(CData $ptr, CData $icon): void
+    {
+        try {
+            $this->onFaviconChanged($ptr, $icon);
+        } catch (\Throwable $e) {
+            $this->poller->fail($e);
+        }
+    }
+
     private function onTitleChanged(CData $ptr, string $title): void
     {
         $intention = $this->dispatcher->dispatch(new WebViewTitleChanging(
@@ -179,6 +242,15 @@ final class WebViewEventHandler
         $this->dispatcher->dispatch(new WebViewTitleChanged($this->webview, $title));
     }
 
+    private function onSafeTitleChanged(CData $ptr, string $title): void
+    {
+        try {
+            $this->onTitleChanged($ptr, $title);
+        } catch (\Throwable $e) {
+            $this->poller->fail($e);
+        }
+    }
+
     private function onLoad(CData $_, CData $state): void
     {
         if ($state[0] === SaucerState::SAUCER_STATE_STARTED) {
@@ -188,5 +260,10 @@ final class WebViewEventHandler
         }
 
         $this->changeState(WebViewState::Ready);
+    }
+
+    private function onSafeLoad(CData $_, CData $state): void
+    {
+        $this->onLoad($_, $state);
     }
 }
