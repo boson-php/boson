@@ -14,7 +14,7 @@ use Boson\WebView\Api\Bindings\Exception\FunctionAlreadyDefinedException;
  * and cleanup of these bindings, as well as the communication between
  * JavaScript and PHP through a message-based RPC system.
  *
- * @template-extends \Traversable<non-empty-string, \Closure(mixed...):mixed>
+ * @template-extends \Traversable<non-empty-string, \Closure(mixed...):(void|mixed)>
  */
 interface BindingsApiInterface extends \Traversable, \Countable
 {
@@ -27,7 +27,7 @@ interface BindingsApiInterface extends \Traversable, \Countable
      * (e.g., "app.functions.myFunction").
      *
      * @param non-empty-string $function The name of the JavaScript function
-     * @param \Closure(mixed...):mixed $callback The PHP callback to execute
+     * @param \Closure(mixed...):(void|mixed) $callback The PHP callback to execute
      *
      * @throws FunctionAlreadyDefinedException if the function is already defined
      */

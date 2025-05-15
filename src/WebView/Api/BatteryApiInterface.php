@@ -43,6 +43,8 @@ interface BatteryApiInterface
      * The chargingTime read-only property of interface indicates the
      * amount of time, in seconds, that remain until the battery is
      * fully charged, or 0 if the battery is already fully charged.
+     *
+     * @var int<0, max>
      */
     public int $chargingTime {
         /**
@@ -57,6 +59,8 @@ interface BatteryApiInterface
      * amount of time, in seconds, that remains until the battery is
      * fully discharged, or {@see null} if the battery is
      * currently charging rather than discharging.
+     *
+     * @var int<0, max>|null
      */
     public ?int $dischargingTime {
         /**

@@ -131,8 +131,8 @@ final class WebViewWebComponents extends WebViewApi implements WebComponentsApiI
             app: $webview->window->app,
         );
 
-        $this->registerDefaultEventListener();
         $this->registerDefaultFunctions();
+        $this->registerDefaultEventListener();
     }
 
     private function registerDefaultEventListener(): void

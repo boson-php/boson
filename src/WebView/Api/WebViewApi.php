@@ -40,7 +40,7 @@ abstract class WebViewApi
     /**
      * @param Intention<WebView> $intention
      */
-    protected function intent(Intention $intention): bool
+    protected function intent(object $intention): bool
     {
         $this->dispatcher->dispatch($intention);
 
@@ -50,7 +50,7 @@ abstract class WebViewApi
     /**
      * @param Event<WebView> $event
      */
-    protected function dispatch(Event $event): void
+    protected function dispatch(object $event): void
     {
         $this->dispatcher->dispatch($event);
     }
