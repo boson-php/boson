@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api;
 
-use Boson\WebView\Api\BindingsApi\Exception\FunctionAlreadyDefinedException;
+use Boson\WebView\Api\Bindings\Exception\FunctionAlreadyDefinedException;
 
 /**
  * Manages the binding between PHP callbacks and JavaScript functions.

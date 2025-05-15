@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api;
 
-use Boson\WebView\Api\WebComponentsApi\Exception\ComponentAlreadyDefinedException;
-use Boson\WebView\Api\WebComponentsApi\Exception\WebComponentsApiException;
+use Boson\WebView\Api\WebComponents\Exception\ComponentAlreadyDefinedException;
+use Boson\WebView\Api\WebComponents\Exception\WebComponentsApiException;
 
 /**
  * Allows to register custom web components, check their existence,

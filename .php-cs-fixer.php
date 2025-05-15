@@ -9,7 +9,7 @@ $files = PhpCsFixer\Finder::create()
             // "public private(set) ?Window $default" detects as ternary operator
             \realpath(__DIR__ . '/src/Window/Manager/WindowManager.php'),
             // Fixer doesnt support an abstract properties
-            \realpath(__DIR__ . '/src/WebView/Api/BatteryApi/WebViewBattery.php'),
+            \realpath(__DIR__ . '/src/WebView/Api/Battery/WebViewBattery.php'),
             \realpath(__DIR__ . '/src/Shared/IdValueGenerator/IntValueGenerator.php'),
             \realpath(__DIR__ . '/src/WebView/Api/WebComponentsApi/Internal/web-component.js.php'),
         ], true)

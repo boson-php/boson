@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api;
 
-use Boson\WebView\Api\BatteryApi\Exception\BatteryNotAvailableException;
-use Boson\WebView\Api\BatteryApi\Exception\BatteryNotReadyException;
+use Boson\Shared\Marker\ExpectsSecurityContext;
+use Boson\WebView\Api\Battery\Exception\BatteryNotAvailableException;
+use Boson\WebView\Api\Battery\Exception\BatteryNotReadyException;
 
+#[ExpectsSecurityContext]
 interface BatteryApiInterface
 {
     /**

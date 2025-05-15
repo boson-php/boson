@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api;
 
-use Boson\WebView\Api\WebComponentsApi\Instantiator\SimpleWebComponentInstantiator;
-use Boson\WebView\Api\WebComponentsApi\Instantiator\WebComponentInstantiatorInterface;
+use Boson\WebView\Api\WebComponents\Instantiator\SimpleWebComponentInstantiator;
+use Boson\WebView\Api\WebComponents\Instantiator\WebComponentInstantiatorInterface;
 
 final readonly class WebComponentsCreateInfo
 {

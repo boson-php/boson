@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Boson\WebView\Api;
 
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\DataApi\Exception\StalledRequestException;
-use Boson\WebView\Api\DataApi\Exception\UnprocessableRequestException;
+use Boson\WebView\Api\Data\Exception\ApplicationNotRunningException;
+use Boson\WebView\Api\Data\Exception\StalledRequestException;
 use JetBrains\PhpStorm\Language;
 use React\Promise\PromiseInterface;
 
@@ -30,12 +30,12 @@ interface DataApiInterface
      * $location = $webview->data->get('document.location');
      * ```
      *
-     * @api
+     *@api
      *
      * @param string $code The JavaScript code to retrieve
      *
      * @return mixed The response from the JavaScript execution
-     * @throws UnprocessableRequestException if the request cannot be processed
+     * @throws ApplicationNotRunningException if the request cannot be processed
      * @throws StalledRequestException if the request times out
      */
     #[BlockingOperation]
@@ -56,12 +56,12 @@ interface DataApiInterface
      *     });
      * ```
      *
-     * @api
+     *@api
      *
      * @param string $code The JavaScript code to retrieve
      *
      * @return PromiseInterface<mixed> A promise that resolves with the response
-     * @throws UnprocessableRequestException if the request cannot be processed
+     * @throws ApplicationNotRunningException if the request cannot be processed
      * @throws StalledRequestException if the request times out
      */
     public function defer(#[Language('JavaScript')] string $code): PromiseInterface;

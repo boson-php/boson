@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api;
 
-use Boson\WebView\Api\ScriptsApi\LoadedScript;
+use Boson\WebView\Api\Scripts\LoadedScript;
 use JetBrains\PhpStorm\Language;
 
 /**
