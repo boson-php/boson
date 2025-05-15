@@ -17,7 +17,7 @@ final readonly class ElementInteractor
     private const string TEMPLATE = <<<'JS'
          (function () {
              try {
-                var __%s = window.boson.components.instances["%1$s"];
+                var __%s = window.boson.components.instances.get("%1$s");
                 if (__%1$s) {
                     with (__%1$s) {
                         %s

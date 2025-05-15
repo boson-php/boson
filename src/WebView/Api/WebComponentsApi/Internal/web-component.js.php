@@ -25,7 +25,11 @@ class <?=$className?> extends HTMLElement {
     #internals;
 
 <?php if ($isDebug): ?>
+<?php   if (\PHP_OS_FAMILY === 'Darwin'): ?>
+    #debugPrefix = '[boson(debug:true)] ';
+<?php   else: ?>
     #debugPrefix = '\x1B[37;3m[boson(debug:true)]\x1B[m ';
+<?php   endif ?>
 <?php endif ?>
 
 <?php if ($hasObservedAttributes): ?>
@@ -51,12 +55,12 @@ class <?=$className?> extends HTMLElement {
         console.log(`${this.#debugPrefix}<<?=$tagName?> /> created`);
 <?php endif ?>
 
-        <?php if ($hasShadowRoot): ?>
+<?php if ($hasShadowRoot): ?>
         this.attachShadow({mode: 'open'});
-        <?php endif; ?>
+<?php endif; ?>
 
         // Attach element to globals registry
-        window.boson.components.instances[this.#id] = this;
+        window.boson.components.instances.attach(this.#id, this);
         // Sending a notification about the creation of an element
         window.boson.components.created("<?=$tagName?>", this.#id)
             .then((value) => {
@@ -85,7 +89,7 @@ class <?=$className?> extends HTMLElement {
 
     connectedCallback() {
         // Double attach element to globals registry (after detaching)
-        window.boson.components.instances[this.#id] = this;
+        window.boson.components.instances.attach(this.#id, this);
 
 <?php if ($isDebug): ?>
         // You may set ApplicationCreateInfo::$debug to false to diable this logs
@@ -110,7 +114,7 @@ class <?=$className?> extends HTMLElement {
 
     disconnectedCallback() {
         // Detach element from globals registry
-        delete window.boson.components.instances[this.#id];
+        window.boson.components.instances.detach(this.#id);
 
 <?php if ($isDebug): ?>
         // You may set ApplicationCreateInfo::$debug to false to diable this logs

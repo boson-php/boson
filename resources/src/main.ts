@@ -1,29 +1,32 @@
 
-import BosonRpc from "./rpc";
-import TransportFactory, {type TransportInterface} from "./transport";
-import CryptoIdGenerator, {type IdGeneratorInterface} from "./id-generator.ts";
+import {type BosonWebComponents} from "./components/BosonWebComponents";
+import BosonWebComponentsSet from "./components/BosonWebComponentsSet";
 
-export type BosonApi = {
+import type {BosonDataResponder} from "./data/BosonDataResponder";
+
+import type IdGeneratorInterface from "./id-generator/IdGeneratorInterface";
+import type {IdType} from "./id-generator/IdGeneratorInterface";
+import IdGeneratorFactory from "./id-generator/IdGeneratorFactory";
+
+import BosonRpc from "./rpc/BosonRpc";
+
+import type {TransportInterface} from "./transport/TransportInterface";
+import TransportFactory from "./transport/TransportFactory";
+
+export type BosonClientApi = {
     io: TransportInterface,
-    ids: IdGeneratorInterface,
-    rpc: BosonRpc,
-    respond: (id: string, result: any) => void,
-    components: {
-        created?: (id: string, tag: string) => void,
-        connected?: (id: string) => void,
-        disconnected?: (id: string) => void,
-        invoke?: (id: string, method: string, args: any) => Promise<any>,
-        attributeChanged?: (id: string, attribute: string, value: any, previous: any) => void,
-        instances: { [key: string]: HTMLElement }
-    },
+    ids: IdGeneratorInterface<IdType>,
+    rpc: BosonRpc<IdType>,
+    respond: BosonDataResponder<IdType>,
+    components: BosonWebComponents,
 }
 
 declare const window: {
-    boson: BosonApi,
+    boson: BosonClientApi,
 };
 
-const ids = new CryptoIdGenerator();
-const io = TransportFactory.createFromGlobals();
+const ids: IdGeneratorInterface<IdType> = IdGeneratorFactory.createFromGlobals();
+const io: TransportInterface = TransportFactory.createFromGlobals();
 const rpc = new BosonRpc(io, ids);
 
 /**
@@ -34,5 +37,5 @@ window.boson.io = io;
 window.boson.ids = ids;
 window.boson.rpc = rpc;
 window.boson.components = {
-    instances: {},
+    instances: new BosonWebComponentsSet(),
 };
