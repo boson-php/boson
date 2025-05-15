@@ -25,17 +25,37 @@ declare const window: {
     boson: BosonClientApi,
 };
 
-const ids: IdGeneratorInterface<IdType> = IdGeneratorFactory.createFromGlobals();
-const io: TransportInterface = TransportFactory.createFromGlobals();
-const rpc = new BosonRpc(io, ids);
-
 /**
  * Prepare public accessor instance.
  */
 window.boson = window.boson || {};
-window.boson.io = io;
-window.boson.ids = ids;
-window.boson.rpc = rpc;
-window.boson.components = {
-    instances: new BosonWebComponentsSet(),
-};
+
+try {
+    window.boson.io = TransportFactory.createFromGlobals();
+} catch (e) {
+    console.error('Failed to initialize IPC subsystem', e);
+}
+
+try {
+    window.boson.ids = IdGeneratorFactory.createFromGlobals();
+} catch (e) {
+    console.error('Failed to initialize ID generator subsystem', e);
+}
+
+try {
+    if (!window.boson.io || !window.boson.ids) {
+        throw new Error('Could not initialize RPC: Requires IPC and ID generator subsystems');
+    }
+
+    window.boson.rpc = new BosonRpc(window.boson.io, window.boson.ids);
+} catch (e) {
+    console.error('Failed to initialize RPC subsystem', e);
+}
+
+window.boson.components = window.boson.components || {};
+
+try {
+    window.boson.components.instances = new BosonWebComponentsSet();
+} catch (e) {
+    console.error('Failed to initialize Web Components subsystem', e);
+}
