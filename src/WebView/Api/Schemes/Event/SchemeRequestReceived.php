@@ -10,7 +10,7 @@ use Boson\Shared\Marker\AsWebViewIntention;
 use Boson\WebView\WebView;
 
 #[AsWebViewIntention]
-class SchemeRequestReceived extends SchemesApiIntention
+final class SchemeRequestReceived extends SchemesApiIntention
 {
     public function __construct(
         WebView $subject,

@@ -4,6 +4,7 @@ includes:
 parameters:
   level: max
   scanFiles:
+    - resources/stubs/aliases.stub.php
     - resources/stubs/saucer.stub.php
     - resources/stubs/saucer-webview-events.stub.php
     - resources/stubs/saucer-window-events.stub.php
