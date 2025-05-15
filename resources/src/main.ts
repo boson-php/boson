@@ -2,7 +2,7 @@
 import {type BosonWebComponents} from "./components/BosonWebComponents";
 import BosonWebComponentsSet from "./components/BosonWebComponentsSet";
 
-import type {BosonDataResponder} from "./data/BosonDataResponder";
+import type {BosonDataApi} from "./data/BosonDataApi";
 
 import type IdGeneratorInterface from "./id-generator/IdGeneratorInterface";
 import type {IdType} from "./id-generator/IdGeneratorInterface";
@@ -17,7 +17,7 @@ export type BosonClientApi = {
     io: TransportInterface,
     ids: IdGeneratorInterface<IdType>,
     rpc: BosonRpc<IdType>,
-    respond: BosonDataResponder<IdType>,
+    data: BosonDataApi<IdType>,
     components: BosonWebComponents,
 }
 

@@ -23,7 +23,12 @@ final readonly class DataApiCreateInfo
      * This constant defines the name of the JavaScript function that will
      * be used to send responses back to PHP.
      */
-    private const string DEFAULT_CALLBACK_METHOD = 'boson.respond';
+    private const string DEFAULT_CALLBACK_METHOD = 'boson.data.respond';
+
+    /**
+     * JavaScript method name for response error handling.
+     */
+    private const string DEFAULT_CALLBACK_FAILURE_METHOD = 'boson.data.reject';
 
     public function __construct(
         /**
@@ -31,11 +36,17 @@ final readonly class DataApiCreateInfo
          */
         public float $timeout = self::DEFAULT_TIMEOUT,
         /**
-         * Contain JavaScript method name for response handling.
+         * Contain JavaScript method name for success response handling.
          *
          * @var non-empty-string
          */
         public string $callback = self::DEFAULT_CALLBACK_METHOD,
+        /**
+         * Contain JavaScript method name for failure response handling.
+         *
+         * @var non-empty-string
+         */
+        public string $failureCallback = self::DEFAULT_CALLBACK_FAILURE_METHOD,
         /**
          * Request ID generator for tracking requests.
          *

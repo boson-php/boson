@@ -9,6 +9,7 @@ use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
 use Boson\Shared\Marker\BlockingOperation;
+use Boson\WebView\Api\DataApi\Exception\ClientErrorException;
 use Boson\WebView\Api\DataApi\Exception\StalledRequestException;
 use Boson\WebView\Api\DataApi\Exception\UnprocessableRequestException;
 use Boson\WebView\Api\DataApiCreateInfo;
@@ -40,7 +41,7 @@ final class WebViewData extends WebViewApi implements DataApiInterface
                 %3$s("%1$s", __result%1$s);
             }
         } catch (e) {
-            console.error(e);
+            %s("%1$s", e.message);
         }
         JS;
 
@@ -55,6 +56,13 @@ final class WebViewData extends WebViewApi implements DataApiInterface
      * @var non-empty-string
      */
     private readonly string $callback;
+
+    /**
+     * @see DataApiCreateInfo::$failureCallback
+     *
+     * @var non-empty-string
+     */
+    private readonly string $failureCallback;
 
     /**
      * Request ID generator for tracking requests.
@@ -88,12 +96,14 @@ final class WebViewData extends WebViewApi implements DataApiInterface
     ) {
         parent::__construct($api, $webview, $dispatcher);
 
-        $this->poller = $this->webview->window->app->poller;
         $this->ids = $webview->info->data->ids;
-        $this->callback = $webview->info->data->callback;
         $this->timeout = $webview->info->data->timeout;
+        $this->callback = $webview->info->data->callback;
+        $this->failureCallback = $webview->info->data->failureCallback;
+        $this->poller = $this->webview->window->app->poller;
 
         $this->webview->bind($this->callback, $this->onResponseReceived(...));
+        $this->webview->bind($this->failureCallback, $this->onFailureReceived(...));
     }
 
     /**
@@ -140,14 +150,23 @@ final class WebViewData extends WebViewApi implements DataApiInterface
         $promise = $this->defer($code);
 
         $result = WebViewRequestsResultStatus::Pending;
+
         $promise->then(static function (mixed $input) use (&$result): mixed {
             return $result = $input;
+        });
+
+        $promise->catch(static function (\Throwable $e) use (&$result): \Throwable {
+            return $result = $e;
         });
 
         $timeout = new Timeout();
 
         while ($this->poller->next()) {
             if ($result !== WebViewRequestsResultStatus::Pending) {
+                if ($result instanceof \Throwable) {
+                    throw $result;
+                }
+
                 return $result;
             }
 
@@ -175,6 +194,7 @@ final class WebViewData extends WebViewApi implements DataApiInterface
             \addcslashes((string) $id, '"'),
             $code,
             $this->callback,
+            $this->failureCallback,
         ]);
     }
 
@@ -194,5 +214,20 @@ final class WebViewData extends WebViewApi implements DataApiInterface
         }
 
         $deferred->resolve($result);
+    }
+
+    /**
+     * Handles failure responses received from JavaScript.
+     *
+     * @param array-key $id The request ID
+     * @param string $error The response error message
+     */
+    private function onFailureReceived(string|int $id, string $error): void
+    {
+        if (($deferred = $this->pull($id)) === null) {
+            return;
+        }
+
+        $deferred->reject(new ClientErrorException($error));
     }
 }

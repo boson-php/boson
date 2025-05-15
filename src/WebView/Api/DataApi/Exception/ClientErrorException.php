@@ -4,4 +4,4 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\DataApi\Exception;
 
-class RequestException extends DataApiException {}
+class ClientErrorException extends DataApiException {}

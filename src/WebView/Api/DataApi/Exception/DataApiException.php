@@ -6,4 +6,4 @@ namespace Boson\WebView\Api\DataApi\Exception;
 
 use Boson\WebView\Api\Exception\WebViewApiException;
 
-class RequestsApiException extends WebViewApiException {}
+class DataApiException extends WebViewApiException {}

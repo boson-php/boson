@@ -17,4 +17,12 @@ interface ApplicationPollerInterface
      * Poll next application loop event.
      */
     public function next(): bool;
+
+    /**
+     * Marks the current step as an exception.
+     *
+     * Required for correct processing of internal errors, for
+     * throwing exceptions into the current event loop.
+     */
+    public function fail(\Throwable $e): void;
 }
