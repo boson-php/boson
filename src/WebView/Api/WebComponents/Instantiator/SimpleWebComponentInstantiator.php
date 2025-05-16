@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponents\Instantiator;
 
-use Boson\WebView\Api\WebComponents\ReactiveContext;
+use Boson\WebView\Api\WebComponents\Context\ReactiveContext;
 use Boson\WebView\WebView;
 
 final readonly class SimpleWebComponentInstantiator implements WebComponentInstantiatorInterface

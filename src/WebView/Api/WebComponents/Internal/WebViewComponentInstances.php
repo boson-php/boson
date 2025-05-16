@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponents\Internal;
 
-use Boson\WebView\Api\WebComponents\HasLifecycleCallbacksInterface;
-use Boson\WebView\Api\WebComponents\HasMethodsInterface;
-use Boson\WebView\Api\WebComponents\HasObservedAttributesInterface;
-use Boson\WebView\Api\WebComponents\HasShadowDomInterface;
-use Boson\WebView\Api\WebComponents\HasTemplateInterface;
+use Boson\WebView\Api\WebComponents\Component\HasLifecycleCallbacksInterface;
+use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
+use Boson\WebView\Api\WebComponents\Component\HasObservedAttributesInterface;
+use Boson\WebView\Api\WebComponents\Component\HasShadowDomInterface;
+use Boson\WebView\Api\WebComponents\Component\HasTemplateInterface;
+use Boson\WebView\Api\WebComponents\Context\Internal\AttributeMap\MutableComponentAttributeMap;
+use Boson\WebView\Api\WebComponents\Context\Internal\ClassList\MutableComponentClassList;
+use Boson\WebView\Api\WebComponents\Context\Internal\ComponentDataRetriever;
+use Boson\WebView\Api\WebComponents\Context\Internal\ComponentEvaluator;
+use Boson\WebView\Api\WebComponents\Context\Internal\Content\MutableShadowDomContentProvider;
+use Boson\WebView\Api\WebComponents\Context\Internal\Content\MutableComponentContentProvider;
+use Boson\WebView\Api\WebComponents\Context\ReactiveContext;
 use Boson\WebView\Api\WebComponents\Instantiator\WebComponentInstantiatorInterface;
-use Boson\WebView\Api\WebComponents\ReactiveContext;
 use Boson\WebView\WebView;
 
 /**
- * Provides components instances
- *
- * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Boson\WebView\Api
+ * @internal this is an internal library class, please do not use it in your code.
+ * @psalm-internal Boson\WebView\Api\WebComponents
  */
 final class WebViewComponentInstances
 {
@@ -34,35 +38,65 @@ final class WebViewComponentInstances
     ) {}
 
     /**
+     * @template TArgComponent of object
+     *
+     * @param non-empty-string $id
+     * @param non-empty-string $name
+     * @param class-string<TArgComponent> $component
+     * @return TArgComponent
+     */
+    private function createContext(string $id, string $name, string $component): ReactiveContext
+    {
+        $evaluator = new ComponentEvaluator($id, $this->webview->scripts);
+        $retriever = new ComponentDataRetriever($id, $this->webview->data);
+
+        return new ReactiveContext(
+            name: \strtolower($name),
+            component: $component,
+            attributes: new MutableComponentAttributeMap($evaluator, $retriever),
+            classList: new MutableComponentClassList($evaluator, $retriever),
+            content: new MutableComponentContentProvider($evaluator, $retriever),
+            shadow: new MutableShadowDomContentProvider($evaluator, $retriever),
+            evaluator: $evaluator,
+            retriever: $retriever,
+        );
+    }
+
+    private function renderRaw(object $component): ?string
+    {
+        if ($component instanceof HasShadowDomInterface) {
+            return null;
+        }
+
+        if (!$component instanceof HasTemplateInterface) {
+            return null;
+        }
+
+        return $component->render();
+    }
+
+    private function renderShadowDom(object $component): ?string
+    {
+        if (!$component instanceof HasShadowDomInterface) {
+            return null;
+        }
+
+        return $component->render();
+    }
+
+    /**
      * @param non-empty-string $id
      * @param non-empty-string $name
      * @param class-string $component
      */
     public function create(string $id, string $name, string $component): ?string
     {
-        $hasShadowDom = \is_subclass_of($component, HasShadowDomInterface::class, true);
-
-        $interactor = new ElementInteractor(
-            id: $id,
-            data: $this->webview->data,
-            scripts: $this->webview->scripts,
+        $this->instances[$id] = $instance = $this->instantiator->create(
+            webview: $this->webview,
+            context: $this->createContext($id, $name, $component),
         );
 
-        $context = new ReactiveContext(
-            name: \strtolower($name),
-            component: $component,
-            attributes: new ReactiveAttributeMap($interactor),
-            content: new ReactiveTemplateContainer($interactor),
-            shadow: new ReactiveShadowDomContainer($interactor),
-        );
-
-        $this->instances[$id] = $instance = $this->instantiator->create($this->webview, $context);
-
-        if ($hasShadowDom === false && $instance instanceof HasTemplateInterface) {
-            return $instance->render();
-        }
-
-        return null;
+        return $this->renderRaw($instance);
     }
 
     /**
@@ -80,11 +114,7 @@ final class WebViewComponentInstances
             $instance->onConnect();
         }
 
-        if ($instance instanceof HasShadowDomInterface) {
-            return $instance->render();
-        }
-
-        return null;
+        return $this->renderShadowDom($instance);
     }
 
     /**

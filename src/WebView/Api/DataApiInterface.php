@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api;
 
-use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\Data\Exception\ApplicationNotRunningException;
-use Boson\WebView\Api\Data\Exception\StalledRequestException;
-use JetBrains\PhpStorm\Language;
-use React\Promise\PromiseInterface;
+use Boson\WebView\Api\Data\DataRetrieverInterface;
 
 /**
  * Managing data between PHP and JavaScript in the WebView.
@@ -16,53 +12,5 @@ use React\Promise\PromiseInterface;
  * Defines the contract for sending JavaScript code to the WebView
  * and receiving responses.
  */
-interface DataApiInterface
-{
-    /**
-     * Synchronously retrieve data from the WebView using JavaScript code.
-     *
-     * This method sends JavaScript code to the WebView and blocks until
-     * a response is received or a timeout occurs. It's suitable for simple,
-     * quick operations where blocking is acceptable.
-     *
-     * Example usage:
-     * ```
-     * $location = $webview->data->get('document.location');
-     * ```
-     *
-     * @api
-     *
-     * @param string $code The JavaScript code to retrieve
-     *
-     * @return mixed The response from the JavaScript execution
-     * @throws ApplicationNotRunningException if the request cannot be processed
-     * @throws StalledRequestException if the request times out
-     */
-    #[BlockingOperation]
-    public function get(#[Language('JavaScript')] string $code, ?float $timeout = null): mixed;
-
-    /**
-     * Asynchronously retrieve data from the WebView using JavaScript code.
-     *
-     * This method sends JavaScript code to the WebView and returns a promise t
-     * hat resolves with the response. It's suitable for operations that
-     * might take longer or when non-blocking behavior is desired.
-     *
-     * Example usage:
-     * ```
-     * $webview->data->defer('document.location')
-     *     ->then(function (array $result): void {
-     *         var_dump($result);
-     *     });
-     * ```
-     *
-     * @api
-     *
-     * @param string $code The JavaScript code to retrieve
-     *
-     * @return PromiseInterface<mixed> A promise that resolves with the response
-     * @throws ApplicationNotRunningException if the request cannot be processed
-     * @throws StalledRequestException if the request times out
-     */
-    public function defer(#[Language('JavaScript')] string $code): PromiseInterface;
-}
+interface DataApiInterface extends
+    DataRetrieverInterface {}

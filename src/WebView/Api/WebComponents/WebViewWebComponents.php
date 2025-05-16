@@ -6,6 +6,9 @@ namespace Boson\WebView\Api\WebComponents;
 
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
+use Boson\WebView\Api\WebComponents\Component\HasClassNameInterface;
+use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
+use Boson\WebView\Api\WebComponents\Component\HasObservedAttributesInterface;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentMethodNameException;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentNameException;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentPropertyNameException;
@@ -24,7 +27,9 @@ use Boson\WebView\WebView;
 /**
  * @template-implements \IteratorAggregate<non-empty-string, class-string>
  */
-final class WebViewWebComponents extends WebViewApi implements WebComponentsApiInterface, \IteratorAggregate
+final class WebViewWebComponents extends WebViewApi implements
+    WebComponentsApiInterface,
+    \IteratorAggregate
 {
     /**
      * ```
