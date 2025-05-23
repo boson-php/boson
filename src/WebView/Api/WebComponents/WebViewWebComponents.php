@@ -9,6 +9,7 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasClassNameInterface;
 use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
+use Boson\WebView\Api\WebComponents\Component\HasPropertiesInterface;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentMethodNameException;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentNameException;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentPropertyNameException;
@@ -290,7 +291,19 @@ final class WebViewWebComponents extends WebViewApi implements
         }
 
         if (\is_subclass_of($component, HasAttributesInterface::class, true)) {
-            foreach ($component::getAttributeNames() as $property) {
+            foreach ($component::getAttributeNames() as $attribute) {
+                if (!$this->isValidComponentPropertyName($attribute)) {
+                    throw InvalidComponentPropertyNameException::becausePropertyNameIsInvalid($name, $attribute);
+                }
+
+                if ($this->isBuiltinComponentPropertyName($attribute)) {
+                    throw BuiltinComponentPropertyNameException::becausePropertyNameIsBuiltin($name, $attribute);
+                }
+            }
+        }
+
+        if (\is_subclass_of($component, HasPropertiesInterface::class, true)) {
+            foreach ($component::getPropertyNames() as $property) {
                 if (!$this->isValidComponentPropertyName($property)) {
                     throw InvalidComponentPropertyNameException::becausePropertyNameIsInvalid($name, $property);
                 }
