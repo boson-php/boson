@@ -18,7 +18,7 @@ interface HasAttributesInterface
      * the element needs change notifications.
      *
      * ```
-     * return ['propertyName', 'otherPropertyName'];
+     * return ['attributeName', 'otherAttributeName'];
      * ```
      *
      * @return list<non-empty-string>

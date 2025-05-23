@@ -8,9 +8,9 @@ interface HasEventListenersInterface
 {
     /**
      * @param non-empty-string $event
-     * @param array<array-key, mixed> $arguments
+     * @param array<array-key, mixed> $args
      */
-    public function onEventFired(string $event, array $arguments = []): void;
+    public function onEventFired(string $event, array $args = []): void;
 
     /**
      * Must return an array containing the names of all event listeners and
