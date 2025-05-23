@@ -7,9 +7,9 @@ namespace Boson\WebView\Api\WebComponents\Component;
 use Boson\WebView\Api\WebComponents\Context\MutableAttributeMapInterface;
 
 /**
- * @phpstan-require-implements HasObservedAttributesInterface
+ * @phpstan-require-implements HasAttributesInterface
  */
-trait HasObservedAttributes
+trait HasAttributes
 {
     public readonly MutableAttributeMapInterface $attributes;
 

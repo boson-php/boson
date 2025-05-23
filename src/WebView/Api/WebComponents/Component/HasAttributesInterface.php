@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponents\Component;
 
-interface HasObservedAttributesInterface
+interface HasAttributesInterface
 {
     /**
      * Called when attributes are changed, added, removed, or replaced.
@@ -23,5 +23,5 @@ interface HasObservedAttributesInterface
      *
      * @return list<non-empty-string>
      */
-    public static function getObservedAttributeNames(): array;
+    public static function getAttributeNames(): array;
 }

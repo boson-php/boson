@@ -7,7 +7,7 @@ namespace Boson\WebView\Api\WebComponents\Internal;
 use Boson\WebView\Api\WebComponents\Component\HasEventListenersInterface;
 use Boson\WebView\Api\WebComponents\Component\HasLifecycleCallbacksInterface;
 use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
-use Boson\WebView\Api\WebComponents\Component\HasObservedAttributesInterface;
+use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasShadowDomInterface;
 use Boson\WebView\Api\WebComponents\Component\HasTemplateInterface;
 use Boson\WebView\Api\WebComponents\Context\Internal\AttributeMap\MutableComponentAttributeMap;
@@ -173,7 +173,7 @@ final class WebViewComponentInstances
     {
         $instance = $this->instances[$id] ?? null;
 
-        if (!$instance instanceof HasObservedAttributesInterface) {
+        if (!$instance instanceof HasAttributesInterface) {
             return;
         }
 

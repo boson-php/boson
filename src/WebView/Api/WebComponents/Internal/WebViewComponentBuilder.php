@@ -7,7 +7,7 @@ namespace Boson\WebView\Api\WebComponents\Internal;
 use Boson\Application;
 use Boson\WebView\Api\WebComponents\Component\HasEventListenersInterface;
 use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
-use Boson\WebView\Api\WebComponents\Component\HasObservedAttributesInterface;
+use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasShadowDomInterface;
 
 /**
@@ -23,9 +23,9 @@ final readonly class WebViewComponentBuilder
     /**
      * @param class-string $component
      */
-    private function hasObservedAttributes(string $component): bool
+    private function hasAttributes(string $component): bool
     {
-        return \is_subclass_of($component, HasObservedAttributesInterface::class, true);
+        return \is_subclass_of($component, HasAttributesInterface::class, true);
     }
 
     /**
@@ -84,11 +84,11 @@ final readonly class WebViewComponentBuilder
      *
      * @return list<non-empty-string>
      */
-    private function buildObservedAttributes(string $component): array
+    private function buildAttributes(string $component): array
     {
-        if ($this->hasObservedAttributes($component)) {
+        if ($this->hasAttributes($component)) {
             /** @var list<non-empty-string> */
-            return $component::getObservedAttributeNames();
+            return $component::getAttributeNames();
         }
 
         return [];
@@ -144,7 +144,7 @@ final readonly class WebViewComponentBuilder
         $isDebug = $this->app->isDebug;
 
         $hasShadowRoot = $this->hasShadowRoot($component);
-        $observedAttributes = $this->buildObservedAttributes($component);
+        $attributeNames = $this->buildAttributes($component);
         $methodNames = $this->buildMethods($component);
         $eventListeners = $this->buildEventListeners($component);
 

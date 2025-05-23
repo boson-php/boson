@@ -4,7 +4,7 @@
  * @var non-empty-string $className
  * @var class-string $component
  * @var bool $hasShadowRoot
- * @var list<non-empty-string> $observedAttributes
+ * @var list<non-empty-string> $attributeNames
  * @var list<non-empty-string> $methodNames
  * @var array<non-empty-string, non-empty-string> $eventListeners
  * @var bool $isDebug
@@ -33,7 +33,7 @@ class <?=$className?> extends HTMLElement {
 <?php   endif ?>
 <?php endif ?>
 
-<?php if ($observedAttributes !== []): ?>
+<?php if ($attributeNames !== []): ?>
     /**
      * Contains a list of attribute subscriptions.
      *
@@ -41,7 +41,7 @@ class <?=$className?> extends HTMLElement {
      * @return {string[]}
      */
     static get observedAttributes() {
-        return <?=\json_encode($observedAttributes)?>;
+        return <?=\json_encode($attributeNames)?>;
     }
 <?php endif ?>
 

@@ -17,7 +17,7 @@ use React\Promise\PromiseInterface;
 
 abstract class WebComponent implements
     HasClassNameInterface,
-    HasObservedAttributesInterface,
+    HasAttributesInterface,
     HasMethodsInterface,
     HasEventListenersInterface,
     HasLifecycleCallbacksInterface,
@@ -28,7 +28,7 @@ abstract class WebComponent implements
 {
     use HasTemplate;
     use HasClassName;
-    use HasObservedAttributes;
+    use HasAttributes;
 
     public readonly MutableClassListInterface $classList;
 
@@ -106,7 +106,7 @@ abstract class WebComponent implements
         $this->refresh();
     }
 
-    public static function getObservedAttributeNames(): array
+    public static function getAttributeNames(): array
     {
         // Can be overridden
         return [];
