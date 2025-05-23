@@ -2,12 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api\WebComponents\Component;
+namespace Boson\WebView\Api\WebComponents;
 
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Api\Data\AsyncDataRetrieverInterface;
 use Boson\WebView\Api\Data\SyncDataRetrieverInterface;
 use Boson\WebView\Api\Scripts\ScriptEvaluatorInterface;
+use Boson\WebView\Api\WebComponents\Component\HasAttributes;
+use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
+use Boson\WebView\Api\WebComponents\Component\HasClassName;
+use Boson\WebView\Api\WebComponents\Component\HasClassNameInterface;
+use Boson\WebView\Api\WebComponents\Component\HasEventListenersInterface;
+use Boson\WebView\Api\WebComponents\Component\HasLifecycleCallbacksInterface;
+use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
+use Boson\WebView\Api\WebComponents\Component\HasShadowDomInterface;
+use Boson\WebView\Api\WebComponents\Component\HasTemplate;
+use Boson\WebView\Api\WebComponents\Component\HasTemplateInterface;
 use Boson\WebView\Api\WebComponents\Context\MutableClassListInterface;
 use Boson\WebView\Api\WebComponents\Context\MutableContentProviderInterface;
 use Boson\WebView\Api\WebComponents\Context\ReactiveContext;
