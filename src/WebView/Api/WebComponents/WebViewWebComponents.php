@@ -6,9 +6,9 @@ namespace Boson\WebView\Api\WebComponents;
 
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Internal\Saucer\LibSaucer;
+use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasClassNameInterface;
 use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
-use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentMethodNameException;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentNameException;
 use Boson\WebView\Api\WebComponents\Exception\BuiltinComponentPropertyNameException;
@@ -152,9 +152,10 @@ final class WebViewWebComponents extends WebViewApi implements
         $this->webview->bind('boson.components.created', $this->onCreated(...));
         $this->webview->bind('boson.components.connected', $this->onConnected(...));
         $this->webview->bind('boson.components.disconnected', $this->onDisconnected(...));
+        $this->webview->bind('boson.components.attributeChanged', $this->onAttributeChanged(...));
+        $this->webview->bind('boson.components.propertyChanged', $this->onPropertyChanged(...));
         $this->webview->bind('boson.components.invoke', $this->onInvoke(...));
         $this->webview->bind('boson.components.fire', $this->onFire(...));
-        $this->webview->bind('boson.components.attributeChanged', $this->onAttributeChanged(...));
     }
 
     private function onCreated(string $tag, string $id): ?string
@@ -217,6 +218,17 @@ final class WebViewWebComponents extends WebViewApi implements
         }
 
         $this->instances->notifyAttributeChange($id, $name, $value, $previous);
+    }
+
+    private function onPropertyChanged(string $id, string $name, string $value): void
+    {
+        if ($id === '' || $name === '') {
+            return;
+        }
+
+        $decoded = \json_decode($value, true, flags: \JSON_THROW_ON_ERROR);
+
+        $this->instances->notifyPropertyChange($id, $name, $decoded);
     }
 
     /**

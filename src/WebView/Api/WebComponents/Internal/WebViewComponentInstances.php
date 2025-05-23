@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponents\Internal;
 
+use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasEventListenersInterface;
 use Boson\WebView\Api\WebComponents\Component\HasLifecycleCallbacksInterface;
 use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
-use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
+use Boson\WebView\Api\WebComponents\Component\HasPropertiesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasShadowDomInterface;
 use Boson\WebView\Api\WebComponents\Component\HasTemplateInterface;
 use Boson\WebView\Api\WebComponents\Context\Internal\AttributeMap\MutableComponentAttributeMap;
@@ -16,6 +17,7 @@ use Boson\WebView\Api\WebComponents\Context\Internal\ComponentDataRetriever;
 use Boson\WebView\Api\WebComponents\Context\Internal\ComponentEvaluator;
 use Boson\WebView\Api\WebComponents\Context\Internal\Content\MutableComponentContentProvider;
 use Boson\WebView\Api\WebComponents\Context\Internal\Content\MutableShadowDomContentProvider;
+use Boson\WebView\Api\WebComponents\Context\Internal\PropertyMap\MutableComponentPropertyMap;
 use Boson\WebView\Api\WebComponents\Context\ReactiveContext;
 use Boson\WebView\Api\WebComponents\Instantiator\WebComponentInstantiatorInterface;
 use Boson\WebView\WebView;
@@ -56,6 +58,7 @@ final class WebViewComponentInstances
             name: \strtolower($name),
             component: $component,
             attributes: new MutableComponentAttributeMap($evaluator, $retriever),
+            properties: new MutableComponentPropertyMap($evaluator, $retriever),
             classList: new MutableComponentClassList($evaluator, $retriever),
             content: new MutableComponentContentProvider($evaluator, $retriever),
             shadow: new MutableShadowDomContentProvider($evaluator, $retriever),
@@ -70,6 +73,7 @@ final class WebViewComponentInstances
             return null;
         }
 
+        // PHPStorm analysis bug here
         if (!$component instanceof HasTemplateInterface) {
             return null;
         }
@@ -178,6 +182,21 @@ final class WebViewComponentInstances
         }
 
         $instance->onAttributeChanged($name, $value, $previous);
+    }
+
+    /**
+     * @param non-empty-string $id
+     * @param non-empty-string $name
+     */
+    public function notifyPropertyChange(string $id, string $name, mixed $value): void
+    {
+        $instance = $this->instances[$id] ?? null;
+
+        if (!$instance instanceof HasPropertiesInterface) {
+            return;
+        }
+
+        $instance->onPropertyChanged($name, $value);
     }
 
     public function destroyAll(): void

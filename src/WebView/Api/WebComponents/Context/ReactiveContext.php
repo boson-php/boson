@@ -40,6 +40,10 @@ final readonly class ReactiveContext implements
          */
         public MutableAttributeMapInterface $attributes,
         /**
+         * Gets access to component's properties list
+         */
+        public MutablePropertyMapInterface $properties,
+        /**
          * Gets access to component's class list
          */
         public MutableClassListInterface $classList,

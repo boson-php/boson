@@ -4,6 +4,7 @@ import type BosonWebComponentsSet from "./BosonWebComponentsSet";
 type Identifier = string;
 type ArgumentsList = string[] | {[key: string]: any};
 type AttributeValue = Optional<string>;
+type PropertyValue = any;
 
 export type BosonWebComponentsLifecycleMethods = {
     /**
@@ -31,6 +32,14 @@ export type BosonWebComponentsLifecycleMethods = {
      * @param {string} id The ID of the created element
      */
     disconnected?: (id: string) => void,
+    /**
+     * Should be called if a certain element instance property has been changed.
+     *
+     * @param {string} id The ID of the created element
+     * @param {string} property The name of the property
+     * @param {any} value New value of the property
+     */
+    propertyChanged?: (id: string, property: Identifier, value: PropertyValue) => void,
     /**
      * Should be called if a certain method is called on an element.
      *

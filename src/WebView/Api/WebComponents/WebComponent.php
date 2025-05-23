@@ -15,6 +15,8 @@ use Boson\WebView\Api\WebComponents\Component\HasClassNameInterface;
 use Boson\WebView\Api\WebComponents\Component\HasEventListenersInterface;
 use Boson\WebView\Api\WebComponents\Component\HasLifecycleCallbacksInterface;
 use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
+use Boson\WebView\Api\WebComponents\Component\HasProperties;
+use Boson\WebView\Api\WebComponents\Component\HasPropertiesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasShadowDomInterface;
 use Boson\WebView\Api\WebComponents\Component\HasTemplate;
 use Boson\WebView\Api\WebComponents\Component\HasTemplateInterface;
@@ -28,6 +30,7 @@ use React\Promise\PromiseInterface;
 abstract class WebComponent implements
     HasClassNameInterface,
     HasAttributesInterface,
+    HasPropertiesInterface,
     HasMethodsInterface,
     HasEventListenersInterface,
     HasLifecycleCallbacksInterface,
@@ -39,6 +42,7 @@ abstract class WebComponent implements
     use HasTemplate;
     use HasClassName;
     use HasAttributes;
+    use HasProperties;
 
     public readonly MutableClassListInterface $classList;
 
@@ -86,6 +90,7 @@ abstract class WebComponent implements
     ) {
         $this->tagName = $ctx->name;
         $this->attributes = $ctx->attributes;
+        $this->properties = $ctx->properties;
         $this->classList = $ctx->classList;
         $this->shadowRoot = $ctx->shadow;
     }
@@ -117,6 +122,17 @@ abstract class WebComponent implements
     }
 
     public static function getAttributeNames(): array
+    {
+        // Can be overridden
+        return [];
+    }
+
+    public function onPropertyChanged(string $property, mixed $value): void
+    {
+        // Can be overridden
+    }
+
+    public static function getPropertyNames(): array
     {
         // Can be overridden
         return [];

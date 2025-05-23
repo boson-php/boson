@@ -10,7 +10,7 @@ use Boson\WebView\Api\WebComponents\Context\MutableAttributeMapInterface;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Boson\WebView\Api\WebComponentsApi
+ * @psalm-internal Boson\WebView\Api\WebComponents
  */
 final readonly class MutableComponentAttributeMap extends ComponentAttributeMap implements
     MutableAttributeMapInterface
@@ -25,17 +25,17 @@ final readonly class MutableComponentAttributeMap extends ComponentAttributeMap 
     public function set(string $attribute, string $value): void
     {
         $this->scripts->eval(\sprintf(
-            'this.setAttribute("%s", "%s")',
-            \addcslashes($attribute, '"'),
-            \addcslashes($value, '"'),
+            'this.setAttribute(`%s`, `%s`)',
+            \addcslashes($attribute, '`'),
+            \addcslashes($value, '`'),
         ));
     }
 
     public function remove(string $attribute): void
     {
         $this->scripts->eval(\sprintf(
-            'this.removeAttribute("%s")',
-            \addcslashes($attribute, '"'),
+            'this.removeAttribute(`%s`)',
+            \addcslashes($attribute, '`'),
         ));
     }
 }
