@@ -14,8 +14,6 @@ use Boson\WebView\Api\Bindings\MutableBindingsMapInterface;
  * that are bound to PHP callbacks. It handles the registration, execution,
  * and cleanup of these bindings, as well as the communication between
  * JavaScript and PHP through a message-based RPC system.
- *
- * @template-extends \Traversable<non-empty-string, \Closure(mixed...):(void|mixed)>
  */
 interface BindingsApiInterface extends
     BindingsMapInterface,

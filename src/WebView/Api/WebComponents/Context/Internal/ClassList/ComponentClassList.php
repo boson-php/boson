@@ -8,7 +8,7 @@ use Boson\WebView\Api\Data\SyncDataRetrieverInterface;
 use Boson\WebView\Api\WebComponents\Context\ClassListInterface;
 
 /**
- * @template-extends \IteratorAggregate<mixed, non-empty-string>
+ * @template-implements \IteratorAggregate<mixed, non-empty-string>
  *
  * @internal this is an internal library class, please do not use it in your code.
  * @psalm-internal Boson\WebView\Api\WebComponents
@@ -38,6 +38,7 @@ readonly class ComponentClassList implements ClassListInterface, \IteratorAggreg
 
     public function findByIndex(int $index): ?string
     {
+        /** @var non-empty-string|null */
         return $this->data->get(\sprintf(
             'this.classList.item(%d)',
             $index,
@@ -46,7 +47,8 @@ readonly class ComponentClassList implements ClassListInterface, \IteratorAggreg
 
     public function count(): int
     {
-        return (int) $this->data->get('this.classList.length');
+        /** @var int<0, max> */
+        return $this->data->get('this.classList.length');
     }
 
     public function getIterator(): \Traversable
@@ -59,6 +61,7 @@ readonly class ComponentClassList implements ClassListInterface, \IteratorAggreg
 
     public function __toString(): string
     {
-        return (string) $this->data->get('this.classList.toString()');
+        /** @var string */
+        return $this->data->get('this.classList.toString()');
     }
 }

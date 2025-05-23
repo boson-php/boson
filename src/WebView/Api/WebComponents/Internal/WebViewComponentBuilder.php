@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\WebComponents\Internal;
 
 use Boson\Application;
+use Boson\WebView\Api\WebComponents\Component\HasEventListenersInterface;
 use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
 use Boson\WebView\Api\WebComponents\Component\HasObservedAttributesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasShadowDomInterface;
@@ -24,8 +25,7 @@ final readonly class WebViewComponentBuilder
      */
     private function hasObservedAttributes(string $component): bool
     {
-        return \is_subclass_of($component, HasObservedAttributesInterface::class, true)
-            && $component::getObservedAttributeNames() !== [];
+        return \is_subclass_of($component, HasObservedAttributesInterface::class, true);
     }
 
     /**
@@ -33,13 +33,100 @@ final readonly class WebViewComponentBuilder
      */
     private function hasMethods(string $component): bool
     {
-        return \is_subclass_of($component, HasMethodsInterface::class, true)
-            && $component::getMethodNames() !== [];
+        return \is_subclass_of($component, HasMethodsInterface::class, true);
     }
 
     private function hasShadowRoot(string $component): bool
     {
         return \is_subclass_of($component, HasShadowDomInterface::class, true);
+    }
+
+    /**
+     * @param class-string $component
+     */
+    private function hasEventListeners(string $component): bool
+    {
+        return \is_subclass_of($component, HasEventListenersInterface::class, true);
+    }
+
+    /**
+     * @param array<array-key, mixed> $arguments
+     * @return non-empty-string
+     */
+    private function buildEventListenerArguments(array $arguments): string
+    {
+        $result = [];
+
+        foreach ($arguments as $name => $argument) {
+            $value = match(true) {
+                \is_string($argument) => 'e.' . $argument,
+                \is_array($argument) => $this->buildEventListenerArguments($argument),
+                default => '{}',
+            };
+
+            if (\is_int($name)) {
+                if (!\is_string($argument)) {
+                    continue;
+                }
+
+                $name = $argument;
+            }
+
+            $result[] = \sprintf('"%s":%s', \addcslashes($name, '"'), $value);
+        }
+
+        return '{' . \implode(',', $result) . '}';
+    }
+
+    /**
+     * @param class-string $component
+     * @return list<non-empty-string>
+     */
+    private function buildObservedAttributes(string $component): array
+    {
+        if ($this->hasObservedAttributes($component)) {
+            /** @var list<non-empty-string> */
+            return $component::getObservedAttributeNames();
+        }
+
+        return [];
+    }
+
+
+    /**
+     * @param class-string $component
+     * @return list<non-empty-string>
+     */
+    private function buildMethods(string $component): array
+    {
+        if ($this->hasMethods($component)) {
+            /** @var list<non-empty-string> */
+            return $component::getMethodNames();
+        }
+
+        return [];
+    }
+
+    /**
+     * @param class-string $component
+     * @return array<non-empty-string, non-empty-string>
+     */
+    private function buildEventListeners(string $component): array
+    {
+        $result = [];
+
+        if ($this->hasEventListeners($component)) {
+            /** @var array<non-empty-string, array<array-key, mixed>> $eventListeners */
+            $eventListeners = $component::getEventListeners();
+
+            foreach ($eventListeners as $eventName => $eventArguments) {
+                $result[$eventName] = $this->buildEventListenerArguments(
+                    arguments: $eventArguments,
+                );
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -54,13 +141,9 @@ final readonly class WebViewComponentBuilder
         $isDebug = $this->app->isDebug;
 
         $hasShadowRoot = $this->hasShadowRoot($component);
-        $hasObservedAttributes = $this->hasObservedAttributes($component);
-
-        $methodNames = [];
-
-        if ($this->hasMethods($component)) {
-            $methodNames = $component::getMethodNames();
-        }
+        $observedAttributes = $this->buildObservedAttributes($component);
+        $methodNames = $this->buildMethods($component);
+        $eventListeners = $this->buildEventListeners($component);
 
         \ob_start();
         require __DIR__ . '/web-component.js.php';

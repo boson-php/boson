@@ -152,8 +152,9 @@ final class WebViewWebComponents extends WebViewApi implements
         $this->webview->bind('boson.components.created', $this->onCreated(...));
         $this->webview->bind('boson.components.connected', $this->onConnected(...));
         $this->webview->bind('boson.components.disconnected', $this->onDisconnected(...));
-        $this->webview->bind('boson.components.attributeChanged', $this->onAttributeChanged(...));
         $this->webview->bind('boson.components.invoke', $this->onInvoke(...));
+        $this->webview->bind('boson.components.fire', $this->onFire(...));
+        $this->webview->bind('boson.components.attributeChanged', $this->onAttributeChanged(...));
     }
 
     private function onCreated(string $tag, string $id): ?string
@@ -165,18 +166,6 @@ final class WebViewWebComponents extends WebViewApi implements
         }
 
         return $this->instances->create($id, $tag, $component);
-    }
-
-    /**
-     * @param array<array-key, mixed> $arguments
-     */
-    private function onInvoke(string $id, string $method, array $arguments): mixed
-    {
-        if ($id === '' || $method === '') {
-            return null;
-        }
-
-        return $this->instances->notifyInvoke($id, $method, $arguments);
     }
 
     private function onConnected(string $id): ?string
@@ -195,6 +184,30 @@ final class WebViewWebComponents extends WebViewApi implements
         }
 
         $this->instances->notifyDisconnect($id);
+    }
+
+    /**
+     * @param array<array-key, mixed> $arguments
+     */
+    private function onInvoke(string $id, string $method, array $arguments): mixed
+    {
+        if ($id === '' || $method === '') {
+            return null;
+        }
+
+        return $this->instances->notifyInvoke($id, $method, $arguments);
+    }
+
+    /**
+     * @param array<array-key, mixed> $arguments
+     */
+    private function onFire(string $id, string $method, array $arguments): void
+    {
+        if ($id === '' || $method === '') {
+            return;
+        }
+
+        $this->instances->notifyFire($id, $method, $arguments);
     }
 
     private function onAttributeChanged(string $id, string $name, ?string $value, ?string $previous): void

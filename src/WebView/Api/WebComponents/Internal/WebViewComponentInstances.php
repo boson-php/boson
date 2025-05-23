@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\WebComponents\Internal;
 
+use Boson\WebView\Api\WebComponents\Component\HasEventListenersInterface;
 use Boson\WebView\Api\WebComponents\Component\HasLifecycleCallbacksInterface;
 use Boson\WebView\Api\WebComponents\Component\HasMethodsInterface;
 use Boson\WebView\Api\WebComponents\Component\HasObservedAttributesInterface;
@@ -43,7 +44,7 @@ final class WebViewComponentInstances
      * @param non-empty-string $id
      * @param non-empty-string $name
      * @param class-string<TArgComponent> $component
-     * @return TArgComponent
+     * @return ReactiveContext<TArgComponent>
      */
     private function createContext(string $id, string $name, string $component): ReactiveContext
     {
@@ -131,6 +132,22 @@ final class WebViewComponentInstances
         }
 
         return $instance->onMethodCalled($method, $arguments);
+    }
+
+    /**
+     * @param non-empty-string $id
+     * @param non-empty-string $event
+     * @param array<array-key, mixed> $arguments
+     */
+    public function notifyFire(string $id, string $event, array $arguments): void
+    {
+        $instance = $this->instances[$id] ?? null;
+
+        if (!$instance instanceof HasEventListenersInterface) {
+            return;
+        }
+
+        $instance->onEventFired($event, $arguments);
     }
 
     /**

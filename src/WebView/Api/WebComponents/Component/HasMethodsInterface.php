@@ -18,6 +18,10 @@ interface HasMethodsInterface
      * Must return an array containing the names of all methods for which
      * the element requires call notifications.
      *
+     * ```
+     * return ['methodName', 'otherMethodName'];
+     * ```
+     *
      * @return list<non-empty-string>
      */
     public static function getMethodNames(): array;

@@ -17,6 +17,10 @@ interface HasObservedAttributesInterface
      * Should return an array containing the names of all attributes for which
      * the element needs change notifications.
      *
+     * ```
+     * return ['propertyName', 'otherPropertyName'];
+     * ```
+     *
      * @return list<non-empty-string>
      */
     public static function getObservedAttributeNames(): array;

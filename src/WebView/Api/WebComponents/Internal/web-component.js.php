@@ -3,13 +3,14 @@
  * @var non-empty-string $tagName
  * @var non-empty-string $className
  * @var class-string $component
- * @var bool $hasObservedAttributes
  * @var bool $hasShadowRoot
+ * @var list<non-empty-string> $observedAttributes
  * @var list<non-empty-string> $methodNames
+ * @var array<non-empty-string, non-empty-string> $eventListeners
  * @var bool $isDebug
  */
 ?>
-class <?php echo $className; ?> extends HTMLElement {
+class <?=$className?> extends HTMLElement {
     /**
      * Contains the unique identifier of the component instance.
      *
@@ -24,15 +25,15 @@ class <?php echo $className; ?> extends HTMLElement {
      */
     #internals;
 
-<?php if ($isDebug) { ?>
-<?php   if (\PHP_OS_FAMILY === 'Darwin') { ?>
+<?php if ($isDebug): ?>
+<?php   if (\PHP_OS_FAMILY === 'Darwin'): ?>
     #debugPrefix = '[boson(debug:true)] ';
-<?php   } else { ?>
+<?php   else: ?>
     #debugPrefix = '\x1B[37;3m[boson(debug:true)]\x1B[m ';
-<?php   } ?>
-<?php } ?>
+<?php   endif ?>
+<?php endif ?>
 
-<?php if ($hasObservedAttributes) { ?>
+<?php if ($observedAttributes !== []): ?>
     /**
      * Contains a list of attribute subscriptions.
      *
@@ -40,9 +41,9 @@ class <?php echo $className; ?> extends HTMLElement {
      * @return {string[]}
      */
     static get observedAttributes() {
-        return <?php echo \json_encode($component::getObservedAttributeNames()); ?>;
+        return <?=\json_encode($observedAttributes)?>;
     }
-<?php } ?>
+<?php endif ?>
 
     constructor() {
         super();
@@ -50,28 +51,36 @@ class <?php echo $className; ?> extends HTMLElement {
         this.#internals = this.attachInternals();
         this.#id = window.boson.ids.generate();
 
-<?php if ($isDebug) { ?>
+<?php if ($isDebug): ?>
         // You may set ApplicationCreateInfo::$debug to false to diable this logs
-        console.log(`${this.#debugPrefix}<<?php echo $tagName; ?> /> created`);
-<?php } ?>
+        console.log(`${this.#debugPrefix}<<?=$tagName?> /> created`);
+<?php endif ?>
 
-<?php if ($hasShadowRoot) { ?>
+<?php if ($hasShadowRoot): ?>
         this.attachShadow({mode: 'open'});
-<?php } ?>
+<?php endif ?>
 
         // Attach element to globals registry
         window.boson.components.instances.attach(this.#id, this);
+
+        // Register event listeners
+<?php foreach ($eventListeners as $eventName => $eventArgs): ?>
+        this.addEventListener("<?=$eventName?>", (e) =>
+            window.boson.components.fire(this.#id, "<?=$eventName?>", <?=$eventArgs?>)
+        );
+<?php endforeach ?>
+
         // Sending a notification about the creation of an element
-        window.boson.components.created("<?php echo $tagName; ?>", this.#id)
+        window.boson.components.created("<?=$tagName?>", this.#id)
             .then((value) => {
                 if (value === null) {
                     return;
                 }
 
-<?php if ($isDebug) { ?>
+<?php if ($isDebug): ?>
                 // You may set ApplicationCreateInfo::$debug to false to diable this logs
-                console.log(`${this.#debugPrefix}<<?php echo $tagName; ?> /> render raw ${value}`);
-<?php } ?>
+                console.log(`${this.#debugPrefix}<<?=$tagName?> /> render raw ${value}`);
+<?php endif ?>
 
                 this.innerHTML = value;
             });
@@ -79,22 +88,22 @@ class <?php echo $className; ?> extends HTMLElement {
         return this;
     }
 
-<?php foreach ($methodNames as $methodName) { ?>
+<?php foreach ($methodNames as $methodName): ?>
 
-    <?php echo $methodName; ?>() {
-        return window.boson.components.invoke(this.#id, "<?php echo $methodName; ?>", Array.prototype.slice.call(arguments));
+    <?=$methodName?>() {
+        return window.boson.components.invoke(this.#id, "<?=$methodName?>", Array.prototype.slice.call(arguments));
     }
 
-<?php } ?>
+<?php endforeach ?>
 
     connectedCallback() {
         // Double attach element to globals registry (after detaching)
         window.boson.components.instances.attach(this.#id, this);
 
-<?php if ($isDebug) { ?>
+<?php if ($isDebug): ?>
         // You may set ApplicationCreateInfo::$debug to false to diable this logs
-        console.log(`${this.#debugPrefix}<<?php echo $tagName; ?> /> connected`);
-<?php } ?>
+        console.log(`${this.#debugPrefix}<<?=$tagName?> /> connected`);
+<?php endif ?>
 
         // Send a notification about the element connection
         window.boson.components.connected(this.#id)
@@ -103,10 +112,10 @@ class <?php echo $className; ?> extends HTMLElement {
                     return;
                 }
 
-<?php if ($isDebug) { ?>
+<?php if ($isDebug): ?>
                 // You may set ApplicationCreateInfo::$debug to false to diable this logs
-                console.log(`${this.#debugPrefix}<<?php echo $tagName; ?> /> render shadow ${value}`);
-<?php } ?>
+                console.log(`${this.#debugPrefix}<<?=$tagName?> /> render shadow ${value}`);
+<?php endif ?>
 
                 this.shadowRoot.innerHTML = value;
             });
@@ -116,24 +125,24 @@ class <?php echo $className; ?> extends HTMLElement {
         // Detach element from globals registry
         window.boson.components.instances.detach(this.#id);
 
-<?php if ($isDebug) { ?>
+<?php if ($isDebug): ?>
         // You may set ApplicationCreateInfo::$debug to false to diable this logs
-        console.log(`${this.#debugPrefix}<<?php echo $tagName; ?> /> disconnected`);
-<?php } ?>
+        console.log(`${this.#debugPrefix}<<?=$tagName?> /> disconnected`);
+<?php endif ?>
 
         // Send a notification about the element disconnection
         window.boson.components.disconnected(this.#id);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-<?php if ($isDebug) { ?>
+<?php if ($isDebug): ?>
         // You may set ApplicationCreateInfo::$debug to false to diable this logs
-        console.log(`${this.#debugPrefix}<<?php echo $tagName; ?> ${name}="${newValue}" /> attribute changed`);
-<?php } ?>
+        console.log(`${this.#debugPrefix}<<?=$tagName?> ${name}="${newValue}" /> attribute changed`);
+<?php endif ?>
 
         // Send a notification about the element attribute change
         window.boson.components.attributeChanged(this.#id, name, newValue, oldValue);
     }
 }
 
-customElements.define("<?php echo $tagName; ?>", <?php echo $className; ?>);
+customElements.define("<?=$tagName?>", <?=$className?>);

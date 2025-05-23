@@ -8,8 +8,6 @@ use Boson\Shared\Marker\BlockingOperation;
 use Boson\WebView\Api\Data\AsyncDataRetrieverInterface;
 use Boson\WebView\Api\Data\SyncDataRetrieverInterface;
 use Boson\WebView\Api\Scripts\ScriptEvaluatorInterface;
-use Boson\WebView\Api\WebComponents\Context\AttributeMapInterface;
-use Boson\WebView\Api\WebComponents\Context\MutableAttributeMapInterface;
 use Boson\WebView\Api\WebComponents\Context\MutableClassListInterface;
 use Boson\WebView\Api\WebComponents\Context\MutableContentProviderInterface;
 use Boson\WebView\Api\WebComponents\Context\ReactiveContext;
@@ -21,13 +19,16 @@ abstract class WebComponent implements
     HasClassNameInterface,
     HasObservedAttributesInterface,
     HasMethodsInterface,
+    HasEventListenersInterface,
     HasLifecycleCallbacksInterface,
     HasTemplateInterface,
     ScriptEvaluatorInterface,
     SyncDataRetrieverInterface,
     AsyncDataRetrieverInterface
 {
-    public readonly MutableAttributeMapInterface $attributes;
+    use HasTemplate;
+    use HasClassName;
+    use HasObservedAttributes;
 
     public readonly MutableClassListInterface $classList;
 
@@ -46,9 +47,9 @@ abstract class WebComponent implements
      * @uses MutableContentProviderInterface::$html
      */
     public string $innerHtml {
-        get => $this->content->html;
+        get => $this->ctx->content->html;
         set(string|\Stringable $html) {
-            $this->content->html = $html;
+            $this->ctx->content->html = $html;
         }
     }
 
@@ -60,9 +61,9 @@ abstract class WebComponent implements
      * @uses MutableContentProviderInterface::$text
      */
     public string $textContent {
-        get => $this->content->text;
+        get => $this->ctx->content->text;
         set(string|\Stringable $text) {
-            $this->content->text = $text;
+            $this->ctx->content->text = $text;
         }
     }
 
@@ -79,81 +80,6 @@ abstract class WebComponent implements
         $this->shadowRoot = $ctx->shadow;
     }
 
-    /**
-     * @api
-     *
-     * @link https://developer.mozilla.org/docs/Web/API/Element/hasAttribute
-     *
-     * @uses AttributeMapInterface::has()
-     *
-     * @param non-empty-string $name
-     */
-    public function hasAttribute(string $name): bool
-    {
-        return $this->attributes->has($name);
-    }
-
-    /**
-     * @api
-     *
-     * @link https://developer.mozilla.org/docs/Web/API/Element/hasAttributes
-     *
-     * @uses AttributeMapInterface::count()
-     */
-    public function hasAttributes(): bool
-    {
-        return $this->attributes->count() > 0;
-    }
-
-    /**
-     * @api
-     *
-     * @link https://developer.mozilla.org/docs/Web/API/Element/removeAttribute
-     *
-     * @uses MutableAttributeMapInterface::remove()
-     *
-     * @param non-empty-string $name
-     */
-    public function removeAttribute(string $name): void
-    {
-        $this->attributes->remove($name);
-    }
-
-    /**
-     * @api
-     *
-     * @link https://developer.mozilla.org/docs/Web/API/Element/getAttribute
-     *
-     * @uses MutableAttributeMapInterface::get()
-     *
-     * @param non-empty-string $name
-     */
-    public function getAttribute(string $name): ?string
-    {
-        return $this->attributes->get($name);
-    }
-
-    /**
-     * @api
-     *
-     * @link https://developer.mozilla.org/docs/Web/API/Element/setAttribute
-     *
-     * @uses MutableAttributeMapInterface::set()
-     *
-     * @param non-empty-string $name
-     */
-    public function setAttribute(string $name, string $value): void
-    {
-        $this->attributes->set($name, $value);
-    }
-
-    public static function getClassName(): string
-    {
-        $name = \str_replace('\\', '_', static::class);
-
-        return 'BosonWebComponent$' . $name;
-    }
-
     public function onConnect(): void
     {
         // Can be overridden
@@ -162,6 +88,17 @@ abstract class WebComponent implements
     public function onDisconnect(): void
     {
         // Can be overridden
+    }
+
+    public function onEventFired(string $event, array $arguments = []): void
+    {
+        // Can be overridden
+    }
+
+    public static function getEventListeners(): array
+    {
+        // Can be overridden
+        return [];
     }
 
     public function onAttributeChanged(string $attribute, ?string $value, ?string $previous): void
@@ -186,16 +123,6 @@ abstract class WebComponent implements
     {
         // Can be overridden
         return [];
-    }
-
-    public function render(): string
-    {
-        if ($this instanceof \Stringable) {
-            return (string) $this;
-        }
-
-        // Can be overridden
-        return '<slot />';
     }
 
     protected function refresh(): void
