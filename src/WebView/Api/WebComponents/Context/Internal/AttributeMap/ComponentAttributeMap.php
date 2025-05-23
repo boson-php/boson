@@ -10,7 +10,7 @@ use Boson\WebView\Api\WebComponents\Context\AttributeMapInterface;
 /**
  * @template-implements \IteratorAggregate<non-empty-string, string>
  *
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api\WebComponents
  */
 readonly class ComponentAttributeMap implements AttributeMapInterface, \IteratorAggregate

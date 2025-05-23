@@ -10,7 +10,7 @@ use Boson\WebView\Api\WebComponents\Context\ClassListInterface;
 /**
  * @template-implements \IteratorAggregate<mixed, non-empty-string>
  *
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api\WebComponents
  */
 readonly class ComponentClassList implements ClassListInterface, \IteratorAggregate
@@ -21,6 +21,7 @@ readonly class ComponentClassList implements ClassListInterface, \IteratorAggreg
 
     /**
      * @param non-empty-string $class
+     *
      * @return non-empty-string
      */
     protected function classToArgument(string $class): string

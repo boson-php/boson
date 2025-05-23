@@ -11,7 +11,9 @@ interface ClassListInterface extends \Traversable, \Countable, \Stringable
 {
     /**
      * @link https://developer.mozilla.org/docs/Web/API/DOMTokenList/item
+     *
      * @param int<0, max> $index
+     *
      * @return non-empty-string|null
      */
     public function findByIndex(int $index): ?string;

@@ -9,7 +9,7 @@ use Boson\WebView\Api\Scripts\ScriptEvaluatorInterface;
 use Boson\WebView\Api\WebComponents\Context\MutableClassListInterface;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api\WebComponents
  */
 final readonly class MutableComponentClassList extends ComponentClassList implements

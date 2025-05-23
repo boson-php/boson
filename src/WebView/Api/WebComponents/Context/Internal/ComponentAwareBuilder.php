@@ -7,7 +7,7 @@ namespace Boson\WebView\Api\WebComponents\Context\Internal;
 use JetBrains\PhpStorm\Language;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api\WebComponents\Context\Internal
  */
 abstract readonly class ComponentAwareBuilder

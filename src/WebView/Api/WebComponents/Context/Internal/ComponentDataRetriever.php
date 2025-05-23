@@ -11,7 +11,7 @@ use JetBrains\PhpStorm\Language;
 use React\Promise\PromiseInterface;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api\WebComponents
  */
 final readonly class ComponentDataRetriever extends ComponentAwareBuilder implements

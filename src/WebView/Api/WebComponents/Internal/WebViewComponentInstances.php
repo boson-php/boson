@@ -14,14 +14,14 @@ use Boson\WebView\Api\WebComponents\Context\Internal\AttributeMap\MutableCompone
 use Boson\WebView\Api\WebComponents\Context\Internal\ClassList\MutableComponentClassList;
 use Boson\WebView\Api\WebComponents\Context\Internal\ComponentDataRetriever;
 use Boson\WebView\Api\WebComponents\Context\Internal\ComponentEvaluator;
-use Boson\WebView\Api\WebComponents\Context\Internal\Content\MutableShadowDomContentProvider;
 use Boson\WebView\Api\WebComponents\Context\Internal\Content\MutableComponentContentProvider;
+use Boson\WebView\Api\WebComponents\Context\Internal\Content\MutableShadowDomContentProvider;
 use Boson\WebView\Api\WebComponents\Context\ReactiveContext;
 use Boson\WebView\Api\WebComponents\Instantiator\WebComponentInstantiatorInterface;
 use Boson\WebView\WebView;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api\WebComponents
  */
 final class WebViewComponentInstances
@@ -44,6 +44,7 @@ final class WebViewComponentInstances
      * @param non-empty-string $id
      * @param non-empty-string $name
      * @param class-string<TArgComponent> $component
+     *
      * @return ReactiveContext<TArgComponent>
      */
     private function createContext(string $id, string $name, string $component): ReactiveContext

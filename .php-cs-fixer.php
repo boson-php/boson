@@ -11,7 +11,7 @@ $files = PhpCsFixer\Finder::create()
             // Fixer doesnt support an abstract properties
             \realpath(__DIR__ . '/src/WebView/Api/Battery/WebViewBattery.php'),
             \realpath(__DIR__ . '/src/Shared/IdValueGenerator/IntValueGenerator.php'),
-            \realpath(__DIR__ . '/src/WebView/Api/WebComponentsApi/Internal/web-component.js.php'),
+            \realpath(__DIR__ . '/src/WebView/Api/WebComponents/Internal/web-component.js.php'),
         ], true)
     )
 ;

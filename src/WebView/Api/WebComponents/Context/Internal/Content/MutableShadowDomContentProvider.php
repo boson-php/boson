@@ -9,7 +9,7 @@ use Boson\WebView\Api\Scripts\ScriptEvaluatorInterface;
 use Boson\WebView\Api\WebComponents\Context\MutableContentProviderInterface;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Api\WebComponents
  */
 final class MutableShadowDomContentProvider extends ShadowDomContentProvider implements

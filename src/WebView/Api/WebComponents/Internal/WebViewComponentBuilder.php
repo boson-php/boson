@@ -51,6 +51,7 @@ final readonly class WebViewComponentBuilder
 
     /**
      * @param array<array-key, mixed> $arguments
+     *
      * @return non-empty-string
      */
     private function buildEventListenerArguments(array $arguments): string
@@ -58,7 +59,7 @@ final readonly class WebViewComponentBuilder
         $result = [];
 
         foreach ($arguments as $name => $argument) {
-            $value = match(true) {
+            $value = match (true) {
                 \is_string($argument) => 'e.' . $argument,
                 \is_array($argument) => $this->buildEventListenerArguments($argument),
                 default => '{}',
@@ -80,6 +81,7 @@ final readonly class WebViewComponentBuilder
 
     /**
      * @param class-string $component
+     *
      * @return list<non-empty-string>
      */
     private function buildObservedAttributes(string $component): array
@@ -92,9 +94,9 @@ final readonly class WebViewComponentBuilder
         return [];
     }
 
-
     /**
      * @param class-string $component
+     *
      * @return list<non-empty-string>
      */
     private function buildMethods(string $component): array
@@ -109,6 +111,7 @@ final readonly class WebViewComponentBuilder
 
     /**
      * @param class-string $component
+     *
      * @return array<non-empty-string, non-empty-string>
      */
     private function buildEventListeners(string $component): array
