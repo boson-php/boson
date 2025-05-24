@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\Http\Headers;
 
-use Boson\Http\HeadersInterface;
+use Boson\Contracts\Http\Headers\HeadersProviderInterface;
+use Boson\Contracts\Http\Headers\MutableHeadersProviderInterface;
+use Boson\Contracts\Http\HeadersInterface;
 use Boson\Http\HeadersMap;
 
 /**

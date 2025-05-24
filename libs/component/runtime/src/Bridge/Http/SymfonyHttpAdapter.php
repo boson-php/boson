@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Http;
 
-use Boson\Http\RequestInterface;
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\ResponseInterface;
 use Boson\Http\Response;
-use Boson\Http\ResponseInterface;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;

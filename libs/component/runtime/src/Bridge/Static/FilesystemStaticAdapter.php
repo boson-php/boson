@@ -6,9 +6,9 @@ namespace Boson\Bridge\Static;
 
 use Boson\Bridge\Static\Mime\ExtensionFileDetector;
 use Boson\Bridge\Static\Mime\FileDetectorInterface;
-use Boson\Http\RequestInterface;
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\ResponseInterface;
 use Boson\Http\Response;
-use Boson\Http\ResponseInterface;
 
 final readonly class FilesystemStaticAdapter implements StaticAdapterInterface
 {

@@ -24,6 +24,9 @@ jobs:
             split_repository: 'runtime'
           - local_path: 'component/weak-types'
             split_repository: 'weak-types'
+          # Contracts
+          - local_path: 'contracts/http-contracts'
+            split_repository: 'http-contracts'
     steps:
       - uses: actions/checkout@v4
 

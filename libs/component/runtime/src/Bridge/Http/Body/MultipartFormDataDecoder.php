@@ -6,8 +6,8 @@ namespace Boson\Bridge\Http\Body;
 
 use Boson\Bridge\Http\Body\MultipartFormData\FormDataBoundary;
 use Boson\Bridge\Http\Body\MultipartFormData\StreamingParser;
-use Boson\Http\HeadersInterface;
-use Boson\Http\RequestInterface;
+use Boson\Contracts\Http\HeadersInterface;
+use Boson\Contracts\Http\RequestInterface;
 
 final readonly class MultipartFormDataDecoder implements SpecializedBodyDecoderInterface
 {

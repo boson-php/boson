@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Http\StatusCode;
 
+use Boson\Contracts\Http\StatusCode\MutableStatusCodeProviderInterface;
+
 /**
  * @api
  *

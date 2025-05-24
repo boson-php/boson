@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Http\Url;
 
+use Boson\Contracts\Http\Url\MutableUrlProviderInterface;
 use Boson\Http\Request;
 
 /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Http\Method;
+namespace Boson\Contracts\Http\Method;
 
 /**
  * @phpstan-type MethodOutputType non-empty-uppercase-string

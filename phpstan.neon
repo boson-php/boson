@@ -14,8 +14,11 @@ parameters:
   fileExtensions:
     - php
   paths:
+    # Components
     - libs/component/runtime/src
     - libs/component/weak-types/src
+    # Contracts
+    - libs/contracts/http-contracts/src
   excludePaths:
     - libs/component/runtime/src/Internal/Saucer/LibSaucer.php
     - libs/component/runtime/src/Internal/Win32/LibKernel32.php

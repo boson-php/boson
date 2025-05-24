@@ -1,6 +1,6 @@
 {
     "name": "boson-php/weak-types",
-    "description": "Provide weak structures and types",
+    "description": "Provides weak structures and types",
     "type": "library",
     "license": "MIT",
     "homepage": "https://bosonphp.com",

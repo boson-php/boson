@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\Http\Headers;
+namespace Boson\Contracts\Http\Headers;
 
-use Boson\Http\HeadersInterface;
+use Boson\Contracts\Http\HeadersInterface;
 
 /**
  * @phpstan-type HeadersListOutputType HeadersInterface

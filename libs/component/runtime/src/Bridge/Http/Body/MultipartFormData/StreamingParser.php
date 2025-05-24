@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Bridge\Http\Body\MultipartFormData;
 
 use Boson\Bridge\Http\Body\Exception\ParsingException;
-use Boson\Http\HeadersInterface;
+use Boson\Contracts\Http\HeadersInterface;
 use Boson\Http\HeadersMap;
 
 /**

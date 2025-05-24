@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
+use Boson\Contracts\Http\HeadersInterface;
+
 /**
  * An implementation of immutable headers list.
  *

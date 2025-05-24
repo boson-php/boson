@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
+use Boson\Contracts\Http\Body\BodyProviderInterface;
+use Boson\Contracts\Http\Body\MutableBodyProviderInterface;
+use Boson\Contracts\Http\Headers\HeadersProviderInterface;
+use Boson\Contracts\Http\Headers\MutableHeadersProviderInterface;
+use Boson\Contracts\Http\Method\MethodProviderInterface;
+use Boson\Contracts\Http\Method\MutableMethodProviderInterface;
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\Url\MutableUrlProviderInterface;
+use Boson\Contracts\Http\Url\UrlProviderInterface;
 use Boson\Http\Body\BodyProviderImpl;
-use Boson\Http\Body\BodyProviderInterface;
-use Boson\Http\Body\MutableBodyProviderInterface;
 use Boson\Http\Headers\HeadersProviderImpl;
-use Boson\Http\Headers\HeadersProviderInterface;
-use Boson\Http\Headers\MutableHeadersProviderInterface;
 use Boson\Http\Method\MethodProviderImpl;
-use Boson\Http\Method\MethodProviderInterface;
-use Boson\Http\Method\MutableMethodProviderInterface;
-use Boson\Http\Url\MutableUrlProviderInterface;
 use Boson\Http\Url\UrlProviderImpl;
-use Boson\Http\Url\UrlProviderInterface;
 
 /**
  * An implementation of immutable request instance.

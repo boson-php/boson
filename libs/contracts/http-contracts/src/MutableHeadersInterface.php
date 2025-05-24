@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Http;
+namespace Boson\Contracts\Http;
 
 interface MutableHeadersInterface extends HeadersInterface
 {

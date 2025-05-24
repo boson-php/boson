@@ -6,9 +6,9 @@ namespace Boson\Bridge\Http;
 
 use Boson\Bridge\Http\Body\BodyDecoderInterface;
 use Boson\Bridge\Http\Server\ServerGlobalsProviderInterface;
-use Boson\Http\RequestInterface;
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\ResponseInterface;
 use Boson\Http\Response;
-use Boson\Http\ResponseInterface;
 use Psr\Http\Message\ResponseInterface as Psr7ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface as Psr17ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface as Psr7ServerRequestInterface;

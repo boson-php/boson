@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\Schemes;
 
 use Boson\ApplicationPollerInterface;
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\ResponseInterface;
 use Boson\Dispatcher\EventDispatcherInterface;
-use Boson\Http\RequestInterface;
-use Boson\Http\ResponseInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerLaunch;
 use Boson\Internal\Saucer\SaucerSchemeError;

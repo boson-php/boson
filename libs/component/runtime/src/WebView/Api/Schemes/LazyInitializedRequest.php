@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\Schemes;
 
-use Boson\Http\HeadersInterface;
+use Boson\Contracts\Http\HeadersInterface;
+use Boson\Contracts\Http\RequestInterface;
 use Boson\Http\HeadersMap;
 use Boson\Http\Request;
-use Boson\Http\RequestInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use FFI\CData;
 

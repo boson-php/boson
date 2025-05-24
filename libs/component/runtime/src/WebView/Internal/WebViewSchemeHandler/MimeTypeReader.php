@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Internal\WebViewSchemeHandler;
 
-use Boson\Http\ResponseInterface;
+use Boson\Contracts\Http\ResponseInterface;
 
 /**
  * @internal this is an internal library class, please do not use it in your code

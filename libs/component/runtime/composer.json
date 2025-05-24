@@ -17,6 +17,7 @@
     "require": {
         "php": "^8.4",
         "ext-ffi": "*",
+        "boson-php/http-contracts": "^1.0",
         "boson-php/weak-types": "^1.0",
         "ffi/env": "^1.0",
         "psr/event-dispatcher": "^1.0",

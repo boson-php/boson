@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Http;
 
-use Boson\Http\ResponseInterface;
+use Boson\Contracts\Http\ResponseInterface;
 
 /**
  * @template TResponse of object

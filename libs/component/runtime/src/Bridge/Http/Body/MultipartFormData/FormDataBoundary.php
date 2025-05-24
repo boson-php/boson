@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Http\Body\MultipartFormData;
 
-use Boson\Http\RequestInterface;
+use Boson\Contracts\Http\RequestInterface;
 
 /**
  * @internal this is an internal library class, please do not use it in your code

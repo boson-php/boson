@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Http\StatusCode;
+namespace Boson\Contracts\Http\StatusCode;
 
 /**
  * @phpstan-type StatusCodeOutputType int<100, 599>

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
+use Boson\Contracts\Http\Body\MutableBodyProviderInterface;
+use Boson\Contracts\Http\Headers\MutableHeadersProviderInterface;
+use Boson\Contracts\Http\MutableHeadersInterface;
+use Boson\Contracts\Http\MutableResponseInterface;
+use Boson\Contracts\Http\StatusCode\MutableStatusCodeProviderInterface;
 use Boson\Http\Body\MutableBodyProviderImpl;
-use Boson\Http\Body\MutableBodyProviderInterface;
 use Boson\Http\Headers\MutableHeadersProviderImpl;
-use Boson\Http\Headers\MutableHeadersProviderInterface;
 use Boson\Http\StatusCode\MutableStatusCodeProviderImpl;
-use Boson\Http\StatusCode\MutableStatusCodeProviderInterface;
 
 /**
  * @phpstan-import-type StatusCodeInputType from MutableStatusCodeProviderInterface

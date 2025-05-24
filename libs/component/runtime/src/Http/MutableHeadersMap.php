@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
+use Boson\Contracts\Http\MutableHeadersInterface;
+
 class MutableHeadersMap extends HeadersMap implements
     MutableHeadersInterface
 {

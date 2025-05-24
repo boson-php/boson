@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Http\Server;
 
-use Boson\Http\RequestInterface;
+use Boson\Contracts\Http\RequestInterface;
 
 /**
  * Decode and extract PHP `$_SERVER` globals from {@see RequestInterface}.

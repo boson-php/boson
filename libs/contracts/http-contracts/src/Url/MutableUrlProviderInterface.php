@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Http\Url;
+namespace Boson\Contracts\Http\Url;
 
 /**
  * @phpstan-import-type UrlOutputType from UrlProviderInterface

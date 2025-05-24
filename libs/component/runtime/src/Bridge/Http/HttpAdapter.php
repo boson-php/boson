@@ -11,7 +11,7 @@ use Boson\Bridge\Http\Body\NativeFormUrlEncodedDecoded;
 use Boson\Bridge\Http\Server\DefaultServerGlobalsProvider;
 use Boson\Bridge\Http\Server\ServerGlobalsProviderInterface;
 use Boson\Bridge\Http\Server\StaticServerGlobalsProvider;
-use Boson\Http\RequestInterface;
+use Boson\Contracts\Http\RequestInterface;
 
 /**
  * @template-covariant TRequest of object

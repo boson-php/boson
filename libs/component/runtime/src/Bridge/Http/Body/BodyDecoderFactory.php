@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Http\Body;
 
-use Boson\Http\RequestInterface;
+use Boson\Contracts\Http\RequestInterface;
 
 /**
  * Factory, which selects the most suitable decoder from

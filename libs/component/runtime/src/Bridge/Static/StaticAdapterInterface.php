@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Static;
 
-use Boson\Http\RequestInterface;
-use Boson\Http\ResponseInterface;
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\ResponseInterface;
 
 interface StaticAdapterInterface
 {

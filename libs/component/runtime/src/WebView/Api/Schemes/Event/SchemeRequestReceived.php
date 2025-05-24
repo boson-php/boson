@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\Schemes\Event;
 
-use Boson\Http\RequestInterface;
-use Boson\Http\ResponseInterface;
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\ResponseInterface;
 use Boson\Shared\Marker\AsWebViewIntention;
 use Boson\WebView\WebView;
 

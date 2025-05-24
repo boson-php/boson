@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Http\Body;
+namespace Boson\Contracts\Http\Body;
 
 /**
  * @phpstan-import-type BodyOutputType from BodyProviderInterface

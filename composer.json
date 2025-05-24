@@ -4,12 +4,14 @@
     "type": "library",
     "license": "MIT",
     "repositories": [
-        {"type": "path", "url": "libs/component/*"}
+        {"type": "path", "url": "libs/component/*"},
+        {"type": "path", "url": "libs/contracts/*"}
     ],
     "require": {
         "php": "^8.4",
         "boson-php/runtime": "^1.0",
-        "boson-php/weak-types": "^1.0"
+        "boson-php/weak-types": "^1.0",
+        "boson-php/http-contracts": "^1.0"
     },
     "require-dev": {
         "ffi/var-dumper": "^1.0",
@@ -27,7 +29,8 @@
     "autoload-dev": {
         "psr-4": {
             "Boson\\Tests\\": "libs/component/runtime/tests",
-            "Boson\\Component\\WeakType\\Tests\\": "libs/component/weak-types/tests"
+            "Boson\\Component\\WeakType\\Tests\\": "libs/component/weak-types/tests",
+            "Boson\\Contracts\\Http\\Tests\\": "libs/contracts/http-contracts/tests"
         }
     },
     "extra": {

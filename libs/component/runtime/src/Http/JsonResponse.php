@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
-use Boson\Http\Body\MutableBodyProviderInterface;
-use Boson\Http\Headers\MutableHeadersProviderInterface;
-use Boson\Http\StatusCode\MutableStatusCodeProviderInterface;
+use Boson\Contracts\Http\Body\MutableBodyProviderInterface;
+use Boson\Contracts\Http\Headers\MutableHeadersProviderInterface;
+use Boson\Contracts\Http\MutableHeadersInterface;
+use Boson\Contracts\Http\MutableResponseInterface;
+use Boson\Contracts\Http\StatusCode\MutableStatusCodeProviderInterface;
 
 /**
  * @phpstan-type JsonEncodingFlagsType int<0, max>

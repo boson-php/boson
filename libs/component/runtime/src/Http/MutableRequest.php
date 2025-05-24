@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Boson\Http;
 
+use Boson\Contracts\Http\Body\MutableBodyProviderInterface;
+use Boson\Contracts\Http\Headers\MutableHeadersProviderInterface;
+use Boson\Contracts\Http\Method\MutableMethodProviderInterface;
+use Boson\Contracts\Http\MutableRequestInterface;
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\Url\MutableUrlProviderInterface;
 use Boson\Http\Body\MutableBodyProviderImpl;
-use Boson\Http\Body\MutableBodyProviderInterface;
 use Boson\Http\Headers\MutableHeadersProviderImpl;
-use Boson\Http\Headers\MutableHeadersProviderInterface;
 use Boson\Http\Method\MutableMethodProviderImpl;
-use Boson\Http\Method\MutableMethodProviderInterface;
 use Boson\Http\Url\MutableUrlProviderImpl;
-use Boson\Http\Url\MutableUrlProviderInterface;
 
 /**
  * @phpstan-import-type MethodInputType from MutableMethodProviderInterface

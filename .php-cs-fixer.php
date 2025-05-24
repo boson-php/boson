@@ -5,6 +5,8 @@ $files = PhpCsFixer\Finder::create()
         // Components
         __DIR__ . '/libs/component/runtime/src',
         __DIR__ . '/libs/component/weak-types/src',
+        // Contracts
+        __DIR__ . '/libs/contracts/http-contracts/src',
     ])
     ->filter(static fn (\SplFileInfo $file): bool
         => !\in_array(\realpath($file->getPathname()), [

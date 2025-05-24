@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Http\Body;
 
+use Boson\Contracts\Http\Body\MutableBodyProviderInterface;
+
 /**
  * @api
  *

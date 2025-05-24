@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Http\Method;
 
+use Boson\Contracts\Http\Method\MutableMethodProviderInterface;
 use Boson\Http\Request;
 
 /**
