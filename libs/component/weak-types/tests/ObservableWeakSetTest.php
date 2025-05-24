@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Boson\Component\WeakType\Tests;
 
 use Boson\Component\WeakType\ObservableWeakSet;
-use Boson\Tests\Unit\TestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('boson-php/weak-types')]
@@ -115,4 +114,4 @@ final class ObservableWeakSetTest extends TestCase
         self::assertTrue($callback1Called);
         self::assertTrue($callback2Called);
     }
-} 
+}

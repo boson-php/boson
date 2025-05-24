@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Boson\Component\WeakType\Tests;
 
 use Boson\Component\WeakType\ObservableWeakMap;
-use Boson\Tests\Unit\TestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('boson-php/weak-types')]
