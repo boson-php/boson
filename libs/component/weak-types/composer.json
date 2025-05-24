@@ -1,12 +1,12 @@
 {
-    "name": "boson-php/runtime",
-    "description": "Boson WebView runtime library",
+    "name": "boson-php/weak-types",
+    "description": "Provide weak structures and types",
     "type": "library",
     "license": "MIT",
     "homepage": "https://bosonphp.com",
     "support": {
         "issues": "https://github.com/boson-php/boson/issues",
-        "source": "https://github.com/boson-php/runtime"
+        "source": "https://github.com/boson-php/weak-types"
     },
     "authors": [
         {
@@ -15,16 +15,11 @@
         }
     ],
     "require": {
-        "php": "^8.4",
-        "ext-ffi": "*",
-        "boson-php/weak-types": "^1.0",
-        "ffi/env": "^1.0",
-        "psr/event-dispatcher": "^1.0",
-        "react/promise": "^3.0"
+        "php": "^8.4"
     },
     "autoload": {
         "psr-4": {
-            "Boson\\": "src"
+            "Boson\\Component\\WeakType\\": "src"
         }
     },
     "require-dev": {
@@ -32,7 +27,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Boson\\Tests\\": "tests"
+            "Boson\\Component\\WeakType\\Tests\\": "tests"
         }
     },
     "extra": {

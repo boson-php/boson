@@ -4,6 +4,7 @@ $files = PhpCsFixer\Finder::create()
     ->in([
         // Components
         __DIR__ . '/libs/component/runtime/src',
+        __DIR__ . '/libs/component/weak-types/src',
     ])
     ->filter(static fn (\SplFileInfo $file): bool
         => !\in_array(\realpath($file->getPathname()), [

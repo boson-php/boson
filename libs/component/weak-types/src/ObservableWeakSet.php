@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\Shared\GarbageCollector;
+namespace Boson\Component\WeakType;
+
+use Boson\Component\WeakType\Internal\ReferenceReleaseCallback;
 
 /**
  * Allows to store a set of objects and track their
@@ -25,7 +27,7 @@ namespace Boson\Shared\GarbageCollector;
 final readonly class ObservableWeakSet implements \IteratorAggregate, \Countable
 {
     /**
-     * @var \WeakMap<TEntry, DestructorObserver<TEntry>>
+     * @var \WeakMap<TEntry, ReferenceReleaseCallback<TEntry>>
      */
     private \WeakMap $memory;
 
@@ -42,7 +44,7 @@ final readonly class ObservableWeakSet implements \IteratorAggregate, \Countable
      */
     public function watch(object $entry, \Closure $onRelease): object
     {
-        $this->memory[$entry] = new DestructorObserver($entry, $onRelease);
+        $this->memory[$entry] = new ReferenceReleaseCallback($entry, $onRelease);
 
         return $entry;
     }

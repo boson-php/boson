@@ -22,6 +22,8 @@ jobs:
           # Components
           - local_path: 'component/runtime'
             split_repository: 'runtime'
+          - local_path: 'component/weak-types'
+            split_repository: 'weak-types'
     steps:
       - uses: actions/checkout@v4
 

@@ -8,7 +8,8 @@
     ],
     "require": {
         "php": "^8.4",
-        "boson-php/runtime": "^1.0"
+        "boson-php/runtime": "^1.0",
+        "boson-php/weak-types": "^1.0"
     },
     "require-dev": {
         "ffi/var-dumper": "^1.0",
@@ -25,7 +26,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Boson\\Tests\\": "libs/component/runtime/tests"
+            "Boson\\Tests\\": "libs/component/runtime/tests",
+            "Boson\\Component\\WeakType\\Tests\\": "libs/component/weak-types/tests"
         }
     },
     "extra": {

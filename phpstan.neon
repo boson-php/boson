@@ -15,6 +15,7 @@ parameters:
     - php
   paths:
     - libs/component/runtime/src
+    - libs/component/weak-types/src
   excludePaths:
     - libs/component/runtime/src/Internal/Saucer/LibSaucer.php
     - libs/component/runtime/src/Internal/Win32/LibKernel32.php

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\Shared\GarbageCollector;
+namespace Boson\Component\WeakType;
+
+use Boson\Component\WeakType\Internal\ReferenceReleaseCallback;
 
 /**
  * Allows to store a set of objects with referenced values and
@@ -29,7 +31,7 @@ namespace Boson\Shared\GarbageCollector;
 final readonly class ObservableWeakMap implements \IteratorAggregate, \Countable
 {
     /**
-     * @var \WeakMap<TKey, DestructorObserver<TValue>>
+     * @var \WeakMap<TKey, ReferenceReleaseCallback<TValue>>
      */
     private \WeakMap $memory;
 
@@ -47,7 +49,7 @@ final readonly class ObservableWeakMap implements \IteratorAggregate, \Countable
      */
     public function watch(object $key, object $value, \Closure $onRelease): object
     {
-        $this->memory[$key] = new DestructorObserver($value, $onRelease);
+        $this->memory[$key] = new ReferenceReleaseCallback($value, $onRelease);
 
         return $key;
     }
@@ -59,18 +61,17 @@ final readonly class ObservableWeakMap implements \IteratorAggregate, \Countable
      */
     public function find(object $key): ?object
     {
-        /**
-         * @var TValue|null
-         *
-         * @phpstan-ignore-next-line : PHPStan does not support WeakMaps correctly
-         */
-        return $this->memory[$key]?->entry;
+        if (!$this->memory->offsetExists($key)) {
+            return null;
+        }
+
+        return $this->memory[$key]->reference;
     }
 
     public function getIterator(): \Traversable
     {
         foreach ($this->memory as $key => $ref) {
-            yield $key => $ref->entry;
+            yield $key => $ref->reference;
         }
     }
 

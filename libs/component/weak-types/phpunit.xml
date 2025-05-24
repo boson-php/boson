@@ -10,9 +10,8 @@
          backupStaticProperties="false"
 >
     <testsuites>
-        <testsuite name="components">
-            <directory>libs/component/runtime/tests</directory>
-            <directory>libs/component/weak-types/tests</directory>
+        <testsuite name="library">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
@@ -20,8 +19,7 @@
 
     <source>
         <include>
-            <directory suffix=".php">libs/component/runtime/src</directory>
-            <directory suffix=".php">libs/component/weak-types/src</directory>
+            <directory suffix=".php">src</directory>
         </include>
     </source>
 
