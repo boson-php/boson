@@ -31,6 +31,9 @@
             "Boson\\Component\\Http\\Tests\\": "tests"
         }
     },
+    "provide": {
+        "boson-php/http-contracts-implementation": "^4.0"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev",
