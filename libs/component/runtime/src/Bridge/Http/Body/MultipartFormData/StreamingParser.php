@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Boson\Bridge\Http\Body\MultipartFormData;
 
 use Boson\Bridge\Http\Body\Exception\ParsingException;
+use Boson\Component\Http\HeadersMap;
 use Boson\Contracts\Http\HeadersInterface;
-use Boson\Http\HeadersMap;
 
 /**
  * @internal this is an internal library class, please do not use it in your code

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Boson\WebView\Internal;
 
 use Boson\ApplicationPollerInterface;
+use Boson\Component\Http\Request;
 use Boson\Dispatcher\EventDispatcherInterface;
-use Boson\Http\Request;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerPolicy;
 use Boson\Internal\Saucer\SaucerState;

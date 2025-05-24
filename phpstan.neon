@@ -15,6 +15,7 @@ parameters:
     - php
   paths:
     # Components
+    - libs/component/http/src
     - libs/component/runtime/src
     - libs/component/weak-types/src
     # Contracts
