@@ -22,10 +22,8 @@ final readonly class DefaultServerGlobalsProvider implements ServerGlobalsProvid
      */
     private const string LOWER = '-abcdefghijklmnopqrstuvwxyz';
 
-    private ServerGlobalsProviderInterface $delegate;
-
     public function __construct(
-        ?ServerGlobalsProviderInterface $delegate = new DefaultServerGlobalsProvider(),
+        private ServerGlobalsProviderInterface $delegate = new EmptyServerGlobalsProvider(),
         /**
          * Allows you to set time-dependent parameters for server global values.
          *
@@ -33,9 +31,7 @@ final readonly class DefaultServerGlobalsProvider implements ServerGlobalsProvid
          * time will be used.
          */
         private ?ClockInterface $clock = null,
-    ) {
-        $this->delegate = $delegate ?? new EmptyServerGlobalsProvider();
-    }
+    ) {}
 
     public function getServerGlobals(RequestInterface $request): array
     {
@@ -65,7 +61,7 @@ final readonly class DefaultServerGlobalsProvider implements ServerGlobalsProvid
             'REMOTE_ADDR' => $host = $segments['host'] ?? '127.0.0.1',
             'REMOTE_PORT' => $port = $segments['port'] ?? 80,
             // compound parameters
-            'REQUEST_URI' => $path . ($query === '' ? '' : '/' . $query),
+            'REQUEST_URI' => $path . ($query === '' ? '' : '?' . $query),
             'HTTP_HOST' => $host . ':' . $port,
         ];
     }

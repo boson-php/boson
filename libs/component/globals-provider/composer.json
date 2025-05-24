@@ -25,7 +25,8 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^12.0"
+        "phpunit/phpunit": "^12.0",
+        "boson-php/http": "^1.0"
     },
     "autoload-dev": {
         "psr-4": {
