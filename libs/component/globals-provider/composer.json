@@ -1,12 +1,12 @@
 {
-    "name": "boson-php/runtime",
-    "description": "Boson WebView runtime library",
+    "name": "boson-php/globals-provider",
+    "description": "Provides PHP superglobal converters and extractors",
     "type": "library",
     "license": "MIT",
     "homepage": "https://bosonphp.com",
     "support": {
         "issues": "https://github.com/boson-php/boson/issues",
-        "source": "https://github.com/boson-php/runtime"
+        "source": "https://github.com/boson-php/globals-provider"
     },
     "authors": [
         {
@@ -16,18 +16,12 @@
     ],
     "require": {
         "php": "^8.4",
-        "ext-ffi": "*",
-        "boson-php/globals-provider": "^1.0",
-        "boson-php/http": "^1.0",
         "boson-php/http-contracts": "^1.0",
-        "boson-php/weak-types": "^1.0",
-        "ffi/env": "^1.0",
-        "psr/event-dispatcher": "^1.0",
-        "react/promise": "^3.0"
+        "psr/clock": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "Boson\\": "src"
+            "Boson\\Component\\GlobalsProvider\\": "src"
         }
     },
     "require-dev": {
@@ -35,7 +29,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Boson\\Tests\\": "tests"
+            "Boson\\Component\\GlobalsProvider\\Tests\\": "tests"
         }
     },
     "extra": {

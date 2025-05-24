@@ -8,9 +8,9 @@ use Boson\Bridge\Http\Body\BodyDecoderFactory;
 use Boson\Bridge\Http\Body\BodyDecoderInterface;
 use Boson\Bridge\Http\Body\MultipartFormDataDecoder;
 use Boson\Bridge\Http\Body\NativeFormUrlEncodedDecoded;
-use Boson\Bridge\Http\Server\DefaultServerGlobalsProvider;
-use Boson\Bridge\Http\Server\ServerGlobalsProviderInterface;
-use Boson\Bridge\Http\Server\StaticServerGlobalsProvider;
+use Boson\Component\GlobalsProvider\DefaultServerGlobalsProvider;
+use Boson\Component\GlobalsProvider\ServerGlobalsProviderInterface;
+use Boson\Component\GlobalsProvider\StaticServerGlobalsProvider;
 use Boson\Contracts\Http\RequestInterface;
 
 /**

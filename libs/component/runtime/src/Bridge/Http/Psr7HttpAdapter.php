@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Bridge\Http;
 
 use Boson\Bridge\Http\Body\BodyDecoderInterface;
-use Boson\Bridge\Http\Server\ServerGlobalsProviderInterface;
+use Boson\Component\GlobalsProvider\ServerGlobalsProviderInterface;
 use Boson\Component\Http\Response;
 use Boson\Contracts\Http\RequestInterface;
 use Boson\Contracts\Http\ResponseInterface;

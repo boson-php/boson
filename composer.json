@@ -9,6 +9,7 @@
     ],
     "require": {
         "php": "^8.4",
+        "boson-php/globals-provider": "^1.0",
         "boson-php/http": "^1.0",
         "boson-php/runtime": "^1.0",
         "boson-php/weak-types": "^1.0",
@@ -30,6 +31,7 @@
     "autoload-dev": {
         "psr-4": {
             "Boson\\Tests\\": "libs/component/runtime/tests",
+            "Boson\\Component\\GlobalsProvider\\Tests\\": "libs/component/globals-provider/tests",
             "Boson\\Component\\Http\\Tests\\": "libs/component/http/tests",
             "Boson\\Component\\WeakType\\Tests\\": "libs/component/weak-types/tests",
             "Boson\\Contracts\\Http\\Tests\\": "libs/contracts/http-contracts/tests"

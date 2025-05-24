@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Http\Server;
+namespace Boson\Component\GlobalsProvider;
 
 use Boson\Contracts\Http\RequestInterface;
 use Psr\Clock\ClockInterface;

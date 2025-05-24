@@ -20,6 +20,8 @@ jobs:
       matrix:
         package:
           # Components
+          - local_path: 'component/globals-provider'
+            split_repository: 'globals-provider'
           - local_path: 'component/runtime'
             split_repository: 'runtime'
           - local_path: 'component/http'
