@@ -3,8 +3,6 @@ name: Tests
 on:
   push:
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   tests:
@@ -46,7 +44,5 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
           command: composer update --${{ matrix.stability }} --ignore-platform-reqs --prefer-dist --no-interaction --no-progress
-      - name: Execute Unit Tests
-        run: composer test:unit
-      - name: Execute Functional Tests
-        run: composer test:functional
+      - name: Execute Tests
+        run: composer test

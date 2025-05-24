@@ -1,20 +1,14 @@
 {
-    "name": "boson-php/runtime",
-    "description": "PHP WebView runtime",
+    "name": "boson-php/boson",
+    "description": "Boson Kernel Monorepo",
     "type": "library",
     "license": "MIT",
-    "bin": ["bin/boson"],
+    "repositories": [
+        {"type": "path", "url": "libs/component/*"}
+    ],
     "require": {
         "php": "^8.4",
-        "ext-ffi": "*",
-        "ffi/env": "^1.0",
-        "psr/event-dispatcher": "^1.0",
-        "react/promise": "^3.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Boson\\": "src"
-        }
+        "boson-php/runtime": "^1.0"
     },
     "require-dev": {
         "ffi/var-dumper": "^1.0",
@@ -31,7 +25,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Boson\\Tests\\": "tests"
+            "Boson\\Tests\\": "libs/component/runtime/tests"
         }
     },
     "extra": {
@@ -50,13 +44,12 @@
         }
     },
     "scripts-aliases": {
+        "test:unit": ["test", "phpunit", "unit"],
         "linter:check": ["linter", "phpstan", "stan"],
         "phpcs:check": ["phpcs", "cs", "psr", "per"]
     },
     "scripts": {
-        "test": ["@test:unit", "@test:functional"],
-        "test:unit": "phpunit --testdox --testsuite=unit",
-        "test:functional": "phpunit --testsuite=functional",
+        "test:unit": "phpunit --testdox",
         "linter:check": "phpstan analyse --configuration phpstan.neon",
         "linter:baseline": "@linter:check --generate-baseline",
         "phpcs:check": "@phpcs:fix --dry-run",

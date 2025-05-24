@@ -1,0 +1,55 @@
+name: Subsplit Libraries
+
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - '*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  subsplit:
+    name: Split Packages (${{ matrix.package.local_path }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          # Components
+          - local_path: 'component/runtime'
+            split_repository: 'runtime'
+    steps:
+      - uses: actions/checkout@v4
+
+      # no tag
+      - if: "!startsWith(github.ref, 'refs/tags/')"
+        name: Monorepo Split of ${{ matrix.package.split_repository }}
+        uses: danharrin/monorepo-split-github-action@v2.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        with:
+          branch: "master"
+          package_directory: 'libs/${{ matrix.package.local_path }}'
+          repository_organization: 'boson-php'
+          repository_name: '${{ matrix.package.split_repository }}'
+          user_name: "SerafimArts"
+          user_email: "nesk@xakep.ru"
+
+      # with tag
+      - if: "startsWith(github.ref, 'refs/tags/')"
+        name: Monorepo Tagged Split of ${{ matrix.package }}
+        uses: danharrin/monorepo-split-github-action@v2.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        with:
+          tag: ${GITHUB_REF#refs/tags/}
+          branch: "master"
+          package_directory: 'libs/${{ matrix.package.local_path }}'
+          repository_organization: 'boson-php'
+          repository_name: '${{ matrix.package.split_repository }}'
+          user_name: "SerafimArts"
+          user_email: "nesk@xakep.ru"

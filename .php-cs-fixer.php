@@ -2,21 +2,20 @@
 
 $files = PhpCsFixer\Finder::create()
     ->in([
-        __DIR__ . '/src'
+        // Components
+        __DIR__ . '/libs/component/runtime/src',
     ])
     ->filter(static fn (\SplFileInfo $file): bool
         => !\in_array(\realpath($file->getPathname()), [
-            // "public private(set) ?Window $default" detects as ternary operator
-            \realpath(__DIR__ . '/src/Window/Manager/WindowManager.php'),
-            // Fixer doesnt support an abstract properties
-            \realpath(__DIR__ . '/src/WebView/Api/Battery/WebViewBattery.php'),
-            \realpath(__DIR__ . '/src/Shared/IdValueGenerator/IntValueGenerator.php'),
-            \realpath(__DIR__ . '/src/WebView/Api/WebComponents/Internal/web-component.js.php'),
+            \realpath(__DIR__ . '/libs/component/runtime/src/Window/Manager/WindowManager.php'),
+            \realpath(__DIR__ . '/libs/component/runtime/src/WebView/Api/Battery/WebViewBattery.php'),
+            \realpath(__DIR__ . '/libs/component/runtime/src/Shared/IdValueGenerator/IntValueGenerator.php'),
+            \realpath(__DIR__ . '/libs/component/runtime/src/WebView/Api/WebComponents/Internal/web-component.js.php'),
         ], true)
     )
 ;
 
-return (new PhpCsFixer\Config())
+return new PhpCsFixer\Config()
     ->setRules([
         '@PER-CS2.0' => true,
         '@PER-CS2.0:risky' => true,

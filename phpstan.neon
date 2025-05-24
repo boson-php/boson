@@ -4,20 +4,20 @@ includes:
 parameters:
   level: max
   scanFiles:
-    - resources/stubs/aliases.stub.php
-    - resources/stubs/saucer.stub.php
-    - resources/stubs/saucer-webview-events.stub.php
-    - resources/stubs/saucer-window-events.stub.php
-    - resources/stubs/kernel32.stub.php
+    - libs/component/runtime/resources/stubs/aliases.stub.php
+    - libs/component/runtime/resources/stubs/saucer.stub.php
+    - libs/component/runtime/resources/stubs/saucer-webview-events.stub.php
+    - libs/component/runtime/resources/stubs/saucer-window-events.stub.php
+    - libs/component/runtime/resources/stubs/kernel32.stub.php
   strictRules:
     allRules: true
   fileExtensions:
     - php
   paths:
-    - src
+    - libs/component/runtime/src
   excludePaths:
-    - src/Internal/Saucer/LibSaucer.php
-    - src/Internal/Win32/LibKernel32.php
+    - libs/component/runtime/src/Internal/Saucer/LibSaucer.php
+    - libs/component/runtime/src/Internal/Win32/LibKernel32.php
   tmpDir: vendor/.cache.phpstan
   reportUnmatchedIgnoredErrors: true
   treatPhpDocTypesAsCertain: false
