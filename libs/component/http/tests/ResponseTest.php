@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Boson\Component\Http\Tests;
 
 use Boson\Component\Http\Response;
-use Boson\Tests\Unit\TestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('boson-php/http')]
@@ -116,4 +115,4 @@ final class ResponseTest extends TestCase
         self::assertTrue($response->headers->has('content-length'));
         self::assertSame('123', $response->headers->first('content-length'));
     }
-} 
+}
