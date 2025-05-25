@@ -33,9 +33,9 @@ $ composer require boson-php/http-contracts
   [windows](https://bosonphp.com/window.html) and [webview](https://bosonphp.com/webview.html) 
   is also available.
 - Also, do not miss the detailed guide on additional apps for working with 
-  [functions](https://bosonphp.com/functions-api.html),
+  [function bindings](https://bosonphp.com/bindings-api.html),
   [scripts](https://bosonphp.com/scripts-api.html),
-  [requests](https://bosonphp.com/requests-api.html), and more.
+  [request interception](https://bosonphp.com/schemes-api.html), and more.
 - If you want to build an application based on 
   [Symfony](https://bosonphp.com/symfony-adapter.html), 
   [Laravel](https://bosonphp.com/laravel-adapter.html) and 
