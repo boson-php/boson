@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Static\Mime;
+namespace Boson\Component\Http\Static\Mime;
 
 use finfo as ExtFileInfo;
 
-final readonly class ExtFileInfoDetector implements FileDetectorInterface
+final readonly class ExtInfoMimeTypeDetector implements MimeTypeDetectorInterface
 {
     private ?ExtFileInfo $finfo;
 
     public function __construct(
-        private ?FileDetectorInterface $delegate = null,
+        private ?MimeTypeDetectorInterface $delegate = null,
         /**
          * Provides reference to "magic" `ext-finfo` file.
          *
@@ -40,7 +40,7 @@ final readonly class ExtFileInfoDetector implements FileDetectorInterface
         return new ExtFileInfo(\FILEINFO_MIME_TYPE, $this->magic);
     }
 
-    public function detectByFile(string $pathname): ?string
+    public function findMimeTypeByFile(string $pathname): ?string
     {
         $result = $this->finfo?->file($pathname);
 
@@ -48,6 +48,6 @@ final readonly class ExtFileInfoDetector implements FileDetectorInterface
             return \strtolower($result);
         }
 
-        return $this->delegate?->detectByFile($pathname);
+        return $this->delegate?->findMimeTypeByFile($pathname);
     }
 }

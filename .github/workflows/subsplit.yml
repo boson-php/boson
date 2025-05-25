@@ -26,6 +26,8 @@ jobs:
             split_repository: 'runtime'
           - local_path: 'component/http'
             split_repository: 'http'
+          - local_path: 'component/http-static-provider'
+            split_repository: 'http-static-provider'
           - local_path: 'component/weak-types'
             split_repository: 'weak-types'
           # Contracts

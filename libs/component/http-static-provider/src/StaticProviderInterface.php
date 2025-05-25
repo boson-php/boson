@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Static;
+namespace Boson\Component\Http\Static;
 
 use Boson\Contracts\Http\RequestInterface;
 use Boson\Contracts\Http\ResponseInterface;
 
-interface StaticAdapterInterface
+interface StaticProviderInterface
 {
     /**
      * Returns {@see ResponseInterface} in case of expected file
      * is present or {@see null} instead.
      */
-    public function lookup(RequestInterface $request): ?ResponseInterface;
+    public function findFileByRequest(RequestInterface $request): ?ResponseInterface;
 }

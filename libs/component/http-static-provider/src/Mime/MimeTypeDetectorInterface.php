@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Static\Mime;
+namespace Boson\Component\Http\Static\Mime;
 
-interface FileDetectorInterface
+interface MimeTypeDetectorInterface
 {
     /**
      * @param non-empty-string $pathname
      *
      * @return non-empty-lowercase-string|null
      */
-    public function detectByFile(string $pathname): ?string;
+    public function findMimeTypeByFile(string $pathname): ?string;
 }

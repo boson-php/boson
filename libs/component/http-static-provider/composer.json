@@ -1,12 +1,12 @@
 {
-    "name": "boson-php/runtime",
-    "description": "Boson WebView runtime library",
+    "name": "boson-php/http-static-provider",
+    "description": "Provides static files finder and resolver",
     "type": "library",
     "license": "MIT",
     "homepage": "https://bosonphp.com",
     "support": {
         "issues": "https://github.com/boson-php/boson/issues",
-        "source": "https://github.com/boson-php/runtime"
+        "source": "https://github.com/boson-php/http-static-provider"
     },
     "authors": [
         {
@@ -15,20 +15,11 @@
         }
     ],
     "require": {
-        "php": "^8.4",
-        "ext-ffi": "*",
-        "boson-php/globals-provider": "^1.0",
-        "boson-php/http": "^1.0",
-        "boson-php/http-static-provider": "^1.0",
-        "boson-php/http-contracts": "^1.0",
-        "boson-php/weak-types": "^1.0",
-        "ffi/env": "^1.0",
-        "psr/event-dispatcher": "^1.0",
-        "react/promise": "^3.0"
+        "php": "^8.4"
     },
     "autoload": {
         "psr-4": {
-            "Boson\\": "src"
+            "Boson\\Component\\Http\\Static\\": "src"
         }
     },
     "require-dev": {
@@ -36,7 +27,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Boson\\Tests\\": "tests"
+            "Boson\\Component\\Http\\Static\\Tests\\": "tests"
         }
     },
     "extra": {

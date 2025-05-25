@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Static\Mime;
+namespace Boson\Component\Http\Static\Mime;
 
-final readonly class ExtensionFileDetector implements FileDetectorInterface
+final readonly class ExtensionMimeTypeDetector implements MimeTypeDetectorInterface
 {
     /**
      * List of mime types supported by the PHP and Chromium.
@@ -1216,14 +1216,14 @@ final readonly class ExtensionFileDetector implements FileDetectorInterface
     ];
 
     public function __construct(
-        private ?FileDetectorInterface $delegate = null,
+        private ?MimeTypeDetectorInterface $delegate = null,
     ) {}
 
-    public function detectByFile(string $pathname): ?string
+    public function findMimeTypeByFile(string $pathname): ?string
     {
         $ext = \pathinfo($pathname, \PATHINFO_EXTENSION);
 
         return self::MIME_TYPES_FOR_EXTENSIONS[\strtolower($ext)]
-            ?? $this->delegate?->detectByFile($pathname);
+            ?? $this->delegate?->findMimeTypeByFile($pathname);
     }
 }

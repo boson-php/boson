@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Boson\Component\GlobalsProvider\Tests;
 
 use Boson\Component\GlobalsProvider\DefaultServerGlobalsProvider;
-use Boson\Component\GlobalsProvider\EmptyServerGlobalsProvider;
-use Boson\Component\GlobalsProvider\StaticServerGlobalsProvider;
 use Boson\Component\Http\Request;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;

@@ -1,0 +1,15 @@
+# IDE
+/.idea
+/.cursor
+
+# Composer
+/composer.lock
+/vendor
+/node_modules
+/build
+
+# Testing
+test.php
+
+# Toolset
+*.phar

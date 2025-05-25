@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Static;
+namespace Boson\Component\Http\Static\ContentType;
 
-use Boson\Bridge\Static\Mime\ExtensionFileDetector;
-use Boson\Bridge\Static\Mime\FileDetectorInterface;
-use Boson\Component\Http\Response;
-use Boson\Contracts\Http\RequestInterface;
-use Boson\Contracts\Http\ResponseInterface;
+use Boson\Component\Http\Static\Mime\ExtensionMimeTypeDetector;
+use Boson\Component\Http\Static\Mime\MimeTypeDetectorInterface;
 
-final readonly class FilesystemStaticAdapter implements StaticAdapterInterface
+final readonly class MimeTypeContentTypeDetector
 {
     /**
      * @var list<non-empty-lowercase-string>
@@ -24,24 +21,14 @@ final readonly class FilesystemStaticAdapter implements StaticAdapterInterface
     /**
      * @var non-empty-lowercase-string
      */
-    private const string DEFAULT_CHARSET = 'utf-8';
+    public const string DEFAULT_CHARSET = 'utf-8';
 
     /**
      * @var non-empty-lowercase-string
      */
-    private const string DEFAULT_CONTENT_TYPE = 'text/html';
+    public const string DEFAULT_CONTENT_TYPE = 'text/html';
 
-    /**
-     * @var list<non-empty-string>
-     */
-    private array $root;
-
-    /**
-     * @param iterable<mixed, non-empty-string>|non-empty-string $root
-     *        List of root (public directories) for files lookup
-     */
     public function __construct(
-        iterable|string $root = [],
         /**
          * Contains default mime type for undetectable files.
          *
@@ -57,67 +44,18 @@ final readonly class FilesystemStaticAdapter implements StaticAdapterInterface
         /**
          * Contains mime type detector.
          */
-        private FileDetectorInterface $mimeDetector = new ExtensionFileDetector(),
-    ) {
-        if (\is_string($root)) {
-            $root = [$root];
-        }
-
-        $this->root = \iterator_to_array(
-            iterator: \is_iterable($root) ? $root : [$root],
-            preserve_keys: false,
-        );
-    }
-
-    /**
-     * @return non-empty-string|null
-     */
-    private function findPathnameForExistingFile(RequestInterface $request): ?string
-    {
-        $path = \parse_url($request->url, \PHP_URL_PATH);
-
-        if (!\is_string($path) || $path === '') {
-            return null;
-        }
-
-        foreach ($this->root as $root) {
-            $pathname = $root . '/' . $path;
-
-            if (!\is_file($pathname) || !\is_readable($pathname)) {
-                continue;
-            }
-
-            return $pathname;
-        }
-
-        return null;
-    }
-
-    public function lookup(RequestInterface $request): ?ResponseInterface
-    {
-        $pathname = $this->findPathnameForExistingFile($request);
-
-        if ($pathname === null) {
-            return null;
-        }
-
-        $contentType = $this->getContentType($pathname);
-
-        return new Response(
-            body: (string) \file_get_contents($pathname),
-            headers: ['content-type' => $contentType],
-        );
-    }
+        private MimeTypeDetectorInterface $mimeDetector = new ExtensionMimeTypeDetector(),
+    ) {}
 
     /**
      * @param non-empty-string $pathname
      *
      * @return non-empty-string
      */
-    private function getContentType(string $pathname): string
+    public function findContentTypeByFile(string $pathname): string
     {
         /** @var non-empty-string $mimeType */
-        $mimeType = $this->mimeDetector->detectByFile($pathname)
+        $mimeType = $this->mimeDetector->findMimeTypeByFile($pathname)
             ?? $this->defaultMimeType;
 
         // Returns mime type with charset in case of file supports charset
