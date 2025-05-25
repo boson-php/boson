@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\Http\Static;
 
 use Boson\Component\Http\Response;
-use Boson\Component\Http\Static\ContentType\MimeTypeContentTypeDetector;
+use Boson\Component\Http\Static\Common\MimeTypeContentTypeDetector;
 use Boson\Component\Http\Static\Mime\ExtensionMimeTypeDetector;
 use Boson\Component\Http\Static\Mime\MimeTypeDetectorInterface;
 use Boson\Contracts\Http\RequestInterface;

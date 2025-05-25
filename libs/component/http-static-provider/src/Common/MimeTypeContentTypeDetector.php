@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\Http\Static\ContentType;
+namespace Boson\Component\Http\Static\Common;
 
 use Boson\Component\Http\Static\Mime\ExtensionMimeTypeDetector;
 use Boson\Component\Http\Static\Mime\MimeTypeDetectorInterface;
