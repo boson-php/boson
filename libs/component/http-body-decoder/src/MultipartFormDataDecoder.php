@@ -6,7 +6,6 @@ namespace Boson\Component\Http\Body;
 
 use Boson\Component\Http\Body\MultipartFormData\FormDataBoundary;
 use Boson\Component\Http\Body\MultipartFormData\FormDataBoundaryFactory;
-use Boson\Component\Http\Body\MultipartFormData\StringBodyIterator;
 use Boson\Component\Http\MutableHeadersMap;
 use Boson\Contracts\Http\HeadersInterface;
 use Boson\Contracts\Http\RequestInterface;
@@ -106,6 +105,7 @@ final readonly class MultipartFormDataDecoder implements SpecializedBodyDecoderI
 
             if ($next === false) {
                 yield \substr($buffer, $offset);
+
                 return;
             }
 
@@ -119,6 +119,7 @@ final readonly class MultipartFormDataDecoder implements SpecializedBodyDecoderI
      * Transforms iterator to headers + body key-value pairs
      *
      * @param \Iterator<mixed, string> $iterator
+     *
      * @return iterable<HeadersInterface, string>
      */
     private function iteratorToHeadersAndBodyPair(FormDataBoundary $boundary, \Iterator $iterator): iterable
@@ -141,7 +142,6 @@ final readonly class MultipartFormDataDecoder implements SpecializedBodyDecoderI
                     $iterator->next();
                     $headers = $this->nextHeadersFromIterator($iterator);
                     continue 2;
-
                 case $boundary->end:
                     break 2;
 
