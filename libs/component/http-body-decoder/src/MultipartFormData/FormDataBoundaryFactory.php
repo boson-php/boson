@@ -34,6 +34,7 @@ final class FormDataBoundaryFactory
             }
 
             // In case of boundary is last header segment: `boundary=value; other=42`
+            /** @phpstan-ignore-next-line payload value cannot be empty (checked above) */
             return new FormDataBoundary(\substr($boundaryPayload, 0, $endsWith));
         }
 
@@ -45,6 +46,12 @@ final class FormDataBoundaryFactory
             return null;
         }
 
-        return new FormDataBoundary(\substr($boundaryPayload, 1, $endsWith - 1));
+        $boundaryPayload = \substr($boundaryPayload, 1, $endsWith - 1);
+
+        if ($boundaryPayload === '') {
+            return null;
+        }
+
+        return new FormDataBoundary($boundaryPayload);
     }
 }

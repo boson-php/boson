@@ -224,7 +224,7 @@ final readonly class MultipartFormDataDecoder implements SpecializedBodyDecoderI
     {
         $contentType = $request->headers->first('content-type');
 
-        if (!\str_starts_with($contentType, self::EXPECTED_CONTENT_TYPE)) {
+        if ($contentType === null || !\str_starts_with($contentType, self::EXPECTED_CONTENT_TYPE)) {
             return false;
         }
 

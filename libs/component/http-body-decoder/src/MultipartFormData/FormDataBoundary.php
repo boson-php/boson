@@ -16,9 +16,6 @@ final readonly class FormDataBoundary
      */
     public string $end;
 
-    /**
-     * @param non-empty-string $delimiter
-     */
     public function __construct(
         /**
          * @var non-empty-string
