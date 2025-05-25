@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Http\Body;
+namespace Boson\Component\Http\Body;
 
-use Boson\Bridge\Http\Body\MultipartFormData\FormDataBoundary;
-use Boson\Bridge\Http\Body\MultipartFormData\StreamingParser;
+use Boson\Component\Http\Body\MultipartFormData\FormDataBoundary;
+use Boson\Component\Http\Body\MultipartFormData\StreamingParser;
 use Boson\Contracts\Http\HeadersInterface;
 use Boson\Contracts\Http\RequestInterface;
 

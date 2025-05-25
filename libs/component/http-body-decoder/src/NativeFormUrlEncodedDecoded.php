@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Http\Body;
+namespace Boson\Component\Http\Body;
 
 use Boson\Contracts\Http\RequestInterface;
 

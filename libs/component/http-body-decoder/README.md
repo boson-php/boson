@@ -5,14 +5,14 @@
 ---
 
 <p align="center">
-    <a href="https://packagist.org/packages/boson-php/http-static-provider"><img src="https://poser.pugx.org/boson-php/http-static-provider/require/php?style=for-the-badge" alt="PHP 8.4+"></a>
-    <a href="https://packagist.org/packages/boson-php/http-static-provider"><img src="https://poser.pugx.org/boson-php/http-static-provider/version?style=for-the-badge" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/boson-php/http-static-provider"><img src="https://poser.pugx.org/boson-php/http-static-provider/v/unstable?style=for-the-badge" alt="Latest Unstable Version"></a>
-    <a href="https://raw.githubusercontent.com/boson-php/boson/blob/master/LICENSE"><img src="https://poser.pugx.org/boson-php/http-static-provider/license?style=for-the-badge" alt="License MIT"></a>
+    <a href="https://packagist.org/packages/boson-php/http-body-decoder"><img src="https://poser.pugx.org/boson-php/http-body-decoder/require/php?style=for-the-badge" alt="PHP 8.4+"></a>
+    <a href="https://packagist.org/packages/boson-php/http-body-decoder"><img src="https://poser.pugx.org/boson-php/http-body-decoder/version?style=for-the-badge" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/boson-php/http-body-decoder"><img src="https://poser.pugx.org/boson-php/http-body-decoder/v/unstable?style=for-the-badge" alt="Latest Unstable Version"></a>
+    <a href="https://raw.githubusercontent.com/boson-php/boson/blob/master/LICENSE"><img src="https://poser.pugx.org/boson-php/http-body-decoder/license?style=for-the-badge" alt="License MIT"></a>
     <a href="https://t.me/boson_php"><img src="https://img.shields.io/static/v1?label=&message=Join+To+Community&color=24A1DE&style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" /></a>
 </p>
 <p align="center">
-    <a href="https://github.com/boson-php/http-static-provider/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/boson-php/boson/tests.yml?label=Tests&style=flat-square&logo=unpkg"></a>
+    <a href="https://github.com/boson-php/http-body-decoder/actions/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/boson-php/boson/tests.yml?label=Tests&style=flat-square&logo=unpkg"></a>
 </p>
 
 ## Installation
@@ -21,7 +21,7 @@ Boson package is available as Composer repository and can
 be installed using the following command in a root of your project:
 
 ```bash
-$ composer require boson-php/http-static-provider
+$ composer require boson-php/http-body-decoder
 ```
 
 ## Documentation

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Http\Body\Exception;
+namespace Boson\Component\Http\Body\Exception;
 
 final class OutOfMemoryException extends BodyDecoderException
 {

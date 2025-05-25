@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Http\Body\MultipartFormData;
+namespace Boson\Component\Http\Body\MultipartFormData;
 
-use Boson\Bridge\Http\Body\Exception\OutOfMemoryException;
+use Boson\Component\Http\Body\Exception\OutOfMemoryException;
 
 /**
  * @internal this is an internal library class, please do not use it in your code
- * @psalm-internal Boson\Bridge\Http\Body
+ * @psalm-internal Boson\Component\Http\Body
  */
 final readonly class FormDataBodyParser
 {

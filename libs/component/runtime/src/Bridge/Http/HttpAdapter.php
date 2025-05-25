@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Boson\Bridge\Http;
 
-use Boson\Bridge\Http\Body\BodyDecoderFactory;
-use Boson\Bridge\Http\Body\BodyDecoderInterface;
-use Boson\Bridge\Http\Body\MultipartFormDataDecoder;
-use Boson\Bridge\Http\Body\NativeFormUrlEncodedDecoded;
 use Boson\Component\GlobalsProvider\CompoundServerGlobalsProvider;
 use Boson\Component\GlobalsProvider\DefaultServerGlobalsProvider;
 use Boson\Component\GlobalsProvider\ServerGlobalsProviderInterface;
 use Boson\Component\GlobalsProvider\StaticServerGlobalsProvider;
+use Boson\Component\Http\Body\BodyDecoderFactory;
+use Boson\Component\Http\Body\BodyDecoderInterface;
+use Boson\Component\Http\Body\MultipartFormDataDecoder;
+use Boson\Component\Http\Body\NativeFormUrlEncodedDecoded;
 use Boson\Contracts\Http\RequestInterface;
 
 /**

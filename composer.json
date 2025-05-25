@@ -34,6 +34,7 @@
             "Boson\\Tests\\": "libs/component/runtime/tests",
             "Boson\\Component\\GlobalsProvider\\Tests\\": "libs/component/globals-provider/tests",
             "Boson\\Component\\Http\\Tests\\": "libs/component/http/tests",
+            "Boson\\Component\\Http\\Body\\Tests\\": "libs/component/http-body-decoder/tests",
             "Boson\\Component\\Http\\Static\\Tests\\": "libs/component/http-static-provider/tests",
             "Boson\\Component\\WeakType\\Tests\\": "libs/component/weak-types/tests",
             "Boson\\Contracts\\Http\\Tests\\": "libs/contracts/http-contracts/tests"

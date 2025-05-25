@@ -5,6 +5,7 @@ $files = PhpCsFixer\Finder::create()
         // Components
         __DIR__ . '/libs/component/globals-provider/src',
         __DIR__ . '/libs/component/http/src',
+        __DIR__ . '/libs/component/http-body-decoder/src',
         __DIR__ . '/libs/component/http-static-provider/src',
         __DIR__ . '/libs/component/runtime/src',
         __DIR__ . '/libs/component/weak-types/src',
