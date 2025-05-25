@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Boson\Component\Http\Body;
 
 use Boson\Component\Http\Body\MultipartFormData\FormDataBoundary;
-use Boson\Component\Http\Body\MultipartFormData\StreamingParser;
+use Boson\Component\Http\Body\MultipartFormData\FormDataBoundaryFactory;
+use Boson\Component\Http\Body\MultipartFormData\StringBodyIterator;
+use Boson\Component\Http\MutableHeadersMap;
 use Boson\Contracts\Http\HeadersInterface;
 use Boson\Contracts\Http\RequestInterface;
 
@@ -16,45 +18,35 @@ final readonly class MultipartFormDataDecoder implements SpecializedBodyDecoderI
      */
     private const string EXPECTED_CONTENT_TYPE = 'multipart/form-data';
 
-    public function __construct(
-        private StreamingParser $parser = new StreamingParser(),
-    ) {}
+    private FormDataBoundaryFactory $boundary;
+
+    public function __construct()
+    {
+        $this->boundary = new FormDataBoundaryFactory();
+    }
 
     public function decode(RequestInterface $request): array
     {
-        $boundary = FormDataBoundary::findFromRequest($request);
+        $boundary = $this->boundary->tryCreateFromContentType(
+            header: (string) $request->headers->first('content-type'),
+        );
 
         if ($boundary === null) {
             return [];
         }
 
+        $iterator = $this->requestToIterator($request);
+
         $result = [];
 
-        try {
-            $elements = $this->parser->parse(
-                stream: $this->requestToStream($request),
-                boundary: $boundary,
-            );
+        foreach ($this->iteratorToHeadersAndBodyPair($boundary, $iterator) as $headers => $body) {
+            $name = $this->getContentDispositionName($headers);
 
-            while ($elements->valid()) {
-                try {
-                    $name = $this->getContentDispositionName($elements->key());
-
-                    if ($name !== null) {
-                        $result[$name] = $elements->current();
-                    }
-                } catch (\Throwable) {
-                    // skip unprocessable body segment
-                }
-
-                $elements->next();
+            if ($name !== null) {
+                $result[$name] = $body;
             }
-        } catch (\Throwable) {
-            /** @var array<non-empty-string, string> */
-            return $result;
         }
 
-        /** @var array<non-empty-string, string> */
         return $result;
     }
 
@@ -100,32 +92,142 @@ final readonly class MultipartFormDataDecoder implements SpecializedBodyDecoderI
     }
 
     /**
-     * @return resource
+     * Transforms request object to body iterator.
+     *
+     * @return \Iterator<array-key, string>
      */
-    private function requestToStream(RequestInterface $request): mixed
+    private function requestToIterator(RequestInterface $request): \Iterator
     {
-        $stream = \fopen('php://memory', 'rb+');
+        $buffer = $request->body;
+        $offset = $next = 0;
 
-        if ($stream === false) {
-            throw new \RuntimeException('Unable to open php://memory stream');
+        while ($next !== false) {
+            $next = \strpos($buffer, "\r\n", $offset);
+
+            if ($next === false) {
+                yield \substr($buffer, $offset);
+                return;
+            }
+
+            yield \substr($buffer, $offset, $next - $offset);
+
+            $offset = $next + 2;
+        }
+    }
+
+    /**
+     * Transforms iterator to headers + body key-value pairs
+     *
+     * @param \Iterator<mixed, string> $iterator
+     * @return iterable<HeadersInterface, string>
+     */
+    private function iteratorToHeadersAndBodyPair(FormDataBoundary $boundary, \Iterator $iterator): iterable
+    {
+        $body = '';
+        $headers = null;
+
+        while ($iterator->valid()) {
+            $chunk = $iterator->current();
+
+            switch ($chunk) {
+                // In case of start next segment
+                case $boundary->segment:
+                    // Flush segment pair
+                    if ($headers !== null) {
+                        yield $headers => $body;
+                        $headers = null;
+                    }
+
+                    $iterator->next();
+                    $headers = $this->nextHeadersFromIterator($iterator);
+                    continue 2;
+
+                case $boundary->end:
+                    break 2;
+
+                case '':
+                    $iterator->next();
+                    $body = $this->nextBodyFromIterator($boundary, $iterator);
+                    continue 2;
+            }
+
+            $iterator->next();
         }
 
-        \fwrite($stream, $request->body);
-        \rewind($stream);
+        // Flush segment pair
+        if ($headers !== null) {
+            yield $headers => $body;
+        }
+    }
 
-        /** @var resource */
-        return $stream;
+    /**
+     * @param \Iterator<mixed, string> $iterator
+     */
+    private function nextBodyFromIterator(FormDataBoundary $boundary, \Iterator $iterator): string
+    {
+        $result = '';
+
+        while ($iterator->valid()) {
+            $chunk = $iterator->current();
+
+            // Complete body decoding at any boundary delimiter
+            if ($chunk === $boundary->segment || $chunk === $boundary->end) {
+                break;
+            }
+
+            if ($result !== '') {
+                $result .= "\r\n";
+            }
+
+            $result .= $chunk;
+
+            $iterator->next();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param \Iterator<mixed, string> $iterator
+     */
+    private function nextHeadersFromIterator(\Iterator $iterator): HeadersInterface
+    {
+        $headers = new MutableHeadersMap();
+
+        while ($iterator->valid()) {
+            $headerLine = $iterator->current();
+
+            // Complete headers decoding at empty line ("\r\n") delimiter
+            if ($headerLine === '') {
+                break;
+            }
+
+            $iterator->next();
+
+            $headerValueStartsAt = \strpos($headerLine, ':');
+
+            // Header line should contain `:` char
+            if ($headerValueStartsAt === false || $headerValueStartsAt === 0) {
+                continue;
+            }
+
+            $headerName = \substr($headerLine, 0, $headerValueStartsAt);
+            $headerValue = \substr($headerLine, $headerValueStartsAt + 1);
+
+            $headers->add($headerName, \ltrim($headerValue));
+        }
+
+        return $headers;
     }
 
     public function isDecodable(RequestInterface $request): bool
     {
         $contentType = $request->headers->first('content-type');
 
-        if ($contentType === null) {
+        if (!\str_starts_with($contentType, self::EXPECTED_CONTENT_TYPE)) {
             return false;
         }
 
-        return $contentType === self::EXPECTED_CONTENT_TYPE
-            || \str_starts_with($contentType, self::EXPECTED_CONTENT_TYPE);
+        return $this->boundary->tryCreateFromContentType($contentType) !== null;
     }
 }
