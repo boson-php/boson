@@ -42,9 +42,6 @@ $ composer require boson-php/http-contracts
   [others](https://bosonphp.com/psr7-adapter.html), 
   then similar functionality is also available.
 
-> This documentation corresponds to the latest release (see https://github.com/boson-php/boson/tags). 
-> Behavior and code in the `master` branch may differ from what is shown below.
-
 ## Community
 
 - Any questions left? You can ask them 
