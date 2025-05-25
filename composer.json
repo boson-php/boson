@@ -11,6 +11,7 @@
         "php": "^8.4",
         "boson-php/globals-provider": "^1.0",
         "boson-php/http": "^1.0",
+        "boson-php/http-body-decoder": "^1.0",
         "boson-php/http-static-provider": "^1.0",
         "boson-php/runtime": "^1.0",
         "boson-php/weak-types": "^1.0",
