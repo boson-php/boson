@@ -8,6 +8,7 @@ use Boson\Bridge\Http\Body\BodyDecoderFactory;
 use Boson\Bridge\Http\Body\BodyDecoderInterface;
 use Boson\Bridge\Http\Body\MultipartFormDataDecoder;
 use Boson\Bridge\Http\Body\NativeFormUrlEncodedDecoded;
+use Boson\Component\GlobalsProvider\CompoundServerGlobalsProvider;
 use Boson\Component\GlobalsProvider\DefaultServerGlobalsProvider;
 use Boson\Component\GlobalsProvider\ServerGlobalsProviderInterface;
 use Boson\Component\GlobalsProvider\StaticServerGlobalsProvider;
@@ -70,9 +71,10 @@ abstract readonly class HttpAdapter implements
 
     protected function createServerGlobalsDecoder(): ServerGlobalsProviderInterface
     {
-        return new DefaultServerGlobalsProvider(
-            delegate: new StaticServerGlobalsProvider(),
-        );
+        return new CompoundServerGlobalsProvider([
+            new StaticServerGlobalsProvider(),
+            new DefaultServerGlobalsProvider(),
+        ]);
     }
 
     protected function createPostGlobalsDecoder(): BodyDecoderInterface

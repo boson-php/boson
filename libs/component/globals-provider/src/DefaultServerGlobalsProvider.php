@@ -23,7 +23,6 @@ final readonly class DefaultServerGlobalsProvider implements ServerGlobalsProvid
     private const string LOWER = '-abcdefghijklmnopqrstuvwxyz';
 
     public function __construct(
-        private ServerGlobalsProviderInterface $delegate = new EmptyServerGlobalsProvider(),
         /**
          * Allows you to set time-dependent parameters for server global values.
          *
@@ -36,7 +35,6 @@ final readonly class DefaultServerGlobalsProvider implements ServerGlobalsProvid
     public function getServerGlobals(RequestInterface $request): array
     {
         return [
-            ...$this->delegate->getServerGlobals($request),
             ...$this->getRequestTime(),
             ...$this->getRequestInfo($request),
             ...$this->getRequestHeaders($request),
