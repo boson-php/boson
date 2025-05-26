@@ -60,6 +60,9 @@ final readonly class Win32RegistryVendorFactory implements VendorFactoryInterfac
 
         $fallback = null;
 
+        // TODO May contain bug:
+        //      https://superuser.com/questions/1834479/windows-registry-shows-windows-10-pro-despite-running-windows-11-pro
+        //      https://learn.microsoft.com/en-us/answers/questions/555857/windows-11-product-name-in-registry
         $name = $this->getStringKey($ffi, 'ProductName');
         $major = $this->getDwordKey($ffi, 'CurrentMajorVersionNumber');
 
