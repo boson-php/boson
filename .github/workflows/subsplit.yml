@@ -30,6 +30,8 @@ jobs:
             split_repository: 'http-body-decoder'
           - local_path: 'component/http-static-provider'
             split_repository: 'http-static-provider'
+          - local_path: 'component/os-info'
+            split_repository: 'os-info'
           - local_path: 'component/weak-types'
             split_repository: 'weak-types'
           # Contracts

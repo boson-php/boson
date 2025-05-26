@@ -15,6 +15,7 @@
             <directory>libs/component/http/tests</directory>
             <directory>libs/component/http-body-decoder/tests</directory>
             <directory>libs/component/http-static-provider/tests</directory>
+            <directory>libs/component/os-info/tests</directory>
             <directory>libs/component/runtime/tests</directory>
             <directory>libs/component/weak-types/tests</directory>
         </testsuite>
@@ -31,6 +32,7 @@
             <directory suffix=".php">libs/component/http/src</directory>
             <directory suffix=".php">libs/component/http-body-decoder/src</directory>
             <directory suffix=".php">libs/component/http-static-provider/src</directory>
+            <directory suffix=".php">libs/component/os-info/src</directory>
             <directory suffix=".php">libs/component/runtime/src</directory>
             <directory suffix=".php">libs/component/weak-types/src</directory>
         </include>

@@ -1,12 +1,12 @@
 {
-    "name": "boson-php/runtime",
-    "description": "Boson WebView runtime library",
+    "name": "boson-php/os-info",
+    "description": "Provides object-oriented interfaces to detect operating system",
     "type": "library",
     "license": "MIT",
     "homepage": "https://bosonphp.com",
     "support": {
         "issues": "https://github.com/boson-php/boson/issues",
-        "source": "https://github.com/boson-php/runtime"
+        "source": "https://github.com/boson-php/os-info"
     },
     "authors": [
         {
@@ -16,29 +16,22 @@
     ],
     "require": {
         "php": "^8.4",
-        "ext-ffi": "*",
-        "boson-php/globals-provider": "^1.0",
-        "boson-php/http": "^1.0",
-        "boson-php/http-body-decoder": "^1.0",
-        "boson-php/http-static-provider": "^1.0",
-        "boson-php/http-contracts": "^1.0",
-        "boson-php/os-info": "^1.0",
-        "boson-php/weak-types": "^1.0",
-        "ffi/env": "^1.0",
-        "psr/event-dispatcher": "^1.0",
-        "react/promise": "^3.0"
+        "ffi/env": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "Boson\\": "src"
-        }
+            "Boson\\Component\\OsInfo\\": "src"
+        },
+        "files": [
+            "src/constants.php"
+        ]
     },
     "require-dev": {
         "phpunit/phpunit": "^12.0"
     },
     "autoload-dev": {
         "psr-4": {
-            "Boson\\Tests\\": "tests"
+            "Boson\\Component\\OsInfo\\Tests\\": "tests"
         }
     },
     "extra": {

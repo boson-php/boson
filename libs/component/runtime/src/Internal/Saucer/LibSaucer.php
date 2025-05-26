@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\Internal\Saucer;
 
+use Boson\Component\OsInfo\Family;
+use Boson\Component\OsInfo\OperatingSystemInfo;
 use Boson\Internal\Environment\Architecture;
 use Boson\Internal\Environment\Exception\UnsupportedArchitectureException;
-use Boson\Internal\Environment\Exception\UnsupportedOperatingSystemException;
-use Boson\Internal\Environment\OperatingSystem;
+use Boson\Internal\Environment\Exception\UnsupportedOperatingSystemException
 use FFI\Env\Runtime;
 
 /**
@@ -56,18 +57,18 @@ final readonly class LibSaucer
      */
     private function getLibrary(): string
     {
-        $os = OperatingSystem::current();
+        $os = OperatingSystemInfo::createFromGlobals();
         $arch = Architecture::current();
 
-        $result = match ($os) {
-            OperatingSystem::Windows => match ($arch) {
+        $result = match (true) {
+            $os->family->is(Family::Windows) => match ($arch) {
                 Architecture::x86,
                 Architecture::Amd64 => 'libboson-windows-x86_64.dll',
                 default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
                     architecture: $arch->value ?? 'unknown',
                 ),
             },
-            OperatingSystem::Linux => match ($arch = Architecture::current()) {
+            $os->family->is(Family::Linux) => match ($arch = Architecture::current()) {
                 Architecture::x86,
                 Architecture::Amd64 => 'libboson-linux-x86_64.so',
                 Architecture::Arm64 => 'libboson-linux-aarch64.so',
@@ -75,7 +76,7 @@ final readonly class LibSaucer
                     architecture: $arch->value ?? 'unknown',
                 ),
             },
-            OperatingSystem::MacOS => match ($arch = Architecture::current()) {
+            $os->family->is(Family::Darwin) => match ($arch = Architecture::current()) {
                 Architecture::x86,
                 Architecture::Amd64,
                 Architecture::Arm64 => 'libboson-darwin-universal.dylib',
@@ -84,7 +85,7 @@ final readonly class LibSaucer
                 ),
             },
             default => throw UnsupportedOperatingSystemException::becauseOperatingSystemIsInvalid(
-                os: $os->value ?? 'unknown',
+                os: $os->name . ' (' . $os->family->name . ')',
             ),
         };
 

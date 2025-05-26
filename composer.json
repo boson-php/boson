@@ -13,6 +13,7 @@
         "boson-php/http": "^1.0",
         "boson-php/http-body-decoder": "^1.0",
         "boson-php/http-static-provider": "^1.0",
+        "boson-php/os-info": "^1.0",
         "boson-php/runtime": "^1.0",
         "boson-php/weak-types": "^1.0",
         "boson-php/http-contracts": "^1.0"
@@ -37,6 +38,7 @@
             "Boson\\Component\\Http\\Tests\\": "libs/component/http/tests",
             "Boson\\Component\\Http\\Body\\Tests\\": "libs/component/http-body-decoder/tests",
             "Boson\\Component\\Http\\Static\\Tests\\": "libs/component/http-static-provider/tests",
+            "Boson\\Component\\OsInfo\\Tests\\": "libs/component/os-info/tests",
             "Boson\\Component\\WeakType\\Tests\\": "libs/component/weak-types/tests",
             "Boson\\Contracts\\Http\\Tests\\": "libs/contracts/http-contracts/tests"
         }

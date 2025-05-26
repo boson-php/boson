@@ -19,6 +19,7 @@ parameters:
     - libs/component/http/src
     - libs/component/http-body-decoder/src
     - libs/component/http-static-provider/src
+    - libs/component/os-info/src
     - libs/component/runtime/src
     - libs/component/weak-types/src
     # Contracts
