@@ -15,6 +15,7 @@ parameters:
     - php
   paths:
     # Components
+    - libs/component/cpu-info/src
     - libs/component/globals-provider/src
     - libs/component/http/src
     - libs/component/http-body-decoder/src

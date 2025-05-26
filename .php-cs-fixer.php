@@ -3,6 +3,7 @@
 $files = PhpCsFixer\Finder::create()
     ->in([
         // Components
+        __DIR__ . '/libs/component/cpu-info/src',
         __DIR__ . '/libs/component/globals-provider/src',
         __DIR__ . '/libs/component/http/src',
         __DIR__ . '/libs/component/http-body-decoder/src',

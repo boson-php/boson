@@ -11,6 +11,7 @@
 >
     <testsuites>
         <testsuite name="components">
+            <directory>libs/component/cpu-info/tests</directory>
             <directory>libs/component/globals-provider/tests</directory>
             <directory>libs/component/http/tests</directory>
             <directory>libs/component/http-body-decoder/tests</directory>
@@ -28,6 +29,7 @@
 
     <source>
         <include>
+            <directory suffix=".php">libs/component/cpu-info/src</directory>
             <directory suffix=".php">libs/component/globals-provider/src</directory>
             <directory suffix=".php">libs/component/http/src</directory>
             <directory suffix=".php">libs/component/http-body-decoder/src</directory>
