@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Internal\Saucer;
 
 use Boson\Component\OsInfo\Family;
-use Boson\Component\OsInfo\OperatingSystemInfo;
+use Boson\Component\OsInfo\OperatingSystem;
 use Boson\Internal\Environment\Architecture;
 use Boson\Internal\Environment\Exception\UnsupportedArchitectureException;
 use Boson\Internal\Environment\Exception\UnsupportedOperatingSystemException
@@ -57,7 +57,7 @@ final readonly class LibSaucer
      */
     private function getLibrary(): string
     {
-        $os = OperatingSystemInfo::createFromGlobals();
+        $os = OperatingSystem::createFromGlobals();
         $arch = Architecture::current();
 
         $result = match (true) {

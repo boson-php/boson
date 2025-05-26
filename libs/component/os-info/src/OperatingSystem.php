@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\Component\OsInfo;
 
-use Boson\Component\OsInfo\Factory\OperatingSystemInfoFactory;
+use Boson\Component\OsInfo\Factory\InMemoryOperatingSystemFactory;
+use Boson\Component\OsInfo\Factory\OperatingSystemFactory;
 
-final readonly class OperatingSystemInfo implements \Stringable
+final readonly class OperatingSystem implements \Stringable
 {
     /**
      * Gets the list of standards supported by this operating system.
@@ -58,10 +59,13 @@ final readonly class OperatingSystemInfo implements \Stringable
     /**
      * @api
      */
-    public static function createFromGlobals(): OperatingSystemInfo
+    public static function createFromGlobals(): OperatingSystem
     {
-        return new OperatingSystemInfoFactory()
-            ->createOperatingSystem();
+        static $factory = new InMemoryOperatingSystemFactory(
+            delegate: new OperatingSystemFactory(),
+        );
+
+        return $factory->createOperatingSystem();
     }
 
     /**

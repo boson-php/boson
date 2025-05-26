@@ -15,9 +15,9 @@ use Boson\Component\OsInfo\Factory\Vendor\VendorFactoryInterface;
 use Boson\Component\OsInfo\Factory\Vendor\Win32GenericVendorFactory;
 use Boson\Component\OsInfo\Factory\Vendor\Win32RegistryVendorFactory;
 use Boson\Component\OsInfo\Factory\Vendor\Win32WmiVendorFactory;
-use Boson\Component\OsInfo\OperatingSystemInfo;
+use Boson\Component\OsInfo\OperatingSystem;
 
-final readonly class OperatingSystemInfoFactory implements OperatingSystemInfoFactoryInterface
+final readonly class OperatingSystemFactory implements OperatingSystemFactoryInterface
 {
     private FamilyFactoryInterface $familyFactory;
     private StandardsFactoryInterface $standardsFactory;
@@ -54,13 +54,13 @@ final readonly class OperatingSystemInfoFactory implements OperatingSystemInfoFa
         return $factory;
     }
 
-    public function createOperatingSystem(): OperatingSystemInfo
+    public function createOperatingSystem(): OperatingSystem
     {
         $family = $this->familyFactory->createFamily();
         $vendor = $this->vendorFactory->createVendor($family);
         $standards = $this->standardsFactory->createStandards($family);
 
-        return new OperatingSystemInfo(
+        return new OperatingSystem(
             name: $vendor->name,
             version: $vendor->version,
             family: $family,
