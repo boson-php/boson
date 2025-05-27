@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Component\OsInfo;
 
-use Boson\Component\OsInfo\Factory\InMemoryOperatingSystemFactory;
 use Boson\Component\OsInfo\Factory\DefaultOperatingSystemFactory;
+use Boson\Component\OsInfo\Factory\InMemoryOperatingSystemFactory;
 use Boson\Component\OsInfo\Vendor\VendorInfo;
 
 final readonly class OperatingSystem extends VendorInfo

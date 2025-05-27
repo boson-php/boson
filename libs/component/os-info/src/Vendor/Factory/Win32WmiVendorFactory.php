@@ -7,6 +7,7 @@ namespace Boson\Component\OsInfo\Vendor\Factory;
 use Boson\Component\OsInfo\Family;
 use Boson\Component\OsInfo\FamilyInterface;
 use Boson\Component\OsInfo\Vendor\VendorInfo;
+use COM as ComExtension;
 
 final readonly class Win32WmiVendorFactory implements VendorFactoryInterface
 {
@@ -23,7 +24,7 @@ final readonly class Win32WmiVendorFactory implements VendorFactoryInterface
     {
         $fallback = $this->delegate->createVendor($family);
 
-        if (!$family->is(Family::Windows) || !\class_exists(\COM::class)) {
+        if (!$family->is(Family::Windows) || !\class_exists(ComExtension::class)) {
             return $fallback;
         }
 
@@ -36,7 +37,7 @@ final readonly class Win32WmiVendorFactory implements VendorFactoryInterface
 
     private function tryCreateFromWmi(VendorInfo $fallback): VendorInfo
     {
-        $wmi = new \COM(self::WMI_MODULE_NAME, null, \CP_UTF8);
+        $wmi = new ComExtension(self::WMI_MODULE_NAME, null, \CP_UTF8);
 
         /**
          * @var object{

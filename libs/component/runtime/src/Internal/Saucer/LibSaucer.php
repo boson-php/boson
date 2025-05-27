@@ -8,7 +8,7 @@ use Boson\Component\OsInfo\Family;
 use Boson\Component\OsInfo\OperatingSystem;
 use Boson\Internal\Environment\Architecture;
 use Boson\Internal\Environment\Exception\UnsupportedArchitectureException;
-use Boson\Internal\Environment\Exception\UnsupportedOperatingSystemException
+use Boson\Internal\Environment\Exception\UnsupportedOperatingSystemException;
 use FFI\Env\Runtime;
 
 /**
