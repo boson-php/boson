@@ -14,6 +14,7 @@ abstract readonly class ArchitectureByNameFactory implements ArchitectureFactory
      * @link https://doc.rust-lang.org/std/arch/index.html
      *
      * @var array<non-empty-lowercase-string, ArchitectureInterface>
+     *
      * @phpstan-ignore-next-line PHPStan false-positive
      */
     private const array UNAME_MAPPINGS = [
