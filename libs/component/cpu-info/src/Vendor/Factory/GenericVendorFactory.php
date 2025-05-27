@@ -24,8 +24,6 @@ final readonly class GenericVendorFactory implements VendorFactoryInterface
 
     public function createVendor(): VendorInfo
     {
-        dd($_SERVER);
-
         $name = \php_uname('m');
 
         if ($name === '') {

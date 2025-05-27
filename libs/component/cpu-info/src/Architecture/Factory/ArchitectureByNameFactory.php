@@ -13,7 +13,8 @@ abstract readonly class ArchitectureByNameFactory implements ArchitectureFactory
      * @link https://wiki.debian.org/ArchitectureSpecificsMemo
      * @link https://doc.rust-lang.org/std/arch/index.html
      *
-     * @var array<non-empty-string, self>
+     * @var array<non-empty-lowercase-string, ArchitectureInterface>
+     * @phpstan-ignore-next-line PHPStan false-positive
      */
     private const array UNAME_MAPPINGS = [
         'x86' => Architecture::x86,

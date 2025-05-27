@@ -6,6 +6,7 @@ namespace Boson\Component\OsInfo;
 
 use Boson\Component\OsInfo\Factory\DefaultOperatingSystemFactory;
 use Boson\Component\OsInfo\Factory\InMemoryOperatingSystemFactory;
+use Boson\Component\OsInfo\Factory\OperatingSystemFactoryInterface;
 use Boson\Component\OsInfo\Vendor\VendorInfo;
 
 final readonly class OperatingSystem extends VendorInfo
@@ -50,6 +51,7 @@ final readonly class OperatingSystem extends VendorInfo
      */
     public static function createFromGlobals(): OperatingSystem
     {
+        /** @phpstan-var InMemoryOperatingSystemFactory $factory */
         static $factory = new InMemoryOperatingSystemFactory(
             delegate: new DefaultOperatingSystemFactory(),
         );

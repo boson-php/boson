@@ -30,6 +30,7 @@ final readonly class CentralProcessor extends VendorInfo
      */
     public static function createFromGlobals(): CentralProcessor
     {
+        /** @phpstan-var InMemoryCentralProcessorFactory $factory */
         static $factory = new InMemoryCentralProcessorFactory(
             delegate: new DefaultCentralProcessorFactory(),
         );

@@ -50,6 +50,7 @@ final readonly class Family implements FamilyInterface
      */
     public static function createFromGlobals(): FamilyInterface
     {
+        /** @phpstan-var InMemoryFamilyFactory $factory */
         static $factory = new InMemoryFamilyFactory(
             delegate: new DefaultFamilyFactory(),
         );

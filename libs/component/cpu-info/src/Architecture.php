@@ -31,6 +31,7 @@ final readonly class Architecture implements ArchitectureInterface
      */
     public static function createFromGlobals(): ArchitectureInterface
     {
+        /** @phpstan-var InMemoryArchitectureFactory $factory */
         static $factory = new InMemoryArchitectureFactory(
             delegate: new DefaultArchitectureFactory(),
         );

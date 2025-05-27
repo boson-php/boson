@@ -73,7 +73,7 @@ final readonly class Win32RegistryVendorFactory implements VendorFactoryInterfac
             $version = $fallback->version;
         }
 
-        $name = $this->getStringKey($ffi, 'ProductName') ?? '';
+        $name = $this->getStringKey($ffi, 'ProductName');
 
         if ($name === '') {
             $name = $fallback->name;
