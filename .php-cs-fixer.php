@@ -4,6 +4,9 @@ $files = PhpCsFixer\Finder::create()
     ->in([
         // Bridges
         __DIR__ . '/libs/bridge/http-bridge/src',
+        __DIR__ . '/libs/bridge/laravel-http-bridge/src',
+        __DIR__ . '/libs/bridge/psr-http-bridge/src',
+        __DIR__ . '/libs/bridge/symfony-http-bridge/src',
         // Components
         __DIR__ . '/libs/component/cpu-info/src',
         __DIR__ . '/libs/component/globals-provider/src',
@@ -167,7 +170,6 @@ return new PhpCsFixer\Config()
         'phpdoc_order' => [
             'order' => [
                 'api',
-                'template',
                 'template-extends',
                 'extends',
                 'template-implements',
@@ -203,10 +205,16 @@ return new PhpCsFixer\Config()
                 ['internal', 'psalm-internal', 'phpstan-internal'],
                 [
                     'template',
+                    'template-covariant',
+                    'template-contravariant',
+                ],
+                [
                     'template-extends',
                     'extends',
                     'template-implements',
                     'implements',
+                ],
+                [
                     'psalm-require-implements',
                     'phpstan-require-implements',
                     'psalm-require-extends',

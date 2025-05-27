@@ -6,6 +6,7 @@ namespace Boson\Dispatcher\Subscription;
 
 /**
  * @template TEvent of object = object
+ *
  * @template-extends SubscriptionInterface<TEvent>
  */
 interface CancellableSubscriptionInterface extends SubscriptionInterface

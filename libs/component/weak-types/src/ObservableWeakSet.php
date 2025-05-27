@@ -22,6 +22,7 @@ use Boson\Component\WeakType\Internal\ReferenceReleaseCallback;
  * ```
  *
  * @template TEntry of object = object
+ *
  * @template-implements \IteratorAggregate<array-key, TEntry>
  */
 final readonly class ObservableWeakSet implements \IteratorAggregate, \Countable

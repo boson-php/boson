@@ -10,6 +10,9 @@
     "require": {
         "php": "^8.4",
         "boson-php/http-bridge": "^1.0",
+        "boson-php/laravel-http-bridge": "^1.0",
+        "boson-php/psr-http-bridge": "^1.0",
+        "boson-php/symfony-http-bridge": "^1.0",
         "boson-php/cpu-info": "^1.0",
         "boson-php/globals-provider": "^1.0",
         "boson-php/http": "^1.0",
@@ -23,7 +26,6 @@
     "require-dev": {
         "ffi/var-dumper": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.75",
-        "illuminate/http": "^12.0",
         "jetbrains/phpstorm-attributes": "^1.2",
         "nyholm/psr7": "^1.8",
         "phpstan/phpstan": "^2.1",
@@ -37,6 +39,9 @@
         "psr-4": {
             "Boson\\Tests\\": "libs/component/runtime/tests",
             "Boson\\Bridge\\Http\\Tests\\": "libs/bridge/http-bridge/tests",
+            "Boson\\Bridge\\Laravel\\Http\\Tests\\": "libs/bridge/laravel-http-bridge/tests",
+            "Boson\\Bridge\\Psr\\Http\\Tests\\": "libs/bridge/psr-http-bridge/tests",
+            "Boson\\Bridge\\Symfony\\Http\\Tests\\": "libs/bridge/symfony-http-bridge/tests",
             "Boson\\Component\\CpuInfo\\Tests\\": "libs/component/cpu-info/tests",
             "Boson\\Component\\GlobalsProvider\\Tests\\": "libs/component/globals-provider/tests",
             "Boson\\Component\\Http\\Tests\\": "libs/component/http/tests",

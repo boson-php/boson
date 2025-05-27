@@ -6,6 +6,7 @@ namespace Boson\Dispatcher\Subscription;
 
 /**
  * @template T of object
+ *
  * @template-extends Subscription<T>
  * @template-implements CancellableSubscriptionInterface<T>
  */

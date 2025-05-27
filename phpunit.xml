@@ -11,7 +11,10 @@
 >
     <testsuites>
         <testsuite name="bridges">
-            <directory>libs/bridges/http-bridge/tests</directory>
+            <directory>libs/bridge/http-bridge/tests</directory>
+            <directory>libs/bridge/laravel-http-bridge/tests</directory>
+            <directory>libs/bridge/psr-http-bridge/tests</directory>
+            <directory>libs/bridge/symfony-http-bridge/tests</directory>
         </testsuite>
         <testsuite name="components">
             <directory>libs/component/cpu-info/tests</directory>
@@ -33,7 +36,10 @@
     <source>
         <include>
             <!-- bridges -->
-            <directory>libs/bridges/http-bridge/src</directory>
+            <directory>libs/bridge/http-bridge/src</directory>
+            <directory>libs/bridge/laravel-http-bridge/src</directory>
+            <directory>libs/bridge/psr-http-bridge/src</directory>
+            <directory>libs/bridge/symfony-http-bridge/src</directory>
             <!-- components -->
             <directory>libs/component/cpu-info/src</directory>
             <directory>libs/component/globals-provider/src</directory>

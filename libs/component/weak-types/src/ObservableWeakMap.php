@@ -26,6 +26,7 @@ use Boson\Component\WeakType\Internal\ReferenceReleaseCallback;
  *
  * @template TKey of object = object
  * @template TValue of object = object
+ *
  * @template-implements \IteratorAggregate<TKey, TValue>
  */
 final readonly class ObservableWeakMap implements \IteratorAggregate, \Countable

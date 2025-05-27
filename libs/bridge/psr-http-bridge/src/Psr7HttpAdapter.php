@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\Bridge\Http;
+namespace Boson\Bridge\Psr\Http;
 
+use Boson\Bridge\Http\HttpAdapter;
 use Boson\Component\GlobalsProvider\ServerGlobalsProviderInterface;
 use Boson\Component\Http\Body\BodyDecoderInterface;
 use Boson\Component\Http\Response;
@@ -15,46 +16,72 @@ use Psr\Http\Message\ServerRequestInterface as Psr7ServerRequestInterface;
 
 /**
  * @template-covariant TRequest of Psr7ServerRequestInterface = Psr7ServerRequestInterface
- *
  * @template TResponse of Psr7ResponseInterface = Psr7ResponseInterface
+ *
  * @template-extends HttpAdapter<TRequest, TResponse>
  */
 readonly class Psr7HttpAdapter extends HttpAdapter
 {
     public function __construct(
-        private Psr17ServerRequestFactoryInterface $requests,
+        private Psr17ServerRequestFactoryInterface $requestFactory,
         ?ServerGlobalsProviderInterface $server = null,
         ?BodyDecoderInterface $body = null,
     ) {
         parent::__construct($server, $body);
     }
 
-    public function createRequest(RequestInterface $request): Psr7ServerRequestInterface
+    /**
+     * @return TRequest
+     */
+    private function createServerRequest(RequestInterface $request): Psr7ServerRequestInterface
     {
-        /** @var Psr7ServerRequestInterface $result */
-        $result = $this->requests->createServerRequest(
+        /** @var TRequest */
+        return $this->requestFactory->createServerRequest(
             $request->method,
             $request->url,
             $this->getServerParameters($request),
         );
+    }
 
-        // Extend headers list
+    private function extendHeaders(Psr7ServerRequestInterface $psr7, RequestInterface $request): Psr7ServerRequestInterface
+    {
         foreach ($request->headers as $name => $value) {
-            $result = $result->withAddedHeader($name, $value);
+            $modified = $psr7->withAddedHeader($name, $value);
+
+            // PSR-7 contains an architectural problem that does not
+            // guarantee the return of the same type.
+            if ($modified instanceof Psr7ServerRequestInterface) {
+                $psr7 = $modified;
+            }
         }
 
-        // Extend query params
-        $result = $result->withQueryParams(
+        return $psr7;
+    }
+
+    private function extendQueryParams(Psr7ServerRequestInterface $psr7, RequestInterface $request): Psr7ServerRequestInterface
+    {
+        return $psr7->withQueryParams(
             query: $this->getQueryParameters($request),
         );
+    }
 
-        // Extend body parameters
-        $result = $result->withParsedBody(
+    private function extendParsedBody(Psr7ServerRequestInterface $psr7, RequestInterface $request): Psr7ServerRequestInterface
+    {
+        return $psr7->withParsedBody(
             data: $this->getDecodedBody($request),
         );
+    }
+
+    public function createRequest(RequestInterface $request): Psr7ServerRequestInterface
+    {
+        $psr7 = $this->createServerRequest($request);
+
+        $psr7 = $this->extendHeaders($psr7, $request);
+        $psr7 = $this->extendQueryParams($psr7, $request);
+        $psr7 = $this->extendParsedBody($psr7, $request);
 
         /** @var TRequest */
-        return $result;
+        return $psr7;
     }
 
     public function createResponse(object $response): ResponseInterface

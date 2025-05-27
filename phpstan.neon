@@ -15,7 +15,10 @@ parameters:
     - php
   paths:
     # Bridges
-    - libs/bridges/http-bridge/src
+    - libs/bridge/http-bridge/src
+    - libs/bridge/laravel-http-bridge/src
+    - libs/bridge/psr-http-bridge/src
+    - libs/bridge/symfony-http-bridge/src
     # Components
     - libs/component/cpu-info/src
     - libs/component/globals-provider/src

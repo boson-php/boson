@@ -6,6 +6,7 @@ namespace Boson\Dispatcher\Subscription;
 
 /**
  * @template T of object
+ *
  * @template-implements SubscriptionInterface<T>
  */
 class Subscription implements SubscriptionInterface

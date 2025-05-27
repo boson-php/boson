@@ -22,6 +22,12 @@ jobs:
           # Bridges
           - local_path: 'bridge/http-bridge'
             split_repository: 'http-bridge'
+          - local_path: 'bridge/symfony-http-bridge'
+            split_repository: 'symfony-http-bridge'
+          - local_path: 'bridge/laravel-http-bridge'
+            split_repository: 'laravel-http-bridge'
+          - local_path: 'bridge/psr-http-bridge'
+            split_repository: 'psr-http-bridge'
           # Components
           - local_path: 'component/cpu-info'
             split_repository: 'cpu-info'
