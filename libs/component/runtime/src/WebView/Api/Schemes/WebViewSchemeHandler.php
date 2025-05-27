@@ -12,9 +12,9 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerLaunch;
 use Boson\Internal\Saucer\SaucerSchemeError;
 use Boson\Shared\Marker\RequiresDealloc;
+use Boson\WebView\Api\Schemes\Event\SchemeRequestReceived;
 use Boson\WebView\Api\SchemesApiInterface;
 use Boson\WebView\Api\WebViewApi;
-use Boson\WebView\Event\WebViewRequest;
 use Boson\WebView\Internal\WebViewSchemeHandler\MimeTypeReader;
 use Boson\WebView\WebView;
 use FFI\CData;
@@ -73,7 +73,7 @@ final class WebViewSchemeHandler extends WebViewApi implements SchemesApiInterfa
     private function onRequest(CData $_, CData $request, CData $executor): void
     {
         try {
-            $processable = $this->intent($intention = new WebViewRequest(
+            $processable = $this->intent($intention = new SchemeRequestReceived(
                 subject: $this->webview,
                 request: $this->createRequest($request),
             ));
