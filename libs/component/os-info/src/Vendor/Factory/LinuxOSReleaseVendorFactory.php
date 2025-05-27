@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\OsInfo\Factory\Vendor;
+namespace Boson\Component\OsInfo\Vendor\Factory;
 
 use Boson\Component\OsInfo\Family;
 use Boson\Component\OsInfo\FamilyInterface;
+use Boson\Component\OsInfo\Vendor\VendorInfo;
 
 final readonly class LinuxOSReleaseVendorFactory implements VendorFactoryInterface
 {
@@ -15,24 +16,21 @@ final readonly class LinuxOSReleaseVendorFactory implements VendorFactoryInterfa
 
     public function createVendor(FamilyInterface $family): VendorInfo
     {
+        $fallback = $this->delegate->createVendor($family);
+
         if (!$family->is(Family::Unix) || !\is_readable('/etc/os-release')) {
-            return $this->delegate->createVendor($family);
+            return $fallback;
         }
 
         /** @var array<non-empty-string, string> $info */
         $info = (array) @\parse_ini_file('/etc/os-release');
 
-        $name = $this->fetchName($info);
-        $version = $this->fetchVersion($info);
-
-        if ($name === null || $version === null) {
-            $previous = $this->delegate->createVendor($family);
-
-            $name ??= $previous->name;
-            $version ??= $previous->version;
-        }
-
-        return new VendorInfo($name, $version, $this->fetchCodename($info));
+        return new VendorInfo(
+            name: $this->fetchName($info) ?? $fallback->name,
+            version: $this->fetchVersion($info) ?? $fallback->version,
+            codename: $this->fetchCodename($info) ?? $fallback->codename,
+            edition: $fallback->edition,
+        );
     }
 
     /**

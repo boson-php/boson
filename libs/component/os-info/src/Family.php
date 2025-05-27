@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\Component\OsInfo;
 
+use Boson\Component\OsInfo\Family\Factory\DefaultFamilyFactory;
+use Boson\Component\OsInfo\Family\Factory\EnvFamilyFactory;
+use Boson\Component\OsInfo\Family\Factory\GenericFamilyFactory;
+use Boson\Component\OsInfo\Family\Factory\InMemoryFamilyFactory;
 use Boson\Component\OsInfo\Family\FamilyImpl;
 
 /**
@@ -42,6 +46,18 @@ final readonly class Family implements FamilyInterface
      * Darwin operating system family.
      */
     public const FamilyInterface Darwin = Family\DARWIN;
+
+    /**
+     * @api
+     */
+    public static function createFromGlobals(): FamilyInterface
+    {
+        static $factory = new InMemoryFamilyFactory(
+            delegate: new DefaultFamilyFactory(),
+        );
+
+        return $factory->createFamily();
+    }
 
     /**
      * @return non-empty-list<FamilyInterface>

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\OsInfo\Factory\Vendor;
+namespace Boson\Component\OsInfo\Vendor\Factory;
 
 use Boson\Component\OsInfo\Family;
 use Boson\Component\OsInfo\FamilyInterface;
+use Boson\Component\OsInfo\Vendor\VendorInfo;
 use FFI\CData;
 use FFI\Env\Runtime;
 
@@ -54,36 +55,35 @@ final readonly class Win32RegistryVendorFactory implements VendorFactoryInterfac
 
     private function tryCreateFromRegistry(FamilyInterface $family): VendorInfo
     {
-        $headers = (string) @\file_get_contents(__FILE__, offset: __COMPILER_HALT_OFFSET__);
+        $ffi = \FFI::cdef(
+            code: (string) @\file_get_contents(__FILE__, offset: __COMPILER_HALT_OFFSET__),
+            lib: 'Advapi32.dll',
+        );
 
-        $ffi = \FFI::cdef($headers, 'Advapi32.dll');
+        $fallback = $this->delegate->createVendor($family);
 
-        $fallback = null;
-
-        // TODO May contain bug:
-        //      https://superuser.com/questions/1834479/windows-registry-shows-windows-10-pro-despite-running-windows-11-pro
-        //      https://learn.microsoft.com/en-us/answers/questions/555857/windows-11-product-name-in-registry
-        $name = $this->getStringKey($ffi, 'ProductName');
         $major = $this->getDwordKey($ffi, 'CurrentMajorVersionNumber');
-
-        // Detect that the name is present
-        if ($name === null || $name === '') {
-            $fallback = $this->delegate->createVendor($family);
-
-            $name = $fallback->name;
-        }
+        $minor = $this->getDwordKey($ffi, 'CurrentMinorVersionNumber');
+        $build = $this->getStringKey($ffi, 'CurrentBuildNumber');
 
         // Detect that the version is present
         if ($major !== 0) {
-            $version = \vsprintf('%d.%d.%s', [
-                $major,
-                $this->getDwordKey($ffi, 'CurrentMinorVersionNumber'),
-                $this->getStringKey($ffi, 'CurrentBuildNumber'),
-            ]);
+            $version = \sprintf('%d.%d.%s', $major, $minor, $build);
         } else {
-            $fallback ??= $this->delegate->createVendor($family);
-
             $version = $fallback->version;
+        }
+
+        $name = $this->getStringKey($ffi, 'ProductName') ?? '';
+
+        if ($name === '') {
+            $name = $fallback->name;
+        }
+
+        // TODO Windows 11 contain registry bug:
+        //      https://superuser.com/questions/1834479/windows-registry-shows-windows-10-pro-despite-running-windows-11-pro
+        //      https://learn.microsoft.com/en-us/answers/questions/555857/windows-11-product-name-in-registry
+        if ($build !== '' && \version_compare($build, '22000', '>=')) {
+            $name = \str_replace(' 10', ' 11', $name);
         }
 
         $edition = $this->getStringKey($ffi, 'EditionID');
@@ -92,12 +92,12 @@ final readonly class Win32RegistryVendorFactory implements VendorFactoryInterfac
         return new VendorInfo(
             name: $name,
             version: $version,
-            codename: $codename === '' ? null : $codename,
-            edition: $edition === '' ? null : $edition,
+            codename: $codename === '' ? $fallback->codename : $codename,
+            edition: $edition === '' ? $fallback->edition : $edition,
         );
     }
 
-    private function getStringKey(\FFI $advapi32, string $name): ?string
+    private function getStringKey(\FFI $advapi32, string $name): string
     {
         /** @phpstan-ignore-next-line : PHPStan false-positive */
         $buffer = $advapi32->new('char[255]');
@@ -105,7 +105,7 @@ final readonly class Win32RegistryVendorFactory implements VendorFactoryInterfac
         try {
             $size = $this->getKey($advapi32, $name, self::RRF_RT_REG_SZ, $buffer);
         } catch (\Throwable) {
-            return null;
+            return '';
         }
 
         return \rtrim(\FFI::string($buffer, $size), "\0");

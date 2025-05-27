@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Boson\Component\OsInfo;
 
 use Boson\Component\OsInfo\Factory\InMemoryOperatingSystemFactory;
-use Boson\Component\OsInfo\Factory\OperatingSystemFactory;
+use Boson\Component\OsInfo\Factory\DefaultOperatingSystemFactory;
+use Boson\Component\OsInfo\Vendor\VendorInfo;
 
-final readonly class OperatingSystem implements \Stringable
+final readonly class OperatingSystem extends VendorInfo
 {
     /**
      * Gets the list of standards supported by this operating system.
@@ -17,43 +18,31 @@ final readonly class OperatingSystem implements \Stringable
     public array $standards;
 
     /**
+     * @param non-empty-string $name
+     * @param non-empty-string $version
+     * @param non-empty-string|null $codename
+     * @param non-empty-string|null $edition
      * @param iterable<mixed, StandardInterface> $standards
      */
     public function __construct(
         /**
-         * Gets the name of the operating system.
-         *
-         * The name should be a non-empty string that uniquely identifies this
-         * operating system. For example, "Ubuntu 22.04 LTS" or "Windows 11".
-         *
-         * @var non-empty-string
-         */
-        public string $name,
-        /**
-         * Gets the version of the operating system.
-         *
-         * @var non-empty-string
-         */
-        public string $version,
-        /**
          * Gets the family this operating system belongs to.
          */
         public FamilyInterface $family,
-        /**
-         * Gets the codename of the operating system.
-         *
-         * @var non-empty-string|null
-         */
-        public ?string $codename = null,
-        /**
-         * Gets the edition of the operating system.
-         *
-         * @var non-empty-string|null
-         */
-        public ?string $edition = null,
+        string $name,
+        string $version,
+        ?string $codename = null,
+        ?string $edition = null,
         iterable $standards = [],
     ) {
         $this->standards = \iterator_to_array($standards, false);
+
+        parent::__construct(
+            name: $name,
+            version: $version,
+            codename: $codename,
+            edition: $edition,
+        );
     }
 
     /**
@@ -62,7 +51,7 @@ final readonly class OperatingSystem implements \Stringable
     public static function createFromGlobals(): OperatingSystem
     {
         static $factory = new InMemoryOperatingSystemFactory(
-            delegate: new OperatingSystemFactory(),
+            delegate: new DefaultOperatingSystemFactory(),
         );
 
         return $factory->createOperatingSystem();

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\OsInfo\Factory\Vendor;
+namespace Boson\Component\OsInfo\Vendor\Factory;
 
 use Boson\Component\OsInfo\FamilyInterface;
+use Boson\Component\OsInfo\Vendor\VendorInfo;
 
 final readonly class Win32GenericVendorFactory implements VendorFactoryInterface
 {
@@ -14,20 +15,23 @@ final readonly class Win32GenericVendorFactory implements VendorFactoryInterface
 
     public function createVendor(FamilyInterface $family): VendorInfo
     {
-        $parent = $this->delegate->createVendor($family);
+        $fallback = $this->delegate->createVendor($family);
 
         $major = self::getConstantValue('PHP_WINDOWS_VERSION_MAJOR');
+
         if ($major === null) {
-            return $parent;
+            return $fallback;
         }
 
         return new VendorInfo(
-            name: $parent->name,
+            name: $fallback->name,
             version: \vsprintf('%d.%d.%d', [
                 $major,
                 self::getConstantValue('PHP_WINDOWS_VERSION_MINOR') ?? 0,
                 self::getConstantValue('PHP_WINDOWS_VERSION_BUILD') ?? 0,
             ]),
+            codename: $fallback->codename,
+            edition: $fallback->edition,
         );
     }
 

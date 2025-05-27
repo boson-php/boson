@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\OsInfo\Factory\Standards;
+namespace Boson\Component\OsInfo\Standard\Factory;
 
 use Boson\Component\OsInfo\Family;
 use Boson\Component\OsInfo\FamilyInterface;
