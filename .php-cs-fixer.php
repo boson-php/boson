@@ -2,6 +2,8 @@
 
 $files = PhpCsFixer\Finder::create()
     ->in([
+        // Bridges
+        __DIR__ . '/libs/bridge/http-bridge/src',
         // Components
         __DIR__ . '/libs/component/cpu-info/src',
         __DIR__ . '/libs/component/globals-provider/src',

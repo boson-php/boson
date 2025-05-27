@@ -10,6 +10,9 @@
          backupStaticProperties="false"
 >
     <testsuites>
+        <testsuite name="bridges">
+            <directory>libs/bridges/http-bridge/tests</directory>
+        </testsuite>
         <testsuite name="components">
             <directory>libs/component/cpu-info/tests</directory>
             <directory>libs/component/globals-provider/tests</directory>
@@ -29,14 +32,19 @@
 
     <source>
         <include>
-            <directory suffix=".php">libs/component/cpu-info/src</directory>
-            <directory suffix=".php">libs/component/globals-provider/src</directory>
-            <directory suffix=".php">libs/component/http/src</directory>
-            <directory suffix=".php">libs/component/http-body-decoder/src</directory>
-            <directory suffix=".php">libs/component/http-static-provider/src</directory>
-            <directory suffix=".php">libs/component/os-info/src</directory>
-            <directory suffix=".php">libs/component/runtime/src</directory>
-            <directory suffix=".php">libs/component/weak-types/src</directory>
+            <!-- bridges -->
+            <directory>libs/bridges/http-bridge/src</directory>
+            <!-- components -->
+            <directory>libs/component/cpu-info/src</directory>
+            <directory>libs/component/globals-provider/src</directory>
+            <directory>libs/component/http/src</directory>
+            <directory>libs/component/http-body-decoder/src</directory>
+            <directory>libs/component/http-static-provider/src</directory>
+            <directory>libs/component/os-info/src</directory>
+            <directory>libs/component/runtime/src</directory>
+            <directory>libs/component/weak-types/src</directory>
+            <!-- contracts -->
+            <directory>libs/contracts/http-contracts/src</directory>
         </include>
     </source>
 

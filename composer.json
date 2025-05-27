@@ -9,6 +9,7 @@
     ],
     "require": {
         "php": "^8.4",
+        "boson-php/http-bridge": "^1.0",
         "boson-php/cpu-info": "^1.0",
         "boson-php/globals-provider": "^1.0",
         "boson-php/http": "^1.0",
@@ -35,6 +36,7 @@
     "autoload-dev": {
         "psr-4": {
             "Boson\\Tests\\": "libs/component/runtime/tests",
+            "Boson\\Bridge\\Http\\Tests\\": "libs/bridge/http-bridge/tests",
             "Boson\\Component\\CpuInfo\\Tests\\": "libs/component/cpu-info/tests",
             "Boson\\Component\\GlobalsProvider\\Tests\\": "libs/component/globals-provider/tests",
             "Boson\\Component\\Http\\Tests\\": "libs/component/http/tests",

@@ -14,6 +14,8 @@ parameters:
   fileExtensions:
     - php
   paths:
+    # Bridges
+    - libs/bridges/http-bridge/src
     # Components
     - libs/component/cpu-info/src
     - libs/component/globals-provider/src

@@ -19,6 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         package:
+          # Bridges
+          - local_path: 'bridge/http-bridge'
+            split_repository: 'http-bridge'
           # Components
           - local_path: 'component/cpu-info'
             split_repository: 'cpu-info'
