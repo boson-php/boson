@@ -2,23 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\OsInfo\Family\Factory;
+namespace Boson\Component\CpuInfo\Vendor\Factory;
 
-use Boson\Component\OsInfo\FamilyInterface;
+use Boson\Component\CpuInfo\Vendor\VendorInfo;
 
-final readonly class EnvFamilyFactory extends FamilyByNameFactory
+final readonly class EnvVendorFactory implements VendorFactoryInterface
 {
     /**
      * @var non-empty-string
      */
-    public const string DEFAULT_OVERRIDE_ENV_NAME = 'BOSON_OS_NAME';
+    public const string DEFAULT_ENV_NAME = 'PROCESSOR_IDENTIFIER';
 
     public function __construct(
-        private FamilyFactoryInterface $delegate,
+        private VendorFactoryInterface $delegate,
         /**
          * @var list<non-empty-string>
          */
-        private array $envVariableNames = [self::DEFAULT_OVERRIDE_ENV_NAME],
+        private array $envVariableNames = [
+            self::DEFAULT_ENV_NAME,
+        ],
     ) {}
 
     /**
@@ -37,14 +39,16 @@ final readonly class EnvFamilyFactory extends FamilyByNameFactory
         return null;
     }
 
-    public function createFamily(): FamilyInterface
+    public function createVendor(): VendorInfo
     {
         $name = $this->tryGetNameFromEnvironment();
 
         if ($name === null) {
-            return $this->delegate->createFamily();
+            return $this->delegate->createVendor();
         }
 
-        return $this->createFromName($name);
+        return new VendorInfo(
+            name: $name,
+        );
     }
 }

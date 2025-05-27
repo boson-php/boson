@@ -2,23 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\OsInfo\Family\Factory;
+namespace Boson\Component\CpuInfo\Architecture\Factory;
 
-use Boson\Component\OsInfo\FamilyInterface;
+use Boson\Component\CpuInfo\ArchitectureInterface;
 
-final readonly class EnvFamilyFactory extends FamilyByNameFactory
+final readonly class EnvArchitectureFactory extends ArchitectureByNameFactory
 {
     /**
      * @var non-empty-string
      */
-    public const string DEFAULT_OVERRIDE_ENV_NAME = 'BOSON_OS_NAME';
+    public const string DEFAULT_OVERRIDE_ENV_NAME = 'BOSON_CPU_ARCH';
+
+    /**
+     * @var non-empty-string
+     */
+    public const string DEFAULT_ENV_NAME = 'PROCESSOR_ARCHITECTURE';
 
     public function __construct(
-        private FamilyFactoryInterface $delegate,
+        private ArchitectureFactoryInterface $delegate,
         /**
          * @var list<non-empty-string>
          */
-        private array $envVariableNames = [self::DEFAULT_OVERRIDE_ENV_NAME],
+        private array $envVariableNames = [
+            self::DEFAULT_OVERRIDE_ENV_NAME,
+            self::DEFAULT_ENV_NAME,
+        ],
     ) {}
 
     /**
@@ -37,12 +45,12 @@ final readonly class EnvFamilyFactory extends FamilyByNameFactory
         return null;
     }
 
-    public function createFamily(): FamilyInterface
+    public function createArchitecture(): ArchitectureInterface
     {
         $name = $this->tryGetNameFromEnvironment();
 
         if ($name === null) {
-            return $this->delegate->createFamily();
+            return $this->delegate->createArchitecture();
         }
 
         return $this->createFromName($name);

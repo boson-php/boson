@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Boson\Component\OsInfo;
 
 use Boson\Component\OsInfo\Family\Factory\DefaultFamilyFactory;
-use Boson\Component\OsInfo\Family\Factory\EnvFamilyFactory;
-use Boson\Component\OsInfo\Family\Factory\GenericFamilyFactory;
 use Boson\Component\OsInfo\Family\Factory\InMemoryFamilyFactory;
 use Boson\Component\OsInfo\Family\FamilyImpl;
 
