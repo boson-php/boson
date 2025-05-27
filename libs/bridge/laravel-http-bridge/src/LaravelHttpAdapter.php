@@ -20,6 +20,7 @@ readonly class LaravelHttpAdapter extends SymfonyHttpAdapter
     #[\Override]
     public function createRequest(RequestInterface $request): LaravelRequest
     {
+        /** @var TRequest */
         return LaravelRequest::createFromBase(
             request: parent::createRequest($request),
         );

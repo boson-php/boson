@@ -33,7 +33,7 @@ readonly class SymfonyHttpAdapter extends HttpAdapter
      * Creates a new Symfony {@see SymfonyRequest} instance from
      * a Boson {@see RequestInterface}.
      *
-     * @return TResponse
+     * @return TRequest
      */
     public function createRequest(RequestInterface $request): SymfonyRequest
     {
@@ -57,7 +57,7 @@ readonly class SymfonyHttpAdapter extends HttpAdapter
      * Creates a new Boson {@see ResponseInterface} instance from a
      * Symfony {@see SymfonyResponse}.
      *
-     * @param TRequest $response
+     * @param TResponse $response
      */
     public function createResponse(object $response): ResponseInterface
     {
