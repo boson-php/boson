@@ -17,6 +17,7 @@
     "require": {
         "php": "^8.4",
         "ext-ffi": "*",
+        "boson-php/cpu-info": "^1.0",
         "boson-php/globals-provider": "^1.0",
         "boson-php/http": "^1.0",
         "boson-php/http-body-decoder": "^1.0",

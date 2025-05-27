@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Boson\Internal\Saucer;
 
+use Boson\Component\CpuInfo\Architecture;
+use Boson\Component\CpuInfo\CentralProcessor;
 use Boson\Component\OsInfo\Family;
 use Boson\Component\OsInfo\OperatingSystem;
-use Boson\Internal\Environment\Architecture;
-use Boson\Internal\Environment\Exception\UnsupportedArchitectureException;
-use Boson\Internal\Environment\Exception\UnsupportedOperatingSystemException;
+use Boson\Exception\Environment\UnsupportedArchitectureException;
+use Boson\Exception\Environment\UnsupportedOperatingSystemException;
 use FFI\Env\Runtime;
 
 /**
@@ -58,30 +59,30 @@ final readonly class LibSaucer
     private function getLibrary(): string
     {
         $os = OperatingSystem::createFromGlobals();
-        $arch = Architecture::current();
+        $cpu = CentralProcessor::createFromGlobals();
 
         $result = match (true) {
-            $os->family->is(Family::Windows) => match ($arch) {
+            $os->family->is(Family::Windows) => match ($cpu->arch) {
                 Architecture::x86,
                 Architecture::Amd64 => 'libboson-windows-x86_64.dll',
                 default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
-                    architecture: $arch->value ?? 'unknown',
+                    architecture: $cpu->name . '(' . $cpu->arch->name . ')',
                 ),
             },
-            $os->family->is(Family::Linux) => match ($arch = Architecture::current()) {
+            $os->family->is(Family::Linux) => match ($cpu->arch) {
                 Architecture::x86,
                 Architecture::Amd64 => 'libboson-linux-x86_64.so',
                 Architecture::Arm64 => 'libboson-linux-aarch64.so',
                 default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
-                    architecture: $arch->value ?? 'unknown',
+                    architecture: $cpu->name . '(' . $cpu->arch->name . ')',
                 ),
             },
-            $os->family->is(Family::Darwin) => match ($arch = Architecture::current()) {
+            $os->family->is(Family::Darwin) => match ($cpu->arch) {
                 Architecture::x86,
                 Architecture::Amd64,
                 Architecture::Arm64 => 'libboson-darwin-universal.dylib',
                 default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
-                    architecture: $arch->value ?? 'unknown',
+                    architecture: $cpu->name . '(' . $cpu->arch->name . ')',
                 ),
             },
             default => throw UnsupportedOperatingSystemException::becauseOperatingSystemIsInvalid(
