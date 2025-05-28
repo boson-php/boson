@@ -12,7 +12,7 @@ final readonly class DefaultFamilyFactory implements FamilyFactoryInterface
 
     public function __construct()
     {
-        $this->default = new EnvFamilyFactory(
+        $this->default = EnvFamilyFactory::createForOverrideEnvVariables(
             delegate: new GenericFamilyFactory(),
         );
     }

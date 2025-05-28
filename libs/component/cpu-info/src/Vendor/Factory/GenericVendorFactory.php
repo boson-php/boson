@@ -32,6 +32,7 @@ final readonly class GenericVendorFactory implements VendorFactoryInterface
 
         return new VendorInfo(
             name: $name,
+            vendor: $this->default->vendor,
         );
     }
 }

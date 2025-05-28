@@ -11,7 +11,16 @@ use Boson\Component\CpuInfo\Vendor\VendorInfo;
 final readonly class CentralProcessor extends VendorInfo
 {
     /**
+     * @var list<InstructionSetInterface>
+     */
+    public array $instructionSets;
+
+    /**
      * @param non-empty-string $name
+     * @param non-empty-string|null $vendor
+     * @param int<1, max> $physicalCores
+     * @param int<1, max> $logicalCores
+     * @param iterable<mixed, InstructionSetInterface> $instructionSets
      */
     public function __construct(
         /**
@@ -19,9 +28,18 @@ final readonly class CentralProcessor extends VendorInfo
          */
         public ArchitectureInterface $arch,
         string $name,
+        ?string $vendor = null,
+        int $physicalCores = 1,
+        int $logicalCores = 1,
+        iterable $instructionSets = [],
     ) {
+        $this->instructionSets = \iterator_to_array($instructionSets, false);
+
         parent::__construct(
             name: $name,
+            vendor: $vendor,
+            physicalCores: $physicalCores,
+            logicalCores: $logicalCores,
         );
     }
 

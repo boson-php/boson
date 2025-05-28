@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Component\CpuInfo;
 
-interface ArchitectureInterface extends \Stringable
+interface InstructionSetInterface extends \Stringable
 {
     /**
      * @var non-empty-string
@@ -13,7 +13,7 @@ interface ArchitectureInterface extends \Stringable
         get;
     }
 
-    public ?ArchitectureInterface $parent {
+    public ArchitectureInterface $arch {
         get;
     }
 }

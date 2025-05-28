@@ -18,8 +18,15 @@ final readonly class EnvFamilyFactory extends FamilyByNameFactory
         /**
          * @var list<non-empty-string>
          */
-        private array $envVariableNames = [self::DEFAULT_OVERRIDE_ENV_NAME],
+        private array $envVariableNames = [],
     ) {}
+
+    public static function createForOverrideEnvVariables(FamilyFactoryInterface $delegate): self
+    {
+        return new self($delegate, [
+            self::DEFAULT_OVERRIDE_ENV_NAME,
+        ]);
+    }
 
     /**
      * @return non-empty-string|null
