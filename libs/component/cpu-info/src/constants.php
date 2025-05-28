@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace Boson\Component\CpuInfo\Architecture {
-
     const X86 = new BuiltinArchitecture('x86');
 
     const AMD64 = new BuiltinArchitecture('amd64', X86);
@@ -29,11 +28,9 @@ namespace Boson\Component\CpuInfo\Architecture {
     const SPARC = new BuiltinArchitecture('sparc');
 
     const SPARC64 = new BuiltinArchitecture('sparc64', SPARC);
-
 }
 
 namespace Boson\Component\CpuInfo\InstructionSet {
-
     use const Boson\Component\CpuInfo\Architecture\AMD64;
     use const Boson\Component\CpuInfo\Architecture\X86;
 
@@ -48,5 +45,4 @@ namespace Boson\Component\CpuInfo\InstructionSet {
     const AVX = new BuiltinInstructionSet('avx', AMD64);
     const AVX2 = new BuiltinInstructionSet('avx2', AMD64);
     const AVX512 = new BuiltinInstructionSet('avx512', AMD64);
-
 }

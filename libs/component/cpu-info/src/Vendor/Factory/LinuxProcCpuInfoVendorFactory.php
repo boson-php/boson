@@ -54,6 +54,7 @@ final readonly class LinuxProcCpuInfoVendorFactory implements VendorFactoryInter
 
     /**
      * @param array<numeric-string|int, list<array<non-empty-string, string>>> $processors
+     *
      * @return int<1, max>|null
      */
     private function getProcessorPhysicalCores(array $processors): ?int
@@ -67,6 +68,7 @@ final readonly class LinuxProcCpuInfoVendorFactory implements VendorFactoryInter
 
     /**
      * @param array<numeric-string|int, list<array<non-empty-string, string>>> $processors
+     *
      * @return int<1, max>|null
      */
     private function getProcessorLogicalCores(array $processors): ?int
@@ -84,6 +86,7 @@ final readonly class LinuxProcCpuInfoVendorFactory implements VendorFactoryInter
 
     /**
      * @param array<numeric-string|int, list<array<non-empty-string, string>>> $processors
+     *
      * @return non-empty-string|null
      */
     private function getProcessorName(array $processors): ?string
@@ -103,6 +106,7 @@ final readonly class LinuxProcCpuInfoVendorFactory implements VendorFactoryInter
 
     /**
      * @param array<numeric-string|int, list<array<non-empty-string, string>>> $processors
+     *
      * @return non-empty-string|null
      */
     private function getProcessorVendor(array $processors): ?string

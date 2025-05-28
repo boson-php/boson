@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\CpuInfo\Internal;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\Component\CpuInfo
  */
 final class LinuxProcCpuInfo

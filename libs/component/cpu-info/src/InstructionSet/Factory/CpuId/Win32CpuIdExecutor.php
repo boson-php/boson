@@ -26,6 +26,7 @@ final readonly class Win32CpuIdExecutor implements CpuIdExecutorInterface
         // MEM_COMMIT | MEM_RESERVE (0x3000) + PAGE_READWRITE (0x04)
         /**
          * @var CData $memory
+         *
          * @phpstan-ignore-next-line
          */
         $memory = $this->ffi->VirtualAlloc(null, $length, 0x3000, 0x04);
@@ -55,6 +56,7 @@ final readonly class Win32CpuIdExecutor implements CpuIdExecutorInterface
 
         /**
          * @var callable():int $cpuid
+         *
          * @phpstan-ignore-next-line
          */
         $cpuid = $this->ffi->cast('int(*)()', $memory);

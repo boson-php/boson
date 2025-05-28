@@ -53,7 +53,7 @@ final readonly class CpuIdInstructionSetFactory implements InstructionSetFactory
 
         return \array_values(\array_unique([
             ...$fallback,
-            ...$this->tryCreateFromCpuId($executor)
+            ...$this->tryCreateFromCpuId($executor),
         ]));
     }
 
