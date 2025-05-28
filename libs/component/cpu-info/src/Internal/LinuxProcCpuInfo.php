@@ -16,7 +16,7 @@ final class LinuxProcCpuInfo
     private const string DEFAULT_CPU_INFO_FILE = '/proc/cpuinfo';
 
     /**
-     * @var array<array-key, array<non-empty-string, string>>|null
+     * @var list<array<non-empty-string, string>>|null
      */
     private ?array $segments = null;
 
@@ -33,6 +33,7 @@ final class LinuxProcCpuInfo
         $result = [];
 
         foreach ($this->getSegments() as $segment) {
+            /** @var numeric-string|null $id */
             $id = $segment['physical id'] ?? null;
 
             if ($id === null) {
@@ -76,7 +77,7 @@ final class LinuxProcCpuInfo
     }
 
     /**
-     * @return array<array-key, array<non-empty-string, string>>
+     * @return list<array<non-empty-string, string>>
      */
     private function readAsSegments(): array
     {

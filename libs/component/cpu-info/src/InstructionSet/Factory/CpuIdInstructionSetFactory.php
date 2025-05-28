@@ -19,6 +19,7 @@ use Boson\Component\CpuInfo\InstructionSet\Factory\CpuId\SSE42Assembly;
 use Boson\Component\CpuInfo\InstructionSet\Factory\CpuId\SSEAssembly;
 use Boson\Component\CpuInfo\InstructionSet\Factory\CpuId\SSSE3Assembly;
 use Boson\Component\CpuInfo\InstructionSet\Factory\CpuId\Win32CpuIdExecutor;
+use Boson\Component\CpuInfo\InstructionSetInterface;
 use Boson\Component\OsInfo\Family;
 use Boson\Component\OsInfo\Family\Factory\FamilyFactoryInterface;
 
@@ -50,11 +51,15 @@ final readonly class CpuIdInstructionSetFactory implements InstructionSetFactory
             return $fallback;
         }
 
-        return \array_unique([...$fallback, ...$this->tryCreateFromCpuId(
-            executor: $executor,
-        )]);
+        return \array_values(\array_unique([
+            ...$fallback,
+            ...$this->tryCreateFromCpuId($executor)
+        ]));
     }
 
+    /**
+     * @return list<InstructionSetInterface>
+     */
     private function tryCreateFromCpuId(CpuIdExecutorInterface $executor): array
     {
         $result = [];

@@ -75,7 +75,7 @@ final readonly class LinuxProcCpuInfoVendorFactory implements VendorFactoryInter
 
         foreach ($processors as $processor) {
             foreach ($processor as $core) {
-                $cores += (int) ($core['cpu cores'] ?? 0);
+                $cores += \max(1, (int) ($core['cpu cores'] ?? 0));
             }
         }
 

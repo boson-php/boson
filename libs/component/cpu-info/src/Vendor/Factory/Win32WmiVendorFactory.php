@@ -50,12 +50,12 @@ final readonly class Win32WmiVendorFactory implements VendorFactoryInterface
             SQL);
 
         /**
-         * @var object{
+         * @var list<object{
          *     Name: string,
          *     Manufacturer: string,
          *     NumberOfCores: int,
          *     NumberOfLogicalProcessors: int,
-         * } $processor
+         * }> $processors
          */
         foreach ($processors as $processor) {
             return new VendorInfo(

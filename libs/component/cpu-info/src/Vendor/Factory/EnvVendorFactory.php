@@ -87,7 +87,7 @@ final readonly class EnvVendorFactory implements VendorFactoryInterface
         $logicalCores = $fallback->logicalCores;
 
         if (\is_numeric($cores)) {
-            $physicalCores = $logicalCores = (int) $cores;
+            $physicalCores = $logicalCores = \max(1, (int) $cores);
         }
 
         return new VendorInfo(
