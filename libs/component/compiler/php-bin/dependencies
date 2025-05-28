@@ -1,0 +1,2 @@
+minimal - ffi,phar,opcache,iconv,mbstring,ctype,shmop
+standard - ffi,phar,opcache,iconv,mbstring,ctype,shmop,sockets,pdo_sqlite,sqlite3,intl,curl,dom,xml,sodium

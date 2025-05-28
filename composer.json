@@ -24,6 +24,7 @@
         "boson-php/http-contracts": "^1.0"
     },
     "require-dev": {
+        "boson-php/compiler": "^1.0",
         "ffi/var-dumper": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.75",
         "jetbrains/phpstorm-attributes": "^1.2",
@@ -65,6 +66,9 @@
         "optimize-autoloader": true,
         "preferred-install": {
             "*": "dist"
+        },
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
         }
     },
     "scripts-aliases": {

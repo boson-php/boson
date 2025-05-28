@@ -1,0 +1,61 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+namespace Boson\Component\Compiler;
+
+use Exception;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+
+
+if ('cli' !== PHP_SAPI) {
+    throw new Exception('This script must be run from the command line.');
+}
+
+if (!isset($GLOBALS['_composer_autoload_path'])) {
+    fwrite(STDERR, 'Install dependencies using Composer.'.PHP_EOL);
+    exit(1);
+}
+
+include $GLOBALS['_composer_autoload_path'];
+
+if (!class_exists(Application::class)) {
+    fwrite(STDERR, 'You need the "symfony/console" component in order to run the Boson Compiler.'.PHP_EOL);
+    exit(1);
+}
+
+$input = new ArgvInput();
+$output = new ConsoleOutput();
+$helper = new QuestionHelper();
+
+$compiler = new Compiler(
+    applicationPath: getcwd(),
+    targetDir: '/build',
+    tmpDir: __DIR__ . '/tmp',
+    stubsPath: __DIR__ . '/stubs'
+);
+
+$platforms = Compiler::PLATFORMS;
+
+$platform = $input->getParameterOption('--platform');
+$arch = $input->getParameterOption('--arch');
+$type = $input->getParameterOption('--standard', 'minimal');
+
+if (!$platform || ! array_key_exists($platform, $platforms)) {
+    $question = new ChoiceQuestion('Select platform', array_keys($platforms));
+    $platform = $helper->ask($input, $output, $question);
+}
+
+$architectures = $platforms[$platform];
+
+if (!$arch || !in_array($arch, $architectures, true)) {
+    $question = new ChoiceQuestion('Select architecture', $architectures);
+    $arch = $helper->ask($input, $output, $question);
+}
+
+$compiler->compile($platform, $arch, $type);
