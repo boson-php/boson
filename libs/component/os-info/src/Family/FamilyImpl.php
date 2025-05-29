@@ -16,7 +16,7 @@ trait FamilyImpl
          * @var non-empty-string
          */
         public readonly string $name,
-        public readonly ?self $parent = null,
+        public readonly ?FamilyInterface $parent = null,
     ) {}
 
     public function is(FamilyInterface $family): bool

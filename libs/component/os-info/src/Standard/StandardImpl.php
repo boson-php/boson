@@ -16,7 +16,7 @@ trait StandardImpl
          * @var non-empty-string
          */
         public readonly string $name,
-        public readonly ?self $parent = null,
+        public readonly ?StandardInterface $parent = null,
     ) {}
 
     public function isSupports(StandardInterface $standard): bool

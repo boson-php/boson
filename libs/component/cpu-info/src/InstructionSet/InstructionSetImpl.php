@@ -2,21 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\CpuInfo\Architecture;
+namespace Boson\Component\CpuInfo\InstructionSet;
 
 use Boson\Component\CpuInfo\ArchitectureInterface;
+use Boson\Component\CpuInfo\InstructionSetInterface;
 
 /**
- * @phpstan-require-implements ArchitectureInterface
+ * @phpstan-require-implements InstructionSetInterface
  */
-trait ArchitectureImpl
+trait InstructionSetImpl
 {
     public function __construct(
         /**
          * @var non-empty-string
          */
         public readonly string $name,
-        public readonly ?ArchitectureInterface $parent = null,
+        public readonly ArchitectureInterface $arch,
     ) {}
 
     public function __toString(): string
