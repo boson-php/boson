@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Boson\Component\OsInfo;
 
+use Boson\Component\OsInfo\Family\BuiltinFamily;
 use Boson\Component\OsInfo\Family\Factory\DefaultFamilyFactory;
 use Boson\Component\OsInfo\Family\Factory\InMemoryFamilyFactory;
 use Boson\Component\OsInfo\Family\FamilyImpl;
+
+require_once __DIR__ . '/Family/constants.php';
 
 /**
  * Representing predefined operating system families.
@@ -59,6 +62,23 @@ final readonly class Family implements FamilyInterface
     }
 
     /**
+     * @api
+     */
+    public static function tryFrom(string $name): ?BuiltinFamily
+    {
+        return BuiltinFamily::tryFrom($name);
+    }
+
+    /**
+     * @api
+     */
+    public static function from(string $name): FamilyInterface
+    {
+        return self::tryFrom($name) ?? new self($name);
+    }
+
+    /**
+     * @api
      * @return non-empty-list<FamilyInterface>
      */
     public static function cases(): array

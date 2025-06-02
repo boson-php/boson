@@ -33,7 +33,6 @@
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^12.0",
         "symfony/console": "^6.4|^7.0",
-        "symfony/http-foundation": "^7.2",
         "symfony/var-dumper": "^6.4|^7.0"
     },
     "autoload-dev": {
@@ -43,6 +42,7 @@
             "Boson\\Bridge\\Laravel\\Http\\Tests\\": "libs/bridge/laravel-http-bridge/tests",
             "Boson\\Bridge\\Psr\\Http\\Tests\\": "libs/bridge/psr-http-bridge/tests",
             "Boson\\Bridge\\Symfony\\Http\\Tests\\": "libs/bridge/symfony-http-bridge/tests",
+            "Boson\\Component\\Compiler\\Tests\\": "libs/component/compiler/tests",
             "Boson\\Component\\CpuInfo\\Tests\\": "libs/component/cpu-info/tests",
             "Boson\\Component\\GlobalsProvider\\Tests\\": "libs/component/globals-provider/tests",
             "Boson\\Component\\Http\\Tests\\": "libs/component/http/tests",

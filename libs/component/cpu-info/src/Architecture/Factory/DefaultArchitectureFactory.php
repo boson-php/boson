@@ -12,10 +12,8 @@ final readonly class DefaultArchitectureFactory implements ArchitectureFactoryIn
 
     public function __construct()
     {
-        $this->default = EnvArchitectureFactory::createForOverrideEnvVariables(
-            delegate: EnvArchitectureFactory::createForBuiltinEnvVariables(
-                delegate: new GenericArchitectureFactory(),
-            ),
+        $this->default = new EnvArchitectureFactory(
+            delegate: new GenericArchitectureFactory(),
         );
     }
 

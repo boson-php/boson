@@ -6,7 +6,7 @@
     "homepage": "https://bosonphp.com",
     "support": {
         "issues": "https://github.com/boson-php/boson/issues",
-        "source": "https://github.com/boson-php/runtime"
+        "source": "https://github.com/boson-php/compiler"
     },
     "authors": [
         {
@@ -18,11 +18,15 @@
             "email": "nesk@xakep.ru"
         }
     ],
-    "bin": ["boson-compiler"],
+    "bin": ["bin/boson"],
     "require": {
         "php": "^8.4",
-        "symfony/console": "^7.0",
-        "bamarni/composer-bin-plugin": "^1.8"
+        "boson-php/cpu-info": "^1.0",
+        "boson-php/os-info": "^1.0",
+        "justinrainbow/json-schema": "^6.3.1",
+        "symfony/console": "^6.4|^7.0",
+        "symfony/process": "^6.4|^7.0",
+        "symfony/http-client": "^6.4|^7.0"
     },
     "autoload": {
         "psr-4": {
@@ -42,9 +46,6 @@
         "optimize-autoloader": true,
         "preferred-install": {
             "*": "dist"
-        },
-        "allow-plugins": {
-            "bamarni/composer-bin-plugin": true
         }
     },
     "minimum-stability": "dev",

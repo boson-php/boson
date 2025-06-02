@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Component\OsInfo\Standard;
 
+use Boson\Component\OsInfo\Standard;
 use Boson\Component\OsInfo\StandardInterface;
 
 /**
@@ -13,4 +14,11 @@ use Boson\Component\OsInfo\StandardInterface;
 final readonly class BuiltinStandard implements StandardInterface
 {
     use StandardImpl;
+
+    public static function tryFrom(string $name): ?BuiltinStandard
+    {
+        return [
+            'posix' => Standard::Posix,
+        ][\strtolower($name)] ?? null;
+    }
 }

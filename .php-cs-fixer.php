@@ -8,6 +8,7 @@ $files = PhpCsFixer\Finder::create()
         __DIR__ . '/libs/bridge/psr-http-bridge/src',
         __DIR__ . '/libs/bridge/symfony-http-bridge/src',
         // Components
+        __DIR__ . '/libs/component/compiler/src',
         __DIR__ . '/libs/component/cpu-info/src',
         __DIR__ . '/libs/component/globals-provider/src',
         __DIR__ . '/libs/component/http/src',

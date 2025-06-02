@@ -17,6 +17,7 @@
             <directory>libs/bridge/symfony-http-bridge/tests</directory>
         </testsuite>
         <testsuite name="components">
+            <directory>libs/component/compiler/tests</directory>
             <directory>libs/component/cpu-info/tests</directory>
             <directory>libs/component/globals-provider/tests</directory>
             <directory>libs/component/http/tests</directory>
@@ -41,6 +42,7 @@
             <directory>libs/bridge/psr-http-bridge/src</directory>
             <directory>libs/bridge/symfony-http-bridge/src</directory>
             <!-- components -->
+            <directory>libs/component/compiler/src</directory>
             <directory>libs/component/cpu-info/src</directory>
             <directory>libs/component/globals-provider/src</directory>
             <directory>libs/component/http/src</directory>

@@ -20,6 +20,7 @@ parameters:
     - libs/bridge/psr-http-bridge/src
     - libs/bridge/symfony-http-bridge/src
     # Components
+    - libs/component/compiler/src
     - libs/component/cpu-info/src
     - libs/component/globals-provider/src
     - libs/component/http/src

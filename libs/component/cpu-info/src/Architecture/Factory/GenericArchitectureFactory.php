@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\Component\CpuInfo\Architecture\Factory;
 
+use Boson\Component\CpuInfo\Architecture;
 use Boson\Component\CpuInfo\ArchitectureInterface;
 
-final readonly class GenericArchitectureFactory extends ArchitectureByNameFactory
+final readonly class GenericArchitectureFactory implements ArchitectureFactoryInterface
 {
     /**
      * @var non-empty-string
@@ -28,6 +29,6 @@ final readonly class GenericArchitectureFactory extends ArchitectureByNameFactor
             $name = $this->default;
         }
 
-        return $this->createFromName($name);
+        return Architecture::from($name);
     }
 }
