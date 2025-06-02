@@ -14,15 +14,10 @@
             "minLength": 1,
             "description": "An entrypoint php file"
         },
-        "box-version": {
-            "type": "string",
-            "pattern": "^\\d+\\.\\d+\\.\\d+$",
-            "description": "The `humbug/box` package version"
-        },
-        "build": {
+        "output": {
             "type": "string",
             "minLength": 1,
-            "description": "Compiler build directory"
+            "description": "Compiler output build directory"
         },
         "root": {
             "type": "string",
@@ -47,28 +42,48 @@
                 "description": "The name of expected OS family"
             }
         },
-        "build-files": {
-            "type": "array",
-            "description": "List of included files to build",
-            "items": {
-                "$ref": "#/$defs/inclusion"
-            }
-        },
-        "copy-files": {
-            "type": "array",
-            "description": "List of included files to copy to output",
-            "items": {
-                "type": "object",
-                "description": "Copy info section",
-                "additionalProperties": false,
-                "required": ["from"],
-                "properties": {
-                    "from": {
-                        "$ref": "#/$defs/inclusion"
-                    },
-                    "to": {
+        "build": {
+            "type": "object",
+            "description": "Configuration of included files to build",
+            "additionalProperties": false,
+            "properties": {
+                "files": {
+                    "type": "array",
+                    "description": "List of included files to build",
+                    "items": {
                         "type": "string",
-                        "description": "Target directory or file name to copy expected files"
+                        "minLength": 1,
+                        "description": "Relative pathname to the file"
+                    }
+                },
+                "directories": {
+                    "type": "array",
+                    "description": "List of included directories to build",
+                    "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Relative pathname to the directory"
+                    }
+                },
+                "finder": {
+                    "type": "array",
+                    "description": "List of included finder rules to build",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "description": "Finder inclusion configuration",
+                        "properties": {
+                            "directory": {
+                                "type": "string",
+                                "description": "The directory in which the files will be searched",
+                                "minLength": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "The name filter for files",
+                                "minLength": 1
+                            }
+                        }
                     }
                 }
             }
@@ -96,40 +111,14 @@
                     ]
                 }
             }
+        },
+        "box-version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "The `humbug/box` package version"
         }
     },
     "$defs": {
-        "inclusion": {
-            "oneOf": [
-                {
-                    "$ref": "#/$defs/file-inclusion"
-                },
-                {
-                    "$ref": "#/$defs/finder-inclusion"
-                }
-            ]
-        },
-        "file-inclusion": {
-            "type": "string",
-            "description": "Include file configuration",
-            "minLength": 1
-        },
-        "finder-inclusion": {
-            "type": "object",
-            "additionalProperties": false,
-            "description": "Include files list configuration",
-            "properties": {
-                "directory": {
-                    "type": "string",
-                    "description": "The directory in which the files will be searched",
-                    "minLength": 1
-                },
-                "name": {
-                    "type": "string",
-                    "description": "The name filter for files",
-                    "minLength": 1
-                }
-            }
-        }
+
     }
 }

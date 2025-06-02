@@ -34,28 +34,28 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
     private const array BUILTIN_ASSEMBLIES = [
         'linux' => [
             'arm64' => [
-                'minimal' => ['libboson-linux-aarch64.so', 'minimal/linux-aarch64.sfx', ''],
-                'standard' => ['libboson-linux-aarch64.so', 'standard/linux-aarch64.sfx', ''],
+                'minimal' => ['libboson-linux-aarch64.so', 'minimal/linux-aarch64.sfx'],
+                'standard' => ['libboson-linux-aarch64.so', 'standard/linux-aarch64.sfx'],
             ],
             'amd64' => [
-                'minimal' => ['libboson-linux-x86_64.so', 'minimal/linux-x86_64.sfx', ''],
-                'standard' => ['libboson-linux-x86_64.so', 'standard/linux-x86_64.sfx', ''],
+                'minimal' => ['libboson-linux-x86_64.so', 'minimal/linux-x86_64.sfx'],
+                'standard' => ['libboson-linux-x86_64.so', 'standard/linux-x86_64.sfx'],
             ],
         ],
         'darwin' => [
             'arm64' => [
-                'minimal' => ['libboson-darwin-universal.dylib', 'minimal/macos-aarch64.sfx', ''],
-                'standard' => ['libboson-darwin-universal.dylib', 'standard/macos-aarch64.sfx', ''],
+                'minimal' => ['libboson-darwin-universal.dylib', 'minimal/macos-aarch64.sfx'],
+                'standard' => ['libboson-darwin-universal.dylib', 'standard/macos-aarch64.sfx'],
             ],
             'amd64' => [
-                'minimal' => ['libboson-darwin-universal.dylib', 'minimal/macos-x86_64.sfx', ''],
-                'standard' => ['libboson-darwin-universal.dylib', 'standard/macos-x86_64.sfx', ''],
+                'minimal' => ['libboson-darwin-universal.dylib', 'minimal/macos-x86_64.sfx'],
+                'standard' => ['libboson-darwin-universal.dylib', 'standard/macos-x86_64.sfx'],
             ],
         ],
         'windows' => [
             'amd64' => [
-                'minimal' => ['libboson-windows-x86_64.dll', 'minimal/windows-x86_64.sfx', 'exe'],
-                'standard' => ['libboson-windows-x86_64.dll', 'standard/windows-x86_64.sfx', 'exe'],
+                'minimal' => ['libboson-windows-x86_64.dll', 'minimal/windows-x86_64.sfx'],
+                'standard' => ['libboson-windows-x86_64.dll', 'standard/windows-x86_64.sfx'],
             ],
         ],
     ];
@@ -71,14 +71,13 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
 
         foreach (self::BUILTIN_ASSEMBLIES as $family => $cpus) {
             foreach ($cpus as $cpu => $editions) {
-                foreach ($editions as $edition => [$frontend, $backend, $extension]) {
+                foreach ($editions as $edition => [$frontend, $backend]) {
                     $result[] = new Assembly(
                         family: Family::from($family),
                         arch: Architecture::from($cpu),
                         edition: Edition::from($edition),
                         frontend: $frontend,
                         backend: $backend,
-                        extension: $extension,
                     );
                 }
             }

@@ -36,7 +36,7 @@ final readonly class PackApplicationWorkflowPresenter
                 case CreateBuildDirectoryStatus::Created:
                     $output->writeln(\sprintf(
                         "\33[2K\r <info>●</info> Build directory \"<comment>%s</comment>\" is available",
-                        $config->build,
+                        $config->output,
                     ));
                     break;
 

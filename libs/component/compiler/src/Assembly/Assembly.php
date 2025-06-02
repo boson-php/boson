@@ -30,7 +30,7 @@ final readonly class Assembly implements \Stringable
      */
     public function getBuildDirectory(Configuration $config): string
     {
-        return $config->build
+        return $config->output
             . \DIRECTORY_SEPARATOR . \strtolower($this->family->name)
             . \DIRECTORY_SEPARATOR . \strtolower($this->arch->name);
     }

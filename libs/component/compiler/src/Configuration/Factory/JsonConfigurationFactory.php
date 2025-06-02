@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\Compiler\Configuration\Factory;
 
 use Boson\Component\Compiler\Configuration;
+use Boson\Component\Compiler\Configuration\DirectoryIncludeConfiguration;
 use Boson\Component\Compiler\Configuration\FileIncludeConfiguration;
 use Boson\Component\Compiler\Configuration\FinderIncludeConfiguration;
 use Boson\Component\Compiler\Configuration\IncludeConfiguration;
@@ -19,16 +20,19 @@ use JsonSchema\Validator;
  *
  * @phpstan-type RawFileInclusionType non-empty-string
  *
- * @phpstan-type RawInclusionType RawFinderInclusionType|RawFileInclusionType
+ * @phpstan-type RawDirectoryInclusionType non-empty-string
  *
  * @phpstan-type RawConfigurationType object{
  *     name?: non-empty-string,
  *     entrypoint?: non-empty-string,
- *     build?: non-empty-string,
+ *     output?: non-empty-string,
  *     root?: non-empty-string,
  *     box-version?: non-empty-string,
- *     build-files?: list<RawInclusionType>,
- *     copy-files?: list<RawInclusionType>,
+ *     build?: object{
+ *         files: list<RawFileInclusionType>,
+ *         directories: list<RawDirectoryInclusionType>,
+ *         finder: list<RawFinderInclusionType>
+ *     },
  *     ini?: object,
  *     ...
  * }
@@ -181,8 +185,8 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
             $config = $config->withBoxVersion($data->{'box-version'});
         }
 
-        if (isset($data->build)) {
-            $config = $config->withBuildDirectory($data->build);
+        if (isset($data->output)) {
+            $config = $config->withOutputDirectory($data->output);
         }
 
         if (isset($data->root)) {
@@ -199,24 +203,30 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
             $config = $config->withRootDirectory($root);
         }
 
-        if (isset($data->{'build-files'})) {
-            /** @var RawInclusionType $inclusion */
-            foreach ($data->{'build-files'} as $inclusion) {
-                $inclusion = $this->createInclusion($inclusion);
-
-                if ($inclusion !== null) {
-                    $config = $config->withAddedBuildInclusion($inclusion);
+        if (isset($data->build)) {
+            if (isset($data->build->files)) {
+                foreach ($data->build->files as $fileInclusion) {
+                    $config = $config->withAddedBuildInclusion(
+                        config: $this->createFileInclusion($fileInclusion),
+                    );
                 }
             }
-        }
 
-        if (isset($data->{'copy-files'})) {
-            /** @var RawInclusionType $inclusion */
-            foreach ($data->{'copy-files'} as $inclusion) {
-                $inclusion = $this->createInclusion($inclusion);
+            if (isset($data->build->directories)) {
+                foreach ($data->build->directories as $directoryInclusion) {
+                    $config = $config->withAddedBuildInclusion(
+                        config: $this->createDirectoryInclusion($directoryInclusion),
+                    );
+                }
+            }
 
-                if ($inclusion !== null) {
-                    $config = $config->withAddedCopyInclusion($inclusion);
+            if (isset($data->build->finder)) {
+                foreach ($data->build->finder as $finder) {
+                    $inclusion = $this->createFinderInclusion($finder);
+
+                    if ($inclusion !== null) {
+                        $config = $config->withAddedBuildInclusion($inclusion);
+                    }
                 }
             }
         }
@@ -232,22 +242,6 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
         }
 
         return $config;
-    }
-
-    /**
-     * @param RawInclusionType $inclusion
-     */
-    private function createInclusion(mixed $inclusion): ?IncludeConfiguration
-    {
-        if (\is_string($inclusion)) {
-            return $this->createFileInclusion($inclusion);
-        }
-
-        if (\is_object($inclusion)) {
-            return $this->createFinderInclusion($inclusion);
-        }
-
-        return null;
     }
 
     private function createFinderInclusion(object $inclusion): ?IncludeConfiguration
@@ -268,5 +262,10 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
     private function createFileInclusion(string $inclusion): FileIncludeConfiguration
     {
         return new FileIncludeConfiguration($inclusion);
+    }
+
+    private function createDirectoryInclusion(string $inclusion): DirectoryIncludeConfiguration
+    {
+        return new DirectoryIncludeConfiguration($inclusion);
     }
 }

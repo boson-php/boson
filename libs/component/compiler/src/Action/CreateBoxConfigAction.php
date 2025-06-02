@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\Compiler\Action;
 
 use Boson\Component\Compiler\Configuration;
+use Boson\Component\Compiler\Configuration\DirectoryIncludeConfiguration;
 use Boson\Component\Compiler\Configuration\FileIncludeConfiguration;
 use Boson\Component\Compiler\Configuration\FinderIncludeConfiguration;
 
@@ -29,7 +30,7 @@ final readonly class CreateBoxConfigAction implements ActionInterface
     {
         $finder = [];
 
-        foreach ($config->buildFiles as $inclusion) {
+        foreach ($config->build as $inclusion) {
             $section = [];
 
             if (!$inclusion instanceof FinderIncludeConfiguration) {
@@ -56,7 +57,7 @@ final readonly class CreateBoxConfigAction implements ActionInterface
     {
         $files = [];
 
-        foreach ($config->buildFiles as $inclusion) {
+        foreach ($config->build as $inclusion) {
             if (!$inclusion instanceof FileIncludeConfiguration) {
                 continue;
             }
@@ -67,10 +68,25 @@ final readonly class CreateBoxConfigAction implements ActionInterface
         return $files;
     }
 
+    private function getBoxDirectoriesConfig(Configuration $config): array
+    {
+        $directories = [];
+
+        foreach ($config->build as $inclusion) {
+            if (!$inclusion instanceof DirectoryIncludeConfiguration) {
+                continue;
+            }
+
+            $directories[] = $inclusion->directory;
+        }
+
+        return $directories;
+    }
+
     private function getBoxConfig(Configuration $config): array
     {
         $finder = $this->getBoxFinderConfig($config);
-
+        $directories = $this->getBoxDirectoriesConfig($config);
         $files = $this->getBoxFilesConfig($config);
         $files[] = $config->entrypoint;
 
@@ -85,6 +101,7 @@ final readonly class CreateBoxConfigAction implements ActionInterface
             'compression' => 'GZ',
             'finder' => $finder,
             'files' => $files,
+            'directories' => $directories,
         ];
     }
 }

@@ -140,7 +140,7 @@ final class CompileCommand extends ConfigAwareCommand
 
         $output->writeln(\sprintf(
             ' · Build an application in "<comment>%s</comment>"',
-            $config->build,
+            $config->output,
         ));
 
         foreach ($workflow->process($config, $assemblies) as $data => $status) {

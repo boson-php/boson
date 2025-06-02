@@ -43,7 +43,7 @@ final readonly class ConsoleInputConfigurationFactory implements ConfigurationFa
         }
 
         if (($temp = $this->getOptionValue('build')) !== null) {
-            $config = $config->withBuildDirectory($temp);
+            $config = $config->withOutputDirectory($temp);
         }
 
         return $config;

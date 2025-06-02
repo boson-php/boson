@@ -38,29 +38,21 @@ final class InitCommand extends ConfigAwareCommand
             'arch' => ['amd64', 'aarch64'],
             'platform' => ['windows', 'linux', 'macos'],
             'entrypoint' => 'index.php',
-            'build' => './build/',
-            'build-files' => [
-                [
-                    'directory' => 'src',
-                    'name' => '*.php',
+            'output' => './build',
+            'build' => [
+                'directories' => [
+                    'public'
                 ],
-                [
-                    'directory' => 'public',
-                    'name' => '*.js|*.css|*.html|*.ico|*.svg|*.png',
-                ],
-                [
-                    'directory' => 'vendor',
-                    'name' => '*.php',
-                ]
-            ],
-            'copy-files' => [
-                [
-                    'from' => [
-                        'directory' => 'resources',
-                        'name' => '*.js|*.css|*.html|*.ico|*.svg|*.png',
+                'finder' => [
+                    [
+                        'directory' => 'src',
+                        'name' => '*.php',
                     ],
-                    'to' => 'resources',
-                ]
+                    [
+                        'directory' => 'vendor',
+                        'name' => '*.php',
+                    ],
+                ],
             ],
             'ini' => [
                 'memory_limit' => '128M',

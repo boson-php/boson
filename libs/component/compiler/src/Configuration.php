@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Component\Compiler;
 
-use Boson\Component\Compiler\Assembly\Assembly;
-use Boson\Component\Compiler\Configuration\FinderIncludeConfiguration;
 use Boson\Component\Compiler\Configuration\IncludeConfiguration;
 
 final class Configuration
@@ -35,14 +33,9 @@ final class Configuration
     public const ?string DEFAULT_APP_DIRECTORY = null;
 
     /**
-     * @var list<FinderIncludeConfiguration>
+     * @var list<IncludeConfiguration>
      */
-    public private(set) array $buildFiles;
-
-    /**
-     * @var list<FinderIncludeConfiguration>
-     */
-    public private(set) array $copyFiles;
+    public private(set) array $build;
 
     /**
      * @var array<non-empty-string, scalar>
@@ -52,8 +45,8 @@ final class Configuration
     /**
      * @var non-empty-string
      */
-    public private(set) string $build {
-        get => $this->build;
+    public private(set) string $output {
+        get => $this->output;
         set(?string $directory) => $directory
             ?? ($this->root . \DIRECTORY_SEPARATOR . 'build');
     }
@@ -77,7 +70,7 @@ final class Configuration
      * @var non-empty-string
      */
     public string $pharPathname {
-        get => $this->build . \DIRECTORY_SEPARATOR . $this->pharName;
+        get => $this->output . \DIRECTORY_SEPARATOR . $this->pharName;
     }
 
     /**
@@ -91,7 +84,7 @@ final class Configuration
      * @var non-empty-string
      */
     public string $boxStubPathname {
-        get => $this->build . \DIRECTORY_SEPARATOR . $this->boxStubName;
+        get => $this->output . \DIRECTORY_SEPARATOR . $this->boxStubName;
     }
 
     /**
@@ -105,7 +98,7 @@ final class Configuration
      * @var non-empty-string
      */
     public string $boxConfigPathname {
-        get => $this->build . \DIRECTORY_SEPARATOR . $this->boxConfigName;
+        get => $this->output . \DIRECTORY_SEPARATOR . $this->boxConfigName;
     }
 
     /**
@@ -119,7 +112,7 @@ final class Configuration
      * @var non-empty-string
      */
     public string $boxPharPathname {
-        get => $this->build . \DIRECTORY_SEPARATOR . $this->boxPharName;
+        get => $this->output . \DIRECTORY_SEPARATOR . $this->boxPharName;
     }
 
     /**
@@ -133,7 +126,6 @@ final class Configuration
 
     /**
      * @param iterable<mixed, IncludeConfiguration> $build
-     * @param iterable<mixed, FinderIncludeConfiguration> $copy
      * @param iterable<non-empty-string, scalar> $ini
      * @param non-empty-string|null $temp
      * @param non-empty-string|null $root
@@ -154,13 +146,11 @@ final class Configuration
         ?string $temp = self::DEFAULT_BUILD_DIRECTORY,
         ?string $root = self::DEFAULT_APP_DIRECTORY,
         iterable $build = [],
-        iterable $copy = [],
         iterable $ini = [],
     ) {
-        $this->buildFiles = \iterator_to_array($build, false);
-        $this->copyFiles = \iterator_to_array($copy, false);
+        $this->build = \iterator_to_array($build, false);
         $this->ini = \iterator_to_array($ini, false);
-        $this->build = $temp;
+        $this->output = $temp;
         $this->root = $root;
     }
 
@@ -205,10 +195,10 @@ final class Configuration
     /**
      * @param non-empty-string|null $directory
      */
-    public function withBuildDirectory(?string $directory): self
+    public function withOutputDirectory(?string $directory): self
     {
         $self = clone $this;
-        $self->build = $directory;
+        $self->output = $directory;
 
         return $self;
     }
@@ -239,15 +229,7 @@ final class Configuration
     public function withAddedBuildInclusion(IncludeConfiguration $config): self
     {
         $self = clone $this;
-        $self->buildFiles[] = $config;
-
-        return $self;
-    }
-
-    public function withAddedCopyInclusion(IncludeConfiguration $config): self
-    {
-        $self = clone $this;
-        $self->copyFiles[] = $config;
+        $self->build[] = $config;
 
         return $self;
     }

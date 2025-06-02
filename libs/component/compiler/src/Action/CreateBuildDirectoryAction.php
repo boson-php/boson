@@ -15,7 +15,7 @@ final readonly class CreateBuildDirectoryAction implements ActionInterface
     {
         yield CreateBuildDirectoryStatus::ReadyToCreate;
 
-        $directory = $config->build;
+        $directory = $config->output;
 
         if (!\is_dir($directory)) {
             $this->createOrFail($directory);
