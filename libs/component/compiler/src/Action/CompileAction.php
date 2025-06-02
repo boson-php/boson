@@ -21,7 +21,15 @@ final readonly class CompileAction extends AssemblyAction
 
         $targetPathname = $this->getBinaryTargetPathname($config);
 
-        $targetStream = \fopen($targetPathname, 'wb+');
+        $targetStream = @\fopen($targetPathname, 'wb+');
+
+        if ($targetStream === false) {
+            throw new \RuntimeException(\sprintf(
+                'Unable to create target binary "%s"',
+                $targetPathname,
+            ));
+        }
+
         \flock($targetStream, \LOCK_EX);
 
         $this->appendSfxArchive($targetStream);
@@ -51,7 +59,15 @@ final readonly class CompileAction extends AssemblyAction
      */
     private function appendSource(mixed $stream, Configuration $config): void
     {
-        $sourceStream = \fopen($config->pharPathname, 'rb');
+        $sourceStream = @\fopen($config->pharPathname, 'rb');
+
+        if ($sourceStream === false) {
+            throw new \RuntimeException(\sprintf(
+                'Unable to open application phar file "%s"',
+                $config->pharPathname,
+            ));
+        }
+
         \flock($sourceStream, \LOCK_SH);
 
         \stream_copy_to_stream($sourceStream, $stream);
@@ -78,7 +94,15 @@ final readonly class CompileAction extends AssemblyAction
     {
         $archive = $this->getSfxArchivePathname($this->assembly);
 
-        $archiveStream = \fopen($archive, 'rb');
+        $archiveStream = @\fopen($archive, 'rb');
+
+        if ($archiveStream === false) {
+            throw new \RuntimeException(\sprintf(
+                'Unable to open application SFX file "%s"',
+                $archive,
+            ));
+        }
+
         \flock($archiveStream, \LOCK_SH);
 
         \stream_copy_to_stream($archiveStream, $stream);

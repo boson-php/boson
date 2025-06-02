@@ -19,18 +19,6 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
      */
     private array $assemblies;
 
-    /**
-     * @phpstan-type OSFamilyType non-empty-string
-     * @phpstan-type CPUArchitectureType non-empty-string
-     * @phpstan-type PHPEditionType non-empty-string
-     * @phpstan-type FrontendBinaryType non-empty-string
-     * @phpstan-type BackendBinaryType non-empty-string
-     *
-     * @var array<OSFamilyType, array<CPUArchitectureType, array<PHPEditionType, array{
-     *     FrontendBinaryType,
-     *     BackendBinaryType
-     * }>>>
-     */
     private const array BUILTIN_ASSEMBLIES = [
         'linux' => [
             'arm64' => [
@@ -60,6 +48,9 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
         ],
     ];
 
+    /**
+     * @param iterable<mixed, Assembly> $assemblies
+     */
     public function __construct(iterable $assemblies)
     {
         $this->assemblies = \iterator_to_array($assemblies, false);

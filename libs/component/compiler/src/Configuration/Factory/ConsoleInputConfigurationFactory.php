@@ -22,7 +22,13 @@ final readonly class ConsoleInputConfigurationFactory implements ConfigurationFa
     {
         $input = $this->input;
 
-        if ($input->hasOption($name) && ($value = $input->getOption($name)) !== '') {
+        if ($input->hasOption($name)) {
+            $value = $input->getOption($name);
+
+            if (!\is_string($value) || $value === '') {
+                return null;
+            }
+
             return $value;
         }
 

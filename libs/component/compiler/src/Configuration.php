@@ -55,7 +55,9 @@ final class Configuration
      * @var non-empty-string
      */
     public private(set) string $root {
+        /** @phpstan-ignore-next-line : Root cannot be empty */
         get => $this->root ??= (\getcwd() ?: '.');
+        /** @phpstan-ignore-next-line : Root cannot be empty */
         set(?string $directory) => $directory ?? (\getcwd() ?: '.');
     }
 
@@ -149,7 +151,7 @@ final class Configuration
         iterable $ini = [],
     ) {
         $this->build = \iterator_to_array($build, false);
-        $this->ini = \iterator_to_array($ini, false);
+        $this->ini = \iterator_to_array($ini, true);
         $this->output = $temp;
         $this->root = $root;
     }

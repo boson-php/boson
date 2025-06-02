@@ -89,6 +89,10 @@ abstract class ConfigAwareCommand extends Command
                 ?? JsonConfigurationFactory::DEFAULT_JSON_FILENAME
             : JsonConfigurationFactory::DEFAULT_JSON_FILENAME;
 
+        if (!\is_string($pathname) || $pathname === '') {
+            throw new \InvalidArgumentException('Could not read configuration file');
+        }
+
         return new JsonConfigurationFactory($pathname)
             ->createConfiguration($this->getDefaultConfiguration());
     }

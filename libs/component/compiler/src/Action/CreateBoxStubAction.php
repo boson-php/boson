@@ -18,7 +18,7 @@ final readonly class CreateBoxStubAction implements ActionInterface
         $stub = \str_replace(
             search: ['{name}', '{entrypoint}'],
             replace: [$config->name, $config->entrypoint],
-            subject: \file_get_contents(__DIR__ . '/../../resources/stub.php'),
+            subject: (string) @\file_get_contents(__DIR__ . '/../../resources/stub.php'),
         );
 
         \file_put_contents($config->boxStubPathname, $stub);

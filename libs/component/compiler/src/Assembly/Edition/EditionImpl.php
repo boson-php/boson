@@ -11,8 +11,14 @@ use Boson\Component\Compiler\Assembly\EditionInterface;
  */
 trait EditionImpl
 {
+    /**
+     * @var list<non-empty-string>
+     */
     public readonly array $extensions;
 
+    /**
+     * @param iterable<mixed, non-empty-string> $extensions
+     */
     public function __construct(
         /**
          * @var non-empty-string

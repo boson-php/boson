@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\Compiler\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
@@ -21,12 +22,17 @@ final class InitCommand extends ConfigAwareCommand
         if (\is_file($boson)) {
             $output->writeln(\sprintf('The config "<comment>%s</comment>" already exists', $boson));
 
-            $shouldContinue = $this->getHelper('question')
-                ->ask($input, $output, new ConfirmationQuestion(
-                    question: ' · Do you want to overwrite it? [y/N] ',
-                    default: false,
-                    trueAnswerRegex: '/^(y|j)/i'
-                ));
+            $helper = $this->getHelper('question');
+
+            if (!$helper instanceof QuestionHelper) {
+                throw new \InvalidArgumentException('Could not initialize question helper');
+            }
+
+            $shouldContinue = $helper->ask($input, $output, new ConfirmationQuestion(
+                question: ' · Do you want to overwrite it? [y/N] ',
+                default: false,
+                trueAnswerRegex: '/^(y|j)/i'
+            ));
 
             if ($shouldContinue === false) {
                 return self::SUCCESS;

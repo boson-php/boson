@@ -14,8 +14,7 @@ use JsonSchema\Validator;
 /**
  * @phpstan-type RawFinderInclusionType object{
  *     directory: non-empty-string,
- *     name: non-empty-string,
- *     ...
+ *     name: non-empty-string
  * }
  * @phpstan-type RawFileInclusionType non-empty-string
  * @phpstan-type RawDirectoryInclusionType non-empty-string
@@ -30,8 +29,7 @@ use JsonSchema\Validator;
  *         directories: list<RawDirectoryInclusionType>,
  *         finder: list<RawFinderInclusionType>
  *     },
- *     ini?: object,
- *     ...
+ *     ini?: object
  * }
  */
 final class JsonConfigurationFactory implements ConfigurationFactoryInterface
@@ -60,7 +58,7 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
     {
         $result = @\file_get_contents(self::JSON_SCHEMA_FILENAME);
 
-        if ($result === false) {
+        if ($result === false || $result === '') {
             throw new \RuntimeException('Failed to load configuration schema file');
         }
 
@@ -139,6 +137,7 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
             throw new \RuntimeException(\vsprintf("%s in $.%s\nin config %s", [
                 $error['message'],
                 $error['property'],
+                /** @phpstan-ignore ternary.shortNotAllowed */
                 \realpath($this->filename) ?: $this->filename,
             ]));
         }
@@ -155,6 +154,7 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
             throw new \RuntimeException(\sprintf(
                 '%s: An error occurred while parsing "%s" configuration file',
                 $e->getMessage(),
+                /** @phpstan-ignore ternary.shortNotAllowed */
                 \realpath($this->filename) ?: $this->filename,
             ));
         }
@@ -170,38 +170,41 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
 
         $this->validateConfigOrFail($data);
 
-        if (isset($data->name)) {
+        if (\property_exists($data, 'name')) {
             $config = $config->withName($data->name);
         }
 
-        if (isset($data->entrypoint)) {
+        if (\property_exists($data, 'entrypoint')) {
             $config = $config->withEntrypoint($data->entrypoint);
         }
 
-        if (isset($data->{'box-version'})) {
+        if (\property_exists($data, 'box-version')) {
+            /** @phpstan-ignore-next-line */
             $config = $config->withBoxVersion($data->{'box-version'});
         }
 
-        if (isset($data->output)) {
+        if (\property_exists($data, 'output')) {
             $config = $config->withOutputDirectory($data->output);
         }
 
-        if (isset($data->root)) {
+        if (\property_exists($data, 'root')) {
             $root = $data->root;
 
             if (\is_dir($root)) {
+                /** @var non-empty-string $root */
                 $root = (string) @\realpath($root);
             }
 
             $config = $config->withRootDirectory($root);
         } else {
-            $root = \dirname(\realpath($this->filename));
+            /** @var non-empty-string $root */
+            $root = \dirname((string) \realpath($this->filename));
 
             $config = $config->withRootDirectory($root);
         }
 
-        if (isset($data->build)) {
-            if (isset($data->build->files)) {
+        if (\property_exists($data, 'build')) {
+            if (\property_exists($data->build, 'files')) {
                 foreach ($data->build->files as $fileInclusion) {
                     $config = $config->withAddedBuildInclusion(
                         config: $this->createFileInclusion($fileInclusion),
@@ -209,7 +212,7 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
                 }
             }
 
-            if (isset($data->build->directories)) {
+            if (\property_exists($data->build, 'directories')) {
                 foreach ($data->build->directories as $directoryInclusion) {
                     $config = $config->withAddedBuildInclusion(
                         config: $this->createDirectoryInclusion($directoryInclusion),
@@ -217,7 +220,7 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
                 }
             }
 
-            if (isset($data->build->finder)) {
+            if (\property_exists($data->build, 'finder')) {
                 foreach ($data->build->finder as $finder) {
                     $inclusion = $this->createFinderInclusion($finder);
 
@@ -228,7 +231,7 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
             }
         }
 
-        if (isset($data->ini)) {
+        if (\property_exists($data, 'ini')) {
             /**
              * @var non-empty-string $iniConfig
              * @var scalar $iniValue
@@ -241,6 +244,9 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
         return $config;
     }
 
+    /**
+     * @param RawFinderInclusionType $inclusion
+     */
     private function createFinderInclusion(object $inclusion): ?IncludeConfiguration
     {
         $directory = $inclusion->directory ?? null;
@@ -256,11 +262,17 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
         );
     }
 
+    /**
+     * @param non-empty-string $inclusion
+     */
     private function createFileInclusion(string $inclusion): FileIncludeConfiguration
     {
         return new FileIncludeConfiguration($inclusion);
     }
 
+    /**
+     * @param non-empty-string $inclusion
+     */
     private function createDirectoryInclusion(string $inclusion): DirectoryIncludeConfiguration
     {
         return new DirectoryIncludeConfiguration($inclusion);

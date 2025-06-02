@@ -18,6 +18,7 @@ final readonly class ClearBuildAssemblyDirectoryAction extends AssemblyAction
         $directory = $this->assembly->getBuildDirectory($config);
 
         if (\is_dir($directory)) {
+            /** @var \SplFileInfo $file */
             foreach ($this->getIterator($directory) as $file) {
                 if ($file->isDir()) {
                     yield $file->getPathname() => ClearBuildAssemblyDirectoryStatus::Cleaning;
@@ -41,7 +42,7 @@ final readonly class ClearBuildAssemblyDirectoryAction extends AssemblyAction
     }
 
     /**
-     * @return \RecursiveIteratorIterator<array-key, \SplFileInfo>
+     * @return \RecursiveIteratorIterator<\RecursiveDirectoryIterator>
      */
     private function getIterator(string $directory): \RecursiveIteratorIterator
     {

@@ -28,7 +28,15 @@ final readonly class DownloadBoxAction implements ActionInterface
             return yield DownloadBoxStatus::Complete;
         }
 
-        $localBoxStream = \fopen($config->boxPharPathname, 'w+b');
+        $localBoxStream = @\fopen($config->boxPharPathname, 'w+b');
+
+        if ($localBoxStream === false) {
+            throw new \RuntimeException(\sprintf(
+                'Unable to create humbug/box phar package in "%s"',
+                $config->boxPharPathname,
+            ));
+        }
+
         \flock($localBoxStream, \LOCK_EX);
 
         try {

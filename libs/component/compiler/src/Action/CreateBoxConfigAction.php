@@ -26,6 +26,12 @@ final readonly class CreateBoxConfigAction implements ActionInterface
         yield CreateBoxConfigStatus::Created;
     }
 
+    /**
+     * @return list<array{
+     *     name?: non-empty-string,
+     *     in?: non-empty-string
+     * }>
+     */
     private function getBoxFinderConfig(Configuration $config): array
     {
         $finder = [];
@@ -53,6 +59,9 @@ final readonly class CreateBoxConfigAction implements ActionInterface
         return $finder;
     }
 
+    /**
+     * @return list<non-empty-string>
+     */
     private function getBoxFilesConfig(Configuration $config): array
     {
         $files = [];
@@ -68,6 +77,9 @@ final readonly class CreateBoxConfigAction implements ActionInterface
         return $files;
     }
 
+    /**
+     * @return list<non-empty-string>
+     */
     private function getBoxDirectoriesConfig(Configuration $config): array
     {
         $directories = [];
@@ -83,6 +95,9 @@ final readonly class CreateBoxConfigAction implements ActionInterface
         return $directories;
     }
 
+    /**
+     * @return array<non-empty-string, mixed>
+     */
     private function getBoxConfig(Configuration $config): array
     {
         $finder = $this->getBoxFinderConfig($config);
