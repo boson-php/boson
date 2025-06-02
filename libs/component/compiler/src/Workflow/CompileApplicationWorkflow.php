@@ -6,6 +6,7 @@ namespace Boson\Component\Compiler\Workflow;
 
 use Boson\Component\Compiler\Action\ClearBuildAssemblyDirectoryAction;
 use Boson\Component\Compiler\Action\CompileAction;
+use Boson\Component\Compiler\Action\CopyRuntimeBinaryAction;
 use Boson\Component\Compiler\Action\CreateBuildAssemblyDirectoryAction;
 use Boson\Component\Compiler\Assembly\Assembly;
 use Boson\Component\Compiler\Configuration;
@@ -29,6 +30,10 @@ final readonly class CompileApplicationWorkflow
 
             // Compile assembly
             yield from new CompileAction($assembly)
+                ->process($config);
+
+            // Copy runtime binaries
+            yield from new CopyRuntimeBinaryAction($assembly)
                 ->process($config);
         }
     }
