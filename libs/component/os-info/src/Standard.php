@@ -43,6 +43,7 @@ final readonly class Standard implements StandardInterface
 
     /**
      * @api
+     *
      * @return non-empty-list<StandardInterface>
      */
     public static function cases(): array

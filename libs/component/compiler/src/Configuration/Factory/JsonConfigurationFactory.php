@@ -17,11 +17,8 @@ use JsonSchema\Validator;
  *     name: non-empty-string,
  *     ...
  * }
- *
  * @phpstan-type RawFileInclusionType non-empty-string
- *
  * @phpstan-type RawDirectoryInclusionType non-empty-string
- *
  * @phpstan-type RawConfigurationType object{
  *     name?: non-empty-string,
  *     entrypoint?: non-empty-string,

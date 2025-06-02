@@ -8,7 +8,7 @@ use Boson\Component\Compiler\Assembly\Edition;
 use Boson\Component\Compiler\Assembly\EditionInterface;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\Component\Compiler\Assembly
  */
 final readonly class BuiltinEdition implements EditionInterface

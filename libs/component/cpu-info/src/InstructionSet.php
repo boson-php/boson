@@ -110,6 +110,7 @@ final class InstructionSet implements InstructionSetInterface
      * defined in this class.
      *
      * @api
+     *
      * @return non-empty-list<InstructionSetInterface>
      */
     public static function cases(): array

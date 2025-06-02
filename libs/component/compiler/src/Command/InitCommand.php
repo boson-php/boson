@@ -41,7 +41,7 @@ final class InitCommand extends ConfigAwareCommand
             'output' => './build',
             'build' => [
                 'directories' => [
-                    'public'
+                    'public',
                 ],
                 'finder' => [
                     [

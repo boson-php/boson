@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\Component\Compiler\Assembly;
 
+use Boson\Component\Compiler\Assembly\EditionInterface as PhpEditionInterface;
 use Boson\Component\Compiler\Configuration;
 use Boson\Component\CpuInfo\ArchitectureInterface as CpuArchitectureInterface;
 use Boson\Component\OsInfo\FamilyInterface as OsFamilyInterface;
-use Boson\Component\Compiler\Assembly\EditionInterface as PhpEditionInterface;
 
 final readonly class Assembly implements \Stringable
 {

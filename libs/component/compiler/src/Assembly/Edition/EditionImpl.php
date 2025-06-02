@@ -25,4 +25,3 @@ trait EditionImpl
         return $this->name;
     }
 }
-

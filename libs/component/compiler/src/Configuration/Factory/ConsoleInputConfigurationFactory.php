@@ -15,6 +15,7 @@ final readonly class ConsoleInputConfigurationFactory implements ConfigurationFa
 
     /**
      * @param non-empty-string $name
+     *
      * @return non-empty-string|null
      */
     private function getOptionValue(string $name): ?string

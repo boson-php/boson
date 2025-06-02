@@ -46,6 +46,7 @@ final readonly class Edition implements EditionInterface
 
     /**
      * @api
+     *
      * @return non-empty-list<EditionInterface>
      */
     public static function cases(): array

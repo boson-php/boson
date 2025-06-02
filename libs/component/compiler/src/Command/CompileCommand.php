@@ -86,7 +86,6 @@ final class CompileCommand extends ConfigAwareCommand
 
         $assemblies = AssemblyCollection::createFromBuiltinAssemblies();
 
-
         // ---------------------------------------------------------------------
         //  Platforms
         // ---------------------------------------------------------------------
@@ -101,7 +100,6 @@ final class CompileCommand extends ConfigAwareCommand
             $output->writeln('   ↳ <info>' . $family . '</info>');
         }
 
-
         // ---------------------------------------------------------------------
         //  Architectures
         // ---------------------------------------------------------------------
@@ -115,7 +113,6 @@ final class CompileCommand extends ConfigAwareCommand
         foreach ($assemblies->getAvailableArchitectures() as $architecture) {
             $output->writeln('   ↳ <info>' . $architecture . '</info>');
         }
-
 
         // ---------------------------------------------------------------------
         //  Edition

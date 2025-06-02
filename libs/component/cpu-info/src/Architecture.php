@@ -139,6 +139,7 @@ final readonly class Architecture implements ArchitectureInterface
      * defined in this class.
      *
      * @api
+     *
      * @return non-empty-list<ArchitectureInterface>
      */
     public static function cases(): array

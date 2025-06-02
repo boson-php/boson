@@ -79,6 +79,7 @@ final readonly class Family implements FamilyInterface
 
     /**
      * @api
+     *
      * @return non-empty-list<FamilyInterface>
      */
     public static function cases(): array

@@ -8,6 +8,7 @@ use Boson\Component\Compiler\Assembly\Assembly;
 
 /**
  * @template TStatus of \UnitEnum
+ *
  * @template-implements ActionInterface<TStatus>
  */
 abstract readonly class AssemblyAction implements ActionInterface

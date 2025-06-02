@@ -15,6 +15,7 @@ final readonly class CompileApplicationWorkflow
 {
     /**
      * @param iterable<mixed, Assembly> $assemblies
+     *
      * @return iterable<mixed, \UnitEnum>
      */
     public function process(Configuration $config, iterable $assemblies): iterable

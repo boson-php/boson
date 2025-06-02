@@ -216,7 +216,6 @@ final class Configuration
 
     /**
      * @param non-empty-string $config
-     * @param string|float|bool|int $value
      */
     public function withAddedIni(string $config, string|float|bool|int $value): self
     {
