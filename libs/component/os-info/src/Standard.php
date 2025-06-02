@@ -27,6 +27,8 @@ final readonly class Standard implements StandardInterface
 
     /**
      * @api
+     *
+     * @param non-empty-string $name
      */
     public static function tryFrom(string $name): ?BuiltinStandard
     {
@@ -35,6 +37,8 @@ final readonly class Standard implements StandardInterface
 
     /**
      * @api
+     *
+     * @param non-empty-string $name
      */
     public static function from(string $name): StandardInterface
     {

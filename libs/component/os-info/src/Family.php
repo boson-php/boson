@@ -63,6 +63,8 @@ final readonly class Family implements FamilyInterface
 
     /**
      * @api
+     *
+     * @param non-empty-string $name
      */
     public static function tryFrom(string $name): ?BuiltinFamily
     {
@@ -71,6 +73,8 @@ final readonly class Family implements FamilyInterface
 
     /**
      * @api
+     *
+     * @param non-empty-string $name
      */
     public static function from(string $name): FamilyInterface
     {

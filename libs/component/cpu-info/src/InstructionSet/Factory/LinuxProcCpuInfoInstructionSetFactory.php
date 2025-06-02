@@ -71,7 +71,7 @@ final readonly class LinuxProcCpuInfoInstructionSetFactory implements Instructio
                 continue;
             }
 
-            yield $flag => match ($flag) {
+            yield $flag => match (\strtolower($flag)) {
                 'mmx' => InstructionSet::MMX,
                 'sse' => InstructionSet::SSE,
                 'sse2' => InstructionSet::SSE2,
@@ -82,7 +82,7 @@ final readonly class LinuxProcCpuInfoInstructionSetFactory implements Instructio
                 'avx' => InstructionSet::AVX,
                 'avx2' => InstructionSet::AVX2,
                 'avx512f' => InstructionSet::AVX512,
-                default => new InstructionSet($flag, $arch),
+                default => new InstructionSet($flag),
             };
         }
     }

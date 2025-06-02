@@ -83,6 +83,8 @@ final class InstructionSet implements InstructionSetInterface
      * instruction set.
      *
      * @api
+     *
+     * @param non-empty-string $name
      */
     public static function tryFrom(string $name): ?BuiltinInstructionSet
     {
@@ -97,6 +99,8 @@ final class InstructionSet implements InstructionSetInterface
      * given name.
      *
      * @api
+     *
+     * @param non-empty-string $name
      */
     public static function from(string $name): InstructionSetInterface
     {
@@ -115,11 +119,11 @@ final class InstructionSet implements InstructionSetInterface
      */
     public static function cases(): array
     {
-        /** @var non-empty-array<non-empty-string, ArchitectureInterface> $cases */
+        /** @var non-empty-array<non-empty-string, InstructionSetInterface> $cases */
         static $cases = new \ReflectionClass(self::class)
             ->getConstants();
 
-        /** @var non-empty-list<ArchitectureInterface> */
+        /** @var non-empty-list<InstructionSetInterface> */
         return \array_values($cases);
     }
 }

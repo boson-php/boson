@@ -14,6 +14,9 @@ trait EditionImpl
     public readonly array $extensions;
 
     public function __construct(
+        /**
+         * @var non-empty-string
+         */
         public readonly string $name,
         iterable $extensions = [],
     ) {
