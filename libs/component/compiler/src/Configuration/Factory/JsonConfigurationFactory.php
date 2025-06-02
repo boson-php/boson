@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace Boson\Component\Compiler\Configuration\Factory;
 
 use Boson\Component\Compiler\Configuration;
+use Boson\Component\Compiler\Configuration\FileIncludeConfiguration;
+use Boson\Component\Compiler\Configuration\FinderIncludeConfiguration;
 use Boson\Component\Compiler\Configuration\IncludeConfiguration;
 use JsonSchema\Validator;
 
 /**
- * @phpstan-type RawInclusionType object{
+ * @phpstan-type RawFinderInclusionType object{
  *     directory: non-empty-string,
  *     name: non-empty-string,
  *     ...
  * }
+ *
+ * @phpstan-type RawFileInclusionType non-empty-string
+ *
+ * @phpstan-type RawInclusionType RawFinderInclusionType|RawFileInclusionType
  *
  * @phpstan-type RawConfigurationType object{
  *     name?: non-empty-string,
@@ -231,7 +237,20 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
     /**
      * @param RawInclusionType $inclusion
      */
-    private function createInclusion(object $inclusion): ?IncludeConfiguration
+    private function createInclusion(mixed $inclusion): ?IncludeConfiguration
+    {
+        if (\is_string($inclusion)) {
+            return $this->createFileInclusion($inclusion);
+        }
+
+        if (\is_object($inclusion)) {
+            return $this->createFinderInclusion($inclusion);
+        }
+
+        return null;
+    }
+
+    private function createFinderInclusion(object $inclusion): ?IncludeConfiguration
     {
         $directory = $inclusion->directory ?? null;
         $name = $inclusion->name ?? null;
@@ -240,9 +259,14 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
             return null;
         }
 
-        return new IncludeConfiguration(
+        return new FinderIncludeConfiguration(
             directory: $directory,
             name: $name,
         );
+    }
+
+    private function createFileInclusion(string $inclusion): FileIncludeConfiguration
+    {
+        return new FileIncludeConfiguration($inclusion);
     }
 }

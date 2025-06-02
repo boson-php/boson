@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\Compiler\Workflow;
 
 use Boson\Component\Compiler\Action\CreateBoxConfigAction;
+use Boson\Component\Compiler\Action\CreateBoxStubAction;
 use Boson\Component\Compiler\Action\CreateBuildDirectoryAction;
 use Boson\Component\Compiler\Action\DownloadBoxAction;
 use Boson\Component\Compiler\Action\PackBoxAction;
@@ -27,6 +28,10 @@ final readonly class PackApplicationWorkflow
 
         // Create box json config
         yield from new CreateBoxConfigAction()
+            ->process($config);
+
+        // Create box stub
+        yield from new CreateBoxStubAction()
             ->process($config);
 
         // Download box package

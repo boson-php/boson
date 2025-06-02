@@ -23,7 +23,6 @@ final readonly class Assembly implements \Stringable
          * @var non-empty-string
          */
         public string $backend,
-        public string $extension = '',
     ) {}
 
     /**
@@ -32,27 +31,13 @@ final readonly class Assembly implements \Stringable
     public function getBuildDirectory(Configuration $config): string
     {
         return $config->build
-            . \DIRECTORY_SEPARATOR . $this->family
-            . \DIRECTORY_SEPARATOR . $this->arch;
-    }
-
-    /**
-     * @return non-empty-string
-     */
-    public function getBuildBinaryPathname(Configuration $config): string
-    {
-        $pathname = $this->getBuildDirectory($config)
-            . \DIRECTORY_SEPARATOR . $config->name;
-
-        if ($this->extension !== '') {
-            $pathname .= '.' . $this->extension;
-        }
-
-        return $pathname;
+            . \DIRECTORY_SEPARATOR . \strtolower($this->family->name)
+            . \DIRECTORY_SEPARATOR . \strtolower($this->arch->name);
     }
 
     public function __toString(): string
     {
-        return $this->family . '/' . $this->arch;
+        return \strtolower($this->family->name)
+            . '/' . \strtolower($this->arch->name);
     }
 }

@@ -23,7 +23,7 @@ final class InitCommand extends ConfigAwareCommand
 
             $shouldContinue = $this->getHelper('question')
                 ->ask($input, $output, new ConfirmationQuestion(
-                    question: 'Do you want to overwrite it? [y/N] ',
+                    question: ' · Do you want to overwrite it? [y/N] ',
                     default: false,
                     trueAnswerRegex: '/^(y|j)/i'
                 ));
@@ -33,7 +33,7 @@ final class InitCommand extends ConfigAwareCommand
             }
         }
 
-        \file_get_contents($boson, \json_encode([
+        \file_put_contents($boson, \json_encode([
             'name' => 'app',
             'arch' => ['amd64', 'aarch64'],
             'platform' => ['windows', 'linux', 'macos'],
@@ -66,6 +66,11 @@ final class InitCommand extends ConfigAwareCommand
                 'memory_limit' => '128M',
             ],
         ], \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT));
+
+        $output->writeln(\sprintf(
+            ' <info>●</info> Configuration "<comment>%s</comment>" was successfully created',
+            $boson,
+        ));
 
         return self::SUCCESS;
     }

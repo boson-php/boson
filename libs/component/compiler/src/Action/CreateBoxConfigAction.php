@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Boson\Component\Compiler\Action;
 
 use Boson\Component\Compiler\Configuration;
+use Boson\Component\Compiler\Configuration\FileIncludeConfiguration;
+use Boson\Component\Compiler\Configuration\FinderIncludeConfiguration;
 
 /**
  * @template-implements ActionInterface<CreateBoxConfigStatus>
@@ -23,52 +25,16 @@ final readonly class CreateBoxConfigAction implements ActionInterface
         yield CreateBoxConfigStatus::Created;
     }
 
-    /**
-     * @return non-empty-string
-     */
-    private function getEntrypointPathname(Configuration $config): string
-    {
-        $entrypoints = [
-            $config->root . '/' . $config->entrypoint,
-            $config->entrypoint,
-        ];
-
-        foreach ($entrypoints as $entrypoint) {
-            $realpath = \realpath($entrypoint);
-
-            if ($realpath !== false) {
-                return $realpath;
-            }
-        }
-
-        throw new \RuntimeException(\sprintf(
-            'Could not find entrypoint file "%s"',
-            $config->root . \DIRECTORY_SEPARATOR . $config->entrypoint,
-        ));
-    }
-
-    private function validateEntrypoint(string $entrypoint): void
-    {
-        $tokens = \PhpToken::tokenize(\file_get_contents($entrypoint));
-
-        foreach ($tokens as $token) {
-            if ($token->is(\T_HALT_COMPILER)) {
-                return;
-            }
-        }
-
-        throw new \RuntimeException(\sprintf(
-            'Entrypoint file "%s" requires "__halt_compiler()" PHP statement',
-            $entrypoint,
-        ));
-    }
-
-    private function getBoxConfig(Configuration $configuration): array
+    private function getBoxFinderConfig(Configuration $config): array
     {
         $finder = [];
 
-        foreach ($configuration->buildFiles as $inclusion) {
+        foreach ($config->buildFiles as $inclusion) {
             $section = [];
+
+            if (!$inclusion instanceof FinderIncludeConfiguration) {
+                continue;
+            }
 
             if ($inclusion->name !== null) {
                 $section['name'] = $inclusion->name;
@@ -83,20 +49,42 @@ final readonly class CreateBoxConfigAction implements ActionInterface
             }
         }
 
-        $entrypoint = $this->getEntrypointPathname($configuration);
+        return $finder;
+    }
 
-        $this->validateEntrypoint($entrypoint);
+    private function getBoxFilesConfig(Configuration $config): array
+    {
+        $files = [];
+
+        foreach ($config->buildFiles as $inclusion) {
+            if (!$inclusion instanceof FileIncludeConfiguration) {
+                continue;
+            }
+
+            $files[] = $inclusion->pathname;
+        }
+
+        return $files;
+    }
+
+    private function getBoxConfig(Configuration $config): array
+    {
+        $finder = $this->getBoxFinderConfig($config);
+
+        $files = $this->getBoxFilesConfig($config);
+        $files[] = $config->entrypoint;
 
         return [
-            'base-path' => $configuration->root,
+            'base-path' => $config->root,
             'check-requirements' => false,
             'dump-autoload' => false,
-            'stub' => $entrypoint,
-            'output' => $configuration->pharPathname,
+            'stub' => $config->boxStubPathname,
+            'output' => $config->pharPathname,
             'main' => false,
             'chmod' => '0644',
             'compression' => 'GZ',
             'finder' => $finder,
+            'files' => $files,
         ];
     }
 }

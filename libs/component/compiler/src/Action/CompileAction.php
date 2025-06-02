@@ -6,6 +6,7 @@ namespace Boson\Component\Compiler\Action;
 
 use Boson\Component\Compiler\Assembly\Assembly;
 use Boson\Component\Compiler\Configuration;
+use Boson\Component\OsInfo\Family;
 
 /**
  * @template-extends AssemblyAction<CompileStatus>
@@ -18,7 +19,8 @@ final readonly class CompileAction extends AssemblyAction
 
         $this->validatePharArchive($config);
 
-        $targetPathname = $this->assembly->getBuildBinaryPathname($config);
+        $targetPathname = $this->getBinaryTargetPathname($config);
+
         $targetStream = \fopen($targetPathname, 'wb+');
         \flock($targetStream, \LOCK_EX);
 
@@ -30,6 +32,18 @@ final readonly class CompileAction extends AssemblyAction
         \fclose($targetStream);
 
         yield $this->assembly => CompileStatus::Compiled;
+    }
+
+    private function getBinaryTargetPathname(Configuration $config): string
+    {
+        $result = $this->assembly->getBuildDirectory($config)
+            . \DIRECTORY_SEPARATOR . $config->name;
+
+        if ($this->assembly->family->is(Family::Windows)) {
+            $result .= '.exe';
+        }
+
+        return $result;
     }
 
     /**
@@ -95,14 +109,14 @@ final readonly class CompileAction extends AssemblyAction
             INI;
 
         foreach ($config->ini as $key => $value) {
-            $ini .= "\n$key=" . match (true) {
+            $ini .= "\n$key=" . match ($value) {
                 false => '0',
                 true => '1',
                 default => (string) $value,
             };
         }
 
-        return $ini;
+        return $ini . "\n";
     }
 
     private function getSfxArchivePathname(Assembly $assembly): string

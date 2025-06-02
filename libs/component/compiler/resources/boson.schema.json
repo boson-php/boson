@@ -58,7 +58,19 @@
             "type": "array",
             "description": "List of included files to copy to output",
             "items": {
-                "$ref": "#/$defs/inclusion"
+                "type": "object",
+                "description": "Copy info section",
+                "additionalProperties": false,
+                "required": ["from"],
+                "properties": {
+                    "from": {
+                        "$ref": "#/$defs/inclusion"
+                    },
+                    "to": {
+                        "type": "string",
+                        "description": "Target directory or file name to copy expected files"
+                    }
+                }
             }
         },
         "ini": {
@@ -88,9 +100,24 @@
     },
     "$defs": {
         "inclusion": {
+            "oneOf": [
+                {
+                    "$ref": "#/$defs/file-inclusion"
+                },
+                {
+                    "$ref": "#/$defs/finder-inclusion"
+                }
+            ]
+        },
+        "file-inclusion": {
+            "type": "string",
+            "description": "Include file configuration",
+            "minLength": 1
+        },
+        "finder-inclusion": {
             "type": "object",
             "additionalProperties": false,
-            "description": "Include files configuration",
+            "description": "Include files list configuration",
             "properties": {
                 "directory": {
                     "type": "string",

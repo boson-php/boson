@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\Compiler;
 
 use Boson\Component\Compiler\Assembly\Assembly;
+use Boson\Component\Compiler\Configuration\FinderIncludeConfiguration;
 use Boson\Component\Compiler\Configuration\IncludeConfiguration;
 
 final class Configuration
@@ -34,12 +35,12 @@ final class Configuration
     public const ?string DEFAULT_APP_DIRECTORY = null;
 
     /**
-     * @var list<IncludeConfiguration>
+     * @var list<FinderIncludeConfiguration>
      */
     public private(set) array $buildFiles;
 
     /**
-     * @var list<IncludeConfiguration>
+     * @var list<FinderIncludeConfiguration>
      */
     public private(set) array $copyFiles;
 
@@ -82,6 +83,20 @@ final class Configuration
     /**
      * @var non-empty-string
      */
+    public string $boxStubName {
+        get => 'entrypoint.php';
+    }
+
+    /**
+     * @var non-empty-string
+     */
+    public string $boxStubPathname {
+        get => $this->build . \DIRECTORY_SEPARATOR . $this->boxStubName;
+    }
+
+    /**
+     * @var non-empty-string
+     */
     public string $boxConfigName {
         get => 'box.json';
     }
@@ -118,7 +133,7 @@ final class Configuration
 
     /**
      * @param iterable<mixed, IncludeConfiguration> $build
-     * @param iterable<mixed, IncludeConfiguration> $copy
+     * @param iterable<mixed, FinderIncludeConfiguration> $copy
      * @param iterable<non-empty-string, scalar> $ini
      * @param non-empty-string|null $temp
      * @param non-empty-string|null $root
