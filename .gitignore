@@ -5,11 +5,13 @@
 # Composer
 /composer.lock
 /vendor
+/vendor-bin
 /node_modules
 /build
 
 # Testing
 test.php
+boson.json
 
 # Toolset
 *.phar

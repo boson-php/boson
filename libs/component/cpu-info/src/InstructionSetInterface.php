@@ -12,8 +12,4 @@ interface InstructionSetInterface extends \Stringable
     public string $name {
         get;
     }
-
-    public ArchitectureInterface $arch {
-        get;
-    }
 }

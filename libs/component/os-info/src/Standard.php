@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\Component\OsInfo;
 
+use Boson\Component\OsInfo\Standard\BuiltinStandard;
 use Boson\Component\OsInfo\Standard\StandardImpl;
+
+require_once __DIR__ . '/Standard/constants.php';
 
 /**
  * Representing predefined operating system standards.
@@ -23,6 +26,23 @@ final readonly class Standard implements StandardInterface
     public const StandardInterface Posix = Standard\POSIX;
 
     /**
+     * @api
+     */
+    public static function tryFrom(string $name): ?BuiltinStandard
+    {
+        return BuiltinStandard::tryFrom($name);
+    }
+
+    /**
+     * @api
+     */
+    public static function from(string $name): StandardInterface
+    {
+        return self::tryFrom($name) ?? new self($name);
+    }
+
+    /**
+     * @api
      * @return non-empty-list<StandardInterface>
      */
     public static function cases(): array

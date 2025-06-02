@@ -29,6 +29,8 @@ jobs:
           - local_path: 'bridge/psr-http-bridge'
             split_repository: 'psr-http-bridge'
           # Components
+          - local_path: 'component/compiler'
+            split_repository: 'compiler'
           - local_path: 'component/cpu-info'
             split_repository: 'cpu-info'
           - local_path: 'component/globals-provider'

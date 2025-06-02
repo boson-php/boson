@@ -1,0 +1,108 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Boson Configuration",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The name of on application"
+        },
+        "entrypoint": {
+            "type": "string",
+            "minLength": 1,
+            "description": "An entrypoint php file"
+        },
+        "box-version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "The `humbug/box` package version"
+        },
+        "build": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Compiler build directory"
+        },
+        "root": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Compiler root directory"
+        },
+        "arch": {
+            "type": "array",
+            "description": "List of expected CPU architectures to compile",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The name of expected CPU architecture"
+            }
+        },
+        "platform": {
+            "type": "array",
+            "description": "List of expected OS families to compile",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The name of expected OS family"
+            }
+        },
+        "build-files": {
+            "type": "array",
+            "description": "List of included files to build",
+            "items": {
+                "$ref": "#/$defs/inclusion"
+            }
+        },
+        "copy-files": {
+            "type": "array",
+            "description": "List of included files to copy to output",
+            "items": {
+                "$ref": "#/$defs/inclusion"
+            }
+        },
+        "ini": {
+            "type": "object",
+            "description": "List of additional php.ini variables",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^.+$": {
+                    "description": "Additional php.ini key",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "description": "Additional php.ini string value"
+                        },
+                        {
+                            "type": "number",
+                            "description": "Additional php.ini number (int or false) value"
+                        },
+                        {
+                            "type": "boolean",
+                            "description": "Additional php.ini boolean value"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "$defs": {
+        "inclusion": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Include files configuration",
+            "properties": {
+                "directory": {
+                    "type": "string",
+                    "description": "The directory in which the files will be searched",
+                    "minLength": 1
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name filter for files",
+                    "minLength": 1
+                }
+            }
+        }
+    }
+}

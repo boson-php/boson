@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Component\CpuInfo\InstructionSet;
 
-use Boson\Component\CpuInfo\ArchitectureInterface;
 use Boson\Component\CpuInfo\InstructionSetInterface;
 
 /**
@@ -17,7 +16,6 @@ trait InstructionSetImpl
          * @var non-empty-string
          */
         public readonly string $name,
-        public readonly ArchitectureInterface $arch,
     ) {}
 
     public function __toString(): string

@@ -1,0 +1,53 @@
+{
+    "name": "boson-php/compiler",
+    "description": "Boson compiler",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://bosonphp.com",
+    "support": {
+        "issues": "https://github.com/boson-php/boson/issues",
+        "source": "https://github.com/boson-php/compiler"
+    },
+    "authors": [
+        {
+            "name": "Danil Shutsky",
+            "email": "thecutcode@gmail.com"
+        },
+        {
+            "name": "Kirill Nesmeyanov",
+            "email": "nesk@xakep.ru"
+        }
+    ],
+    "bin": ["bin/boson"],
+    "require": {
+        "php": "^8.4",
+        "boson-php/cpu-info": "^1.0",
+        "boson-php/os-info": "^1.0",
+        "justinrainbow/json-schema": "^6.3.1",
+        "symfony/console": "^6.4|^7.0",
+        "symfony/process": "^6.4|^7.0",
+        "symfony/http-client": "^6.4|^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Boson\\Component\\Compiler\\": "src"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev",
+            "dev-main": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "platform-check": true,
+        "bin-compat": "full",
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
