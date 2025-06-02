@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boson\Component\Compiler\Workflow\PackApplication;
+namespace Boson\Component\Compiler\Action;
 
-enum BoxPackProcessStatus
+enum PackBoxStatus
 {
     case ReadyToPack;
     case Packing;

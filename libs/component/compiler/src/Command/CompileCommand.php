@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Boson\Component\Compiler\Command;
 
+use Boson\Component\Compiler\Action\ClearBuildAssemblyDirectoryStatus;
+use Boson\Component\Compiler\Action\CompileStatus;
+use Boson\Component\Compiler\Action\CreateBuildAssemblyDirectoryStatus;
 use Boson\Component\Compiler\Assembly\AssemblyCollection;
 use Boson\Component\Compiler\Assembly\Edition;
 use Boson\Component\Compiler\Command\PackCommand\PackApplicationWorkflowPresenter;
-use Boson\Component\Compiler\Workflow\CompileApplication\CompileApplicationProcessStatus;
-use Boson\Component\Compiler\Workflow\CompileApplication\PrepareProcessStatus;
 use Boson\Component\Compiler\Workflow\CompileApplicationWorkflow;
 use Boson\Component\CpuInfo\Architecture;
 use Boson\Component\OsInfo\Family;
@@ -138,57 +139,57 @@ final class CompileCommand extends ConfigAwareCommand
         $workflow = new CompileApplicationWorkflow();
 
         $output->writeln(\sprintf(
-            ' · Application build using "<comment>%s</comment>" directory',
+            ' · Build an application in "<comment>%s</comment>"',
             $config->build,
         ));
 
         foreach ($workflow->process($config, $assemblies) as $data => $status) {
             switch ($status) {
-                case PrepareProcessStatus::ReadyToCleanBuildDirectory:
+                case ClearBuildAssemblyDirectoryStatus::ReadyToClean:
                     $output->write(\sprintf(
                         '   [<comment>%s</comment>] Cleanup build directory...',
                         $data,
                     ));
                     break;
 
-                case PrepareProcessStatus::CleaningBuildDirectory:
+                case ClearBuildAssemblyDirectoryStatus::Cleaning:
                     $output->write(\sprintf(
                         "\33[2K\r   ↳ Removing \"<comment>%s</comment>\"",
                         $data,
                     ));
                     break;
 
-                case PrepareProcessStatus::CleanedBuildDirectory:
+                case ClearBuildAssemblyDirectoryStatus::Cleaned:
                     $output->writeln(\sprintf(
                         "\33[2K\r   [<comment>%s</comment>] Build directory is cleaned",
                         $data,
                     ));
                     break;
 
-                case PrepareProcessStatus::ReadyToCreateBuildDirectory:
+                case CreateBuildAssemblyDirectoryStatus::ReadyToCreate:
                     $output->write(\sprintf(
                         '   [<comment>%s</comment>] Prepare build directory',
                         $data,
                     ));
                     break;
 
-                case PrepareProcessStatus::CreatedBuildDirectory:
+                case CreateBuildAssemblyDirectoryStatus::Created:
                     $output->writeln(\sprintf(
                         "\33[2K\r   [<comment>%s</comment>] Build directory is available",
                         $data,
                     ));
                     break;
 
-                case CompileApplicationProcessStatus::CompilationStarting:
+                case CompileStatus::ReadyToCompile:
                     $output->write(\sprintf(
                         '   [<comment>%s</comment>] Compilation...',
                         $data,
                     ));
                     break;
 
-                case CompileApplicationProcessStatus::CompilationCompleted:
+                case CompileStatus::Compiled:
                     $output->writeln(\sprintf(
-                        "\33[2K\r   [<comment>%s</comment>] <info>✓</info> Compiled",
+                        "\33[2K\r   [<comment>%s</comment>] Compiled",
                         $data,
                     ));
                     break;

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\Component\Compiler\Command\PackCommand;
 
+use Boson\Component\Compiler\Action\CreateBoxConfigStatus;
+use Boson\Component\Compiler\Action\CreateBuildDirectoryStatus;
+use Boson\Component\Compiler\Action\DownloadBoxStatus;
+use Boson\Component\Compiler\Action\PackBoxStatus;
 use Boson\Component\Compiler\Configuration;
-use Boson\Component\Compiler\Workflow\PackApplication\BoxDownloadProcessStatus;
-use Boson\Component\Compiler\Workflow\PackApplication\BoxPackProcessStatus;
-use Boson\Component\Compiler\Workflow\PackApplication\PrepareProcessStatus;
 use Boson\Component\Compiler\Workflow\PackApplicationWorkflow;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,58 +29,58 @@ final readonly class PackApplicationWorkflowPresenter
 
         foreach ($this->workflow->process($config) as $process) {
             switch ($process) {
-                case PrepareProcessStatus::ReadyToCreateBuildDirectory:
+                case CreateBuildDirectoryStatus::ReadyToCreate:
                     $output->write(' · Checking build directory');
                     break;
 
-                case PrepareProcessStatus::CreatedBuildDirectory:
+                case CreateBuildDirectoryStatus::Created:
                     $output->writeln(\sprintf(
-                        "\33[2K\r <info>✓</info> Build directory \"<comment>%s</comment>\" is available",
+                        "\33[2K\r <info>●</info> Build directory \"<comment>%s</comment>\" is available",
                         $config->build,
                     ));
                     break;
 
-                case PrepareProcessStatus::ReadyToCreateBoxConfig:
+                case CreateBoxConfigStatus::ReadyToCreate:
                     $output->write(' · Checking box config');
                     break;
 
-                case PrepareProcessStatus::CreatedBoxConfig:
+                case CreateBoxConfigStatus::Created:
                     $output->writeln(\sprintf(
-                        "\33[2K\r <info>✓</info> Config \"<comment>%s</comment>\" is created",
+                        "\33[2K\r <info>●</info> Config \"<comment>%s</comment>\" is created",
                         $config->boxConfigPathname,
                     ));
                     break;
 
-                case BoxDownloadProcessStatus::ReadyToDownload:
+                case DownloadBoxStatus::ReadyToDownload:
                     $output->write(' · Checking <comment>humbug/box</comment> installation');
                     break;
 
-                case BoxDownloadProcessStatus::Downloading:
+                case DownloadBoxStatus::Downloading:
                     $progress->setMessage('Downloading <comment>humbug/box</comment>');
                     $progress->advance();
                     break;
 
-                case BoxDownloadProcessStatus::Complete:
+                case DownloadBoxStatus::Complete:
                     $progress->clear();
                     $output->writeln(\sprintf(
-                        "\33[2K\r <info>✓</info> The \"<comment>humbug/box</comment>\" <info>v%s</info> is ready",
+                        "\33[2K\r <info>●</info> The \"<comment>humbug/box</comment>\" <info>v%s</info> is ready",
                         $config->boxVersion,
                     ));
                     break;
 
-                case BoxPackProcessStatus::ReadyToPack:
+                case PackBoxStatus::ReadyToPack:
                     $output->write(' · Packing application');
                     break;
 
-                case BoxPackProcessStatus::Packing:
+                case PackBoxStatus::Packing:
                     $progress->setMessage('Packing application');
                     $progress->advance();
                     break;
 
-                case BoxPackProcessStatus::Packed:
+                case PackBoxStatus::Packed:
                     $progress->clear();
                     $output->writeln(\sprintf(
-                        "\33[2K\r <info>✓</info> Application packed \"<comment>%s</comment>\"",
+                        "\33[2K\r <info>●</info> Application packed \"<comment>%s</comment>\"",
                         $config->pharPathname,
                     ));
                     break;
