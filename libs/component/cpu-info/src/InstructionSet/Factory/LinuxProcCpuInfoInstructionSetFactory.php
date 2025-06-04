@@ -49,7 +49,7 @@ final readonly class LinuxProcCpuInfoInstructionSetFactory implements Instructio
             foreach ($processor as $core) {
                 $flags = $core['flags'] ?? '';
 
-                foreach ($this->parseFlags($flags, $arch) as $flag => $set) {
+                foreach ($this->parseFlags($flags) as $flag => $set) {
                     $result[$flag] = $set;
                 }
             }
@@ -61,7 +61,7 @@ final readonly class LinuxProcCpuInfoInstructionSetFactory implements Instructio
     /**
      * @return iterable<non-empty-string, InstructionSetInterface>
      */
-    private function parseFlags(string $flags, ArchitectureInterface $arch): iterable
+    private function parseFlags(string $flags): iterable
     {
         /**
          * @link https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/arch/x86/include/asm/cpufeature.h?id=refs/tags/v4.1.3
@@ -71,7 +71,7 @@ final readonly class LinuxProcCpuInfoInstructionSetFactory implements Instructio
                 continue;
             }
 
-            yield $flag => match (\strtolower($flag)) {
+            $set = match (\strtolower($flag)) {
                 'mmx' => InstructionSet::MMX,
                 'sse' => InstructionSet::SSE,
                 'sse2' => InstructionSet::SSE2,
@@ -82,8 +82,12 @@ final readonly class LinuxProcCpuInfoInstructionSetFactory implements Instructio
                 'avx' => InstructionSet::AVX,
                 'avx2' => InstructionSet::AVX2,
                 'avx512f' => InstructionSet::AVX512,
-                default => new InstructionSet($flag),
+                default => null,
             };
+
+            if ($set !== null) {
+                yield $flag => $set;
+            }
         }
     }
 }
