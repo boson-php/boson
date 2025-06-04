@@ -44,6 +44,16 @@ final readonly class CentralProcessor extends VendorInfo
     }
 
     /**
+     * Checks if this CPU supports the given instruction set.
+     *
+     * @api
+     */
+    public function isSupports(InstructionSetInterface $instructionSet): bool
+    {
+        return \in_array($instructionSet, $this->instructionSets, true);
+    }
+
+    /**
      * @api
      */
     public static function createFromGlobals(): CentralProcessor
