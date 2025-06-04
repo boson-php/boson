@@ -19,6 +19,12 @@ trait ArchitectureImpl
         public readonly ?ArchitectureInterface $parent = null,
     ) {}
 
+    public function is(ArchitectureInterface $architecture): bool
+    {
+        return $this === $architecture
+            || $this->parent?->is($architecture) === true;
+    }
+
     public function __toString(): string
     {
         return $this->name;
