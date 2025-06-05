@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
  * - HTTP requests: Boson {@see RequestInterface} → Symfony {@see SymfonyRequest}
  * - HTTP responses: Symfony {@see SymfonyResponse} → Boson {@see ResponseInterface}
  *
- * @template-covariant TRequest of SymfonyRequest = SymfonyRequest
+ * @template-covariant TRequest of SymfonyRequest = SymfonyPatchedRequest
  * @template TResponse of SymfonyResponse = SymfonyResponse
  *
  * @template-extends HttpAdapter<SymfonyRequest, SymfonyResponse>
@@ -37,7 +37,7 @@ readonly class SymfonyHttpAdapter extends HttpAdapter
      */
     public function createRequest(RequestInterface $request): SymfonyRequest
     {
-        $symfony = SymfonyRequest::create(
+        $symfony = SymfonyPatchedRequest::create(
             uri: $request->url,
             method: $request->method,
             parameters: $this->getQueryParameters($request),
@@ -49,7 +49,7 @@ readonly class SymfonyHttpAdapter extends HttpAdapter
             parameters: $this->getDecodedBody($request),
         );
 
-        /** @var TRequest */
+        /** @phpstan-ignore-next-line : Known contravariant violation =( */
         return $symfony;
     }
 
