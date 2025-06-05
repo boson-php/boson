@@ -9,7 +9,7 @@ use Boson\Component\Http\Request;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('boson-php/http-body-decoder')]
-final class NativeFormUrlEncodedDecoderTest extends TestCase
+final class FormUrlEncodedDecoderTest extends TestCase
 {
     private FormUrlEncodedDecoder $decoder;
 
