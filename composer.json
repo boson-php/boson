@@ -4,6 +4,7 @@
     "type": "library",
     "license": "MIT",
     "repositories": [
+        {"type": "path", "url": "libs/bridge/*"},
         {"type": "path", "url": "libs/component/*"},
         {"type": "path", "url": "libs/contracts/*"}
     ],
