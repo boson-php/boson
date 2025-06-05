@@ -11,7 +11,7 @@ use Boson\Component\GlobalsProvider\StaticServerGlobalsProvider;
 use Boson\Component\Http\Body\BodyDecoderFactory;
 use Boson\Component\Http\Body\BodyDecoderInterface;
 use Boson\Component\Http\Body\MultipartFormDataDecoder;
-use Boson\Component\Http\Body\NativeFormUrlEncodedDecoded;
+use Boson\Component\Http\Body\FormUrlEncodedDecoder;
 use Boson\Contracts\Http\RequestInterface;
 
 /**
@@ -122,7 +122,7 @@ abstract readonly class HttpAdapter implements
     private function createDefaultBodyDecoder(): BodyDecoderInterface
     {
         return new BodyDecoderFactory([
-            new NativeFormUrlEncodedDecoded(),
+            new FormUrlEncodedDecoder(),
             new MultipartFormDataDecoder(),
         ]);
     }

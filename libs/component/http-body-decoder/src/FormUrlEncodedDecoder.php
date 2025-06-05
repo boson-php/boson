@@ -9,7 +9,7 @@ use Boson\Contracts\Http\RequestInterface;
 /**
  * An "application/x-www-form-urlencoded" body decoder using PHP behaviour.
  */
-final readonly class NativeFormUrlEncodedDecoded implements SpecializedBodyDecoderInterface
+final readonly class FormUrlEncodedDecoder implements SpecializedBodyDecoderInterface
 {
     /**
      * @var non-empty-lowercase-string

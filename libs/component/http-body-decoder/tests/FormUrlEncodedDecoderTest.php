@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Boson\Component\Http\Body\Tests;
 
-use Boson\Component\Http\Body\NativeFormUrlEncodedDecoded;
+use Boson\Component\Http\Body\FormUrlEncodedDecoder;
 use Boson\Component\Http\Request;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('boson-php/http-body-decoder')]
-final class NativeFormUrlEncodedDecodedTest extends TestCase
+final class FormUrlEncodedDecoderTest extends TestCase
 {
-    private NativeFormUrlEncodedDecoded $decoder;
+    private FormUrlEncodedDecoder $decoder;
 
     protected function setUp(): void
     {
-        $this->decoder = new NativeFormUrlEncodedDecoded();
+        $this->decoder = new FormUrlEncodedDecoder();
 
         parent::setUp();
     }
