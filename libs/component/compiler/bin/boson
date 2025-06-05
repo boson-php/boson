@@ -89,10 +89,8 @@ $app = new class extends Application {
 
     public function getVersion(): string
     {
-        $package = InstalledVersions::getRootPackage();
-
-        return $package['pretty_version']
-            ?? $package['version']
+        return InstalledVersions::getPrettyVersion('boson-php/compiler')
+            ?? InstalledVersions::getVersion('boson-php/compiler')
             ?? 'dev-master';
     }
 
