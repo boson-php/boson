@@ -10,8 +10,8 @@ use Boson\Component\GlobalsProvider\ServerGlobalsProviderInterface;
 use Boson\Component\GlobalsProvider\StaticServerGlobalsProvider;
 use Boson\Component\Http\Body\BodyDecoderFactory;
 use Boson\Component\Http\Body\BodyDecoderInterface;
-use Boson\Component\Http\Body\MultipartFormDataDecoder;
 use Boson\Component\Http\Body\FormUrlEncodedDecoder;
+use Boson\Component\Http\Body\MultipartFormDataDecoder;
 use Boson\Contracts\Http\RequestInterface;
 
 /**
