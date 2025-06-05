@@ -21,8 +21,8 @@
     "bin": ["bin/boson"],
     "require": {
         "php": "^8.4",
-        "boson-php/cpu-info": "^1.0",
-        "boson-php/os-info": "^1.0",
+        "boson-php/cpu-info": "^0.13",
+        "boson-php/os-info": "^0.13",
         "justinrainbow/json-schema": "^6.3.1",
         "symfony/console": "^6.4|^7.0",
         "symfony/process": "^6.4|^7.0",
@@ -35,8 +35,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev",
-            "dev-main": "1.0.x-dev"
+            "dev-master": "0.13.x-dev",
+            "dev-main": "0.13.x-dev"
         }
     },
     "config": {

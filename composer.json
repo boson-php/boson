@@ -9,22 +9,22 @@
     ],
     "require": {
         "php": "^8.4",
-        "boson-php/http-bridge": "^1.0",
-        "boson-php/laravel-http-bridge": "^1.0",
-        "boson-php/psr-http-bridge": "^1.0",
-        "boson-php/symfony-http-bridge": "^1.0",
-        "boson-php/cpu-info": "^1.0",
-        "boson-php/globals-provider": "^1.0",
-        "boson-php/http": "^1.0",
-        "boson-php/http-body-decoder": "^1.0",
-        "boson-php/http-static-provider": "^1.0",
-        "boson-php/os-info": "^1.0",
-        "boson-php/runtime": "^1.0",
-        "boson-php/weak-types": "^1.0",
-        "boson-php/http-contracts": "^1.0"
+        "boson-php/http-bridge": "^0.13",
+        "boson-php/laravel-http-bridge": "^0.13",
+        "boson-php/psr-http-bridge": "^0.13",
+        "boson-php/symfony-http-bridge": "^0.13",
+        "boson-php/cpu-info": "^0.13",
+        "boson-php/globals-provider": "^0.13",
+        "boson-php/http": "^0.13",
+        "boson-php/http-body-decoder": "^0.13",
+        "boson-php/http-static-provider": "^0.13",
+        "boson-php/os-info": "^0.13",
+        "boson-php/runtime": "^0.13",
+        "boson-php/weak-types": "^0.13",
+        "boson-php/http-contracts": "^0.13"
     },
     "require-dev": {
-        "boson-php/compiler": "^1.0",
+        "boson-php/compiler": "^0.13",
         "ffi/var-dumper": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.75",
         "jetbrains/phpstorm-attributes": "^1.2",
@@ -55,8 +55,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev",
-            "dev-main": "1.0.x-dev"
+            "dev-master": "0.13.x-dev",
+            "dev-main": "0.13.x-dev"
         }
     },
     "config": {
