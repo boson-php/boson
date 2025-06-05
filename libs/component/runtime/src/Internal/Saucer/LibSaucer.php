@@ -90,11 +90,29 @@ final readonly class LibSaucer
             ),
         };
 
-        if (\extension_loaded('phar') && \Phar::running() !== '') {
-            return $result;
+        return $this->getPharAwareLibrary($result)
+            ?? self::DEFAULT_BIN_DIR . '/' . $result;
+    }
+
+    /**
+     * @param non-empty-string $pathname
+     * @return non-empty-string|null
+     */
+    private function getPharAwareLibrary(string $pathname): ?string
+    {
+        // Skip in case the PHAR is not available
+        // or the project is launched outside the PHAR
+        if (!\extension_loaded('phar') || \Phar::running() === '') {
+            return null;
         }
 
-        return self::DEFAULT_BIN_DIR . '/' . $result;
+        $pathname = \realpath($pathname);
+
+        if ($pathname === false) {
+            return null;
+        }
+
+        return $pathname;
     }
 
     private function assertVersionCompatibility(): void
