@@ -5,6 +5,7 @@ $files = PhpCsFixer\Finder::create()
         // Bridges
         __DIR__ . '/libs/bridge/http-bridge/src',
         __DIR__ . '/libs/bridge/laravel-http-bridge/src',
+        __DIR__ . '/libs/bridge/laravel-provider/src',
         __DIR__ . '/libs/bridge/psr-http-bridge/src',
         __DIR__ . '/libs/bridge/symfony-http-bridge/src',
         // Components

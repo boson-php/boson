@@ -38,7 +38,7 @@ $boson = new Boson(
 $factory = new ApplicationFactory($basePath);
 $bridge = new LaravelHttpAdapter();
 $static = new FilesystemStaticProvider([__DIR__ . '/public']);
-$worker = new Worker($factory);
+$worker = new Worker($factory, $boson);
 $worker->boot();
 
 $boson->on(function (SchemeRequestReceived $e) use ($bridge, $static, $worker) {

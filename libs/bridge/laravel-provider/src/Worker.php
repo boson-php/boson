@@ -17,6 +17,7 @@ use Laravel\Octane\Events\WorkerStopping;
 use Laravel\Octane\RequestContext;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
+use Boson\Application as Boson;
 
 class Worker implements WorkerContract
 {
@@ -28,6 +29,7 @@ class Worker implements WorkerContract
 
     public function __construct(
         private ApplicationFactory $appFactory,
+        private Boson $boson,
     ) {}
 
     public function boot(array $initialInstances = []): void
@@ -42,6 +44,8 @@ class Worker implements WorkerContract
         $sandbox = clone $this->app;
 
         CurrentApplication::set($sandbox);
+
+        $sandbox->scoped(Boson::class, fn() => $this->boson);
 
         $gateway = new ApplicationGateway($this->app, $sandbox);
 
