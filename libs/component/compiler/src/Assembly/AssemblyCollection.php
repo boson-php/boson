@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Component\Compiler\Assembly;
 
-use Boson\Component\CpuInfo\Architecture;
-use Boson\Component\CpuInfo\ArchitectureInterface;
-use Boson\Component\OsInfo\Family;
-use Boson\Component\OsInfo\FamilyInterface;
-
 /**
  * @template-implements \IteratorAggregate<array-key, Assembly>
  */
@@ -30,7 +25,7 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
                 'standard' => ['libboson-linux-x86_64.so', 'standard/linux-x86_64.sfx'],
             ],
         ],
-        'darwin' => [
+        'macos' => [
             'arm64' => [
                 'minimal' => ['libboson-darwin-universal.dylib', 'minimal/macos-aarch64.sfx'],
                 'standard' => ['libboson-darwin-universal.dylib', 'standard/macos-aarch64.sfx'],
@@ -64,9 +59,9 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
             foreach ($cpus as $cpu => $editions) {
                 foreach ($editions as $edition => [$frontend, $backend]) {
                     $result[] = new Assembly(
-                        family: Family::from($family),
-                        arch: Architecture::from($cpu),
-                        edition: Edition::from($edition),
+                        platform: AssemblyPlatform::fromNormalized($family),
+                        arch: AssemblyArchitecture::fromNormalized($cpu),
+                        edition: AssemblyEdition::fromNormalized($edition),
                         frontend: $frontend,
                         backend: $backend,
                     );
@@ -78,15 +73,15 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param list<FamilyInterface> $families
+     * @param list<AssemblyPlatform> $platforms
      */
-    public function withExpectedFamilies(array $families): self
+    public function withExpectedPlatforms(array $platforms): self
     {
         $result = [];
 
         foreach ($this->assemblies as $assembly) {
-            foreach ($families as $family) {
-                if ($family === $assembly->family) {
+            foreach ($platforms as $platform) {
+                if ($platform === $assembly->platform) {
                     $result[] = $assembly;
                 }
             }
@@ -96,21 +91,21 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return iterable<array-key, FamilyInterface>
+     * @return list<AssemblyPlatform>
      */
-    public function getAvailableFamilies(): iterable
+    public function getAvailablePlatforms(): array
     {
         $family = [];
 
         foreach ($this->assemblies as $assembly) {
-            $family[$assembly->family->name] = $assembly->family;
+            $family[$assembly->platform->name] = $assembly->platform;
         }
 
         return \array_values($family);
     }
 
     /**
-     * @param list<ArchitectureInterface> $architectures
+     * @param list<AssemblyArchitecture> $architectures
      */
     public function withExpectedArchitectures(array $architectures): self
     {
@@ -128,9 +123,9 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return iterable<array-key, ArchitectureInterface>
+     * @return list<AssemblyArchitecture>
      */
-    public function getAvailableArchitectures(): iterable
+    public function getAvailableArchitectures(): array
     {
         $architectures = [];
 
@@ -141,7 +136,7 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
         return \array_values($architectures);
     }
 
-    public function withExpectedEdition(EditionInterface $edition): self
+    public function withExpectedEdition(AssemblyEdition $edition): self
     {
         $result = [];
 
@@ -155,9 +150,9 @@ final class AssemblyCollection implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return iterable<array-key, EditionInterface>
+     * @return list<AssemblyEdition>
      */
-    public function getAvailableEditions(): iterable
+    public function getAvailableEditions(): array
     {
         $editions = [];
 

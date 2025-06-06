@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Boson\Component\Compiler\Action;
 
 use Boson\Component\Compiler\Assembly\Assembly;
+use Boson\Component\Compiler\Assembly\AssemblyPlatform;
 use Boson\Component\Compiler\Configuration;
-use Boson\Component\OsInfo\Family;
 
 /**
  * @template-extends AssemblyAction<CompileStatus>
@@ -47,7 +47,7 @@ final readonly class CompileAction extends AssemblyAction
         $result = $this->assembly->getBuildDirectory($config)
             . \DIRECTORY_SEPARATOR . $config->name;
 
-        if ($this->assembly->family->is(Family::Windows)) {
+        if ($this->assembly->platform === AssemblyPlatform::Windows) {
             $result .= '.exe';
         }
 
