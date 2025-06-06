@@ -30,12 +30,6 @@
             "Boson\\Contracts\\Http\\Tests\\": "tests"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.13.x-dev",
-            "dev-main": "0.13.x-dev"
-        }
-    },
     "config": {
         "sort-packages": true,
         "platform-check": true,
