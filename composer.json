@@ -3,14 +3,6 @@
     "description": "Boson Kernel Monorepo",
     "type": "library",
     "license": "MIT",
-    "repositories": [
-        {"type": "path", "url": "libs/bridge/*"},
-        {"type": "path", "url": "libs/component/*"},
-        {"type": "path", "url": "libs/contracts/*"}
-    ],
-    "require": {
-        "php": "^8.4"
-    },
     "replace": {
         "boson-php/http-bridge": "self.version",
         "boson-php/laravel-http-bridge": "self.version",
@@ -38,6 +30,9 @@
         "phpunit/phpunit": "^12.0",
         "symfony/console": "^6.4|^7.0",
         "symfony/var-dumper": "^6.4|^7.0"
+    },
+    "require": {
+        "php": "^8.4"
     },
     "autoload-dev": {
         "psr-4": {
