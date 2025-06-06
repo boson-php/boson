@@ -3,24 +3,30 @@
     "description": "Boson Kernel Monorepo",
     "type": "library",
     "license": "MIT",
-    "replace": {
-        "boson-php/http-bridge": "self.version",
-        "boson-php/laravel-http-bridge": "self.version",
-        "boson-php/laravel-provider": "self.version",
-        "boson-php/psr-http-bridge": "self.version",
-        "boson-php/symfony-http-bridge": "self.version",
-        "boson-php/cpu-info": "self.version",
-        "boson-php/globals-provider": "self.version",
-        "boson-php/http": "self.version",
-        "boson-php/http-body-decoder": "self.version",
-        "boson-php/http-static-provider": "self.version",
-        "boson-php/os-info": "self.version",
-        "boson-php/runtime": "self.version",
-        "boson-php/weak-types": "self.version",
-        "boson-php/http-contracts": "self.version",
-        "boson-php/compiler": "self.version"
+    "repositories": [
+        {"type": "path", "url": "libs/bridge/*", "options": {"canonical": false}},
+        {"type": "path", "url": "libs/component/*", "options": {"canonical": false}},
+        {"type": "path", "url": "libs/contracts/*", "options": {"canonical": false}}
+    ],
+    "require": {
+        "php": "^8.4",
+        "boson-php/http-bridge": "^0.13",
+        "boson-php/laravel-http-bridge": "^0.13",
+        "boson-php/laravel-provider": "^0.13",
+        "boson-php/psr-http-bridge": "^0.13",
+        "boson-php/symfony-http-bridge": "^0.13",
+        "boson-php/cpu-info": "^0.13",
+        "boson-php/globals-provider": "^0.13",
+        "boson-php/http": "^0.13",
+        "boson-php/http-body-decoder": "^0.13",
+        "boson-php/http-static-provider": "^0.13",
+        "boson-php/os-info": "^0.13",
+        "boson-php/runtime": "^0.13",
+        "boson-php/weak-types": "^0.13",
+        "boson-php/http-contracts": "^0.13"
     },
     "require-dev": {
+        "boson-php/compiler": "^0.13",
         "ffi/var-dumper": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.75",
         "jetbrains/phpstorm-attributes": "^1.2",
@@ -30,9 +36,6 @@
         "phpunit/phpunit": "^12.0",
         "symfony/console": "^6.4|^7.0",
         "symfony/var-dumper": "^6.4|^7.0"
-    },
-    "require": {
-        "php": "^8.4"
     },
     "autoload-dev": {
         "psr-4": {
@@ -51,6 +54,12 @@
             "Boson\\Component\\OsInfo\\Tests\\": "libs/component/os-info/tests",
             "Boson\\Component\\WeakType\\Tests\\": "libs/component/weak-types/tests",
             "Boson\\Contracts\\Http\\Tests\\": "libs/contracts/http-contracts/tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.13.x-dev",
+            "dev-main": "0.13.x-dev"
         }
     },
     "config": {
