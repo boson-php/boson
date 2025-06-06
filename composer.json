@@ -9,20 +9,23 @@
         {"type": "path", "url": "libs/contracts/*"}
     ],
     "require": {
-        "php": "^8.4",
-        "boson-php/http-bridge": "^0.13",
-        "boson-php/laravel-http-bridge": "^0.13",
-        "boson-php/psr-http-bridge": "^0.13",
-        "boson-php/symfony-http-bridge": "^0.13",
-        "boson-php/cpu-info": "^0.13",
-        "boson-php/globals-provider": "^0.13",
-        "boson-php/http": "^0.13",
-        "boson-php/http-body-decoder": "^0.13",
-        "boson-php/http-static-provider": "^0.13",
-        "boson-php/os-info": "^0.13",
-        "boson-php/runtime": "^0.13",
-        "boson-php/weak-types": "^0.13",
-        "boson-php/http-contracts": "^0.13"
+        "php": "^8.4"
+    },
+    "replace": {
+        "boson-php/http-bridge": "self.version",
+        "boson-php/laravel-http-bridge": "self.version",
+        "boson-php/laravel-provider": "self.version",
+        "boson-php/psr-http-bridge": "self.version",
+        "boson-php/symfony-http-bridge": "self.version",
+        "boson-php/cpu-info": "self.version",
+        "boson-php/globals-provider": "self.version",
+        "boson-php/http": "self.version",
+        "boson-php/http-body-decoder": "self.version",
+        "boson-php/http-static-provider": "self.version",
+        "boson-php/os-info": "self.version",
+        "boson-php/runtime": "self.version",
+        "boson-php/weak-types": "self.version",
+        "boson-php/http-contracts": "self.version"
     },
     "require-dev": {
         "boson-php/compiler": "^0.13",
