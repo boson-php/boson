@@ -23,7 +23,7 @@ final readonly class LibSaucer
     /**
      * @var non-empty-string
      */
-    private const string MINIMAL_REQUIRED_VERSION = '0.2.0';
+    private const string MINIMAL_REQUIRED_VERSION = '0.3.0';
 
     /**
      * @var non-empty-string
@@ -480,3 +480,35 @@ void saucer_webview_remove(saucer_handle *, SAUCER_WEB_EVENT event, uint64_t id)
 void saucer_webview_once(saucer_handle *, SAUCER_WEB_EVENT event, void *callback);
 uint64_t saucer_webview_on(saucer_handle *, SAUCER_WEB_EVENT event, void *callback);
 /*[[sc::before_init]]*/ void saucer_register_scheme(const char *name);
+
+// .desktop.h
+
+typedef struct saucer_desktop saucer_desktop;
+
+saucer_desktop *saucer_desktop_new(saucer_application *app);
+void saucer_desktop_free(saucer_desktop *);
+
+void saucer_desktop_open(saucer_desktop *, const char *path);
+
+typedef struct saucer_picker_options saucer_picker_options;
+
+saucer_picker_options *saucer_picker_options_new();
+void saucer_picker_options_free(saucer_picker_options *);
+
+void saucer_picker_options_set_initial(saucer_picker_options *, const char *path);
+void saucer_picker_options_add_filter(saucer_picker_options *, const char *filter);
+
+/**
+* @note The returned array will be populated with strings which are themselves dynamically allocated.
+*
+* To properly free the returned array you should:
+* - Free all strings within the array
+* - Free the array itself
+*/
+/*[[sc::requires_free]]*/ char *saucer_desktop_pick_file(saucer_desktop *, saucer_picker_options *options);
+
+/*[[sc::requires_free]]*/ char *saucer_desktop_pick_folder(saucer_desktop *, saucer_picker_options *options);
+
+/*[[sc::requires_free]]*/ char **saucer_desktop_pick_files(saucer_desktop *, saucer_picker_options *options);
+
+/*[[sc::requires_free]]*/ char **saucer_desktop_pick_folders(saucer_desktop *, saucer_picker_options *options);

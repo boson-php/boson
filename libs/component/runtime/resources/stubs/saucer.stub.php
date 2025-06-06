@@ -22,6 +22,8 @@ use FFI\CType;
  * @phpstan-type SaucerSchemeExecutorType CData
  * @phpstan-type SaucerScriptType CData
  * @phpstan-type SaucerEmbeddedFileType CData
+ * @phpstan-type SaucerDesktopType CData
+ * @phpstan-type SaucerPickerOptionsType CData
  *
  * @phpstan-type SaucerPoolCallbackType callable():void
  * @phpstan-type SaucerPostCallbackType callable():void
@@ -30,6 +32,7 @@ use FFI\CType;
  * @phpstan-type SaucerOnMessageType callable(string):bool
  *
  * @phpstan-type UInt8ArrayType CData
+ * @phpstan-type StringArrayType CData
  * @phpstan-type UnmanagedStringType CData
  *
  * @seal-properties
@@ -752,4 +755,66 @@ final readonly class LibSaucer
     public function saucer_webview_on(CData $handle, int $event, callable|CData $callback): int {}
 
     public function saucer_register_scheme(string $name): void {}
+
+    /**
+     * @param SaucerApplicationType $app
+     * @return SaucerDesktopType
+     */
+    public function saucer_desktop_new(CData $app): CData {}
+
+    /**
+     * @param SaucerDesktopType $desktop
+     */
+    public function saucer_desktop_free(CData $desktop): void {}
+
+    /**
+     * @param SaucerDesktopType $desktop
+     */
+    public function saucer_desktop_open(CData $desktop, string $path): void {}
+
+    /**
+     * @return SaucerPickerOptionsType
+     */
+    public function saucer_picker_options_new(): CData {}
+
+    /**
+     * @param SaucerPickerOptionsType $options
+     */
+    public function saucer_picker_options_free(CData $options): void {}
+
+    /**
+     * @param SaucerPickerOptionsType $options
+     */
+    public function saucer_picker_options_set_initial(CData $options, string $path): void {}
+
+    /**
+     * @param SaucerPickerOptionsType $options
+     */
+    public function saucer_picker_options_add_filter(CData $options, string $filter): void {}
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param SaucerPickerOptionsType $options
+     */
+    public function saucer_desktop_pick_file(CData $desktop, CData $options): string {}
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param SaucerPickerOptionsType $options
+     */
+    public function saucer_desktop_pick_folder(CData $desktop, CData $options): string {}
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param SaucerPickerOptionsType $options
+     * @return StringArrayType
+     */
+    public function saucer_desktop_pick_files(CData $desktop, CData $options): CData {}
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param SaucerPickerOptionsType $options
+     * @return StringArrayType
+     */
+    public function saucer_desktop_pick_folders(CData $desktop, CData $options): CData {}
 }
