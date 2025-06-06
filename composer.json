@@ -25,10 +25,10 @@
         "boson-php/os-info": "self.version",
         "boson-php/runtime": "self.version",
         "boson-php/weak-types": "self.version",
-        "boson-php/http-contracts": "self.version"
+        "boson-php/http-contracts": "self.version",
+        "boson-php/compiler": "self.version"
     },
     "require-dev": {
-        "boson-php/compiler": "^0.13",
         "ffi/var-dumper": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.75",
         "jetbrains/phpstorm-attributes": "^1.2",
