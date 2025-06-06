@@ -96,6 +96,7 @@ final readonly class LibSaucer
 
     /**
      * @param non-empty-string $pathname
+     *
      * @return non-empty-string|null
      */
     private function getPharAwareLibrary(string $pathname): ?string
