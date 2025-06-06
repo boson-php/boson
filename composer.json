@@ -4,9 +4,9 @@
     "type": "library",
     "license": "MIT",
     "repositories": [
-        {"type": "path", "url": "libs/bridge/*"},
-        {"type": "path", "url": "libs/component/*"},
-        {"type": "path", "url": "libs/contracts/*"}
+        {"type": "path", "url": "libs/bridge/*", "options": {"canonical": false}},
+        {"type": "path", "url": "libs/component/*", "options": {"canonical": false}},
+        {"type": "path", "url": "libs/contracts/*", "options": {"canonical": false}}
     ],
     "require": {
         "php": "^8.4",
