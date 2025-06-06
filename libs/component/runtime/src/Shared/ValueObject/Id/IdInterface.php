@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Shared\Id;
+namespace Boson\Shared\ValueObject\Id;
 
 use Boson\Shared\ValueObject\ValueObjectInterface;
 
