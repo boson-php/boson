@@ -115,7 +115,6 @@ final class WebViewData extends WebViewExtension implements DataApiInterface
         $this->context->bind($this->failureCallback, $this->onFailureReceived(...));
     }
 
-
     /**
      * Retrieves and removes a pending request from the registry.
      *

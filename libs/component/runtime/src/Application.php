@@ -30,7 +30,6 @@ use Boson\Internal\ThreadsCountResolver;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\WebView;
-use Boson\Window\Api\WindowExtension;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
 use Boson\Window\Window;
