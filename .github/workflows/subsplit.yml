@@ -26,6 +26,8 @@ jobs:
             split_repository: 'symfony-http-bridge'
           - local_path: 'bridge/laravel-http-bridge'
             split_repository: 'laravel-http-bridge'
+          - local_path: 'bridge/laravel-provider'
+            split_repository: 'laravel-provider'
           - local_path: 'bridge/psr-http-bridge'
             split_repository: 'psr-http-bridge'
           # Components

@@ -1,0 +1,55 @@
+#!/usr/bin/env php
+<?php
+
+use Boson\Application as Boson;
+use Boson\ApplicationCreateInfo;
+use Boson\Bridge\Laravel\Http\LaravelHttpAdapter;
+use Boson\Component\Http\Static\FilesystemStaticProvider;
+use Boson\WebView\Api\Schemes\Event\SchemeRequestReceived;
+use Boson\Window\WindowCreateInfo;
+use Boson\Bridge\Laravel\Provider\Worker;
+use Laravel\Octane\ApplicationFactory;
+use Laravel\Octane\RequestContext;
+
+$basePath = __DIR__;
+
+
+require $basePath . '/vendor/autoload.php';
+require $basePath . '/vendor/laravel/octane/fixes/fix-symfony-dd.php';
+
+define('LARAVEL_START', microtime(true));
+
+ini_set('display_errors', 'stderr');
+
+$_ENV['APP_RUNNING_IN_CONSOLE'] = false;
+
+$boson = new Boson(
+    new ApplicationCreateInfo(
+        schemes: ['laravel'],
+        debug: false,
+        window: new WindowCreateInfo(
+            width: 1400,
+            height: 800,
+            alwaysOnTop: false,
+        ),
+    ),
+);
+
+$factory = new ApplicationFactory($basePath);
+$bridge = new LaravelHttpAdapter();
+$static = new FilesystemStaticProvider([__DIR__ . '/public']);
+$worker = new Worker($factory, $boson);
+$worker->boot();
+
+$boson->on(function (SchemeRequestReceived $e) use ($bridge, $static, $worker) {
+    $request = $bridge->createRequest($e->request);
+
+    $worker->handle($request, new RequestContext());
+
+    $response = $static->findFileByRequest($e->request) ?? $bridge->createResponse($worker->getResponse());
+
+    $e->response = $response;
+});
+
+$boson->webview->url = 'laravel://localhost';
+
