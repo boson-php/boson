@@ -33,6 +33,7 @@ use FFI\CType;
  *
  * @phpstan-type UInt8ArrayType CData
  * @phpstan-type StringArrayType CData
+ * @phpstan-type StringType CData
  * @phpstan-type UnmanagedStringType CData
  *
  * @seal-properties
@@ -795,14 +796,16 @@ final readonly class LibSaucer
     /**
      * @param SaucerDesktopType $desktop
      * @param SaucerPickerOptionsType $options
+     * @return StringType
      */
-    public function saucer_desktop_pick_file(CData $desktop, CData $options): string {}
+    public function saucer_desktop_pick_file(CData $desktop, CData $options): ?CData {}
 
     /**
      * @param SaucerDesktopType $desktop
      * @param SaucerPickerOptionsType $options
+     * @return StringType
      */
-    public function saucer_desktop_pick_folder(CData $desktop, CData $options): string {}
+    public function saucer_desktop_pick_folder(CData $desktop, CData $options): ?CData {}
 
     /**
      * @param SaucerDesktopType $desktop
