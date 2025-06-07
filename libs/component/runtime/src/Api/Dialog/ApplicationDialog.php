@@ -13,7 +13,7 @@ use Boson\Internal\Saucer\LibSaucer;
 use FFI\CData;
 
 /**
- * @internal this is an internal library class, please do not use it in your code.
+ * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson
  */
 final class ApplicationDialog extends ApplicationExtension implements DialogApiInterface
@@ -32,9 +32,6 @@ final class ApplicationDialog extends ApplicationExtension implements DialogApiI
         );
     }
 
-    /**
-     * @param string|null $directory
-     */
     private function applyDirectory(CData $options, ?string $directory): void
     {
         $directory ??= \getcwd();
@@ -82,6 +79,7 @@ final class ApplicationDialog extends ApplicationExtension implements DialogApiI
     /**
      * @param iterable<mixed, mixed> $filter
      * @param \Closure(CData, CData): ?CData $selector
+     *
      * @return non-empty-string|null
      */
     private function selectOne(?string $directory, iterable $filter, \Closure $selector): ?string
@@ -106,6 +104,7 @@ final class ApplicationDialog extends ApplicationExtension implements DialogApiI
     /**
      * @param iterable<mixed, mixed> $filter
      * @param \Closure(CData, CData): ?CData $selector
+     *
      * @return list<non-empty-string>
      */
     private function selectMany(?string $directory, iterable $filter, \Closure $selector): array

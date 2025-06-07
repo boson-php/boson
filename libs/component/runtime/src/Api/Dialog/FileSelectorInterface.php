@@ -11,6 +11,7 @@ interface FileSelectorInterface
      *
      * @param non-empty-string|null $directory
      * @param iterable<mixed, non-empty-string> $filter
+     *
      * @return non-empty-string|null
      */
     public function selectFile(?string $directory = null, iterable $filter = []): ?string;
@@ -20,6 +21,7 @@ interface FileSelectorInterface
      *
      * @param non-empty-string|null $directory
      * @param iterable<mixed, non-empty-string> $filter
+     *
      * @return iterable<array-key, non-empty-string>
      */
     public function selectFiles(?string $directory = null, iterable $filter = []): iterable;
