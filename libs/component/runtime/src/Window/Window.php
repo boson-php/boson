@@ -13,8 +13,10 @@ use Boson\Dispatcher\EventListenerProviderInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerWindowEdge;
 use Boson\Shared\Marker\RequiresDealloc;
+use Boson\WebView\Api\WebViewExtension;
 use Boson\WebView\Internal\WebViewCreateInfo\FlagsListFormatter;
 use Boson\WebView\WebView;
+use Boson\Window\Api\WindowExtension;
 use Boson\Window\Event\WindowDecorationChanged;
 use Boson\Window\Event\WindowMaximized;
 use Boson\Window\Event\WindowMinimized;
@@ -496,6 +498,25 @@ final class Window implements EventListenerProviderInterface
         if ($this->info->visible) {
             $this->show();
         }
+    }
+
+    /**
+     * @template TArgApiProvider of WindowExtension
+     *
+     * @param class-string<TArgApiProvider> $class
+     *
+     * @return TArgApiProvider
+     *
+     * @phpstan-ignore-next-line TODO will be used later
+     */
+    private function createWindowExtension(string $class): WindowExtension
+    {
+        return new $class(
+            api: $this->api,
+            context: $this,
+            listener: $this->events,
+            dispatcher: $this->dispatcher,
+        );
     }
 
     /**

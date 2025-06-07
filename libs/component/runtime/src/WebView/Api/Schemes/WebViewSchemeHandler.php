@@ -8,18 +8,19 @@ use Boson\ApplicationPollerInterface;
 use Boson\Contracts\Http\RequestInterface;
 use Boson\Contracts\Http\ResponseInterface;
 use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListenerInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Internal\Saucer\SaucerLaunch;
 use Boson\Internal\Saucer\SaucerSchemeError;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Api\Schemes\Event\SchemeRequestReceived;
 use Boson\WebView\Api\SchemesApiInterface;
-use Boson\WebView\Api\WebViewApi;
+use Boson\WebView\Api\WebViewExtension;
 use Boson\WebView\Internal\WebViewSchemeHandler\MimeTypeReader;
 use Boson\WebView\WebView;
 use FFI\CData;
 
-final class WebViewSchemeHandler extends WebViewApi implements SchemesApiInterface
+final class WebViewSchemeHandler extends WebViewExtension implements SchemesApiInterface
 {
     public array $schemes;
 
@@ -27,17 +28,26 @@ final class WebViewSchemeHandler extends WebViewApi implements SchemesApiInterfa
 
     private readonly ApplicationPollerInterface $poller;
 
-    public function __construct(LibSaucer $api, WebView $webview, EventDispatcherInterface $dispatcher)
-    {
-        parent::__construct($api, $webview, $dispatcher);
+    public function __construct(
+        LibSaucer $api,
+        WebView $context,
+        EventListenerInterface $listener,
+        EventDispatcherInterface $dispatcher,
+    ) {
+        parent::__construct(
+            api: $api,
+            context: $context,
+            listener: $listener,
+            dispatcher: $dispatcher,
+        );
 
         $this->mimeTypes = new MimeTypeReader();
 
-        $this->poller = $this->webview->window->app->poller;
-        $this->schemes = $webview->window->app->info->schemes;
+        $this->poller = $context->window->app->poller;
+        $this->schemes = $context->window->app->info->schemes;
 
         $this->createSchemeInterceptors(
-            schemes: $this->webview->window->app->info->schemes,
+            schemes: $context->window->app->info->schemes,
         );
     }
 
@@ -48,7 +58,7 @@ final class WebViewSchemeHandler extends WebViewApi implements SchemesApiInterfa
     {
         foreach ($schemes as $scheme) {
             $this->api->saucer_webview_handle_scheme(
-                $this->webview->window->id->ptr,
+                $this->context->window->id->ptr,
                 $scheme,
                 $this->onSafeRequest(...),
                 SaucerLaunch::SAUCER_LAUNCH_SYNC,
@@ -74,7 +84,7 @@ final class WebViewSchemeHandler extends WebViewApi implements SchemesApiInterfa
     {
         try {
             $processable = $this->intent($intention = new SchemeRequestReceived(
-                subject: $this->webview,
+                subject: $this->context,
                 request: $this->createRequest($request),
             ));
 

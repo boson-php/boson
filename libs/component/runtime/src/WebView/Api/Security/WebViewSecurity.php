@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\Security;
 
 use Boson\WebView\Api\SecurityApiInterface;
-use Boson\WebView\Api\WebViewApi;
+use Boson\WebView\Api\WebViewExtension;
 use Boson\WebView\WebViewState;
 
 /**
  * Provides information about the security context of the WebView.
  */
-final class WebViewSecurity extends WebViewApi implements SecurityApiInterface
+final class WebViewSecurity extends WebViewExtension implements SecurityApiInterface
 {
     /**
      * @var non-empty-list<non-empty-string>
@@ -45,7 +45,7 @@ final class WebViewSecurity extends WebViewApi implements SecurityApiInterface
      */
     private function findCurrentScheme(): ?string
     {
-        $scheme = \parse_url($this->webview->url, \PHP_URL_SCHEME);
+        $scheme = \parse_url($this->context->url, \PHP_URL_SCHEME);
 
         if ($scheme === '' || !\is_string($scheme)) {
             return null;
@@ -64,7 +64,7 @@ final class WebViewSecurity extends WebViewApi implements SecurityApiInterface
      */
     private function getSecurityContext(): bool
     {
-        if ($this->webview->state === WebViewState::Ready) {
+        if ($this->context->state === WebViewState::Ready) {
             $scheme = $this->findCurrentScheme();
 
             if ($scheme === null) {
@@ -85,7 +85,7 @@ final class WebViewSecurity extends WebViewApi implements SecurityApiInterface
      */
     private function getRealSecurity(): bool
     {
-        return (bool) $this->webview->data->get('window.isSecureContext');
+        return (bool) $this->context->data->get('window.isSecureContext');
     }
 
     /**

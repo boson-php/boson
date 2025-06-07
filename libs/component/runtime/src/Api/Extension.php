@@ -2,27 +2,40 @@
 
 declare(strict_types=1);
 
-namespace Boson\WebView\Api;
+namespace Boson\Api;
 
 use Boson\Dispatcher\Event;
 use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListenerInterface;
 use Boson\Dispatcher\Intention;
 use Boson\Dispatcher\Subscription\CancellableSubscriptionInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\WebView\WebView;
 use FFI\CData;
 
-abstract class WebViewApi
+/**
+ * @template T of object
+ */
+abstract class Extension
 {
     protected readonly CData $ptr;
 
     public function __construct(
         protected readonly LibSaucer $api,
-        protected readonly WebView $webview,
+        /**
+         * @var T
+         */
+        protected readonly object $context,
+        private readonly EventListenerInterface $listener,
         private readonly EventDispatcherInterface $dispatcher,
     ) {
-        $this->ptr = $this->webview->window->id->ptr;
+        $this->ptr = $this->getHandle($this->context);
     }
+
+    /**
+     * @param T $context
+     */
+    abstract protected function getHandle(object $context): CData;
 
     /**
      * @template TArgEvent of object
@@ -34,7 +47,7 @@ abstract class WebViewApi
      */
     protected function listen(string $event, callable $then): CancellableSubscriptionInterface
     {
-        return $this->webview->events->addEventListener($event, $then);
+        return $this->listener->addEventListener($event, $then);
     }
 
     /**

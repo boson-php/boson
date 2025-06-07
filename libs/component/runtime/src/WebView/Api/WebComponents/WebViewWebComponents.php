@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\WebComponents;
 
 use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListenerInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\WebView\Api\WebComponents\Component\HasAttributesInterface;
 use Boson\WebView\Api\WebComponents\Component\HasClassNameInterface;
@@ -21,14 +22,14 @@ use Boson\WebView\Api\WebComponents\Internal\WebViewComponentBuilder;
 use Boson\WebView\Api\WebComponents\Internal\WebViewComponentInstances;
 use Boson\WebView\Api\WebComponentsApiInterface;
 use Boson\WebView\Api\WebComponentsCreateInfo;
-use Boson\WebView\Api\WebViewApi;
+use Boson\WebView\Api\WebViewExtension;
 use Boson\WebView\Event\WebViewNavigating;
 use Boson\WebView\WebView;
 
 /**
  * @template-implements \IteratorAggregate<non-empty-string, class-string>
  */
-final class WebViewWebComponents extends WebViewApi implements
+final class WebViewWebComponents extends WebViewExtension implements
     WebComponentsApiInterface,
     \IteratorAggregate
 {
@@ -122,19 +123,28 @@ final class WebViewWebComponents extends WebViewApi implements
 
     private readonly WebViewComponentBuilder $builder;
 
-    public function __construct(LibSaucer $api, WebView $webview, EventDispatcherInterface $dispatcher)
-    {
-        parent::__construct($api, $webview, $dispatcher);
+    public function __construct(
+        LibSaucer $api,
+        WebView $context,
+        EventListenerInterface $listener,
+        EventDispatcherInterface $dispatcher,
+    ) {
+        parent::__construct(
+            api: $api,
+            context: $context,
+            listener: $listener,
+            dispatcher: $dispatcher,
+        );
 
-        $this->classNamePrefix = $webview->info->webComponents->classNamePrefix;
+        $this->classNamePrefix = $context->info->webComponents->classNamePrefix;
 
         $this->instances = new WebViewComponentInstances(
-            webview: $webview,
-            instantiator: $this->webview->info->webComponents->instantiator,
+            webview: $context,
+            instantiator: $this->context->info->webComponents->instantiator,
         );
 
         $this->builder = new WebViewComponentBuilder(
-            app: $webview->window->app,
+            app: $context->window->app,
         );
 
         $this->registerDefaultFunctions();
@@ -150,13 +160,13 @@ final class WebViewWebComponents extends WebViewApi implements
 
     private function registerDefaultFunctions(): void
     {
-        $this->webview->bind('boson.components.created', $this->onCreated(...));
-        $this->webview->bind('boson.components.connected', $this->onConnected(...));
-        $this->webview->bind('boson.components.disconnected', $this->onDisconnected(...));
-        $this->webview->bind('boson.components.attributeChanged', $this->onAttributeChanged(...));
-        $this->webview->bind('boson.components.propertyChanged', $this->onPropertyChanged(...));
-        $this->webview->bind('boson.components.invoke', $this->onInvoke(...));
-        $this->webview->bind('boson.components.fire', $this->onFire(...));
+        $this->context->bind('boson.components.created', $this->onCreated(...));
+        $this->context->bind('boson.components.connected', $this->onConnected(...));
+        $this->context->bind('boson.components.disconnected', $this->onDisconnected(...));
+        $this->context->bind('boson.components.attributeChanged', $this->onAttributeChanged(...));
+        $this->context->bind('boson.components.propertyChanged', $this->onPropertyChanged(...));
+        $this->context->bind('boson.components.invoke', $this->onInvoke(...));
+        $this->context->bind('boson.components.fire', $this->onFire(...));
     }
 
     private function onCreated(string $tag, string $id): ?string
@@ -316,7 +326,7 @@ final class WebViewWebComponents extends WebViewApi implements
 
         $this->components[$name] = $component;
 
-        $this->webview->scripts->add($this->builder->build(
+        $this->context->scripts->add($this->builder->build(
             tagName: $name,
             className: $this->getClassName($component),
             component: $component,

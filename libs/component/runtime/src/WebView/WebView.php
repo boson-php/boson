@@ -29,7 +29,7 @@ use Boson\WebView\Api\WebComponents\Exception\ComponentAlreadyDefinedException;
 use Boson\WebView\Api\WebComponents\Exception\WebComponentsApiException;
 use Boson\WebView\Api\WebComponents\WebViewWebComponents;
 use Boson\WebView\Api\WebComponentsApiInterface;
-use Boson\WebView\Api\WebViewApi;
+use Boson\WebView\Api\WebViewExtension;
 use Boson\WebView\Internal\WebViewEventHandler;
 use Boson\Window\Window;
 use FFI\CData;
@@ -197,13 +197,13 @@ final class WebView implements EventListenerProviderInterface
         // The WebView handle pointer is the same as the Window pointer.
         $this->ptr = $this->window->id->ptr;
 
-        $this->scripts = $this->createApi(WebViewScriptsSet::class);
-        $this->bindings = $this->createApi(WebViewBindingsMap::class);
-        $this->data = $this->createApi(WebViewData::class);
-        $this->security = $this->createApi(WebViewSecurity::class);
-        $this->components = $this->createApi(WebViewWebComponents::class);
-        $this->battery = $this->createApi(WebViewBattery::class);
-        $this->schemes = $this->createApi(WebViewSchemeHandler::class);
+        $this->scripts = $this->createWebViewExtension(WebViewScriptsSet::class);
+        $this->bindings = $this->createWebViewExtension(WebViewBindingsMap::class);
+        $this->data = $this->createWebViewExtension(WebViewData::class);
+        $this->security = $this->createWebViewExtension(WebViewSecurity::class);
+        $this->components = $this->createWebViewExtension(WebViewWebComponents::class);
+        $this->battery = $this->createWebViewExtension(WebViewBattery::class);
+        $this->schemes = $this->createWebViewExtension(WebViewSchemeHandler::class);
 
         $this->internalWebViewEventHandler = $this->createWebViewEventHandler();
 
@@ -211,17 +211,18 @@ final class WebView implements EventListenerProviderInterface
     }
 
     /**
-     * @template TArgApiProvider of WebViewApi
+     * @template TArgApiProvider of WebViewExtension
      *
      * @param class-string<TArgApiProvider> $class
      *
      * @return TArgApiProvider
      */
-    private function createApi(string $class): WebViewApi
+    private function createWebViewExtension(string $class): WebViewExtension
     {
         return new $class(
             api: $this->api,
-            webview: $this,
+            context: $this,
+            listener: $this->events,
             dispatcher: $this->dispatcher,
         );
     }

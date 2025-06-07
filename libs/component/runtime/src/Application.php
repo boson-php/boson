@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson;
 
+use Boson\Api\ApplicationExtension;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
 use Boson\Dispatcher\EventListener;
@@ -29,6 +30,7 @@ use Boson\Internal\ThreadsCountResolver;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\WebView;
+use Boson\Window\Api\WindowExtension;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
 use Boson\Window\Window;
@@ -195,6 +197,25 @@ final class Application implements EventListenerProviderInterface
         if ($this->info->autorun) {
             $this->registerDeferRunnerIfNotRegistered();
         }
+    }
+
+    /**
+     * @template TArgApiProvider of ApplicationExtension
+     *
+     * @param class-string<TArgApiProvider> $class
+     *
+     * @return TArgApiProvider
+     *
+     * @phpstan-ignore-next-line TODO will be used later
+     */
+    private function createApplicationExtension(string $class): ApplicationExtension
+    {
+        return new $class(
+            api: $this->api,
+            context: $this,
+            listener: $this->events,
+            dispatcher: $this->dispatcher,
+        );
     }
 
     /**

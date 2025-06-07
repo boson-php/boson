@@ -6,6 +6,7 @@ namespace Boson\WebView\Api\Data;
 
 use Boson\ApplicationPollerInterface;
 use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListenerInterface;
 use Boson\Internal\Saucer\LibSaucer;
 use Boson\Shared\IdValueGenerator\IdValueGeneratorInterface;
 use Boson\Shared\Marker\BlockingOperation;
@@ -15,7 +16,7 @@ use Boson\WebView\Api\Data\Exception\StalledRequestException;
 use Boson\WebView\Api\Data\Exception\WebViewIsNotReadyException;
 use Boson\WebView\Api\DataApiCreateInfo;
 use Boson\WebView\Api\DataApiInterface;
-use Boson\WebView\Api\WebViewApi;
+use Boson\WebView\Api\WebViewExtension;
 use Boson\WebView\Internal\Timeout;
 use Boson\WebView\WebView;
 use Boson\WebView\WebViewState;
@@ -29,7 +30,7 @@ use function React\Promise\resolve;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewData extends WebViewApi implements DataApiInterface
+final class WebViewData extends WebViewExtension implements DataApiInterface
 {
     private const string DATA_REQUEST_TEMPLATE = <<<'JS'
         try {
@@ -93,20 +94,27 @@ final class WebViewData extends WebViewApi implements DataApiInterface
 
     public function __construct(
         LibSaucer $api,
-        WebView $webview,
+        WebView $context,
+        EventListenerInterface $listener,
         EventDispatcherInterface $dispatcher,
     ) {
-        parent::__construct($api, $webview, $dispatcher);
+        parent::__construct(
+            api: $api,
+            context: $context,
+            listener: $listener,
+            dispatcher: $dispatcher,
+        );
 
-        $this->ids = $webview->info->data->ids;
-        $this->timeout = $webview->info->data->timeout;
-        $this->callback = $webview->info->data->callback;
-        $this->failureCallback = $webview->info->data->failureCallback;
-        $this->poller = $this->webview->window->app->poller;
+        $this->ids = $context->info->data->ids;
+        $this->timeout = $context->info->data->timeout;
+        $this->callback = $context->info->data->callback;
+        $this->failureCallback = $context->info->data->failureCallback;
+        $this->poller = $context->window->app->poller;
 
-        $this->webview->bind($this->callback, $this->onResponseReceived(...));
-        $this->webview->bind($this->failureCallback, $this->onFailureReceived(...));
+        $this->context->bind($this->callback, $this->onResponseReceived(...));
+        $this->context->bind($this->failureCallback, $this->onFailureReceived(...));
     }
+
 
     /**
      * Retrieves and removes a pending request from the registry.
@@ -137,7 +145,7 @@ final class WebViewData extends WebViewApi implements DataApiInterface
             $this->pull($id);
         });
 
-        $this->webview->scripts->eval($this->pack($id, $code));
+        $this->context->scripts->eval($this->pack($id, $code));
 
         return $deferred->promise();
     }
@@ -149,7 +157,7 @@ final class WebViewData extends WebViewApi implements DataApiInterface
             return '';
         }
 
-        if ($this->webview->state === WebViewState::Navigating) {
+        if ($this->context->state === WebViewState::Navigating) {
             throw WebViewIsNotReadyException::becauseWebViewIsNotReady($code);
         }
 
