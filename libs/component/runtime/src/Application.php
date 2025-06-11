@@ -458,14 +458,7 @@ final class Application implements EventListenerProviderInterface
 
         $this->dispatcher->dispatch(new ApplicationStarted($this));
 
-        if (\Fiber::getCurrent() !== null) {
-            while ($this->poller->next()) {
-                \usleep(1);
-                \Fiber::suspend($this);
-            }
-        } else {
-            $this->api->saucer_application_run($this->id->ptr);
-        }
+        $this->api->saucer_application_run($this->id->ptr);
     }
 
     /**
