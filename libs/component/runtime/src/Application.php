@@ -215,8 +215,6 @@ final class Application implements EventListenerProviderInterface
      * @param class-string<TArgApiProvider> $class
      *
      * @return TArgApiProvider
-     *
-     * @phpstan-ignore-next-line TODO will be used later
      */
     private function createApplicationExtension(string $class): ApplicationExtension
     {
