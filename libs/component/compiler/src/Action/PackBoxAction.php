@@ -30,10 +30,19 @@ final readonly class PackBoxAction implements ActionInterface
         }
 
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException(\trim($error));
+            throw new \RuntimeException($this->formatErrorMessage($error));
         }
 
         yield PackBoxStatus::Packed;
+    }
+
+    private function formatErrorMessage(string $message): string
+    {
+        $message = \str_replace("\r\n", "\n", $message);
+        $message = \preg_replace('/^\h*In.+?line\h+\d+:\h*$/isum', '', $message);
+        $message = \preg_replace('/^\h*compile \[.+?WORKING-DIR]/isum', '', $message);
+
+        return \trim($message);
     }
 
     private function createProcess(Configuration $config): Process
