@@ -42,7 +42,8 @@ final readonly class PackBoxAction implements ActionInterface
         $message = \preg_replace('/^\h*In.+?line\h+\d+:\h*$/isum', '', $message);
         $message = \preg_replace('/^\h*compile \[.+?WORKING-DIR]/isum', '', $message);
 
-        return \trim($message);
+        return 'An error occurred while executing "humbug/box" compile command: '
+            . \trim($message);
     }
 
     private function createProcess(Configuration $config): Process
