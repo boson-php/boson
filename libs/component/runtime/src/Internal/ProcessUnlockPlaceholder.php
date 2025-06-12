@@ -34,6 +34,10 @@ final class ProcessUnlockPlaceholder implements ApplicationPollerInterface
             return false;
         }
 
+        if (\Fiber::getCurrent() !== null) {
+            \Fiber::suspend($this->app);
+        }
+
         if ($this->exception !== null) {
             [$exception, $this->exception] = [$this->exception, null];
 
