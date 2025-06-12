@@ -19,6 +19,7 @@ final class Configuration
      * @var non-empty-string
      */
     public const string DEFAULT_ENTRYPOINT = 'index.php';
+
     /**
      * @var non-empty-string
      */
