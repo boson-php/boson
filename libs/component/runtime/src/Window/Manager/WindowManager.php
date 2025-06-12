@@ -100,6 +100,7 @@ final class WindowManager implements
      */
     private static function createWindowsStorage(): \SplObjectStorage
     {
+        /** @var \SplObjectStorage<Window, mixed> */
         return new \SplObjectStorage();
     }
 
@@ -114,6 +115,7 @@ final class WindowManager implements
      */
     private static function createWindowsDestructorObserver(): ObservableWeakSet
     {
+        /** @var ObservableWeakSet<Window> */
         return new ObservableWeakSet();
     }
 
