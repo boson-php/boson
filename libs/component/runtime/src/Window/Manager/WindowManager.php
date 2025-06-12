@@ -15,6 +15,7 @@ use Boson\Internal\Saucer\LibSaucer;
 use Boson\Component\WeakType\ObservableWeakSet;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Event\WindowCreated;
+use Boson\Window\Event\WindowDestroyed;
 use Boson\Window\Window;
 use Boson\Window\WindowCreateInfo;
 use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
@@ -205,10 +206,13 @@ final class WindowManager implements
             dispatcher: $this->events,
         );
 
+        // Clearing object pointers after window object release
         $this->memory->watch($window, function (Window $window): void {
             $this->api->saucer_webview_clear_scripts($window->id->ptr);
             $this->api->saucer_webview_clear_embedded($window->id->ptr);
             $this->api->saucer_free($window->id->ptr);
+
+            $this->dispatcher->dispatch(new WindowDestroyed($window));
         });
 
         $this->dispatcher->dispatch(new WindowCreated($window));
