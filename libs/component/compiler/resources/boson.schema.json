@@ -72,16 +72,76 @@
                         "type": "object",
                         "additionalProperties": false,
                         "description": "Finder inclusion configuration",
+                        "required": ["directory"],
                         "properties": {
                             "directory": {
-                                "type": "string",
-                                "description": "The directory in which the files will be searched",
-                                "minLength": 1
+                                "oneOf": [
+                                    {
+                                        "type": "string",
+                                        "description": "The directory in which the files will be searched",
+                                        "minLength": 1
+                                    },
+                                    {
+                                        "type": "array",
+                                        "minLength": 1,
+                                        "items": {
+                                            "type": "string",
+                                            "description": "The directory in which the files will be searched",
+                                            "minLength": 1
+                                        }
+                                    }
+                                ]
+                            },
+                            "not-directory": {
+                                "oneOf": [
+                                    {
+                                        "type": "string",
+                                        "description": "The directory exclusion filter",
+                                        "minLength": 1
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "The directory exclusion filter",
+                                            "minLength": 1
+                                        }
+                                    }
+                                ]
                             },
                             "name": {
-                                "type": "string",
-                                "description": "The name filter for files",
-                                "minLength": 1
+                                "oneOf": [
+                                    {
+                                        "type": "string",
+                                        "description": "The name filter for files",
+                                        "minLength": 1
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "The name filter for files",
+                                            "minLength": 1
+                                        }
+                                    }
+                                ]
+                            },
+                            "not-name": {
+                                "oneOf": [
+                                    {
+                                        "type": "string",
+                                        "description": "The name exclusion filter for files",
+                                        "minLength": 1
+                                    },
+                                    {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "The name exclusion filter for files",
+                                            "minLength": 1
+                                        }
+                                    }
+                                ]
                             }
                         }
                     }

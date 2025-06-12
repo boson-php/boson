@@ -8,12 +8,20 @@ final readonly class FinderIncludeConfiguration extends IncludeConfiguration
 {
     public function __construct(
         /**
-         * @var non-empty-string|null
+         * @var non-empty-list<non-empty-string>
          */
-        public ?string $directory,
+        public array $directories,
         /**
-         * @var non-empty-string|null
+         * @var list<non-empty-string>
          */
-        public ?string $name,
+        public array $notDirectories = [],
+        /**
+         * @var list<non-empty-string>
+         */
+        public array $names = [],
+        /**
+         * @var list<non-empty-string>
+         */
+        public array $notNames = [],
     ) {}
 }

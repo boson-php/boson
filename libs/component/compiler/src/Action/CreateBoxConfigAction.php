@@ -28,8 +28,10 @@ final readonly class CreateBoxConfigAction implements ActionInterface
 
     /**
      * @return list<array{
-     *     name?: non-empty-string,
-     *     in?: non-empty-string
+     *     in: non-empty-list<non-empty-string>,
+     *     name?: list<non-empty-string>,
+     *     exclude?: list<non-empty-string>,
+     *     notName?: list<non-empty-string>,
      * }>
      */
     private function getBoxFinderConfig(Configuration $config): array
@@ -37,23 +39,32 @@ final readonly class CreateBoxConfigAction implements ActionInterface
         $finder = [];
 
         foreach ($config->build as $inclusion) {
-            $section = [];
-
             if (!$inclusion instanceof FinderIncludeConfiguration) {
                 continue;
             }
 
-            if ($inclusion->name !== null) {
-                $section['name'] = $inclusion->name;
+            if ($inclusion->directories === []) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Directories list cannot be empty in "build.finder[%s].directories" config section',
+                    \count($finder),
+                ));
             }
 
-            if ($inclusion->directory !== null) {
-                $section['in'] = $inclusion->directory;
+            $section = ['in' => $inclusion->directories];
+
+            if ($inclusion->notDirectories !== []) {
+                $section['exclude'] = $inclusion->notDirectories;
             }
 
-            if ($section !== []) {
-                $finder[] = $section;
+            if ($inclusion->names !== []) {
+                $section['name'] = $inclusion->names;
             }
+
+            if ($inclusion->notNames !== []) {
+                $section['notName'] = $inclusion->notNames;
+            }
+
+            $finder[] = $section;
         }
 
         return $finder;
