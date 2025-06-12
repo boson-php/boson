@@ -15,6 +15,6 @@ abstract class WebViewExtension extends Extension
 {
     protected function getHandle(object $context): CData
     {
-        return $context->window->id->ptr;
+        return $context->id->ptr;
     }
 }

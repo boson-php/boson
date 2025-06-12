@@ -34,7 +34,6 @@ use Boson\WebView\WebView;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
 use Boson\Window\Window;
-use Boson\Window\WindowCreateInfo;
 use FFI\CData;
 use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 
@@ -87,9 +86,7 @@ final class Application implements EventListenerProviderInterface
     /**
      * Gets access to the Dialog API of the application.
      */
-    public DialogApiInterface $dialog {
-        get => $this->dialog ??= $this->createApplicationExtension(ApplicationDialog::class);
-    }
+    public readonly DialogApiInterface $dialog;
 
     /**
      * Provides more convenient and faster access to the
@@ -194,19 +191,25 @@ final class Application implements EventListenerProviderInterface
             new NativeShutdownFunctionRunner(),
         ],
     ) {
+        // Initialization Application's fields and properties
         $this->api = self::createLibSaucer($info->library);
         $this->isDebug = self::createIsDebugParameter($info->debug);
         $this->events = $this->dispatcher = self::createEventListener($dispatcher);
         $this->id = self::createApplicationId($this->api, $this->info->name, $this->info->threads);
         $this->poller = self::createApplicationPoller($this->api, $this);
-        $this->windows = self::createWindowManager($this->api, $this, $info->window, $this->dispatcher);
+        $this->windows = self::createWindowManager($this->api, $this, $info, $this->dispatcher);
 
+        // Initialization of Application's API
+        $this->dialog = $this->createApplicationExtension(ApplicationDialog::class);
+
+        // Register Application's subsystems
         $this->registerSchemes();
         $this->registerDefaultEventListeners();
-
-        $this->registerAndExecuteBootHandlers();
         $this->registerQuitHandlers();
         $this->registerDeferRunner();
+
+        // Boot the Application
+        $this->boot();
     }
 
     /**
@@ -256,12 +259,7 @@ final class Application implements EventListenerProviderInterface
      */
     private function createApplicationPoller(LibSaucer $api, Application $ctx): ApplicationPollerInterface
     {
-        return new ApplicationPoller($api, $ctx, function () {
-            $this->isRunning = true;
-            $this->wasEverRunning = true;
-
-            $this->dispatcher->dispatch(new ApplicationStarted($this));
-        });
+        return new ApplicationPoller($api, $ctx);
     }
 
     /**
@@ -282,9 +280,9 @@ final class Application implements EventListenerProviderInterface
     }
 
     /**
-     * Boot application handlers.
+     * Boot the application.
      */
-    private function registerAndExecuteBootHandlers(): void
+    private function boot(): void
     {
         foreach ($this->bootHandlers as $handler) {
             $handler->boot();
@@ -300,13 +298,13 @@ final class Application implements EventListenerProviderInterface
     private static function createWindowManager(
         LibSaucer $api,
         Application $app,
-        WindowCreateInfo $info,
+        ApplicationCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ): WindowManager {
         return new WindowManager(
             api: $api,
             app: $app,
-            info: $info,
+            info: $info->window,
             dispatcher: $dispatcher,
         );
     }
@@ -513,6 +511,8 @@ final class Application implements EventListenerProviderInterface
 
         $this->isRunning = true;
         $this->wasEverRunning = true;
+
+        $this->dispatcher->dispatch(new ApplicationStarted($this));
 
         while ($this->poller->next()) {
             \usleep(1);

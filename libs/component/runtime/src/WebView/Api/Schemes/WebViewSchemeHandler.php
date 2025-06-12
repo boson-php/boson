@@ -58,7 +58,7 @@ final class WebViewSchemeHandler extends WebViewExtension implements SchemesApiI
     {
         foreach ($schemes as $scheme) {
             $this->api->saucer_webview_handle_scheme(
-                $this->context->window->id->ptr,
+                $this->context->id->ptr,
                 $scheme,
                 $this->onSafeRequest(...),
                 SaucerLaunch::SAUCER_LAUNCH_SYNC,

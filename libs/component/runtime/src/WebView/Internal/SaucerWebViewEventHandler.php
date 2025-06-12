@@ -28,7 +28,7 @@ use FFI\CData;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class WebViewEventHandler
+final class SaucerWebViewEventHandler
 {
     /**
      * @var non-empty-string

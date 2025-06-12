@@ -21,38 +21,27 @@ final class ApplicationPoller implements ApplicationPollerInterface
 
     private ?\Throwable $exception = null;
 
-    private bool $booted = false;
-
     public function __construct(
         private readonly LibSaucer $api,
         private readonly Application $app,
-        /**
-         * @var \Closure():void
-         */
-        private readonly \Closure $bootstrap,
     ) {
         $this->ptr = $this->app->id->ptr;
     }
 
     public function next(): bool
     {
-        if ($this->booted === false) {
-            ($this->bootstrap)();
-            $this->booted = true;
-        }
+        if ($this->exception !== null) {
+            [$exception, $this->exception] = [$this->exception, null];
 
-        if ($this->app->isRunning === false) {
-            return false;
+            throw $exception;
         }
 
         if (\Fiber::getCurrent() !== null) {
             \Fiber::suspend($this->app);
         }
 
-        if ($this->exception !== null) {
-            [$exception, $this->exception] = [$this->exception, null];
-
-            throw $exception;
+        if ($this->app->isRunning === false) {
+            return false;
         }
 
         $this->api->saucer_application_run_once($this->ptr);

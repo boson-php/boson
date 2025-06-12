@@ -7,6 +7,7 @@ namespace Boson\Window\Manager;
 use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerInterface;
 use Boson\Dispatcher\EventListenerProvider;
 use Boson\Dispatcher\EventListenerProviderInterface;
@@ -16,6 +17,7 @@ use Boson\Window\Event\WindowClosed;
 use Boson\Window\Event\WindowCreated;
 use Boson\Window\Window;
 use Boson\Window\WindowCreateInfo;
+use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 
 /**
  * Manages the lifecycle and collection of windows in the application.
@@ -73,16 +75,63 @@ final class WindowManager implements
         WindowCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
-        $this->windows = new \SplObjectStorage();
-        $this->memory = new ObservableWeakSet();
+        // Initialization Window Manager's fields and properties
+        $this->windows = self::createWindowsStorage();
+        $this->memory = self::createWindowsDestructorObserver();
+        $this->events = $this->dispatcher = self::createEventListener($dispatcher);
 
-        $this->events = $this->dispatcher = new DelegateEventListener($dispatcher);
+        // Initialization of Window Manager's API
+        // ...
 
+        // Register Window Manager's subsystems
         $this->registerDefaultEventListeners();
 
+        // Create default Window proxy instance
         $this->default = $this->create($info, true);
     }
 
+    /**
+     * Creates a new instance of {@see \SplObjectStorage} for storing window
+     * instances.
+     *
+     * This storage is required to keep all window objects in memory.
+     *
+     * @return \SplObjectStorage<Window, mixed>
+     */
+    private static function createWindowsStorage(): \SplObjectStorage
+    {
+        return new \SplObjectStorage();
+    }
+
+    /**
+     * Creates a new instance of {@see ObservableWeakSet} for tracking window
+     * destruction.
+     *
+     * This set does NOT store objects in memory, but references the main
+     * storage created by {@see createWindowsStorage()}.
+     *
+     * @return ObservableWeakSet<Window>
+     */
+    private static function createWindowsDestructorObserver(): ObservableWeakSet
+    {
+        return new ObservableWeakSet();
+    }
+
+    /**
+     * Creates local (windows-aware) event listener
+     * based on the provided dispatcher.
+     */
+    private static function createEventListener(PsrEventDispatcherInterface $dispatcher): EventListener
+    {
+        return new DelegateEventListener($dispatcher);
+    }
+
+    /**
+     * Registers default event listeners for the window manager.
+     *
+     * This method sets up handlers for window lifecycle events, such as
+     * window closure and default window recalculation.
+     */
     private function registerDefaultEventListeners(): void
     {
         $this->events->addEventListener(WindowClosed::class, function (WindowClosed $event) {

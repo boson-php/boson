@@ -7,6 +7,7 @@ namespace Boson\Window;
 use Boson\Application;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventDispatcherInterface;
+use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerInterface;
 use Boson\Dispatcher\EventListenerProvider;
 use Boson\Dispatcher\EventListenerProviderInterface;
@@ -26,6 +27,7 @@ use Boson\Window\Internal\Size\ManagedWindowSize;
 use Boson\Window\Internal\SaucerWindowEventHandler;
 use Boson\Window\Manager\WindowFactoryInterface;
 use FFI\CData;
+use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 
 /**
  * @api
@@ -476,25 +478,43 @@ final class Window implements EventListenerProviderInterface
         public readonly WindowCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
-        $this->id = $this->createWindowId($this->info);
-        $this->events = $this->dispatcher = new DelegateEventListener($dispatcher);
-        $this->size = $this->createWindowSize();
-        $this->min = $this->createWindowMinSize();
-        $this->max = $this->createWindowMaxSize();
-        $this->webview = $this->createWebView();
-        $this->handler = new SaucerWindowEventHandler(
-            api: $this->api,
-            window: $this,
-            dispatcher: $this->dispatcher,
-        );
+        // Initialization Window's fields and properties
+        $this->id = self::createWindowId($api, $app, $this->info);
+        $this->events = $this->dispatcher = self::createEventListener($dispatcher);
+        $this->size = self::createWindowSize($api, $this->id);
+        $this->min = self::createWindowMinSize($api, $this->id);
+        $this->max = self::createWindowMaxSize($api, $this->id);
+        $this->webview = self::createWebView($api, $this, $info, $this->dispatcher);
+        $this->decoration = self::createWindowDecorations($info);
+        $this->handler = self::createSaucerWindowEventHandler($api, $this, $this->dispatcher);
 
-        $this->decoration = $this->info->decoration;
+        // Initialization of Window's API
+        // ...
 
+        // Register Window's subsystems
         $this->registerDefaultEventListeners();
 
+        // Boot the Window
+        $this->boot();
+    }
+
+    /**
+     * Boot the window.
+     */
+    private function boot(): void
+    {
         if ($this->info->visible) {
             $this->show();
         }
+    }
+
+    /**
+     * Creates local (window-aware) event listener
+     * based on the provided dispatcher.
+     */
+    private static function createEventListener(PsrEventDispatcherInterface $dispatcher): EventListener
+    {
+        return new DelegateEventListener($dispatcher);
     }
 
     /**
@@ -506,9 +526,9 @@ final class Window implements EventListenerProviderInterface
      * size through this interface will be reflected in the actual
      * window dimensions.
      */
-    private function createWindowSize(): MutableSizeInterface
+    private static function createWindowSize(LibSaucer $api, WindowId $id): MutableSizeInterface
     {
-        return new ManagedWindowSize($this->api, $this->id->ptr);
+        return new ManagedWindowSize($api, $id->ptr);
     }
 
     /**
@@ -521,9 +541,9 @@ final class Window implements EventListenerProviderInterface
      * changes to the bounds through this interface will be reflected in the
      * actual window constraints.
      */
-    private function createWindowMinSize(): MutableSizeInterface
+    private static function createWindowMinSize(LibSaucer $api, WindowId $id): MutableSizeInterface
     {
-        return new ManagedWindowMinBounds($this->api, $this->id->ptr);
+        return new ManagedWindowMinBounds($api, $id->ptr);
     }
 
     /**
@@ -536,9 +556,9 @@ final class Window implements EventListenerProviderInterface
      * changes to the bounds through this interface will be reflected in the
      * actual window constraints.
      */
-    private function createWindowMaxSize(): MutableSizeInterface
+    private static function createWindowMaxSize(LibSaucer $api, WindowId $id): MutableSizeInterface
     {
-        return new ManagedWindowMaxBounds($this->api, $this->id->ptr);
+        return new ManagedWindowMaxBounds($api, $id->ptr);
     }
 
     /**
@@ -561,40 +581,59 @@ final class Window implements EventListenerProviderInterface
     }
 
     /**
-     * Registers default event listeners for the window.
+     * Creates WebView instance of the window.
+     *
+     * This method initializes and returns a {@see WebView} object
+     * that is responsible for managing window's webview.
      */
-    private function registerDefaultEventListeners(): void
-    {
-        $this->events->addEventListener(WindowMinimized::class, function (WindowMinimized $e): void {
-            $this->state = $e->isMinimized ? WindowState::Minimized : WindowState::Normal;
-        });
-
-        $this->events->addEventListener(WindowMaximized::class, function (WindowMaximized $e): void {
-            $this->state = $e->isMaximized ? WindowState::Maximized : WindowState::Normal;
-        });
+    private static function createWebView(
+        LibSaucer $api,
+        Window $window,
+        WindowCreateInfo $info,
+        EventDispatcherInterface $dispatcher,
+    ): WebView {
+        return new WebView(
+            api: $api,
+            window: $window,
+            info: $info->webview,
+            dispatcher: $dispatcher,
+        );
     }
 
     /**
-     * Creates WebView instance of the window
+     * Creates a new instance of {@see SaucerWindowEventHandler} that manages
+     * the window's native event handling and bridges them to the Saucer's
+     * event system.
+     *
+     * This method initializes an event handler that translates native window
+     * events (like resize, focus, close) into application events that can be
+     * handled by the event dispatcher.
      */
-    private function createWebView(): WebView
+    private static function createSaucerWindowEventHandler(
+        LibSaucer $api,
+        Window $window,
+        EventDispatcherInterface $dispatcher,
+    ): SaucerWindowEventHandler {
+        return new SaucerWindowEventHandler($api, $window, $dispatcher);
+    }
+
+    /**
+     * Creates an instance of {@see WindowDecoration} based on the window
+     * creation information.
+     */
+    private static function createWindowDecorations(WindowCreateInfo $info): WindowDecoration
     {
-        return new WebView(
-            api: $this->api,
-            window: $this,
-            info: $this->info->webview,
-            dispatcher: $this->dispatcher,
-        );
+        return $info->decoration;
     }
 
     /**
      * Creates new window ID and internal handle
      */
-    private function createWindowId(WindowCreateInfo $info): WindowId
+    private static function createWindowId(LibSaucer $api, Application $app, WindowCreateInfo $info): WindowId
     {
         return WindowId::fromHandle(
-            api: $this->api,
-            handle: $this->createWindowPointer($info),
+            api: $api,
+            handle: self::createWindowPointer($api, $app, $info),
         );
     }
 
@@ -613,17 +652,17 @@ final class Window implements EventListenerProviderInterface
     }
 
     #[RequiresDealloc]
-    private function createWindowPointer(WindowCreateInfo $info): CData
+    private static function createWindowPointer(LibSaucer $api, Application $app, WindowCreateInfo $info): CData
     {
-        $preferences = $this->createPreferencesPointer($info);
+        $preferences = self::createPreferencesPointer($api, $app, $info);
 
         // Enable dev tools in case of the corresponding value was passed
         // explicitly to the create info options or debug mode was enabled.
-        $isDevToolsEnabled = $info->webview->devTools ?? $this->app->isDebug;
+        $isDevToolsEnabled = $info->webview->devTools ?? $app->isDebug;
 
         // Enable context menu in case of the corresponding value was passed
         // explicitly to the create info options or debug mode was enabled.
-        $isContextMenuEnabled = $info->webview->contextMenu ?? $this->app->isDebug;
+        $isContextMenuEnabled = $info->webview->contextMenu ?? $app->isDebug;
 
         if ($isDevToolsEnabled) {
             /**
@@ -631,75 +670,89 @@ final class Window implements EventListenerProviderInterface
              *
              * @link https://developer.chrome.com/blog/self-xss#can_you_disable_it_for_test_automation
              */
-            $this->api->saucer_preferences_add_browser_flag(
+            $api->saucer_preferences_add_browser_flag(
                 $preferences,
                 '--unsafely-disable-devtools-self-xss-warnings',
             );
         }
 
         try {
-            $handle = $this->api->saucer_new($preferences);
+            $handle = $api->saucer_new($preferences);
 
             if ($info->decoration === WindowDecoration::DarkMode) {
-                $this->api->saucer_webview_set_force_dark_mode($handle, true);
+                $api->saucer_webview_set_force_dark_mode($handle, true);
             }
 
             if ($info->title !== '') {
-                $this->api->saucer_window_set_title($handle, $info->title);
+                $api->saucer_window_set_title($handle, $info->title);
             }
 
             if ($info->resizable === false) {
-                $this->api->saucer_window_set_resizable($handle, false);
+                $api->saucer_window_set_resizable($handle, false);
             }
 
             if ($info->alwaysOnTop === true) {
-                $this->api->saucer_window_set_always_on_top($handle, true);
+                $api->saucer_window_set_always_on_top($handle, true);
             }
 
             if ($info->clickThrough === true) {
-                $this->api->saucer_window_set_click_through($handle, true);
+                $api->saucer_window_set_click_through($handle, true);
             }
 
-            $this->api->saucer_window_set_size($handle, $info->width, $info->height);
-            $this->api->saucer_webview_set_context_menu($handle, $isContextMenuEnabled);
-            $this->api->saucer_webview_set_dev_tools($handle, $isDevToolsEnabled);
+            $api->saucer_window_set_size($handle, $info->width, $info->height);
+            $api->saucer_webview_set_context_menu($handle, $isContextMenuEnabled);
+            $api->saucer_webview_set_dev_tools($handle, $isDevToolsEnabled);
 
             return $handle;
         } finally {
-            $this->api->saucer_preferences_free($preferences);
+            $api->saucer_preferences_free($preferences);
         }
     }
 
     #[RequiresDealloc]
-    private function createPreferencesPointer(WindowCreateInfo $info): CData
+    private static function createPreferencesPointer(LibSaucer $api, Application $app, WindowCreateInfo $info): CData
     {
-        $preferences = $this->api->saucer_preferences_new($this->app->id->ptr);
+        $preferences = $api->saucer_preferences_new($app->id->ptr);
 
         // Hardware acceleration is enabled by default.
         if ($info->enableHardwareAcceleration === false) {
-            $this->api->saucer_preferences_set_hardware_acceleration($preferences, false);
+            $api->saucer_preferences_set_hardware_acceleration($preferences, false);
         }
 
         // The "persistent cookies" feature uses storage value.
         // If this functionality is not required,
         // then storage can be omitted.
         if ($info->webview->storage === false) {
-            $this->api->saucer_preferences_set_persistent_cookies($preferences, false);
+            $api->saucer_preferences_set_persistent_cookies($preferences, false);
         } else {
-            $this->api->saucer_preferences_set_storage_path($preferences, $info->webview->storage);
+            $api->saucer_preferences_set_storage_path($preferences, $info->webview->storage);
         }
 
         // Specify additional flags using the formatter.
         foreach (FlagsListFormatter::format($info->webview->flags) as $value) {
-            $this->api->saucer_preferences_add_browser_flag($preferences, $value);
+            $api->saucer_preferences_add_browser_flag($preferences, $value);
         }
 
         // Define the "user-agent" header if it is specified.
         if ($info->webview->userAgent !== null) {
-            $this->api->saucer_preferences_set_user_agent($preferences, $info->webview->userAgent);
+            $api->saucer_preferences_set_user_agent($preferences, $info->webview->userAgent);
         }
 
         return $preferences;
+    }
+
+    /**
+     * Registers default event listeners for the window.
+     */
+    private function registerDefaultEventListeners(): void
+    {
+        $this->events->addEventListener(WindowMinimized::class, function (WindowMinimized $e): void {
+            $this->state = $e->isMinimized ? WindowState::Minimized : WindowState::Normal;
+        });
+
+        $this->events->addEventListener(WindowMaximized::class, function (WindowMaximized $e): void {
+            $this->state = $e->isMaximized ? WindowState::Maximized : WindowState::Normal;
+        });
     }
 
     /**
