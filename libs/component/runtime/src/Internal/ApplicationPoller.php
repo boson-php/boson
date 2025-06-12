@@ -15,21 +15,32 @@ use FFI\CData;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson
  */
-final class ProcessUnlockPlaceholder implements ApplicationPollerInterface
+final class ApplicationPoller implements ApplicationPollerInterface
 {
     private readonly CData $ptr;
 
     private ?\Throwable $exception = null;
 
+    private bool $booted = false;
+
     public function __construct(
         private readonly LibSaucer $api,
         private readonly Application $app,
+        /**
+         * @var \Closure():void
+         */
+        private readonly \Closure $bootstrap,
     ) {
         $this->ptr = $this->app->id->ptr;
     }
 
     public function next(): bool
     {
+        if ($this->booted === false) {
+            ($this->bootstrap)();
+            $this->booted = true;
+        }
+
         if ($this->app->isRunning === false) {
             return false;
         }

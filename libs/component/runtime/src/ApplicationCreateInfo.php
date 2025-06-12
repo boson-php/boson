@@ -54,6 +54,8 @@ final readonly class ApplicationCreateInfo
         /**
          * Automatically detects the library pathname if {@see null},
          * otherwise it forcibly exposes it.
+         *
+         * @var non-empty-string|null
          */
         public ?string $library = null,
         /**

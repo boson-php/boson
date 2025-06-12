@@ -23,7 +23,7 @@ use Boson\Window\Event\WindowStateChanged;
 use Boson\Window\Internal\Size\ManagedWindowMaxBounds;
 use Boson\Window\Internal\Size\ManagedWindowMinBounds;
 use Boson\Window\Internal\Size\ManagedWindowSize;
-use Boson\Window\Internal\WindowEventHandler;
+use Boson\Window\Internal\SaucerWindowEventHandler;
 use Boson\Window\Manager\WindowFactoryInterface;
 use FFI\CData;
 
@@ -448,7 +448,7 @@ final class Window implements EventListenerProviderInterface
      *
      * @phpstan-ignore property.onlyWritten
      */
-    private readonly WindowEventHandler $handler;
+    private readonly SaucerWindowEventHandler $handler;
 
     /**
      * @internal Please do not use the constructor directly. There is a
@@ -477,14 +477,12 @@ final class Window implements EventListenerProviderInterface
         EventDispatcherInterface $dispatcher,
     ) {
         $this->id = $this->createWindowId($this->info);
-
         $this->events = $this->dispatcher = new DelegateEventListener($dispatcher);
-        $this->size = new ManagedWindowSize($this->api, $this->id->ptr);
-        $this->min = new ManagedWindowMinBounds($this->api, $this->id->ptr);
-        $this->max = new ManagedWindowMaxBounds($this->api, $this->id->ptr);
+        $this->size = $this->createWindowSize();
+        $this->min = $this->createWindowMinSize();
+        $this->max = $this->createWindowMaxSize();
         $this->webview = $this->createWebView();
-
-        $this->handler = new WindowEventHandler(
+        $this->handler = new SaucerWindowEventHandler(
             api: $this->api,
             window: $this,
             dispatcher: $this->dispatcher,
@@ -497,6 +495,50 @@ final class Window implements EventListenerProviderInterface
         if ($this->info->visible) {
             $this->show();
         }
+    }
+
+    /**
+     * Creates a new instance of {@see ManagedWindowSize} that wraps the native
+     * window size functionality. The returned object allows reading and
+     * modifying the window's width and height through a managed interface.
+     *
+     * The size is managed by the native window system and any changes to the
+     * size through this interface will be reflected in the actual
+     * window dimensions.
+     */
+    private function createWindowSize(): MutableSizeInterface
+    {
+        return new ManagedWindowSize($this->api, $this->id->ptr);
+    }
+
+    /**
+     * Creates a new instance of {@see ManagedWindowMinBounds} that wraps the
+     * native window minimum size bounds functionality. The returned object
+     * allows reading and modifying the window's minimum width and height
+     * through a managed interface.
+     *
+     * The minimum size bounds are managed by the native window system and any
+     * changes to the bounds through this interface will be reflected in the
+     * actual window constraints.
+     */
+    private function createWindowMinSize(): MutableSizeInterface
+    {
+        return new ManagedWindowMinBounds($this->api, $this->id->ptr);
+    }
+
+    /**
+     * Creates a new instance of {@see ManagedWindowMaxBounds} that wraps the
+     * native window maximum size bounds functionality. The returned object
+     * allows reading and modifying the window's maximum width and height
+     * through a managed interface.
+     *
+     * The maximum size bounds are managed by the native window system and any
+     * changes to the bounds through this interface will be reflected in the
+     * actual window constraints.
+     */
+    private function createWindowMaxSize(): MutableSizeInterface
+    {
+        return new ManagedWindowMaxBounds($this->api, $this->id->ptr);
     }
 
     /**

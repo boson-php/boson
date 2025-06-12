@@ -23,7 +23,7 @@ use FFI\CData;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\Window
  */
-final readonly class WindowEventHandler
+final readonly class SaucerWindowEventHandler
 {
     /**
      * @var non-empty-string
