@@ -8,54 +8,79 @@ use Boson\Component\Compiler\Assembly\AssemblyArchitecture;
 use Boson\Component\Compiler\Assembly\AssemblyPlatform;
 use Boson\Component\Compiler\Configuration\IncludeConfiguration;
 
+/**
+ * Configuration class for managing compiler settings and build parameters.
+ */
 final class Configuration
 {
     /**
+     * Default application name used when not specified.
+     *
      * @var non-empty-string
      */
     public const string DEFAULT_APP_NAME = 'app';
 
     /**
+     * Default entrypoint file used when not specified.
+     *
      * @var non-empty-string
      */
     public const string DEFAULT_ENTRYPOINT = 'index.php';
 
     /**
+     * Default `humbug/box` version used when not specified.
+     *
      * @var non-empty-string
      */
     public const string DEFAULT_BOX_VERSION = '4.6.6';
 
     /**
+     * Default build directory used when not specified.
+     *
      * @var non-empty-string|null
      */
     public const ?string DEFAULT_BUILD_DIRECTORY = null;
 
     /**
+     * Default application directory used when not specified.
+     *
      * @var non-empty-string|null
      */
     public const ?string DEFAULT_APP_DIRECTORY = null;
 
     /**
+     * List of target CPU architectures for compilation.
+     *
      * @var list<AssemblyArchitecture>
      */
     public private(set) array $architectures;
 
     /**
+     * List of target operating system platforms for compilation.
+     *
      * @var list<AssemblyPlatform>
      */
     public private(set) array $platforms;
 
     /**
+     * List of build inclusion configurations.
+     *
      * @var list<IncludeConfiguration>
      */
     public private(set) array $build;
 
     /**
+     * PHP INI settings to be applied during compilation.
+     *
      * @var array<non-empty-string, scalar>
      */
     public private(set) array $ini;
 
     /**
+     * Output directory for compiled files.
+     *
+     * If not specified, defaults to 'build' subdirectory in root.
+     *
      * @var non-empty-string
      */
     public private(set) string $output {
@@ -65,6 +90,10 @@ final class Configuration
     }
 
     /**
+     * Root directory of the application.
+     *
+     * If not specified, defaults to current working directory.
+     *
      * @var non-empty-string
      */
     public private(set) string $root {
@@ -75,6 +104,8 @@ final class Configuration
     }
 
     /**
+     * Name of the generated PHAR archive.
+     *
      * @var non-empty-string
      */
     public string $pharName {
@@ -82,6 +113,8 @@ final class Configuration
     }
 
     /**
+     * Full path to the generated PHAR archive.
+     *
      * @var non-empty-string
      */
     public string $pharPathname {
@@ -89,6 +122,8 @@ final class Configuration
     }
 
     /**
+     * Name of the `humbug/box` stub file.
+     *
      * @var non-empty-string
      */
     public string $boxStubName {
@@ -96,6 +131,8 @@ final class Configuration
     }
 
     /**
+     * Full path to the `humbug/box` stub file.
+     *
      * @var non-empty-string
      */
     public string $boxStubPathname {
@@ -103,6 +140,8 @@ final class Configuration
     }
 
     /**
+     * Name of the `humbug/box` configuration file.
+     *
      * @var non-empty-string
      */
     public string $boxConfigName {
@@ -110,6 +149,8 @@ final class Configuration
     }
 
     /**
+     * Full path to the `humbug/box` configuration file.
+     *
      * @var non-empty-string
      */
     public string $boxConfigPathname {
@@ -117,6 +158,8 @@ final class Configuration
     }
 
     /**
+     * Name of the `humbug/box` PHAR archive.
+     *
      * @var non-empty-string
      */
     public string $boxPharName {
@@ -124,6 +167,8 @@ final class Configuration
     }
 
     /**
+     * Full path to the `humbug/box` PHAR archive.
+     *
      * @var non-empty-string
      */
     public string $boxPharPathname {
@@ -131,6 +176,8 @@ final class Configuration
     }
 
     /**
+     * URI for downloading the `humbug/box` PHAR archive.
+     *
      * @var non-empty-string
      */
     public string $boxUri {
@@ -139,14 +186,6 @@ final class Configuration
         ]);
     }
 
-    /**
-     * @param iterable<mixed, IncludeConfiguration> $build
-     * @param iterable<non-empty-string, scalar> $ini
-     * @param iterable<mixed, AssemblyArchitecture> $architectures
-     * @param iterable<mixed, AssemblyPlatform> $platforms
-     * @param non-empty-string|null $output
-     * @param non-empty-string|null $root
-     */
     public function __construct(
         /**
          * @var non-empty-string
@@ -175,12 +214,17 @@ final class Configuration
         $this->root = $root;
     }
 
+    /**
+     * Creates a new instance of {@see Configuration} with default values.
+     */
     public static function createDefaultConfiguration(): self
     {
         return new self();
     }
 
     /**
+     * Returns copy of an instance with updated application name.
+     *
      * @param non-empty-string $name
      */
     public function withName(string $name): self
@@ -192,6 +236,8 @@ final class Configuration
     }
 
     /**
+     * Returns copy of an instance with updated entrypoint file.
+     *
      * @param non-empty-string $entrypoint
      */
     public function withEntrypoint(string $entrypoint): self
@@ -203,6 +249,8 @@ final class Configuration
     }
 
     /**
+     * Returns copy of an instance with updated Box version.
+     *
      * @param non-empty-string $version
      */
     public function withBoxVersion(string $version): self
@@ -214,6 +262,8 @@ final class Configuration
     }
 
     /**
+     * Returns copy of an instance with updated output directory.
+     *
      * @param non-empty-string|null $directory
      */
     public function withOutputDirectory(?string $directory): self
@@ -225,6 +275,8 @@ final class Configuration
     }
 
     /**
+     * Returns copy of an instance with updated root directory.
+     *
      * @param non-empty-string|null $directory
      */
     public function withRootDirectory(?string $directory): self
@@ -236,6 +288,8 @@ final class Configuration
     }
 
     /**
+     * Returns copy of an instance with an additional PHP INI setting.
+     *
      * @param non-empty-string $config
      */
     public function withAddedIni(string $config, string|float|bool|int $value): self
@@ -246,6 +300,9 @@ final class Configuration
         return $self;
     }
 
+    /**
+     * Returns copy of an instance with an additional build inclusion.
+     */
     public function withAddedBuildInclusion(IncludeConfiguration $config): self
     {
         $self = clone $this;
@@ -255,6 +312,8 @@ final class Configuration
     }
 
     /**
+     * Returns copy of an instance with updated architecture targets.
+     *
      * @param iterable<mixed, AssemblyArchitecture|non-empty-string> $architectures
      */
     public function withArchitectures(iterable $architectures): self
@@ -276,6 +335,8 @@ final class Configuration
     }
 
     /**
+     * Returns copy of an instance with updated platform targets.
+     *
      * @param iterable<mixed, AssemblyPlatform|non-empty-string> $platforms
      */
     public function withPlatforms(iterable $platforms): self
