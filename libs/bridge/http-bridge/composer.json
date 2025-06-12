@@ -16,9 +16,9 @@
     ],
     "require": {
         "php": "^8.4",
-        "boson-php/globals-provider": "^0.13",
-        "boson-php/http-body-decoder": "^0.13",
-        "boson-php/http-contracts": "^0.13"
+        "boson-php/globals-provider": "^0.14",
+        "boson-php/http-body-decoder": "^0.14",
+        "boson-php/http-contracts": "^0.14"
     },
     "autoload": {
         "psr-4": {
@@ -35,8 +35,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.13.x-dev",
-            "dev-main": "0.13.x-dev"
+            "dev-master": "0.14.x-dev",
+            "dev-main": "0.14.x-dev"
         }
     },
     "config": {

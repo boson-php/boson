@@ -17,11 +17,11 @@
     "require": {
         "php": "^8.4",
         "ext-ffi": "*",
-        "boson-php/cpu-info": "^0.13",
-        "boson-php/http": "^0.13",
-        "boson-php/http-contracts": "^0.13",
-        "boson-php/os-info": "^0.13",
-        "boson-php/weak-types": "^0.13",
+        "boson-php/cpu-info": "^0.14",
+        "boson-php/http": "^0.14",
+        "boson-php/http-contracts": "^0.14",
+        "boson-php/os-info": "^0.14",
+        "boson-php/weak-types": "^0.14",
         "ffi/env": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "react/promise": "^3.0"
@@ -41,8 +41,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.13.x-dev",
-            "dev-main": "0.13.x-dev"
+            "dev-master": "0.14.x-dev",
+            "dev-main": "0.14.x-dev"
         }
     },
     "config": {
