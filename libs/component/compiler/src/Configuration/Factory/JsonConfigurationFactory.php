@@ -263,6 +263,7 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
 
         /**
          * @phpstan-var non-empty-string|list<non-empty-string> $notDirectories
+         *
          * @phpstan-ignore-next-line : False-positive; null-coalescence using
          */
         $notDirectories = $inclusion->{'not-directory'} ?? [];
@@ -272,6 +273,7 @@ final class JsonConfigurationFactory implements ConfigurationFactoryInterface
 
         /**
          * @phpstan-var non-empty-string|list<non-empty-string> $notNames
+         *
          * @phpstan-ignore-next-line : False-positive; null-coalescence using
          */
         $notNames = $inclusion->{'not-name'} ?? [];
