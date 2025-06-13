@@ -186,6 +186,14 @@ final class Configuration
         ]);
     }
 
+    /**
+     * @param iterable<mixed, IncludeConfiguration> $build
+     * @param iterable<non-empty-string, scalar> $ini
+     * @param iterable<mixed, AssemblyArchitecture> $architectures
+     * @param iterable<mixed, AssemblyPlatform> $platforms
+     * @param non-empty-string|null $output
+     * @param non-empty-string|null $root
+     */
     public function __construct(
         /**
          * @var non-empty-string
