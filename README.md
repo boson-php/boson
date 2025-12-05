@@ -25,15 +25,16 @@ By the way, there is more information about the project
 
 ## Application Example
 
-```php
-$app = new Boson\Application();
+You can find a detailed example application in the 
+[Boson Application](https://github.com/boson-php/app) repository.
 
-$app->webview->html = <<<'HTML'
-    <button onclick="foo('HELLO');">Hello</button>
-    HTML;
+<div align="center">
 
-$app->webview->bind('foo', var_dump(...));
-```
+| <img src="https://habrastorage.org/webt/6z/uy/7n/6zuy7nzopxkjq83nnmlpafhiupq.png" width="800" /> | <img src="https://habrastorage.org/webt/y8/6f/hz/y86fhz4e1vwv0rx2wnlwcfmprmo.png" width="800" /> |
+|:------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------:|
+|                                              Linux                                               |                                            Windows                                               |
+
+</div>
 
 ## Installation
 
