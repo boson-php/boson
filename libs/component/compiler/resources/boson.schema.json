@@ -33,24 +33,6 @@
             "minLength": 1,
             "description": "Compiler root directory"
         },
-        "arch": {
-            "type": "array",
-            "description": "List of expected CPU architectures to compile",
-            "items": {
-                "type": "string",
-                "minLength": 1,
-                "description": "The name of expected CPU architecture"
-            }
-        },
-        "platform": {
-            "type": "array",
-            "description": "List of expected OS families to compile",
-            "items": {
-                "type": "string",
-                "minLength": 1,
-                "description": "The name of expected OS family"
-            }
-        },
         "mount": {
             "type": "array",
             "description": "List of mount directories",
