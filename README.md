@@ -30,9 +30,9 @@ You can find a detailed example application in the
 
 <div align="center">
 
-| <img src="https://habrastorage.org/webt/6z/uy/7n/6zuy7nzopxkjq83nnmlpafhiupq.png" width="385" /> | <img src="https://habrastorage.org/webt/y8/6f/hz/y86fhz4e1vwv0rx2wnlwcfmprmo.png" width="385" /> |
-|:------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------:|
-|                                              Linux                                               |                                            Windows                                               |
+| <img src="https://habrastorage.org/webt/6z/uy/7n/6zuy7nzopxkjq83nnmlpafhiupq.png" /> | <img src="https://habrastorage.org/webt/jb/39/la/jb39laksyaksq4nhrhazchuw33o.png" /> | <img src="https://habrastorage.org/webt/y8/6f/hz/y86fhz4e1vwv0rx2wnlwcfmprmo.png" /> |
+|:------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------:|
+|                                        Linux                                         |                                        macOS                                         |                                       Windows                                        |
 
 </div>
 
