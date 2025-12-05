@@ -28,6 +28,11 @@ By the way, there is more information about the project
 You can find a detailed example application in the 
 [Boson Application](https://github.com/boson-php/app) repository.
 
+1) You should download the app using `composer create-project boson-php/app`
+2) Then:
+  - Run it using `php index.php`
+  - Or compile it using `php vendor/bin/boson compile`
+
 <div align="center">
 
 | <img src="https://habrastorage.org/webt/6z/uy/7n/6zuy7nzopxkjq83nnmlpafhiupq.png" /> | <img src="https://habrastorage.org/webt/jb/39/la/jb39laksyaksq4nhrhazchuw33o.png" /> | <img src="https://habrastorage.org/webt/y8/6f/hz/y86fhz4e1vwv0rx2wnlwcfmprmo.png" /> |
