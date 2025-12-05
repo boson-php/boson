@@ -19,10 +19,10 @@
         "boson-php/http-static-provider": "^0.19",
         "boson-php/runtime": "^0.19",
         "boson-php/symfony-http-bridge": "^0.19",
-        "symfony/config": "^6.4|^7.0",
-        "symfony/dependency-injection": "^6.4|^7.0",
-        "symfony/http-kernel": "^6.4|^7.0",
-        "symfony/runtime": "^6.4|^7.0"
+        "symfony/config": "^6.4|^7.0|^8.0",
+        "symfony/dependency-injection": "^6.4|^7.0|^8.0",
+        "symfony/http-kernel": "^6.4|^7.0|^8.0",
+        "symfony/runtime": "^6.4|^7.0|^8.0"
     },
     "autoload": {
         "psr-4": {
