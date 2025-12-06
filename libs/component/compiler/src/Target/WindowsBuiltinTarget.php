@@ -82,15 +82,13 @@ final readonly class WindowsBuiltinTarget extends BuiltinTarget
         ];
     }
 
-    /**
-     * @return non-empty-string
-     */
     protected function getSfxFilename(string $edition): string
     {
         return match ($this->arch) {
             BuiltinArchitectureTarget::Amd64 => match ($edition) {
                 self::MINIMAL_EDITION => 'windows-x86_64.min.sfx',
                 self::STANDARD_EDITION => 'windows-x86_64.standard.sfx',
+                default => throw new \RuntimeException(\sprintf('Unsupported edition "%s"', $edition)),
             },
             default => throw new \RuntimeException(\sprintf(
                 'Unsupported architecture "%s"',

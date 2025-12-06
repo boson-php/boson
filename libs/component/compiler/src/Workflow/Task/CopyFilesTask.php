@@ -75,6 +75,7 @@ final readonly class CopyFilesTask implements TaskInterface
                     . \DIRECTORY_SEPARATOR . $file->getFilename();
 
             Task::run($config, new CreateDirectoryTask(
+                /** @phpstan-ignore-next-line : Directory can't be root */
                 directory: \dirname($targetPathname),
             ));
 

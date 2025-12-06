@@ -79,8 +79,6 @@ final readonly class SelectEditionTask implements TaskInterface
             \implode(', ', $this->getExpectedDependencies($config)),
         ]);
 
-        $extensions = self::REQUIRED_EXTENSIONS;
-
         foreach ($this->extensions as $name => $extensions) {
             Task::notify('Check %s build', [$name]);
 
@@ -91,7 +89,7 @@ final readonly class SelectEditionTask implements TaskInterface
             }
         }
 
-        throw $this->missingExtensionsError($config, $extensions);
+        throw $this->missingExtensionsError($config, $extensions ?? self::REQUIRED_EXTENSIONS);
     }
 
     /**

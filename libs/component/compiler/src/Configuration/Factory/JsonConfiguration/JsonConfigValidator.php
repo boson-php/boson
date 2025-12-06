@@ -29,6 +29,7 @@ final readonly class JsonConfigValidator
     public function __construct(
         string $jsonSchemaPathname = self::JSON_SCHEMA_PATHNAME,
     ) {
+        /** @phpstan-ignore assign.propertyType */
         $this->validator = new JustInRainbowJsonSchemaValidator($jsonSchemaPathname);
     }
 

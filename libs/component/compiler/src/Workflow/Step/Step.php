@@ -38,11 +38,14 @@ abstract readonly class Step
             }
 
             return match (true) {
-                isset($trace['class'], $trace['function']) => new MethodContext(
+                isset($trace['class']) => new MethodContext(
                     class: $trace['class'],
+                    /** @phpstan-ignore-next-line : Method name cannot be empty */
                     method: $trace['function'],
                 ),
+                /** @phpstan-ignore-next-line : Function name can be not defined in {main} context (?) */
                 isset($trace['function']) => new FunctionContext(
+                    /** @phpstan-ignore-next-line : Function name cannot be empty */
                     function: $trace['function'],
                 ),
                 default => new GlobalContext(),

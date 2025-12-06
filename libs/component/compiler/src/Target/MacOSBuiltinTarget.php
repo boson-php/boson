@@ -76,22 +76,23 @@ final readonly class MacOSBuiltinTarget extends UnixBuiltinTarget
         ];
     }
 
-    /**
-     * @return non-empty-string
-     */
     protected function getSfxFilename(string $edition): string
     {
         return match ($this->arch) {
             BuiltinArchitectureTarget::Amd64 => match ($edition) {
                 self::MINIMAL_EDITION => 'macos-x86_64.min.sfx',
                 self::STANDARD_EDITION => 'macos-x86_64.standard.sfx',
+                default => throw new \RuntimeException(\sprintf('Unsupported edition "%s"', $edition)),
             },
+            /** @phpstan-ignore-next-line : Allow default match arm */
             BuiltinArchitectureTarget::Arm64 => match ($edition) {
                 self::MINIMAL_EDITION => 'macos-aarch64.min.sfx',
                 self::STANDARD_EDITION => 'macos-aarch64.standard.sfx',
+                default => throw new \RuntimeException(\sprintf('Unsupported edition "%s"', $edition)),
             },
             default => throw new \RuntimeException(\sprintf(
                 'Unsupported architecture "%s"',
+                /** @phpstan-ignore-next-line : Backed enum's value is always string|int */
                 $this->arch->value,
             )),
         };

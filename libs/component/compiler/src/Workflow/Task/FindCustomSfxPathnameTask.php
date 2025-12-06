@@ -46,7 +46,7 @@ final readonly class FindCustomSfxPathnameTask implements TaskInterface
     {
         Task::info('Lookup for custom SFX');
 
-        $sfx = $this->config['sfx'] ?? null;
+        $sfx = $this->target->config['sfx'] ?? null;
 
         if (!isset($sfx)) {
             Task::notify('Custom SFX not defined');

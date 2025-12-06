@@ -21,6 +21,10 @@ final readonly class AssemblyTargetTask implements TaskInterface
      */
     public string $targetPathname;
 
+    /**
+     * @param non-empty-string $sfxPathname
+     * @param non-empty-string $targetPathname
+     */
     public function __construct(
         string $sfxPathname,
         string $targetPathname,

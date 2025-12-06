@@ -72,9 +72,11 @@ final readonly class LinuxBuiltinTarget extends UnixBuiltinTarget
     {
         return match ($this->arch) {
             BuiltinArchitectureTarget::Amd64 => self::DEFAULT_RUNTIME_AMD64_BINARY_NAME,
+            /** @phpstan-ignore-next-line : Allow default match arm */
             BuiltinArchitectureTarget::Arm64 => self::DEFAULT_RUNTIME_ARM64_BINARY_NAME,
             default => throw new \InvalidArgumentException(\sprintf(
                 'Unsupported architecture "%s"',
+                /** @phpstan-ignore-next-line : Backed enum's value is always string|int */
                 $this->arch->value,
             )),
         };
@@ -88,22 +90,23 @@ final readonly class LinuxBuiltinTarget extends UnixBuiltinTarget
         ];
     }
 
-    /**
-     * @return non-empty-string
-     */
     protected function getSfxFilename(string $edition): string
     {
         return match ($this->arch) {
             BuiltinArchitectureTarget::Amd64 => match ($edition) {
                 self::MINIMAL_EDITION => 'linux-x86_64.min.sfx',
                 self::STANDARD_EDITION => 'linux-x86_64.standard.sfx',
+                default => throw new \RuntimeException(\sprintf('Unsupported edition "%s"', $edition)),
             },
+            /** @phpstan-ignore-next-line : Allow default match arm */
             BuiltinArchitectureTarget::Arm64 => match ($edition) {
                 self::MINIMAL_EDITION => 'linux-aarch64.min.sfx',
                 self::STANDARD_EDITION => 'linux-aarch64.standard.sfx',
+                default => throw new \RuntimeException(\sprintf('Unsupported edition "%s"', $edition)),
             },
             default => throw new \RuntimeException(\sprintf(
                 'Unsupported architecture "%s"',
+                /** @phpstan-ignore-next-line : Backed enum's value is always string|int */
                 $this->arch->value,
             )),
         };

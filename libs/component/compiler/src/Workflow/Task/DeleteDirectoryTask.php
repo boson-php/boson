@@ -37,14 +37,19 @@ final readonly class DeleteDirectoryTask implements TaskInterface
             return;
         }
 
-        /** @var \SplFileInfo $file */
         foreach (Path::files($this->directory) as $file) {
+            $pathname = $file->getPathname();
+
+            if ($pathname === '') {
+                continue;
+            }
+
             if ($file->isDir()) {
-                $this->removeDirectory($config, $file->getPathname());
+                $this->removeDirectory($config, $pathname);
             }
 
             if ($file->isFile()) {
-                Task::run($config, new DeleteFileTask($file->getPathname()));
+                Task::run($config, new DeleteFileTask($pathname));
             }
         }
 

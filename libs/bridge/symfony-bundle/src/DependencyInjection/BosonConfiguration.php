@@ -37,13 +37,15 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 final class BosonConfiguration implements ConfigurationInterface
 {
+    /**
+     * @return TreeBuilder<'array'>
+     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $tree = new TreeBuilder('boson');
 
         $root = $tree->getRootNode();
 
-        /** @phpstan-ignore-next-line : Known non-fixable issue */
         $root->children()
             ->stringNode('name')
                 ->info('The name of the boson application')

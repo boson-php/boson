@@ -44,14 +44,14 @@
     },
     "require-dev": {
         "ffi/var-dumper": "^1.0",
-        "friendsofphp/php-cs-fixer": "^3.86",
+        "friendsofphp/php-cs-fixer": "^3.91",
         "jetbrains/phpstorm-attributes": "^1.2",
-        "nyholm/psr7": "^1.8",
-        "phpstan/phpstan": "^2.1",
-        "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^12.0",
-        "symfony/console": "^6.4|^7.0",
-        "symfony/var-dumper": "^6.4|^7.0"
+        "nyholm/psr7": "^1.8.2",
+        "phpstan/phpstan": "^2.1.33",
+        "phpstan/phpstan-strict-rules": "^2.0.7",
+        "phpunit/phpunit": "^12.5",
+        "symfony/console": "^6.4|^7.0|^8.0",
+        "symfony/var-dumper": "^6.4|^7.0|^8.0"
     },
     "autoload-dev": {
         "psr-4": {

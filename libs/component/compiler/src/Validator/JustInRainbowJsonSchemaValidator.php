@@ -19,6 +19,7 @@ use JsonSchema\Validator;
  * }>
  *
  * @template TSchema of array<array-key, mixed>
+ * @template-implements FileValidatorInterface<TSchema>
  */
 final readonly class JustInRainbowJsonSchemaValidator implements FileValidatorInterface
 {

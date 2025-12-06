@@ -31,8 +31,14 @@ final readonly class CollectInterpreterConfigTask implements TaskInterface
     {
         yield from $config->ini;
 
-        if (isset($this->target->config['ini'])) {
-            yield from $this->target->config['ini'];
+        if (isset($this->target->config['ini']) && \is_array($this->target->config['ini'])) {
+            foreach ($this->target->config['ini'] as $key => $value) {
+                if (!\is_string($key) || $key === '' || !\is_scalar($value)) {
+                    continue;
+                }
+
+                yield $key => $value;
+            }
         }
     }
 

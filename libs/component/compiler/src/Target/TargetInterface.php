@@ -12,7 +12,7 @@ use Boson\Component\Compiler\Configuration;
 interface TargetInterface extends \Stringable
 {
     /**
-     * Gets target type
+     * Gets a target type
      *
      * @var non-empty-string
      */

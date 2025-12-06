@@ -15,6 +15,7 @@ final readonly class Path
     {
         $result = \str_replace(['\\', '/'], \DIRECTORY_SEPARATOR, $path);
 
+        /** @phpstan-ignore ternary.shortNotAllowed */
         return \realpath($result) ?: $result;
     }
 

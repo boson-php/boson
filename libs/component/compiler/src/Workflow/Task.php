@@ -48,12 +48,15 @@ final readonly class Task
      *
      * @param callable():TArgResult $context
      *
-     * @return \Generator<mixed, array-key, Step, TArgResult>
+     * @return \Generator<mixed, Step, Step, TArgResult>
      * @throws \Throwable
      */
     public static function capture(callable $context): \Generator
     {
-        return self::toCoroutine(new \Fiber($context));
+        /** @var \Fiber<Step, Step, TArgResult, Step> $fiber */
+        $fiber = new \Fiber($context);
+
+        return self::toCoroutine($fiber);
     }
 
     /**
@@ -69,7 +72,7 @@ final readonly class Task
         }
 
         try {
-            \Fiber::suspend(new NotifyStep($message, $args));
+            \Fiber::suspend(new NotifyStep($message, \array_values($args)));
         } catch (\Throwable) {
             // NO-OP
         }
@@ -88,7 +91,7 @@ final readonly class Task
         }
 
         try {
-            \Fiber::suspend(new ProgressStep($message, $args));
+            \Fiber::suspend(new ProgressStep($message, \array_values($args)));
         } catch (\Throwable) {
             // NO-OP
         }
@@ -105,19 +108,19 @@ final readonly class Task
         }
 
         try {
-            \Fiber::suspend(new InfoStep($message, $args));
+            \Fiber::suspend(new InfoStep($message, \array_values($args)));
         } catch (\Throwable) {
             // NO-OP
         }
     }
 
     /**
-     * @template TArgStep of Step
+     * @template TArgStep of Step|null
      * @template TArgResult of mixed
      *
-     * @param \Fiber<null, null, TArgResult, TArgStep> $fiber
+     * @param \Fiber<TArgStep, TArgStep, TArgResult, TArgStep> $fiber
      *
-     * @return \Generator<null, array-key, TArgStep, TArgResult>
+     * @return \Generator<array-key, TArgStep, TArgStep, TArgResult>
      * @throws \Throwable
      */
     private static function toCoroutine(\Fiber $fiber): \Generator
@@ -129,26 +132,30 @@ final readonly class Task
         }
 
         if (!$fiber->isStarted()) {
+            /** @phpstan-ignore generator.valueType */
             $value = yield $fiber->start();
         }
 
-        if (!$fiber->isTerminated()) {
-            while (true) {
-                $value = $fiber->resume($value);
+        /** @phpstan-ignore booleanNot.alwaysTrue */
+        while (!$fiber->isTerminated()) {
+            /** @phpstan-ignore argument.type */
+            $value = $fiber->resume($value);
 
-                // The last call to "resume()" moves the execution of the
-                // Fiber to the "return" stmt.
-                //
-                // So the "yield" is not needed. Skip this step and return
-                // the result.
-                if ($fiber->isTerminated()) {
-                    break;
-                }
-
-                $value = yield $value;
+            // The last call to "resume()" moves the execution of the
+            // Fiber to the "return" stmt.
+            //
+            // So the "yield" is not needed. Skip this step and return
+            // the result.
+            /** @phpstan-ignore if.alwaysFalse */
+            if ($fiber->isTerminated()) {
+                break;
             }
+
+            /** @phpstan-ignore generator.valueType */
+            $value = yield $value;
         }
 
+        /** @phpstan-ignore deadCode.unreachable */
         return $fiber->getReturn();
     }
 }

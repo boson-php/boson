@@ -29,9 +29,9 @@ final readonly class CreateFileTask implements TaskInterface
 
     private function createFileOrFail(): void
     {
-        $isWritten = @\file_put_contents($this->pathname, $this->content);
+        $written = @\file_put_contents($this->pathname, $this->content);
 
-        if ($isWritten) {
+        if ($written !== false) {
             return;
         }
 

@@ -15,9 +15,6 @@ use Boson\Component\Compiler\Workflow\Task;
  */
 final readonly class WorkflowExecutor
 {
-    /**
-     * @var \ReflectionObject<TWorkflow>
-     */
     private \ReflectionObject $reflection;
 
     public function __construct(
