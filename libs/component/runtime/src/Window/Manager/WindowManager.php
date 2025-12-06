@@ -131,7 +131,7 @@ final class WindowManager implements
     private function registerDefaultEventListeners(): void
     {
         $this->listener->addEventListener(WindowClosed::class, function (WindowClosed $event) {
-            $this->windows->detach($event->subject);
+            $this->windows->offsetUnset($event->subject);
 
             // Recalculate default window in case of
             // previous default window was closed.
@@ -147,7 +147,7 @@ final class WindowManager implements
             ? $this->createWindowProxy($info)
             : $this->createWindowInstance($info);
 
-        $this->windows->attach($instance, $info);
+        $this->windows->offsetSet($instance, $info);
 
         return $instance;
     }
