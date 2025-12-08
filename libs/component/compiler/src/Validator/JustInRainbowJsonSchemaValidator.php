@@ -65,11 +65,12 @@ final readonly class JustInRainbowJsonSchemaValidator implements FileValidatorIn
      */
     private function validate(array $data): Validator
     {
-        $validator = new Validator();
+        $schema = \json_decode((string) \file_get_contents($this->jsonSchemaPathname));
 
-        $validator->validate($data, (object) [
-            '$ref' => $this->jsonSchemaPathname,
-        ], Constraint::CHECK_MODE_TYPE_CAST);
+        assert(\is_object($schema), 'Schema must be an object');
+
+        $validator = new Validator();
+        $validator->validate($data, $schema, Constraint::CHECK_MODE_TYPE_CAST);
 
         return $validator;
     }
