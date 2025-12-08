@@ -18,12 +18,12 @@ final readonly class ApplyPermissionsTask implements TaskInterface
     /**
      * @var int<0, max>
      */
-    public const int DEFAULT_WRITE_PERMISSIONS = 0o644;
+    public const int DEFAULT_WRITE_PERMISSIONS = 0o666;
 
     /**
      * @var int<0, max>
      */
-    public const int DEFAULT_EXECUTE_PERMISSIONS = 0o775;
+    public const int DEFAULT_EXECUTE_PERMISSIONS = 0o777;
 
     /**
      * @param non-empty-string $pathname
