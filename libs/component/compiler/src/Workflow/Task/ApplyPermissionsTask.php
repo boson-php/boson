@@ -18,7 +18,7 @@ final readonly class ApplyPermissionsTask implements TaskInterface
     /**
      * @var int<0, max>
      */
-    public const int DEFAULT_WRITE_PERMISSIONS = 0o666;
+    public const int DEFAULT_WRITE_PERMISSIONS = 0o755;
 
     /**
      * @var int<0, max>
