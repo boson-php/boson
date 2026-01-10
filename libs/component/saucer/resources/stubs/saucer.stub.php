@@ -136,10 +136,10 @@ interface SaucerInterface
 
     /**
      * @param SaucerApplicationOptionsType $options
-     * @param CData|null $error
+     * @param IntPtr $error
      * @return SaucerApplicationType
      */
-    public function saucer_application_new(CData $options, CData|null $error): CData;
+    public function saucer_application_new(CData $options, CData $error): CData;
 
     /**
      * @param SaucerApplicationType $app

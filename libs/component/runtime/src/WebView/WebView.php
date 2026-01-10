@@ -162,8 +162,6 @@ final class WebView implements
             // faster than magic `__get` call.
             $this->__set($property, $extension);
         }
-
-        // Register WebView's subsystems
     }
 
     /**
