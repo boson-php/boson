@@ -7,7 +7,7 @@ namespace Boson\WebView\Api\LifecycleEvents;
 use Boson\Component\Http\Request;
 use Boson\Component\Saucer\Policy;
 use Boson\Component\Saucer\State;
-use Boson\Component\Saucer\WebEvent as Event;
+use Boson\Component\Saucer\WebViewEvent as Event;
 use Boson\Dispatcher\EventListener;
 use Boson\Internal\WebView\CSaucerWebViewEventsStruct;
 use Boson\WebView\Api\LoadedWebViewExtension;
@@ -91,12 +91,12 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
 
         $ptr = $this->webview->window->id->ptr;
 
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEB_EVENT_DOM_READY, $ctx->onDomReady);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEB_EVENT_NAVIGATED, $ctx->onNavigated);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEB_EVENT_NAVIGATE, $ctx->onNavigating);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEB_EVENT_FAVICON, $ctx->onFaviconChanged);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEB_EVENT_TITLE, $ctx->onTitleChanged);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEB_EVENT_LOAD, $ctx->onLoad);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_DOM_READY, $ctx->onDomReady);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_NAVIGATED, $ctx->onNavigated);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_NAVIGATE, $ctx->onNavigating);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_FAVICON, $ctx->onFaviconChanged);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_TITLE, $ctx->onTitleChanged);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_LOAD, $ctx->onLoad);
 
         $this->app->saucer->saucer_webview_on_message($ptr, $this->onSafeMessageReceived(...));
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\Scripts;
 
-use Boson\Component\Saucer\LoadTime;
+use Boson\Component\Saucer\ScriptTime;
 use Boson\Dispatcher\EventListener;
 use Boson\WebView\Api\LoadedWebViewExtension;
 use Boson\WebView\WebView;
@@ -45,7 +45,7 @@ final class ScriptsApi extends LoadedWebViewExtension implements
 
     public function preload(#[Language('JavaScript')] string $code, bool $permanent = false): LoadedScript
     {
-        $handle = $this->app->saucer->saucer_script_new($code, LoadTime::SAUCER_LOAD_TIME_CREATION);
+        $handle = $this->app->saucer->saucer_script_new($code, ScriptTime::SAUCER_SCRIPT_TIME_CREATION);
 
         if ($permanent) {
             $this->app->saucer->saucer_script_set_permanent($handle, true);
@@ -62,7 +62,7 @@ final class ScriptsApi extends LoadedWebViewExtension implements
 
     public function add(#[Language('JavaScript')] string $code): LoadedScript
     {
-        $handle = $this->app->saucer->saucer_script_new($code, LoadTime::SAUCER_LOAD_TIME_READY);
+        $handle = $this->app->saucer->saucer_script_new($code, ScriptTime::SAUCER_SCRIPT_TIME_READY);
 
         return $this->registerAndInject(new LoadedScript(
             api: $this->app->saucer,

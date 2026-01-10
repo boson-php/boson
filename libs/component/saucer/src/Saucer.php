@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Component\Saucer;
 
+use Boson\Component\Saucer\Exception\InvalidLibraryException;
 use Boson\Component\Saucer\Loader\CpuArchitecture;
 use Boson\Component\Saucer\Loader\LibraryDetector;
 use Boson\Component\Saucer\Loader\OperatingSystem;
@@ -20,6 +21,10 @@ final readonly class Saucer implements SaucerInterface
     public function __construct(string $library, bool $validateVersion = true)
     {
         Runtime::assertAvailable();
+
+        if (!\is_file($library)) {
+            throw InvalidLibraryException::becauseFileNotFound($library);
+        }
 
         $this->ffi = \FFI::cdef(
             code: (string) \file_get_contents(__FILE__, offset: __COMPILER_HALT_OFFSET__),
@@ -78,35 +83,63 @@ final readonly class Saucer implements SaucerInterface
 
 __halt_compiler();
 
-
 /// Generic Build Functions
 
-const char* boson_version();
+const char *boson_version();
 
 /// Saucer Data Types
 
-// .options
-typedef struct saucer_options saucer_options;
-
 // .app
+typedef struct saucer_screen saucer_screen;
 typedef struct saucer_application saucer_application;
-typedef void (*saucer_pool_callback)();
-typedef void (*saucer_post_callback)();
+typedef struct saucer_application_options saucer_application_options;
+
+typedef enum SAUCER_POLICY
+{
+    SAUCER_POLICY_ALLOW,
+    SAUCER_POLICY_BLOCK,
+} SAUCER_POLICY;
+
+typedef enum SAUCER_APPLICATION_EVENT
+{
+    SAUCER_APPLICATION_EVENT_QUIT,
+} SAUCER_APPLICATION_EVENT;
+
+typedef SAUCER_POLICY (*saucer_application_event_quit)(saucer_application *, void *);
+
+typedef void (*saucer_post_callback)(void *);
+typedef void (*saucer_run_callback)(saucer_application *, void *);
+typedef void (*saucer_finish_callback)(saucer_application *, void *);
 
 // .stash
 typedef struct saucer_stash saucer_stash;
-typedef saucer_stash *(*saucer_stash_lazy_callback)();
+typedef saucer_stash *(*saucer_stash_lazy_callback)(void *);
 
 // .icon
 typedef struct saucer_icon saucer_icon;
 
-// .navigation
-typedef struct saucer_navigation saucer_navigation;
-
-// .preferences
-typedef struct saucer_preferences saucer_preferences;
-
 // .window
+typedef struct saucer_window saucer_window;
+
+typedef enum SAUCER_WINDOW_EDGE
+{
+    SAUCER_WINDOW_EDGE_TOP          = 1 << 0,
+    SAUCER_WINDOW_EDGE_BOTTOM       = 1 << 1,
+    SAUCER_WINDOW_EDGE_LEFT         = 1 << 2,
+    SAUCER_WINDOW_EDGE_RIGHT        = 1 << 3,
+    SAUCER_WINDOW_EDGE_BOTTOM_LEFT  = SAUCER_WINDOW_EDGE_BOTTOM | SAUCER_WINDOW_EDGE_LEFT,
+    SAUCER_WINDOW_EDGE_BOTTOM_RIGHT = SAUCER_WINDOW_EDGE_BOTTOM | SAUCER_WINDOW_EDGE_RIGHT,
+    SAUCER_WINDOW_EDGE_TOP_LEFT     = SAUCER_WINDOW_EDGE_TOP | SAUCER_WINDOW_EDGE_LEFT,
+    SAUCER_WINDOW_EDGE_TOP_RIGHT    = SAUCER_WINDOW_EDGE_TOP | SAUCER_WINDOW_EDGE_RIGHT,
+} SAUCER_WINDOW_EDGE;
+
+typedef enum SAUCER_WINDOW_DECORATION
+{
+    SAUCER_WINDOW_DECORATION_NONE,
+    SAUCER_WINDOW_DECORATION_PARTIAL,
+    SAUCER_WINDOW_DECORATION_FULL,
+} SAUCER_WINDOW_DECORATION;
+
 typedef enum SAUCER_WINDOW_EVENT
 {
     SAUCER_WINDOW_EVENT_DECORATED,
@@ -118,63 +151,54 @@ typedef enum SAUCER_WINDOW_EVENT
     SAUCER_WINDOW_EVENT_CLOSE,
 } SAUCER_WINDOW_EVENT;
 
-typedef enum SAUCER_WINDOW_EDGE
-{
-    SAUCER_WINDOW_EDGE_TOP = 1 << 0,
-    SAUCER_WINDOW_EDGE_BOTTOM = 1 << 1,
-    SAUCER_WINDOW_EDGE_LEFT = 1 << 2,
-    SAUCER_WINDOW_EDGE_RIGHT = 1 << 3,
-} SAUCER_WINDOW_EDGE;
+typedef void (*saucer_window_event_decorated)(saucer_window *, SAUCER_WINDOW_DECORATION, void *);
+typedef void (*saucer_window_event_maximize)(saucer_window *, bool, void *);
+typedef void (*saucer_window_event_minimize)(saucer_window *, bool, void *);
+typedef void (*saucer_window_event_closed)(saucer_window *, void *);
+typedef void (*saucer_window_event_resize)(saucer_window *, int, int, void *);
+typedef void (*saucer_window_event_focus)(saucer_window *, bool, void *);
+typedef SAUCER_POLICY (*saucer_window_event_close)(saucer_window *, void *);
 
-typedef enum SAUCER_POLICY
-{
-    SAUCER_POLICY_ALLOW,
-    SAUCER_POLICY_BLOCK,
-} SAUCER_POLICY;
-
-typedef struct saucer_handle saucer_handle;
+// .url
+typedef struct saucer_url saucer_url;
 
 // .scheme
+typedef struct saucer_scheme_executor saucer_scheme_executor;
+typedef struct saucer_scheme_request saucer_scheme_request;
+typedef struct saucer_scheme_response saucer_scheme_response;
+
 typedef enum SAUCER_SCHEME_ERROR
 {
-    SAUCER_REQUEST_ERROR_NOT_FOUND,
-    SAUCER_REQUEST_ERROR_INVALID,
-    SAUCER_REQUEST_ERROR_ABORTED,
-    SAUCER_REQUEST_ERROR_DENIED,
-    SAUCER_REQUEST_ERROR_FAILED,
+    SAUCER_SCHEME_ERROR_NOT_FOUND = 404,
+    SAUCER_SCHEME_ERROR_INVALID   = 400,
+    SAUCER_SCHEME_ERROR_DENIED    = 401,
+    SAUCER_SCHEME_ERROR_FAILED    = -1
 } SAUCER_SCHEME_ERROR;
 
-typedef struct saucer_scheme_response saucer_scheme_response;
-typedef struct saucer_scheme_request saucer_scheme_request;
-typedef struct saucer_scheme_executor saucer_scheme_executor;
+typedef void (*saucer_scheme_handler)(saucer_scheme_request *, saucer_scheme_executor *);
 
-typedef void (*saucer_scheme_handler)(saucer_handle *, saucer_scheme_request *, saucer_scheme_executor *);
+// .permission
+typedef struct saucer_permission_request saucer_permission_request;
 
-// .script
-typedef enum SAUCER_LOAD_TIME
+typedef enum SAUCER_PERMISSION_TYPE
 {
-    SAUCER_LOAD_TIME_CREATION,
-    SAUCER_LOAD_TIME_READY,
-} SAUCER_LOAD_TIME;
+    SAUCER_PERMISSION_TYPE_UNKNOWN       = 0,
+    SAUCER_PERMISSION_TYPE_AUDIO_MEDIA   = 1 << 0,
+    SAUCER_PERMISSION_TYPE_VIDEO_MEDIA   = 1 << 1,
+    SAUCER_PERMISSION_TYPE_DESKTOP_MEDIA = 1 << 2,
+    SAUCER_PERMISSION_TYPE_MOUSE_LOCK    = 1 << 3,
+    SAUCER_PERMISSION_TYPE_DEVICE_INFO   = 1 << 4,
+    SAUCER_PERMISSION_TYPE_LOCATION      = 1 << 5,
+    SAUCER_PERMISSION_TYPE_CLIPBOARD     = 1 << 6,
+    SAUCER_PERMISSION_TYPE_NOTIFICATION  = 1 << 7,
+} SAUCER_PERMISSION_TYPE;
 
-typedef enum SAUCER_WEB_FRAME
-{
-    SAUCER_WEB_FRAME_TOP,
-    SAUCER_WEB_FRAME_ALL,
-} SAUCER_WEB_FRAME;
-
-typedef struct saucer_script saucer_script;
+// .navigation
+typedef struct saucer_navigation saucer_navigation;
 
 // .webview
-typedef enum SAUCER_WEB_EVENT
-{
-    SAUCER_WEB_EVENT_DOM_READY,
-    SAUCER_WEB_EVENT_NAVIGATED,
-    SAUCER_WEB_EVENT_NAVIGATE,
-    SAUCER_WEB_EVENT_FAVICON,
-    SAUCER_WEB_EVENT_TITLE,
-    SAUCER_WEB_EVENT_LOAD,
-} SAUCER_WEB_EVENT;
+typedef struct saucer_webview saucer_webview;
+typedef struct saucer_webview_options saucer_webview_options;
 
 typedef enum SAUCER_STATE
 {
@@ -182,250 +206,310 @@ typedef enum SAUCER_STATE
     SAUCER_STATE_FINISHED,
 } SAUCER_STATE;
 
-typedef enum SAUCER_LAUNCH
+typedef enum SAUCER_STATUS
 {
-    SAUCER_LAUNCH_SYNC,
-    SAUCER_LAUNCH_ASYNC,
-} SAUCER_LAUNCH;
+    SAUCER_STATE_HANDLED,
+    SAUCER_STATE_UNHANDLED,
+} SAUCER_STATUS;
 
-typedef struct saucer_embedded_file saucer_embedded_file;
+typedef enum SAUCER_SCRIPT_TIME
+{
+    SAUCER_SCRIPT_TIME_CREATION,
+    SAUCER_SCRIPT_TIME_READY,
+} SAUCER_SCRIPT_TIME;
 
-typedef bool (*saucer_on_message)(const char *);
+typedef enum SAUCER_WEBVIEW_EVENT
+{
+    SAUCER_WEBVIEW_EVENT_PERMISSION,
+    SAUCER_WEBVIEW_EVENT_FULLSCREEN,
+    SAUCER_WEBVIEW_EVENT_DOM_READY,
+    SAUCER_WEBVIEW_EVENT_NAVIGATED,
+    SAUCER_WEBVIEW_EVENT_NAVIGATE,
+    SAUCER_WEBVIEW_EVENT_MESSAGE,
+    SAUCER_WEBVIEW_EVENT_REQUEST,
+    SAUCER_WEBVIEW_EVENT_FAVICON,
+    SAUCER_WEBVIEW_EVENT_TITLE,
+    SAUCER_WEBVIEW_EVENT_LOAD,
+} SAUCER_WEBVIEW_EVENT;
+
+typedef SAUCER_STATUS (*saucer_webview_event_permission)(saucer_webview *, saucer_permission_request *, void *);
+typedef SAUCER_POLICY (*saucer_webview_event_fullscreen)(saucer_webview *, bool, void *);
+typedef void (*saucer_webview_event_dom_ready)(saucer_webview *, void *);
+typedef void (*saucer_webview_event_navigated)(saucer_webview *, saucer_url *, void *);
+typedef SAUCER_POLICY (*saucer_webview_event_navigate)(saucer_webview *, saucer_navigation *, void *);
+typedef SAUCER_STATUS (*saucer_webview_event_message)(saucer_webview *, const char *, size_t, void *);
+typedef void (*saucer_webview_event_request)(saucer_webview *, saucer_url *, void *);
+typedef void (*saucer_webview_event_favicon)(saucer_webview *, saucer_icon *, void *);
+typedef void (*saucer_webview_event_title)(saucer_webview *, const char *, size_t, void *);
+typedef void (*saucer_webview_event_load)(saucer_webview *, SAUCER_STATE, void *);
+
 
 /// Saucer Functions
 
-// .options
-saucer_options *saucer_options_new(const char *id);
-void saucer_options_free(saucer_options *);
-
-void saucer_options_set_argc(saucer_options *, int argc);
-void saucer_options_set_argv(saucer_options *, char **argv);
-
-void saucer_options_set_threads(saucer_options *, size_t threads);
-
 // .app
-saucer_application *saucer_application_init(saucer_options *options);
+void saucer_screen_free(saucer_screen *);
+
+const char *saucer_screen_name(saucer_screen *);
+void saucer_screen_size(saucer_screen *, int *w, int *h);
+void saucer_screen_position(saucer_screen *, int *x, int *y);
+
+void saucer_application_options_free(saucer_application_options *);
+saucer_application_options *saucer_application_options_new(const char *id);
+
+void saucer_application_options_set_argc(saucer_application_options *, int);
+void saucer_application_options_set_argv(saucer_application_options *, char **);
+void saucer_application_options_set_quit_on_last_window_closed(saucer_application_options *, bool);
+
 void saucer_application_free(saucer_application *);
-saucer_application *saucer_application_active();
+saucer_application *saucer_application_new(saucer_application_options *, int *error);
+
 bool saucer_application_thread_safe(saucer_application *);
+void saucer_application_screens(saucer_application *, saucer_screen **, size_t *size);
 
-/**
- * @brief Submits (blocking) the given @param callback to the thread-pool
- */
-void saucer_application_pool_submit(saucer_application *, saucer_pool_callback callback);
+void saucer_application_post(saucer_application *, saucer_post_callback, void *userdata);
 
-/**
- * @brief Emplaces (non blocking) the given @param callback to the thread-pool
- */
-void saucer_application_pool_emplace(saucer_application *, saucer_pool_callback callback);
-void saucer_application_post(saucer_application *, saucer_post_callback callback);
 void saucer_application_quit(saucer_application *);
-void saucer_application_run(saucer_application *);
-void saucer_application_run_once(saucer_application *);
+int saucer_application_run(saucer_application *, saucer_run_callback, saucer_finish_callback, void *userdata);
+
+size_t saucer_application_on(saucer_application *, SAUCER_APPLICATION_EVENT, void *callback, bool clearable,
+                             void *userdata);
+
+void saucer_application_once(saucer_application *, SAUCER_APPLICATION_EVENT, void *callback, void *userdata);
+
+void saucer_application_off(saucer_application *, SAUCER_APPLICATION_EVENT, size_t);
+void saucer_application_off_all(saucer_application *, SAUCER_APPLICATION_EVENT);
+
+void saucer_application_native(saucer_application *, size_t idx, void *result, size_t *size);
+
+const char *saucer_version();
 
 // .stash
-void saucer_stash_free(saucer_stash *);
-size_t saucer_stash_size(saucer_stash *);
 const uint8_t *saucer_stash_data(saucer_stash *);
-saucer_stash *saucer_stash_from(const uint8_t *data, size_t size);
-saucer_stash *saucer_stash_view(const uint8_t *data, size_t size);
+size_t saucer_stash_size(saucer_stash *);
 
-/**
- * @note The stash returned from within the @param callback is automatically
- *       deleted. However, the stash returned from this function must still
- *       be free'd accordingly.
- */
-saucer_stash *saucer_stash_lazy(saucer_stash_lazy_callback callback);
+void saucer_stash_free(saucer_stash *);
+saucer_stash *saucer_stash_copy(saucer_stash *);
+
+saucer_stash *saucer_stash_new_from(uint8_t *, size_t);
+saucer_stash *saucer_stash_new_view(const uint8_t *, size_t);
+saucer_stash *saucer_stash_new_lazy(saucer_stash_lazy_callback, void *userdata);
+
+saucer_stash *saucer_stash_new_from_str(const char *);
+saucer_stash *saucer_stash_new_view_str(const char *);
+
+saucer_stash *saucer_stash_new_empty();
 
 // .icon
-void saucer_icon_free(saucer_icon *);
 bool saucer_icon_empty(saucer_icon *);
 saucer_stash *saucer_icon_data(saucer_icon *);
-void saucer_icon_save(saucer_icon *, const char *path);
 
-/**
- * @brief Try to construct an icon from a given file.
- * @note The pointer pointed to by @param result will be set to a saucer_icon
- *       in case of success. The returned icon must be free'd.
- */
-void saucer_icon_from_file(saucer_icon **result, const char *file);
+void saucer_icon_save(saucer_icon *, const char *);
 
-/**
- * @brief Try to construct an icon from a given stash (raw bytes).
- * @note The pointer pointed to by @param result will be set to a saucer_icon
- *       in case of success. The returned icon must be free'd.
- */
-void saucer_icon_from_data(saucer_icon **result, saucer_stash *stash);
+void saucer_icon_free(saucer_icon *);
+saucer_icon *saucer_icon_copy(saucer_icon *);
 
-// .memory
-void saucer_memory_free(void *data);
-void *saucer_memory_alloc(size_t size);
+saucer_icon *saucer_icon_new_from_file(const char *, int *error);
+saucer_icon *saucer_icon_new_from_stash(saucer_stash *, int *error);
+
+void saucer_icon_native(saucer_icon *, size_t, void *, size_t *);
+
+// .window
+void saucer_window_free(saucer_window *);
+saucer_window *saucer_window_new(saucer_application *, int *error);
+
+bool saucer_window_visible(saucer_window *);
+bool saucer_window_focused(saucer_window *);
+
+bool saucer_window_minimized(saucer_window *);
+bool saucer_window_maximized(saucer_window *);
+bool saucer_window_resizable(saucer_window *);
+
+bool saucer_window_fullscreen(saucer_window *);
+
+bool saucer_window_always_on_top(saucer_window *);
+bool saucer_window_click_through(saucer_window *);
+
+void saucer_window_title(saucer_window *, char *, size_t *);
+
+void saucer_window_background(saucer_window *, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
+int saucer_window_decorations(saucer_window *);
+
+void saucer_window_size(saucer_window *, int *w, int *h);
+void saucer_window_max_size(saucer_window *, int *w, int *h);
+void saucer_window_min_size(saucer_window *, int *w, int *h);
+
+void saucer_window_position(saucer_window *, int *x, int *y);
+saucer_screen *saucer_window_screen(saucer_window *);
+
+void saucer_window_hide(saucer_window *);
+void saucer_window_show(saucer_window *);
+void saucer_window_close(saucer_window *);
+
+void saucer_window_focus(saucer_window *);
+
+void saucer_window_start_drag(saucer_window *);
+void saucer_window_start_resize(saucer_window *, SAUCER_WINDOW_EDGE);
+
+void saucer_window_set_minimized(saucer_window *, bool);
+void saucer_window_set_maximized(saucer_window *, bool);
+void saucer_window_set_resizable(saucer_window *, bool);
+
+void saucer_window_set_fullscreen(saucer_window *, bool);
+
+void saucer_window_set_always_on_top(saucer_window *, bool);
+void saucer_window_set_click_through(saucer_window *, bool);
+
+void saucer_window_set_icon(saucer_window *, saucer_icon *);
+void saucer_window_set_title(saucer_window *, const char *);
+
+void saucer_window_set_background(saucer_window *, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+void saucer_window_set_decorations(saucer_window *, SAUCER_WINDOW_DECORATION);
+
+void saucer_window_set_size(saucer_window *, int w, int h);
+void saucer_window_set_max_size(saucer_window *, int w, int h);
+void saucer_window_set_min_size(saucer_window *, int w, int h);
+
+void saucer_window_set_position(saucer_window *, int x, int y);
+
+size_t saucer_window_on(saucer_window *, SAUCER_WINDOW_EVENT, void *callback, bool clearable, void *userdata);
+
+void saucer_window_once(saucer_window *, SAUCER_WINDOW_EVENT, void *callback, void *userdata);
+
+void saucer_window_off(saucer_window *, SAUCER_WINDOW_EVENT, size_t);
+void saucer_window_off_all(saucer_window *, SAUCER_WINDOW_EVENT);
+
+void saucer_window_native(saucer_window *, size_t, void *, size_t *);
+
+// .url
+void saucer_url_free(saucer_url *);
+saucer_url *saucer_url_copy(saucer_url *);
+
+saucer_url *saucer_url_new_parse(const char *, int *error);
+saucer_url *saucer_url_new_from(const char *, int *error);
+saucer_url *saucer_url_new_opts(const char *scheme, const char *host, size_t *port, const char *path);
+
+void saucer_url_string(saucer_url *, char *, size_t *);
+
+void saucer_url_path(saucer_url *, char *, size_t *);
+void saucer_url_scheme(saucer_url *, char *, size_t *);
+
+void saucer_url_host(saucer_url *, char *, size_t *);
+bool saucer_url_port(saucer_url *, size_t *);
+
+void saucer_url_user(saucer_url *, char *, size_t *);
+void saucer_url_password(saucer_url *, char *, size_t *);
+
+void saucer_url_native(saucer_url *, size_t, void *, size_t *);
+
+// .scheme
+void saucer_scheme_response_free(saucer_scheme_response *);
+saucer_scheme_response *saucer_scheme_response_new(saucer_stash *, const char *mime);
+
+void saucer_scheme_response_append_header(saucer_scheme_response *, const char *, const char *);
+void saucer_scheme_response_set_status(saucer_scheme_response *, int);
+
+void saucer_scheme_request_free(saucer_scheme_request *);
+saucer_scheme_request *saucer_scheme_request_copy(saucer_scheme_request *);
+
+saucer_url *saucer_scheme_request_url(saucer_scheme_request *);
+void saucer_scheme_request_method(saucer_scheme_request *, char *, size_t *);
+
+saucer_stash *saucer_scheme_request_content(saucer_scheme_request *);
+void saucer_scheme_request_headers(saucer_scheme_request *, char *, size_t *);
+
+void saucer_scheme_executor_free(saucer_scheme_executor *);
+saucer_scheme_executor *saucer_scheme_executor_copy(saucer_scheme_executor *);
+
+void saucer_scheme_executor_reject(saucer_scheme_executor *, SAUCER_SCHEME_ERROR);
+void saucer_scheme_executor_accept(saucer_scheme_executor *, saucer_scheme_response *);
+
+// .permission
+void saucer_permission_request_free(saucer_permission_request *);
+saucer_permission_request *saucer_permission_request_copy(saucer_permission_request *);
+
+saucer_url *saucer_permission_request_url(saucer_permission_request *);
+SAUCER_PERMISSION_TYPE saucer_permission_request_type(saucer_permission_request *);
+
+void saucer_permission_request_accept(saucer_permission_request *, bool);
+
+void saucer_permission_request_native(saucer_permission_request *, size_t, void *, size_t *);
 
 // .navigation
-void saucer_navigation_free(saucer_navigation *);
-/*[[sc::requires_free]]*/ char *saucer_navigation_url(saucer_navigation *);
+saucer_url *saucer_navigation_url(saucer_navigation *);
 bool saucer_navigation_new_window(saucer_navigation *);
 bool saucer_navigation_redirection(saucer_navigation *);
 bool saucer_navigation_user_initiated(saucer_navigation *);
 
-// .preferences
-saucer_preferences *saucer_preferences_new(saucer_application *app);
-void saucer_preferences_free(saucer_preferences *);
-void saucer_preferences_set_persistent_cookies(saucer_preferences *, bool enabled);
-void saucer_preferences_set_hardware_acceleration(saucer_preferences *, bool enabled);
-void saucer_preferences_set_storage_path(saucer_preferences *, const char *path);
-void saucer_preferences_add_browser_flag(saucer_preferences *, const char *flag);
-void saucer_preferences_set_user_agent(saucer_preferences *, const char *user_agent);
-
-// .window
-bool saucer_window_visible(saucer_handle *);
-bool saucer_window_focused(saucer_handle *);
-bool saucer_window_minimized(saucer_handle *);
-bool saucer_window_maximized(saucer_handle *);
-bool saucer_window_resizable(saucer_handle *);
-bool saucer_window_decorations(saucer_handle *);
-bool saucer_window_always_on_top(saucer_handle *);
-bool saucer_window_click_through(saucer_handle *);
-/*[[sc::requires_free]]*/ char *saucer_window_title(saucer_handle *);
-void saucer_window_size(saucer_handle *, int *width, int *height);
-void saucer_window_max_size(saucer_handle *, int *width, int *height);
-void saucer_window_min_size(saucer_handle *, int *width, int *height);
-void saucer_window_hide(saucer_handle *);
-void saucer_window_show(saucer_handle *);
-void saucer_window_close(saucer_handle *);
-void saucer_window_focus(saucer_handle *);
-void saucer_window_start_drag(saucer_handle *);
-void saucer_window_start_resize(saucer_handle *, SAUCER_WINDOW_EDGE edge);
-void saucer_window_set_minimized(saucer_handle *, bool enabled);
-void saucer_window_set_maximized(saucer_handle *, bool enabled);
-void saucer_window_set_resizable(saucer_handle *, bool enabled);
-void saucer_window_set_decorations(saucer_handle *, bool enabled);
-void saucer_window_set_always_on_top(saucer_handle *, bool enabled);
-void saucer_window_set_click_through(saucer_handle *, bool enabled);
-void saucer_window_set_icon(saucer_handle *, saucer_icon *icon);
-void saucer_window_set_title(saucer_handle *, const char *title);
-void saucer_window_set_size(saucer_handle *, int width, int height);
-void saucer_window_set_max_size(saucer_handle *, int width, int height);
-void saucer_window_set_min_size(saucer_handle *, int width, int height);
-void saucer_window_clear(saucer_handle *, SAUCER_WINDOW_EVENT event);
-void saucer_window_remove(saucer_handle *, SAUCER_WINDOW_EVENT event, uint64_t id);
-
-/**
- * @note See respective comment on events in "window.h"
- * @warning The icon passed to the @param callback in the `web_event::icon_changed` event must be free'd by the
- * user
- */
-void saucer_window_once(saucer_handle *, SAUCER_WINDOW_EVENT event, void *callback);
-uint64_t saucer_window_on(saucer_handle *, SAUCER_WINDOW_EVENT event, void *callback);
-
-// .scheme
-saucer_scheme_response *saucer_scheme_response_new(saucer_stash *data, const char *mime);
-void saucer_scheme_response_free(saucer_scheme_response *);
-void saucer_scheme_response_set_status(saucer_scheme_response *, int status);
-void saucer_scheme_response_add_header(saucer_scheme_response *, const char *header, const char *value);
-void saucer_scheme_request_free(saucer_scheme_request *);
-/*[[sc::requires_free]]*/ char *saucer_scheme_request_url(saucer_scheme_request *);
-/*[[sc::requires_free]]*/ char *saucer_scheme_request_method(saucer_scheme_request *);
-/*[[sc::requires_free]]*/ saucer_stash *saucer_scheme_request_content(saucer_scheme_request *);
-
-/**
- * @note The arrays pointed to by @param headers and @param values will be populated with strings which are
- * themselves dynamically allocated. Both arrays will then hold @param count elements.
- *
- * To properly free the returned arrays you should:
- * - Free all strings within the headers and values array
- * - Free the array itself
- */
-void saucer_scheme_request_headers(saucer_scheme_request *, char ***headers, char ***values, size_t *count);
-void saucer_scheme_executor_free(saucer_scheme_executor *);
-void saucer_scheme_executor_resolve(saucer_scheme_executor *, saucer_scheme_response *response);
-void saucer_scheme_executor_reject(saucer_scheme_executor *, SAUCER_SCHEME_ERROR error);
-
-// .script
-saucer_script *saucer_script_new(const char *code, SAUCER_LOAD_TIME time);
-void saucer_script_free(saucer_script *);
-
-void saucer_script_set_frame(saucer_script *, SAUCER_WEB_FRAME frame);
-void saucer_script_set_time(saucer_script *, SAUCER_LOAD_TIME time);
-void saucer_script_set_permanent(saucer_script *, bool permanent);
-void saucer_script_set_code(saucer_script *, const char *code);
-
 // .webview
+void saucer_webview_options_free(saucer_webview_options *);
+saucer_webview_options *saucer_webview_options_new(saucer_window *);
 
-/*[[sc::requires_free]]*/ saucer_embedded_file *saucer_embed(saucer_stash *content, const char *mime);
-void saucer_embed_free(saucer_embedded_file *);
-/*[[sc::requires_free]]*/ saucer_handle *saucer_new(saucer_preferences *prefs);
-void saucer_free(saucer_handle *);
-void saucer_webview_on_message(saucer_handle *, saucer_on_message callback);
-/*[[sc::requires_free]]*/ saucer_icon *saucer_webview_favicon(saucer_handle *);
-/*[[sc::requires_free]]*/ char *saucer_webview_page_title(saucer_handle *);
-bool saucer_webview_dev_tools(saucer_handle *);
-/*[[sc::requires_free]]*/ char *saucer_webview_url(saucer_handle *);
-bool saucer_webview_context_menu(saucer_handle *);
-void saucer_webview_background(saucer_handle *, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
-bool saucer_webview_force_dark_mode(saucer_handle *);
-void saucer_webview_set_dev_tools(saucer_handle *, bool enabled);
-void saucer_webview_set_context_menu(saucer_handle *, bool enabled);
-void saucer_webview_set_force_dark_mode(saucer_handle *, bool enabled);
-void saucer_webview_set_background(saucer_handle *, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-void saucer_webview_set_file(saucer_handle *, const char *file);
-void saucer_webview_set_url(saucer_handle *, const char *url);
-void saucer_webview_back(saucer_handle *);
-void saucer_webview_forward(saucer_handle *);
-void saucer_webview_reload(saucer_handle *);
-void saucer_webview_embed_file(saucer_handle *, const char *name, saucer_embedded_file *file, SAUCER_LAUNCH policy);
-void saucer_webview_serve(saucer_handle *, const char *file);
-void saucer_webview_clear_scripts(saucer_handle *);
-void saucer_webview_clear_embedded(saucer_handle *);
-void saucer_webview_clear_embedded_file(saucer_handle *, const char *file);
-void saucer_webview_inject(saucer_handle *, saucer_script *script);
-void saucer_webview_execute(saucer_handle *, const char *code);
-void saucer_webview_handle_scheme(saucer_handle *, const char *name, saucer_scheme_handler handler, SAUCER_LAUNCH policy);
-void saucer_webview_remove_scheme(saucer_handle *, const char *name);
-void saucer_webview_clear(saucer_handle *, SAUCER_WEB_EVENT event);
-void saucer_webview_remove(saucer_handle *, SAUCER_WEB_EVENT event, uint64_t id);
+void saucer_webview_options_set_attributes(saucer_webview_options *, bool);
+void saucer_webview_options_set_persistent_cookies(saucer_webview_options *, bool);
+void saucer_webview_options_set_hardware_acceleration(saucer_webview_options *, bool);
 
-/**
- * @note The @param callback should be a function pointer to a function matching the event, that is:
- * <return-type>(saucer_handle *, <params>...);
- *
- * Where "<return-type>" and "<params>..." are to be substituted according
- * to the given event signature (see the respective C++ header)
- *
- * @example web_event::title_changed => void(*)(saucer_handle *, const char *)
- */
-void saucer_webview_once(saucer_handle *, SAUCER_WEB_EVENT event, void *callback);
-uint64_t saucer_webview_on(saucer_handle *, SAUCER_WEB_EVENT event, void *callback);
-/*[[sc::before_init]]*/ void saucer_register_scheme(const char *name);
+void saucer_webview_options_set_storage_path(saucer_webview_options *, const char *);
+void saucer_webview_options_set_user_agent(saucer_webview_options *, const char *);
+void saucer_webview_options_append_browser_flag(saucer_webview_options *, const char *);
 
-// .desktop.h
+void saucer_webview_free(saucer_webview *);
+saucer_webview *saucer_webview_new(saucer_webview_options *, int *error);
 
-typedef struct saucer_desktop saucer_desktop;
+saucer_url *saucer_webview_url(saucer_webview *, int *error);
 
-saucer_desktop *saucer_desktop_new(saucer_application *app);
-void saucer_desktop_free(saucer_desktop *);
+saucer_icon *saucer_webview_favicon(saucer_webview *);
+void saucer_webview_page_title(saucer_webview *, char *, size_t *);
 
-void saucer_desktop_open(saucer_desktop *, const char *path);
+bool saucer_webview_dev_tools(saucer_webview *);
+bool saucer_webview_context_menu(saucer_webview *);
 
-typedef struct saucer_picker_options saucer_picker_options;
+bool saucer_webview_force_dark(saucer_webview *);
+void saucer_webview_background(saucer_webview *, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *a);
 
-saucer_picker_options *saucer_picker_options_new();
-void saucer_picker_options_free(saucer_picker_options *);
+void saucer_webview_bounds(saucer_webview *, int *x, int *y, int *w, int *h);
 
-void saucer_picker_options_set_initial(saucer_picker_options *, const char *path);
-void saucer_picker_options_add_filter(saucer_picker_options *, const char *filter);
+void saucer_webview_set_url(saucer_webview *, saucer_url *);
+void saucer_webview_set_url_str(saucer_webview *, const char *);
 
-/**
-* @note The returned array will be populated with strings which are themselves dynamically allocated.
-*
-* To properly free the returned array you should:
-* - Free all strings within the array
-* - Free the array itself
-*/
-/*[[sc::requires_free]]*/ char *saucer_desktop_pick_file(saucer_desktop *, saucer_picker_options *options);
+void saucer_webview_set_html(saucer_webview *, const char *);
 
-/*[[sc::requires_free]]*/ char *saucer_desktop_pick_folder(saucer_desktop *, saucer_picker_options *options);
+void saucer_webview_set_dev_tools(saucer_webview *, bool);
+void saucer_webview_set_context_menu(saucer_webview *, bool);
 
-/*[[sc::requires_free]]*/ char **saucer_desktop_pick_files(saucer_desktop *, saucer_picker_options *options);
+void saucer_webview_set_force_dark(saucer_webview *, bool);
+void saucer_webview_set_background(saucer_webview *, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
-/*[[sc::requires_free]]*/ char **saucer_desktop_pick_folders(saucer_desktop *, saucer_picker_options *options);
+void saucer_webview_reset_bounds(saucer_webview *);
+void saucer_webview_set_bounds(saucer_webview *, int x, int y, int w, int h);
+
+void saucer_webview_back(saucer_webview *);
+void saucer_webview_forward(saucer_webview *);
+
+void saucer_webview_reload(saucer_webview *);
+
+void saucer_webview_serve(saucer_webview *, const char *);
+void saucer_webview_embed(saucer_webview *, const char *path, saucer_stash *content, const char *mime);
+
+void saucer_webview_unembed_all(saucer_webview *);
+void saucer_webview_unembed(saucer_webview *, const char *);
+
+void saucer_webview_execute(saucer_webview *, const char *);
+size_t saucer_webview_inject(saucer_webview *, const char *code, SAUCER_SCRIPT_TIME run_at, bool no_frames,
+                             bool clearable);
+
+void saucer_webview_uninject_all(saucer_webview *);
+void saucer_webview_uninject(saucer_webview *, size_t);
+
+void saucer_webview_handle_scheme(saucer_webview *, const char *, saucer_scheme_handler);
+void saucer_webview_remove_scheme(saucer_webview *, const char *);
+
+size_t saucer_webview_on(saucer_webview *, SAUCER_WEBVIEW_EVENT, void *callback, bool clearable, void *userdata);
+
+void saucer_webview_once(saucer_webview *, SAUCER_WEBVIEW_EVENT, void *callback, void *userdata);
+
+void saucer_webview_off(saucer_webview *, SAUCER_WEBVIEW_EVENT, size_t);
+void saucer_webview_off_all(saucer_webview *, SAUCER_WEBVIEW_EVENT);
+
+void saucer_webview_register_scheme(const char *);
+
+void saucer_webview_native(saucer_webview *, size_t, void *, size_t *);

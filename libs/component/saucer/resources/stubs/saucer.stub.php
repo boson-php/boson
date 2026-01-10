@@ -13,29 +13,50 @@ use FFI\CType;
  *
  * @mixin \FFI
  *
- * @phpstan-type SaucerOptionsType CData
+ * @phpstan-type SaucerScreenType CData
+ * @phpstan-type SaucerScreenTypePtr CData
  * @phpstan-type SaucerApplicationType CData
+ * @phpstan-type SaucerApplicationOptionsType CData
  * @phpstan-type SaucerStashType CData
  * @phpstan-type SaucerIconType CData
+ * @phpstan-type SaucerWindowType CData
+ * @phpstan-type SaucerUrlType CData
+ * @phpstan-type SaucerPermissionRequestType CData
  * @phpstan-type SaucerNavigationType CData
- * @phpstan-type SaucerPreferencesType CData
- * @phpstan-type SaucerHandleType CData
- * @phpstan-type SaucerSchemeResponseType CData
- * @phpstan-type SaucerSchemeRequestType CData
+ * @phpstan-type SaucerWebviewType CData
+ * @phpstan-type SaucerWebviewOptionsType CData
  * @phpstan-type SaucerSchemeExecutorType CData
- * @phpstan-type SaucerScriptType CData
- * @phpstan-type SaucerEmbeddedFileType CData
- * @phpstan-type SaucerDesktopType CData
- * @phpstan-type SaucerPickerOptionsType CData
- * @phpstan-type SaucerPoolCallbackType callable():void
- * @phpstan-type SaucerPostCallbackType callable():void
- * @phpstan-type SaucerStashLazyCallbackType callable():SaucerStashType
- * @phpstan-type SaucerSchemeHandlerType callable(SaucerHandleType,SaucerSchemeRequestType,SaucerSchemeExecutorType):void
- * @phpstan-type SaucerOnMessageType callable(string):bool
- * @phpstan-type UInt8ArrayType CData
- * @phpstan-type StringArrayType CData
- * @phpstan-type StringType CData
- * @phpstan-type UnmanagedStringType CData
+ * @phpstan-type SaucerSchemeRequestType CData
+ * @phpstan-type SaucerSchemeResponseType CData
+ * 
+ * @phpstan-type SizeTPtr CData
+ * @phpstan-type UInt8Ptr CData
+ * @phpstan-type IntPtr CData
+ * @phpstan-type CharPtr CData
+ *
+ * @phsptan-type saucer_application_event_quit callable(SaucerApplicationType, CData|null): (Policy::SAUCER_POLICY_*)
+ * @phsptan-type saucer_post_callback callable(CData|null): (void)
+ * @phsptan-type saucer_run_callback callable(SaucerApplicationType, CData|null): (void)
+ * @phsptan-type saucer_finish_callback callable(SaucerApplicationType, CData|null): (void)
+ * @phsptan-type saucer_stash_lazy_callback callable(CData|null): (SaucerStashType)
+ * @phsptan-type saucer_window_event_decorated callable(SaucerWindowType, WindowDecoration::SAUCER_WINDOW_DECORATION_*, CData|null): (void)
+ * @phsptan-type saucer_window_event_maximize callable(SaucerWindowType, bool, CData|null): (void)
+ * @phsptan-type saucer_window_event_minimize callable(SaucerWindowType, bool, CData|null): (void)
+ * @phsptan-type saucer_window_event_closed callable(SaucerWindowType, CData|null): (void)
+ * @phsptan-type saucer_window_event_resize callable(SaucerWindowType, int, int, CData|null): (void)
+ * @phsptan-type saucer_window_event_focus callable(SaucerWindowType, bool, CData|null): (void)
+ * @phsptan-type saucer_window_event_close callable(SaucerWindowType, CData|null): (Policy::SAUCER_POLICY_*)
+ * @phsptan-type saucer_scheme_handler callable(SaucerSchemeRequestType, SaucerSchemeExecutorType): (void)
+ * @phsptan-type saucer_webview_event_permission callable(SaucerWebviewType, SaucerPermissionRequestType, CData|null): (Status::SAUCER_STATE_*)
+ * @phsptan-type saucer_webview_event_fullscreen callable(SaucerWebviewType, bool, CData|null): (Policy::SAUCER_POLICY_*)
+ * @phsptan-type saucer_webview_event_dom_ready callable(SaucerWebviewType, CData|null): (void)
+ * @phsptan-type saucer_webview_event_navigated callable(SaucerWebviewType, SaucerUrlType, CData|null): (void)
+ * @phsptan-type saucer_webview_event_navigate callable(SaucerWebviewType, SaucerNavigationType, CData|null): (Policy::SAUCER_POLICY_*)
+ * @phsptan-type saucer_webview_event_message callable(SaucerWebviewType, string|null, int<0, max>, CData|null): (Status::SAUCER_STATE_*)
+ * @phsptan-type saucer_webview_event_request callable(SaucerWebviewType, SaucerUrlType, CData|null): (void)
+ * @phsptan-type saucer_webview_event_favicon callable(SaucerWebviewType, SaucerIconType, CData|null): (void)
+ * @phsptan-type saucer_webview_event_title callable(SaucerWebviewType, string|null, int<0, max>, CData|null): (void)
+ * @phsptan-type saucer_webview_event_load callable(SaucerWebviewType, State::SAUCER_STATE_*, CData|null): (void)
  *
  * @seal-properties
  * @seal-methods
@@ -58,37 +79,55 @@ interface SaucerInterface
     public function boson_version(): string;
 
     /**
-     * @return SaucerOptionsType
+     * @param SaucerScreenType $screen
      */
-    public function saucer_options_new(string $id): CData;
+    public function saucer_screen_free(CData $screen): void;
 
     /**
-     * @param SaucerOptionsType $options
+     * @param SaucerScreenType $screen
      */
-    public function saucer_options_free(CData $options): void;
+    public function saucer_screen_name(CData $screen): string;
 
     /**
-     * @param SaucerOptionsType $options
+     * @param SaucerScreenType $screen
+     * @param IntPtr $w
+     * @param IntPtr $h
+     */
+    public function saucer_screen_size(CData $screen, CData $w, CData $h): void;
+
+    /**
+     * @param SaucerScreenType $screen
+     * @param IntPtr $x
+     * @param IntPtr $y
+     */
+    public function saucer_screen_position(CData $screen, CData $x, CData $y): void;
+
+    /**
+     * @param SaucerApplicationOptionsType $options
+     */
+    public function saucer_application_options_free(CData $options): void;
+
+    /**
+     * @param non-empty-string $id
+     * @return SaucerApplicationOptionsType
+     */
+    public function saucer_application_options_new(string $id): CData;
+
+    /**
+     * @param SaucerApplicationOptionsType $options
      * @param int<-2147483648, 2147483647> $argc
      */
-    public function saucer_options_set_argc(CData $options, int $argc): void;
+    public function saucer_application_options_set_argc(CData $options, int $argc): void;
 
     /**
-     * @param SaucerOptionsType $options
+     * @param SaucerApplicationOptionsType $options
      */
-    public function saucer_options_set_argv(CData $options, ?CData $argv): void;
+    public function saucer_application_options_set_argv(CData $options, CData|null $argv): void;
 
     /**
-     * @param SaucerOptionsType $options
+     * @param SaucerApplicationOptionsType $options
      */
-    public function saucer_options_set_threads(CData $options, int $threads): void;
-
-    /**
-     * @param SaucerOptionsType $options
-     *
-     * @return SaucerApplicationType
-     */
-    public function saucer_application_init(CData $options): CData;
+    public function saucer_application_options_set_quit_on_last_window_closed(CData $options, bool $enable): void;
 
     /**
      * @param SaucerApplicationType $app
@@ -96,9 +135,11 @@ interface SaucerInterface
     public function saucer_application_free(CData $app): void;
 
     /**
+     * @param SaucerApplicationOptionsType $options
+     * @param CData|null $error
      * @return SaucerApplicationType
      */
-    public function saucer_application_active(): CData;
+    public function saucer_application_new(CData $options, CData|null $error): CData;
 
     /**
      * @param SaucerApplicationType $app
@@ -107,21 +148,16 @@ interface SaucerInterface
 
     /**
      * @param SaucerApplicationType $app
-     * @param SaucerPoolCallbackType $callback
+     * @param SaucerScreenTypePtr $screens
+     * @param SizeTPtr $size
      */
-    public function saucer_application_pool_submit(CData $app, callable $callback): void;
+    public function saucer_application_screens(CData $app, CData|null $screens, CData|null $size): void;
 
     /**
      * @param SaucerApplicationType $app
-     * @param SaucerPoolCallbackType $callback
+     * @param (callable(CData|null): void)|CData $onPost
      */
-    public function saucer_application_pool_emplace(CData $app, callable $callback): void;
-
-    /**
-     * @param SaucerApplicationType $app
-     * @param SaucerPostCallbackType $callback
-     */
-    public function saucer_application_post(CData $app, callable $callback): void;
+    public function saucer_application_post(CData $app, CData|callable $onPost, CData|null $data): void;
 
     /**
      * @param SaucerApplicationType $app
@@ -130,13 +166,58 @@ interface SaucerInterface
 
     /**
      * @param SaucerApplicationType $app
+     * @param (callable(SaucerApplicationType, CData|null): void)|CData $onRun
+     * @param (callable(SaucerApplicationType, CData|null): void)|CData $onFinish
+     * @return int<-2147483648, 2147483647>
      */
-    public function saucer_application_run(CData $app): void;
+    public function saucer_application_run(CData $app, CData|callable $onRun, CData|callable $onFinish, CData|null $data): int;
 
     /**
      * @param SaucerApplicationType $app
+     * @param (ApplicationEvent::SAUCER_APPLICATION_EVENT_*) $event
+     * @return int<0, max>
      */
-    public function saucer_application_run_once(CData $app): void;
+    public function saucer_application_on(CData $app, int $event, CData|callable $callback, bool $clearable, CData|null $data): int;
+
+    /**
+     * @param SaucerApplicationType $app
+     * @param (ApplicationEvent::SAUCER_APPLICATION_EVENT_*) $event
+     */
+    public function saucer_application_once(CData $app, int $event, CData|callable $callback, CData|null $data): void;
+
+    /**
+     * @param SaucerApplicationType $app
+     * @param (ApplicationEvent::SAUCER_APPLICATION_EVENT_*) $event
+     * @param int<0, max> $id
+     */
+    public function saucer_application_off(CData $app, int $event, int $id): void;
+
+    /**
+     * @param SaucerApplicationType $app
+     * @param (ApplicationEvent::SAUCER_APPLICATION_EVENT_*) $event
+     */
+    public function saucer_application_off_all(CData $app, int $event): void;
+
+    /**
+     * @param SaucerApplicationType $app
+     * @param int<0, max> $idx
+     * @param SizeTPtr $size
+     */
+    public function saucer_application_native(CData $app, int $idx, CData|null $result, CData|null $size): void;
+
+    public function saucer_version(): string;
+
+    /**
+     * @param SaucerStashType $stash
+     * @return UInt8Ptr
+     */
+    public function saucer_stash_data(CData $stash): CData;
+
+    /**
+     * @param SaucerStashType $stash
+     * @return int<0, max>
+     */
+    public function saucer_stash_size(CData $stash): int;
 
     /**
      * @param SaucerStashType $stash
@@ -145,41 +226,35 @@ interface SaucerInterface
 
     /**
      * @param SaucerStashType $stash
-     */
-    public function saucer_stash_size(CData $stash): int;
-
-    /**
-     * @param SaucerStashType $stash
-     *
-     * @return UInt8ArrayType
-     */
-    public function saucer_stash_data(CData $stash): CData;
-
-    /**
-     * @param UInt8ArrayType $data
-     *
      * @return SaucerStashType
      */
-    public function saucer_stash_from(CData $data, int $size): CData;
+    public function saucer_stash_copy(CData $stash): CData;
 
     /**
-     * @param UInt8ArrayType $data
-     *
+     * @param UInt8Ptr $data
+     * @param int<0, max> $size
      * @return SaucerStashType
      */
-    public function saucer_stash_view(CData $data, int $size): CData;
+    public function saucer_stash_new_from(CData $data, int $size): CData;
 
     /**
-     * @param SaucerStashLazyCallbackType $callback
-     *
+     * @param UInt8Ptr $data
+     * @param int<0, max> $size
      * @return SaucerStashType
      */
-    public function saucer_stash_lazy(callable $callback): CData;
+    public function saucer_stash_new_view(CData $data, int $size): CData;
 
     /**
-     * @param SaucerIconType $icon
+     * @param (callable(CData|null):SaucerStashType)|CData $callback
+     * @return SaucerStashType
      */
-    public function saucer_icon_free(CData $icon): void;
+    public function saucer_stash_new_lazy(CData|callable $callback, CData|null $data): CData;
+
+    public function saucer_stash_new_from_str(string $data): CData;
+
+    public function saucer_stash_new_view_str(string $data): CData;
+
+    public function saucer_stash_new_empty(): CData;
 
     /**
      * @param SaucerIconType $icon
@@ -188,289 +263,405 @@ interface SaucerInterface
 
     /**
      * @param SaucerIconType $icon
-     *
      * @return SaucerStashType
      */
     public function saucer_icon_data(CData $icon): CData;
 
     /**
      * @param SaucerIconType $icon
+     * @param non-empty-string $path
      */
     public function saucer_icon_save(CData $icon, string $path): void;
 
     /**
-     * @phpstan-type SaucerOutputIconType CData
-     *
-     * @param SaucerOutputIconType $resultIcon
+     * @param SaucerIconType $icon
      */
-    public function saucer_icon_from_file(CData $resultIcon, string $file): void;
+    public function saucer_icon_free(CData $icon): void;
 
     /**
-     * @phpstan-type SaucerOutputIconType CData
-     *
-     * @param SaucerOutputIconType $resultIcon
+     * @param SaucerIconType $icon
+     * @return SaucerIconType
+     */
+    public function saucer_icon_copy(CData $icon): CData;
+
+    /**
+     * @param non-empty-string $path
+     * @param IntPtr $error
+     * @return SaucerIconType
+     */
+    public function saucer_icon_new_from_file(string $path, CData $error): CData;
+
+    /**
      * @param SaucerStashType $stash
+     * @param IntPtr $error
+     * @return SaucerIconType
      */
-    public function saucer_icon_from_data(CData $resultIcon, CData $stash): void;
-
-    public function saucer_memory_free(CData $data): void;
-
-    public function saucer_memory_alloc(int $size): CData;
+    public function saucer_icon_new_from_stash(CData $stash, CData $error): CData;
 
     /**
-     * @param SaucerNavigationType $navigation
+     * @param SaucerIconType $icon
+     * @param int<0, max> $idx
+     * @param CData $result
+     * @param CData $size
      */
-    public function saucer_navigation_free(CData $navigation): void;
+    public function saucer_icon_native(CData $icon, int $idx, CData $result, CData $size): void;
+
 
     /**
-     * @param SaucerNavigationType $navigation
-     *
-     * @return UnmanagedStringType
+     * @param SaucerWindowType $window
      */
-    public function saucer_navigation_url(CData $navigation): CData;
-
-    /**
-     * @param SaucerNavigationType $navigation
-     */
-    public function saucer_navigation_new_window(CData $navigation): bool;
-
-    /**
-     * @param SaucerNavigationType $navigation
-     */
-    public function saucer_navigation_redirection(CData $navigation): bool;
-
-    /**
-     * @param SaucerNavigationType $navigation
-     */
-    public function saucer_navigation_user_initiated(CData $navigation): bool;
+    public function saucer_window_free(CData $window): void;
 
     /**
      * @param SaucerApplicationType $app
-     *
-     * @return SaucerPreferencesType
+     * @param IntPtr $error
+     * @return SaucerWindowType
      */
-    public function saucer_preferences_new(CData $app): CData;
+    public function saucer_window_new(CData $app, CData $error): CData;
 
     /**
-     * @param SaucerPreferencesType $preferences
+     * @param SaucerWindowType $window
      */
-    public function saucer_preferences_free(CData $preferences): void;
+    public function saucer_window_visible(CData $window): bool;
 
     /**
-     * @param SaucerPreferencesType $preferences
+     * @param SaucerWindowType $window
      */
-    public function saucer_preferences_set_persistent_cookies(CData $preferences, bool $enabled): void;
+    public function saucer_window_focused(CData $window): bool;
 
     /**
-     * @param SaucerPreferencesType $preferences
+     * @param SaucerWindowType $window
      */
-    public function saucer_preferences_set_hardware_acceleration(CData $preferences, bool $enabled): void;
+    public function saucer_window_minimized(CData $window): bool;
 
     /**
-     * @param SaucerPreferencesType $preferences
+     * @param SaucerWindowType $window
      */
-    public function saucer_preferences_set_storage_path(CData $preferences, string $path): void;
+    public function saucer_window_maximized(CData $window): bool;
 
     /**
-     * @param SaucerPreferencesType $preferences
+     * @param SaucerWindowType $window
      */
-    public function saucer_preferences_add_browser_flag(CData $preferences, string $flag): void;
+    public function saucer_window_resizable(CData $window): bool;
 
     /**
-     * @param SaucerPreferencesType $preferences
+     * @param SaucerWindowType $window
      */
-    public function saucer_preferences_set_user_agent(CData $preferences, string $userAgent): void;
+    public function saucer_window_fullscreen(CData $window): bool;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_visible(CData $handle): bool;
+    public function saucer_window_always_on_top(CData $window): bool;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_focused(CData $handle): bool;
+    public function saucer_window_click_through(CData $window): bool;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
+     * @param CharPtr $title
+     * @param SizeTPtr $size
      */
-    public function saucer_window_minimized(CData $handle): bool;
+    public function saucer_window_title(CData $window, CData $title, CData $size): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
+     * @param UInt8Ptr $r
+     * @param UInt8Ptr $g
+     * @param UInt8Ptr $b
+     * @param UInt8Ptr $a
      */
-    public function saucer_window_maximized(CData $handle): bool;
+    public function saucer_window_background(CData $window, CData $r, CData $g, CData $b, CData $a): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
+     * @return int<-2147483648, 2147483647>
      */
-    public function saucer_window_resizable(CData $handle): bool;
+    public function saucer_window_decorations(CData $window): int;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
+     * @param IntPtr $w
+     * @param IntPtr $h
      */
-    public function saucer_window_decorations(CData $handle): bool;
+    public function saucer_window_size(CData $window, CData $w, CData $h): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
+     * @param IntPtr $w
+     * @param IntPtr $h
      */
-    public function saucer_window_always_on_top(CData $handle): bool;
+    public function saucer_window_max_size(CData $window, CData $w, CData $h): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
+     * @param IntPtr $w
+     * @param IntPtr $h
      */
-    public function saucer_window_click_through(CData $handle): bool;
+    public function saucer_window_min_size(CData $window, CData $w, CData $h): void;
 
     /**
-     * @param SaucerHandleType $handle
-     *
-     * @return UnmanagedStringType
+     * @param SaucerWindowType $window
+     * @param IntPtr $x
+     * @param IntPtr $y
      */
-    public function saucer_window_title(CData $handle): CData;
+    public function saucer_window_position(CData $window, CData $x, CData $y): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
+     * @return SaucerScreenType
      */
-    public function saucer_window_size(CData $handle, CData $width, CData $height): void;
+    public function saucer_window_screen(CData $window): CData;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_max_size(CData $handle, CData $width, CData $height): void;
+    public function saucer_window_hide(CData $window): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_min_size(CData $handle, CData $width, CData $height): void;
+    public function saucer_window_show(CData $window): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_hide(CData $handle): void;
+    public function saucer_window_close(CData $window): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_show(CData $handle): void;
+    public function saucer_window_focus(CData $window): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_close(CData $handle): void;
+    public function saucer_window_start_drag(CData $window): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
+     * @param (WindowEdge::SAUCER_WINDOW_EDGE_*) $edge
      */
-    public function saucer_window_focus(CData $handle): void;
+    public function saucer_window_start_resize(CData $window, int $edge): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_start_drag(CData $handle): void;
+    public function saucer_window_set_minimized(CData $window, bool $state): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WindowEdge::SAUCER_WINDOW_EDGE_*|int-mask-of<WindowEdge::SAUCER_WINDOW_EDGE_*> $edge
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_start_resize(CData $handle, int $edge): void;
+    public function saucer_window_set_maximized(CData $window, bool $state): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_set_minimized(CData $handle, bool $enabled): void;
+    public function saucer_window_set_resizable(CData $window, bool $state): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_set_maximized(CData $handle, bool $enabled): void;
+    public function saucer_window_set_fullscreen(CData $window, bool $state): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_set_resizable(CData $handle, bool $enabled): void;
+    public function saucer_window_set_always_on_top(CData $window, bool $state): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_set_decorations(CData $handle, bool $enabled): void;
+    public function saucer_window_set_click_through(CData $window, bool $state): void;
 
     /**
-     * @param SaucerHandleType $handle
-     */
-    public function saucer_window_set_always_on_top(CData $handle, bool $enabled): void;
-
-    /**
-     * @param SaucerHandleType $handle
-     */
-    public function saucer_window_set_click_through(CData $handle, bool $enabled): void;
-
-    /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      * @param SaucerIconType $icon
      */
-    public function saucer_window_set_icon(CData $handle, CData $icon): void;
+    public function saucer_window_set_icon(CData $window, CData $icon): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWindowType $window
      */
-    public function saucer_window_set_title(CData $handle, string $title): void;
+    public function saucer_window_set_title(CData $window, string $title): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param int<-2147483648, 2147483647> $width
-     * @param int<-2147483648, 2147483647> $height
+     * @param SaucerWindowType $window
+     * @param int<0, 255> $r
+     * @param int<0, 255> $g
+     * @param int<0, 255> $b
+     * @param int<0, 255> $a
      */
-    public function saucer_window_set_size(CData $handle, int $width, int $height): void;
+    public function saucer_window_set_background(CData $window, int $r, int $g, int $b, int $a): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param int<-2147483648, 2147483647> $width
-     * @param int<-2147483648, 2147483647> $height
+     * @param SaucerWindowType $window
+     * @param (WindowDecoration::SAUCER_WINDOW_DECORATION_*) $decorations
      */
-    public function saucer_window_set_max_size(CData $handle, int $width, int $height): void;
+    public function saucer_window_set_decorations(CData $window, int $decorations): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param int<-2147483648, 2147483647> $width
-     * @param int<-2147483648, 2147483647> $height
+     * @param SaucerWindowType $window
+     * @param int<-2147483648, 2147483647> $w
+     * @param int<-2147483648, 2147483647> $h
      */
-    public function saucer_window_set_min_size(CData $handle, int $width, int $height): void;
+    public function saucer_window_set_size(CData $window, int $w, int $h): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WindowEvent::SAUCER_WINDOW_EVENT_* $event
+     * @param SaucerWindowType $window
+     * @param int<-2147483648, 2147483647> $w
+     * @param int<-2147483648, 2147483647> $h
      */
-    public function saucer_window_clear(CData $handle, int $event): void;
+    public function saucer_window_set_max_size(CData $window, int $w, int $h): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WindowEvent::SAUCER_WINDOW_EVENT_* $event
+     * @param SaucerWindowType $window
+     * @param int<-2147483648, 2147483647> $w
+     * @param int<-2147483648, 2147483647> $h
      */
-    public function saucer_window_remove(CData $handle, int $event, int $id): void;
+    public function saucer_window_set_min_size(CData $window, int $w, int $h): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WindowEvent::SAUCER_WINDOW_EVENT_* $event
+     * @param SaucerWindowType $window
+     * @param int<-2147483648, 2147483647> $x
+     * @param int<-2147483648, 2147483647> $y
      */
-    public function saucer_window_once(CData $handle, int $event, callable|CData $callback): void;
+    public function saucer_window_set_position(CData $window, int $x, int $y): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WindowEvent::SAUCER_WINDOW_EVENT_* $event
+     * @param SaucerWindowType $window
+     * @param (WindowEvent::SAUCER_WINDOW_EVENT_*) $event
+     * @return int<0, max>
      */
-    public function saucer_window_on(CData $handle, int $event, callable|CData $callback): int;
+    public function saucer_window_on(CData $window, int $event, CData|callable $callback, bool $clearable, CData|null $data): int;
 
     /**
-     * @param SaucerStashType $data
-     *
-     * @return SaucerSchemeResponseType
+     * @param SaucerWindowType $window
+     * @param (WindowEvent::SAUCER_WINDOW_EVENT_*) $event
      */
-    public function saucer_scheme_response_new(CData $data, string $mime): CData;
+    public function saucer_window_once(CData $window, int $event, CData|callable $callback, CData|null $data): void;
+
+    /**
+     * @param SaucerWindowType $window
+     * @param (WindowEvent::SAUCER_WINDOW_EVENT_*) $event
+     * @param int<0, max> $id
+     */
+    public function saucer_window_off(CData $window, int $event, int $id): void;
+
+    /**
+     * @param SaucerWindowType $window
+     * @param (WindowEvent::SAUCER_WINDOW_EVENT_*) $event
+     */
+    public function saucer_window_off_all(CData $window, int $event): void;
+
+    /**
+     * @param SaucerWindowType $window
+     * @param int<0, max> $idx
+     * @param SizeTPtr $size
+     */
+    public function saucer_window_native(CData $window, int $idx, CData $result, CData $size): void;
+
+    /**
+     * @param SaucerUrlType $url
+     */
+    public function saucer_url_free(CData $url): void;
+
+    /**
+     * @param SaucerUrlType $url
+     * @return SaucerUrlType
+     */
+    public function saucer_url_copy(CData $url): CData;
+
+    /**
+     * @param IntPtr $error
+     * @return SaucerUrlType
+     */
+    public function saucer_url_new_parse(string $data, CData $error): CData;
+
+    /**
+     * @param IntPtr $error
+     * @return SaucerUrlType
+     */
+    public function saucer_url_new_from(string $path, CData $error): CData;
+
+    /**
+     * @param SizeTPtr $port
+     * @return SaucerUrlType
+     */
+    public function saucer_url_new_opts(string $scheme, string $host, CData $port, string $path): CData;
+
+    /**
+     * @param SaucerUrlType $url
+     * @param CharPtr $string
+     * @param SizeTPtr $size
+     */
+    public function saucer_url_string(CData $url, CData $string, CData $size): void;
+
+    /**
+     * @param SaucerUrlType $url
+     * @param CharPtr $path
+     * @param SizeTPtr $size
+     */
+    public function saucer_url_path(CData $url, CData $path, CData $size): void;
+
+    /**
+     * @param SaucerUrlType $url
+     * @param CharPtr $scheme
+     * @param SizeTPtr $size
+     */
+    public function saucer_url_scheme(CData $url, CData $scheme, CData $size): void;
+
+    /**
+     * @param SaucerUrlType $url
+     * @param CharPtr $host
+     * @param SizeTPtr $size
+     */
+    public function saucer_url_host(CData $url, CData $host, CData $size): void;
+
+    /**
+     * @param SaucerUrlType $url
+     * @param CharPtr $port
+     */
+    public function saucer_url_port(CData $url, CData $port): bool;
+
+    /**
+     * @param SaucerUrlType $url
+     * @param CharPtr $user
+     * @param SizeTPtr $size
+     */
+    public function saucer_url_user(CData $url, CData $user, CData $size): void;
+
+    /**
+     * @param SaucerUrlType $url
+     * @param CharPtr $password
+     * @param SizeTPtr $size
+     */
+    public function saucer_url_password(CData $url, CData $password, CData $size): void;
+
+    /**
+     * @param SaucerUrlType $url
+     * @param int<0, max> $idx
+     * @param SizeTPtr $size
+     */
+    public function saucer_url_native(CData $url, int $idx, CData $result, CData $size): void;
 
     /**
      * @param SaucerSchemeResponseType $response
      */
     public function saucer_scheme_response_free(CData $response): void;
+
+    /**
+     * @param SaucerStashType $stash
+     * @return SaucerSchemeResponseType
+     */
+    public function saucer_scheme_response_new(CData $stash, string $mime): CData;
+
+    /**
+     * @param SaucerSchemeResponseType $response
+     */
+    public function saucer_scheme_response_append_header(CData $response, string $name, string $value): void;
 
     /**
      * @param SaucerSchemeResponseType $response
@@ -479,46 +670,41 @@ interface SaucerInterface
     public function saucer_scheme_response_set_status(CData $response, int $status): void;
 
     /**
-     * @param SaucerSchemeResponseType $response
-     */
-    public function saucer_scheme_response_add_header(CData $response, string $header, string $value): void;
-
-    /**
      * @param SaucerSchemeRequestType $request
      */
     public function saucer_scheme_request_free(CData $request): void;
 
     /**
      * @param SaucerSchemeRequestType $request
-     *
-     * @return UnmanagedStringType
+     * @return SaucerSchemeRequestType
+     */
+    public function saucer_scheme_request_copy(CData $request): CData;
+
+    /**
+     * @param SaucerSchemeRequestType $request
+     * @return SaucerUrlType
      */
     public function saucer_scheme_request_url(CData $request): CData;
 
     /**
      * @param SaucerSchemeRequestType $request
-     *
-     * @return UnmanagedStringType
+     * @param CharPtr $method
+     * @param SizeTPtr $size
      */
-    public function saucer_scheme_request_method(CData $request): CData;
+    public function saucer_scheme_request_method(CData $request, CData $method, CData $size): void;
 
     /**
      * @param SaucerSchemeRequestType $request
-     *
      * @return SaucerStashType
      */
     public function saucer_scheme_request_content(CData $request): CData;
 
     /**
-     * @phpstan-type OutArrayOfStringType CData
-     * @phpstan-type OutInteger CData
-     *
      * @param SaucerSchemeRequestType $request
-     * @param OutArrayOfStringType $headers
-     * @param OutArrayOfStringType $values
-     * @param OutInteger $count
+     * @param CharPtr $headers
+     * @param SizeTPtr $size
      */
-    public function saucer_scheme_request_headers(CData $request, CData $headers, CData $values, CData $count): void;
+    public function saucer_scheme_request_headers(CData $request, CData $headers, CData $size): void;
 
     /**
      * @param SaucerSchemeExecutorType $executor
@@ -527,318 +713,345 @@ interface SaucerInterface
 
     /**
      * @param SaucerSchemeExecutorType $executor
-     * @param SaucerSchemeResponseType $response
+     * @return SaucerSchemeExecutorType
      */
-    public function saucer_scheme_executor_resolve(CData $executor, CData $response): void;
+    public function saucer_scheme_executor_copy(CData $executor): CData;
 
     /**
      * @param SaucerSchemeExecutorType $executor
-     * @param SchemeError::SAUCER_REQUEST_ERROR_* $error
+     * @param (SchemeError::SAUCER_SCHEME_ERROR_*) $code
      */
-    public function saucer_scheme_executor_reject(CData $executor, int $error): void;
+    public function saucer_scheme_executor_reject(CData $executor, int $code): void;
 
     /**
-     * @param LoadTime::SAUCER_LOAD_TIME_* $time
-     *
-     * @return SaucerScriptType
+     * @param SaucerSchemeExecutorType $executor
+     * @param SaucerSchemeResponseType $response
      */
-    public function saucer_script_new(string $code, int $time): CData;
+    public function saucer_scheme_executor_accept(CData $executor, CData $response): void;
 
     /**
-     * @param SaucerScriptType $script
+     * @param SaucerPermissionRequestType $request
      */
-    public function saucer_script_free(CData $script): void;
+    public function saucer_permission_request_free(CData $request): void;
 
     /**
-     * @param SaucerScriptType $script
-     * @param WebFrame::SAUCER_WEB_FRAME_* $frame
+     * @param SaucerPermissionRequestType $request
+     * @return SaucerPermissionRequestType
      */
-    public function saucer_script_set_frame(CData $script, int $frame): void;
+    public function saucer_permission_request_copy(CData $request): CData;
 
     /**
-     * @param SaucerScriptType $script
-     * @param LoadTime::SAUCER_LOAD_TIME_* $time
+     * @param SaucerPermissionRequestType $request
+     * @return SaucerUrlType
      */
-    public function saucer_script_set_time(CData $script, int $time): void;
+    public function saucer_permission_request_url(CData $request): CData;
 
     /**
-     * @param SaucerScriptType $script
+     * @param SaucerPermissionRequestType $request
+     * @return (PermissionType::SAUCER_PERMISSION_TYPE_*)
      */
-    public function saucer_script_set_permanent(CData $script, bool $permanent): void;
+    public function saucer_permission_request_type(CData $request): int;
 
     /**
-     * @param SaucerScriptType $script
+     * @param SaucerPermissionRequestType $request
      */
-    public function saucer_script_set_code(CData $script, string $code): void;
+    public function saucer_permission_request_accept(CData $request, bool $state): void;
 
     /**
-     * @param SaucerStashType $stash
-     *
-     * @return SaucerEmbeddedFileType
+     * @param SaucerPermissionRequestType $request
+     * @param int<0, max> $idx
+     * @param SizeTPtr $size
      */
-    public function saucer_embed(CData $stash, string $mime): CData;
+    public function saucer_permission_request_native(CData $request, int $idx, CData $result, CData $size): void;
 
     /**
-     * @param SaucerEmbeddedFileType $file
+     * @param SaucerNavigationType $nav
+     * @return SaucerUrlType
      */
-    public function saucer_embed_free(CData $file): void;
+    public function saucer_navigation_url(CData $nav): CData;
 
     /**
-     * @param SaucerPreferencesType $preferences
-     *
-     * @return SaucerHandleType
+     * @param SaucerNavigationType $nav
      */
-    public function saucer_new(CData $preferences): CData;
+    public function saucer_navigation_new_window(CData $nav): bool;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerNavigationType $nav
      */
-    public function saucer_free(CData $handle): void;
+    public function saucer_navigation_redirection(CData $nav): bool;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param SaucerOnMessageType $callback
+     * @param SaucerNavigationType $nav
      */
-    public function saucer_webview_on_message(CData $handle, callable $callback): void;
+    public function saucer_navigation_user_initiated(CData $nav): bool;
 
     /**
-     * @param SaucerHandleType $handle
-     *
+     * @param SaucerWebviewOptionsType $options
+     */
+    public function saucer_webview_options_free(CData $options): void;
+
+    /**
+     * @param SaucerWindowType $window
+     * @return SaucerWebviewOptionsType
+     */
+    public function saucer_webview_options_new(CData $window): CData;
+
+    /**
+     * @param SaucerWebviewOptionsType $options
+     */
+    public function saucer_webview_options_set_attributes(CData $options, bool $enabled): void;
+
+    /**
+     * @param SaucerWebviewOptionsType $options
+     */
+    public function saucer_webview_options_set_persistent_cookies(CData $options, bool $enabled): void;
+
+    /**
+     * @param SaucerWebviewOptionsType $options
+     */
+    public function saucer_webview_options_set_hardware_acceleration(CData $options, bool $enabled): void;
+
+    /**
+     * @param SaucerWebviewOptionsType $options
+     */
+    public function saucer_webview_options_set_storage_path(CData $options, string $value): void;
+
+    /**
+     * @param SaucerWebviewOptionsType $options
+     */
+    public function saucer_webview_options_set_user_agent(CData $options, string $value): void;
+
+    /**
+     * @param SaucerWebviewOptionsType $options
+     */
+    public function saucer_webview_options_append_browser_flag(CData $options, string $value): void;
+
+    /**
+     * @param SaucerWebviewType $webview
+     */
+    public function saucer_webview_free(CData $webview): void;
+
+    /**
+     * @param SaucerWebviewOptionsType $options
+     * @param IntPtr $error
+     * @return SaucerWebviewType
+     */
+public function saucer_webview_new(CData $options, CData $error): CData;
+
+    /**
+     * @param SaucerWebviewType $webview
+     * @param IntPtr $error
+     * @return SaucerUrlType
+     */
+    public function saucer_webview_url(CData $webview, CData $error): CData;
+
+    /**
+     * @param SaucerWebviewType $webview
      * @return SaucerIconType
      */
-    public function saucer_webview_favicon(CData $handle): CData;
+    public function saucer_webview_favicon(CData $webview): CData;
 
     /**
-     * @param SaucerHandleType $handle
-     *
-     * @return UnmanagedStringType
+     * @param SaucerWebviewType $webview
+     * @param CharPtr $title
+     * @param SizeTPtr $size
      */
-    public function saucer_webview_page_title(CData $handle): CData;
+    public function saucer_webview_page_title(CData $webview, CData $title, CData $size): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_dev_tools(CData $handle): bool;
+    public function saucer_webview_dev_tools(CData $webview): bool;
 
     /**
-     * @param SaucerHandleType $handle
-     *
-     * @return UnmanagedStringType
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_url(CData $handle): CData;
+    public function saucer_webview_context_menu(CData $webview): bool;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_context_menu(CData $handle): bool;
+    public function saucer_webview_force_dark(CData $webview): bool;
 
     /**
-     * @phpstan-type OutUInt8Type CData
-     *
-     * @param SaucerHandleType $handle
-     * @param OutUInt8Type $r
-     * @param OutUInt8Type $g
-     * @param OutUInt8Type $b
-     * @param OutUInt8Type $a
+     * @param SaucerWebviewType $webview
+     * @param UInt8Ptr $r
+     * @param UInt8Ptr $g
+     * @param UInt8Ptr $b
+     * @param UInt8Ptr $a
      */
-    public function saucer_webview_background(CData $handle, CData $r, CData $g, CData $b, CData $a): bool;
+    public function saucer_webview_background(CData $webview, CData $r, CData $g, CData $b, CData $a): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
+     * @param IntPtr $x
+     * @param IntPtr $y
+     * @param IntPtr $w
+     * @param IntPtr $h
      */
-    public function saucer_webview_force_dark_mode(CData $handle): bool;
+    public function saucer_webview_bounds(CData $webview, CData $x, CData $y, CData $w, CData $h): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
+     * @param SaucerUrlType $url
      */
-    public function saucer_webview_set_dev_tools(CData $handle, bool $enabled): void;
+    public function saucer_webview_set_url(CData $webview, CData $url): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_set_context_menu(CData $handle, bool $enabled): void;
+    public function saucer_webview_set_url_str(CData $webview, string $url): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_set_force_dark_mode(CData $handle, bool $enabled): void;
+    public function saucer_webview_set_html(CData $webview, string $html): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
+     */
+    public function saucer_webview_set_dev_tools(CData $webview, bool $enabled): void;
+
+    /**
+     * @param SaucerWebviewType $webview
+     */
+    public function saucer_webview_set_context_menu(CData $webview, bool $enabled): void;
+
+    /**
+     * @param SaucerWebviewType $webview
+     */
+    public function saucer_webview_set_force_dark(CData $webview, bool $enabled): void;
+
+    /**
+     * @param SaucerWebviewType $webview
      * @param int<0, 255> $r
      * @param int<0, 255> $g
      * @param int<0, 255> $b
      * @param int<0, 255> $a
      */
-    public function saucer_webview_set_background(CData $handle, int $r, int $g, int $b, int $a): void;
+    public function saucer_webview_set_background(CData $webview, int $r, int $g, int $b, int $a): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_set_file(CData $handle, string $file): void;
+    public function saucer_webview_reset_bounds(CData $webview): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
+     * @param int<-2147483648, 2147483647> $x
+     * @param int<-2147483648, 2147483647> $y
+     * @param int<-2147483648, 2147483647> $w
+     * @param int<-2147483648, 2147483647> $h
      */
-    public function saucer_webview_set_url(CData $handle, string $url): void;
+    public function saucer_webview_set_bounds(CData $webview, int $x, int $y, int $w, int $h): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_back(CData $handle): void;
+    public function saucer_webview_back(CData $webview): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_forward(CData $handle): void;
+    public function saucer_webview_forward(CData $webview): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_reload(CData $handle): void;
+    public function saucer_webview_reload(CData $webview): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param SaucerEmbeddedFileType $file
-     * @param Launch::SAUCER_LAUNCH_* $policy
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_embed_file(CData $handle, string $name, CData $file, int $policy): void;
+    public function saucer_webview_serve(CData $webview, string $path): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
+     * @param SaucerStashType $content
      */
-    public function saucer_webview_serve(CData $handle, string $file): void;
+public function saucer_webview_embed(CData $webview, string $path, CData $content, string $mime): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_clear_scripts(CData $handle): void;
+    public function saucer_webview_unembed_all(CData $webview): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_clear_embedded(CData $handle): void;
+    public function saucer_webview_unembed(CData $webview, string $path): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_clear_embedded_file(CData $handle, string $file): void;
+    public function saucer_webview_execute(CData $webview, string $code): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param SaucerScriptType $script
+     * @param SaucerWebviewType $webview
+     * @param (ScriptTime::SAUCER_SCRIPT_TIME_*) $type
+     * @return int<0, max>
      */
-    public function saucer_webview_inject(CData $handle, CData $script): void;
+    public function saucer_webview_inject(CData $webview, string $code, int $type, bool $noFrames, bool $clearable): int;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
      */
-    public function saucer_webview_execute(CData $handle, string $code): void;
+    public function saucer_webview_uninject_all(CData $webview): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param SaucerSchemeHandlerType $handler
-     * @param Launch::SAUCER_LAUNCH_* $policy
+     * @param SaucerWebviewType $webview
+     * @param int<0, max> $id
      */
-    public function saucer_webview_handle_scheme(CData $handle, string $name, callable $handler, int $policy): void;
+    public function saucer_webview_uninject(CData $webview, int $id): void;
 
     /**
-     * @param SaucerHandleType $handle
+     * @param SaucerWebviewType $webview
+     * @param non-empty-string $scheme
+     * @param (callable(SaucerSchemeRequestType, SaucerSchemeExecutorType): void)|CData $handler
      */
-    public function saucer_webview_remove_scheme(CData $handle, string $name): void;
+    public function saucer_webview_handle_scheme(CData $webview, string $scheme, callable|CData $handler): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WebEvent::SAUCER_WEB_EVENT_* $event
+     * @param SaucerWebviewType $webview
+     * @param non-empty-string $scheme
      */
-    public function saucer_webview_clear(CData $handle, int $event): void;
+    public function saucer_webview_remove_scheme(CData $webview, string $scheme): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WebEvent::SAUCER_WEB_EVENT_* $event
+     * @param SaucerWebviewType $webview
+     * @param (WebViewEvent::SAUCER_WEBVIEW_EVENT_*) $event
+     * @return int<0, max>
      */
-    public function saucer_webview_remove(CData $handle, int $event, int $id): void;
+    public function saucer_webview_on(CData $webview, int $event, CData|callable $callback, bool $clearable, CData|null $data): int;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WebEvent::SAUCER_WEB_EVENT_* $event
+     * @param SaucerWebviewType $webview
+     * @param (WebViewEvent::SAUCER_WEBVIEW_EVENT_*) $event
      */
-    public function saucer_webview_once(CData $handle, int $event, callable|CData $callback): void;
+    public function saucer_webview_once(CData $webview, int $event, CData|callable $callback, CData|null $data): void;
 
     /**
-     * @param SaucerHandleType $handle
-     * @param WebEvent::SAUCER_WEB_EVENT_* $event
+     * @param SaucerWebviewType $webview
+     * @param (WebViewEvent::SAUCER_WEBVIEW_EVENT_*) $event
+     * @param int<0, max> $id
      */
-    public function saucer_webview_on(CData $handle, int $event, callable|CData $callback): int;
-
-    public function saucer_register_scheme(string $name): void;
-
-    /**
-     * @param SaucerApplicationType $app
-     *
-     * @return SaucerDesktopType
-     */
-    public function saucer_desktop_new(CData $app): CData;
+    public function saucer_webview_off(CData $webview, int $event, int $id): void;
 
     /**
-     * @param SaucerDesktopType $desktop
+     * @param SaucerWebviewType $webview
+     * @param (WebViewEvent::SAUCER_WEBVIEW_EVENT_*) $event
      */
-    public function saucer_desktop_free(CData $desktop): void;
+    public function saucer_webview_off_all(CData $webview, int $event): void;
 
     /**
-     * @param SaucerDesktopType $desktop
+     * @param non-empty-string $scheme
      */
-    public function saucer_desktop_open(CData $desktop, string $path): void;
+    public function saucer_webview_register_scheme(string $scheme): void;
 
     /**
-     * @return SaucerPickerOptionsType
+     * @param SaucerWebviewType $webview
+     * @param int<0, max> $idx
+     * @param SizeTPtr $size
      */
-    public function saucer_picker_options_new(): CData;
-
-    /**
-     * @param SaucerPickerOptionsType $options
-     */
-    public function saucer_picker_options_free(CData $options): void;
-
-    /**
-     * @param SaucerPickerOptionsType $options
-     */
-    public function saucer_picker_options_set_initial(CData $options, string $path): void;
-
-    /**
-     * @param SaucerPickerOptionsType $options
-     */
-    public function saucer_picker_options_add_filter(CData $options, string $filter): void;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param SaucerPickerOptionsType $options
-     *
-     * @return StringType
-     */
-    public function saucer_desktop_pick_file(CData $desktop, CData $options): ?CData;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param SaucerPickerOptionsType $options
-     *
-     * @return StringType
-     */
-    public function saucer_desktop_pick_folder(CData $desktop, CData $options): ?CData;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param SaucerPickerOptionsType $options
-     *
-     * @return StringArrayType
-     */
-    public function saucer_desktop_pick_files(CData $desktop, CData $options): CData;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param SaucerPickerOptionsType $options
-     *
-     * @return StringArrayType
-     */
-    public function saucer_desktop_pick_folders(CData $desktop, CData $options): CData;
+    public function saucer_webview_native(CData $webview, int $idx, CData $result, CData $size): void;
 }

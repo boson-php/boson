@@ -54,7 +54,7 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
         try {
             $this->onRequest($_, $request, $executor);
         } catch (\Throwable $e) {
-            $code = SchemeError::SAUCER_REQUEST_ERROR_FAILED;
+            $code = SchemeError::SAUCER_SCHEME_ERROR_FAILED;
             $this->app->saucer->saucer_scheme_executor_reject($executor, $code);
 
             $this->app->poller->throw($e);
@@ -73,7 +73,7 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
 
             // Abort request in case of intention is cancelled.
             if ($processable === false) {
-                $code = SchemeError::SAUCER_REQUEST_ERROR_ABORTED;
+                $code = SchemeError::SAUCER_SCHEME_ERROR_ABORTED;
                 $this->app->saucer->saucer_scheme_executor_reject($executor, $code);
 
                 return;

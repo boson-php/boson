@@ -10,20 +10,8 @@ use Boson\Component\Saucer\Exception\Environment\UnsupportedOperatingSystemExcep
 final class LibraryDetector implements \Stringable
 {
     private const string DEFAULT_BIN_DIR = __DIR__ . '/../../bin';
-    private const ?string DEFAULT_PHAR_DIR = null;
 
-    private const ?string DEFAULT_LIB_LINUX_X86 = 'libboson-linux-x86_64.so';
-    private const ?string DEFAULT_LIB_LINUX_AMD64 = 'libboson-linux-x86_64.so';
-    private const ?string DEFAULT_LIB_LINUX_ARM64 = 'libboson-linux-aarch64.so';
-    private const ?string DEFAULT_LIB_LINUX_ARM = null;
-    private const ?string DEFAULT_LIB_WINDOWS_X86 = 'libboson-windows-x86_64.dll';
-    private const ?string DEFAULT_LIB_WINDOWS_AMD64 = 'libboson-windows-x86_64.dll';
-    private const ?string DEFAULT_LIB_WINDOWS_ARM = null;
-    private const ?string DEFAULT_LIB_WINDOWS_ARM64 = null;
-    private const ?string DEFAULT_LIB_MAC_X86 = 'libboson-darwin-universal.dylib';
-    private const ?string DEFAULT_LIB_MAC_AMD64 = 'libboson-darwin-universal.dylib';
-    private const ?string DEFAULT_LIB_MAC_ARM = null;
-    private const ?string DEFAULT_LIB_MAC_ARM64 = 'libboson-darwin-universal.dylib';
+    private const ?string DEFAULT_PHAR_DIR = null;
 
     /**
      * @var non-empty-string
@@ -32,32 +20,32 @@ final class LibraryDetector implements \Stringable
         get {
             $os = $this->os ?? OperatingSystem::createFromGlobals();
             $arch = $this->arch ?? CpuArchitecture::createFromGlobals();
+            $de = $this->de ?? DesktopEnvironment::createFromGlobals($os);
 
             return match ($os) {
                 OperatingSystem::Windows => match ($arch) {
-                    CpuArchitecture::x86 => self::DEFAULT_LIB_WINDOWS_X86,
-                    CpuArchitecture::Amd64 => self::DEFAULT_LIB_WINDOWS_AMD64,
-                    CpuArchitecture::Arm => self::DEFAULT_LIB_WINDOWS_ARM,
-                    CpuArchitecture::Arm64 => self::DEFAULT_LIB_WINDOWS_ARM64,
+                    CpuArchitecture::x86,
+                    CpuArchitecture::Amd64 => 'libboson-windows-x86_64.dll',
                     default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
                         architecture: \php_uname('m'),
                     ),
                 },
                 OperatingSystem::Linux,
                 OperatingSystem::BSD => match ($arch) {
-                    CpuArchitecture::x86 => self::DEFAULT_LIB_LINUX_X86,
-                    CpuArchitecture::Amd64 => self::DEFAULT_LIB_LINUX_AMD64,
-                    CpuArchitecture::Arm => self::DEFAULT_LIB_LINUX_ARM,
-                    CpuArchitecture::Arm64 => self::DEFAULT_LIB_LINUX_ARM64,
+                    CpuArchitecture::x86,
+                    CpuArchitecture::Amd64 => match ($de) {
+                        DesktopEnvironment::QT => 'libboson-linux-qt-x86_64.so',
+                        default => 'libboson-linux-gtk-x86_64.so',
+                    },
                     default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
                         architecture: \php_uname('m'),
                     ),
                 },
                 OperatingSystem::MacOS => match ($arch) {
-                    CpuArchitecture::x86 => self::DEFAULT_LIB_MAC_X86,
-                    CpuArchitecture::Amd64 => self::DEFAULT_LIB_MAC_AMD64,
-                    CpuArchitecture::Arm => self::DEFAULT_LIB_MAC_ARM,
-                    CpuArchitecture::Arm64 => self::DEFAULT_LIB_MAC_ARM64,
+                    CpuArchitecture::x86,
+                    CpuArchitecture::Amd64,
+                    CpuArchitecture::Arm,
+                    CpuArchitecture::Arm64 => 'libboson-darwin-universal.dylib',
                     default => throw UnsupportedArchitectureException::becauseArchitectureIsInvalid(
                         architecture: \php_uname('m'),
                     ),
@@ -95,6 +83,7 @@ final class LibraryDetector implements \Stringable
     public function __construct(
         private readonly ?OperatingSystem $os = null,
         private readonly ?CpuArchitecture $arch = null,
+        private readonly ?DesktopEnvironment $de = null,
         /**
          * @var non-empty-string
          */
@@ -114,6 +103,7 @@ final class LibraryDetector implements \Stringable
         return new self(
             os: $os,
             arch: $this->arch,
+            de: $this->de,
             localDirectory: $this->localDirectory,
             pharDirectory: $this->pharDirectory,
         );
@@ -128,6 +118,22 @@ final class LibraryDetector implements \Stringable
         return new self(
             os: $this->os,
             arch: $arch,
+            de: $this->de,
+            localDirectory: $this->localDirectory,
+            pharDirectory: $this->pharDirectory,
+        );
+    }
+
+    /**
+     * @api
+     * @phpstan-pure
+     */
+    public function withDesktopEnvironment(?DesktopEnvironment $de): self
+    {
+        return new self(
+            os: $this->os,
+            arch: $this->arch,
+            de: $de,
             localDirectory: $this->localDirectory,
             pharDirectory: $this->pharDirectory,
         );
@@ -144,6 +150,7 @@ final class LibraryDetector implements \Stringable
         return new self(
             os: $this->os,
             arch: $this->arch,
+            de: $this->de,
             localDirectory: $directory,
             pharDirectory: $this->pharDirectory,
         );
@@ -160,6 +167,7 @@ final class LibraryDetector implements \Stringable
         return new self(
             os: $this->os,
             arch: $this->arch,
+            de: $this->de,
             localDirectory: $this->localDirectory,
             pharDirectory: $directory,
         );

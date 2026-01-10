@@ -11,12 +11,12 @@ final readonly class VersionChecker
     /**
      * @var non-empty-string
      */
-    private const string MINIMAL_REQUIRED_VERSION = '0.3.0';
+    private const string MINIMAL_REQUIRED_VERSION = '0.5.0';
 
     /**
      * @var non-empty-string
      */
-    private const string MAXIMAL_SUPPORTED_VERSION = '1.0.0';
+    private const string MAXIMAL_SUPPORTED_VERSION = '0.6.0';
 
     public static function check(\FFI $saucer): void
     {
