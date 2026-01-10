@@ -200,7 +200,7 @@ class Application implements
 
         // Kernel initialization
         $this->saucer = $this->createLibSaucer($info->library);
-        $this->id = $this->createApplicationId($this->saucer, $this->info->name, $this->info->threads);
+        $this->id = $this->createApplicationId($this->saucer, $this->info->name);
         $this->windows = $this->createWindowManager($this->saucer, $this, $info, $this->listener);
         $this->poller = $this->createApplicationPoller($this->saucer);
 
@@ -379,13 +379,12 @@ class Application implements
      * Creates a new application ID
      *
      * @param non-empty-string $name
-     * @param int<1, max>|null $threads
      */
-    protected function createApplicationId(SaucerInterface $api, string $name, ?int $threads): ApplicationId
+    protected function createApplicationId(SaucerInterface $api, string $name): ApplicationId
     {
         return ApplicationId::fromAppHandle(
             api: $api,
-            handle: $this->createApplicationPointer($api, $name, $threads),
+            handle: $this->createApplicationPointer($api, $name),
             name: $name,
         );
     }
@@ -394,12 +393,11 @@ class Application implements
      * Creates a new application instance pointer.
      *
      * @param non-empty-string $name
-     * @param int<1, max>|null $threads
      */
     #[RequiresDealloc]
-    protected function createApplicationPointer(SaucerInterface $api, string $name, ?int $threads): CData
+    protected function createApplicationPointer(SaucerInterface $api, string $name): CData
     {
-        $options = $this->createApplicationOptionsPointer($api, $name, $threads);
+        $options = $this->createApplicationOptionsPointer($api, $name);
 
         try {
             return $api->saucer_application_init($options);
@@ -412,18 +410,11 @@ class Application implements
      * Creates a new application options pointer.
      *
      * @param non-empty-string $name
-     * @param int<1, max>|null $threads
      */
     #[RequiresDealloc]
-    protected function createApplicationOptionsPointer(SaucerInterface $api, string $name, ?int $threads): CData
+    protected function createApplicationOptionsPointer(SaucerInterface $api, string $name): CData
     {
         $options = $api->saucer_options_new($name);
-
-        $threads = ThreadsCountResolver::resolve($threads);
-
-        if ($threads !== null) {
-            $api->saucer_options_set_threads($options, $threads);
-        }
 
         return $options;
     }

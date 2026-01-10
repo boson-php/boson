@@ -75,15 +75,6 @@ final readonly class ApplicationCreateInfo
         public string $name = self::DEFAULT_APPLICATION_NAME,
         iterable $schemes = [],
         /**
-         * An application threads count.
-         *
-         * The number of threads will be determined automatically if it
-         * is not explicitly specified (defined as {@see null}).
-         *
-         * @var int<1, max>|null
-         */
-        public ?int $threads = null,
-        /**
          * Automatically detects debug environment if {@see null},
          * otherwise it forcibly enables or disables it.
          */
