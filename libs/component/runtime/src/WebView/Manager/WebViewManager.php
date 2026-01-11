@@ -10,6 +10,7 @@ use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerProvider;
+use Boson\WebView\Exception\NoParentWindowException;
 use Boson\WebView\WebView;
 use Boson\WebView\WebViewCreateInfo;
 use Boson\Window\Window;
@@ -60,12 +61,30 @@ final class WebViewManager implements
      */
     private readonly WebViewHandlerFactory $factory;
 
+    /**
+     * Parent window reference
+     */
+    private Window $window {
+        /**
+         * @throws NoParentWindowException in case of parent window has been removed
+         */
+        get => $this->reference->get()
+            ?? throw NoParentWindowException::becauseNoParentWindow();
+    }
+
+    /**
+     * @var \WeakReference<Window>
+     */
+    private readonly \WeakReference $reference;
+
     public function __construct(
         private readonly SaucerInterface $api,
-        private readonly Window $window,
+        Window $parent,
         WebViewCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
+        $this->reference = \WeakReference::create($parent);
+
         // Initialization Window Manager's fields and properties
         $this->webviews = $this->createWebViewsStorage();
         $this->listener = $this->createEventListener($dispatcher);
@@ -103,13 +122,12 @@ final class WebViewManager implements
         return new WebViewHandlerFactory($this->api, $this->window);
     }
 
-
     public function create(WebViewCreateInfo $info = new WebViewCreateInfo()): WebView
     {
         $instance = new WebView(
             saucer: $this->api,
-            id: $this->factory->create($info),
-            window: $this->window,
+            id: $this->factory->create($this->window, $info),
+            parent: $this->window,
             info: $info,
             dispatcher: $this->listener,
         );
@@ -148,6 +166,10 @@ final class WebViewManager implements
         foreach ($this->webviews as $webview) {
             $this->webviews->detach($webview);
         }
+
+        $this->default = null;
+
+        $this->listener->removeAllEventListeners();
     }
 
     public function getIterator(): \Traversable

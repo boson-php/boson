@@ -10,7 +10,7 @@ use Boson\Extension\Extension;
 use Boson\Window\Window;
 
 /**
- * Creates a new instance of {@see WebViewLifecycleEventsListener} that manages
+ * Creates a new instance of {@see LifecycleEventsListener} that manages
  * the window's native event handling and bridges them to the Saucer's
  * event system.
  *
@@ -20,10 +20,10 @@ use Boson\Window\Window;
  *
  * @template-extends Extension<Window>
  */
-final class WindowLifecycleEventsExtension extends Extension
+final class LifecycleEventsExtension extends Extension
 {
-    public function load(IdentifiableInterface $ctx, EventListener $listener): WindowLifecycleEventsListener
+    public function load(IdentifiableInterface $ctx, EventListener $listener): LifecycleEventsListener
     {
-        return new WindowLifecycleEventsListener($ctx, $listener);
+        return new LifecycleEventsListener($ctx, $listener);
     }
 }

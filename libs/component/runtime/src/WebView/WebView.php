@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView;
 
+use Boson\Application;
 use Boson\Component\Http\Request;
 use Boson\Component\Saucer\SaucerInterface;
 use Boson\Contracts\EventListener\EventListenerInterface;
@@ -25,6 +26,7 @@ use Boson\WebView\Api\Scripts\ScriptsApiInterface;
 use Boson\WebView\Api\WebComponents\Exception\ComponentAlreadyDefinedException;
 use Boson\WebView\Api\WebComponents\Exception\WebComponentsApiException;
 use Boson\WebView\Api\WebComponents\WebComponentsApiInterface;
+use Boson\WebView\Exception\NoParentWindowException;
 use Boson\Window\Window;
 use Boson\Window\WindowId;
 use JetBrains\PhpStorm\Language;
@@ -41,6 +43,18 @@ final class WebView implements
     ContainerInterface
 {
     use EventListenerProvider;
+
+    /**
+     * Gets a reference to the parent window to which the
+     * specified webview instance belongs.
+     */
+    public Window $window {
+        /**
+         * @throws NoParentWindowException in case of parent window has been removed
+         */
+        get => $this->reference->get()
+            ?? throw NoParentWindowException::becauseNoParentWindow();
+    }
 
     /**
      * Contains webview URI instance.
@@ -109,6 +123,11 @@ final class WebView implements
     private readonly Registry $extensions;
 
     /**
+     * @var \WeakReference<Window>
+     */
+    private readonly \WeakReference $reference;
+
+    /**
      * @internal Please do not use the constructor directly. There is a
      *           corresponding {@see WindowFactoryInterface::create()} method
      *           for creating new windows with single webview child instance,
@@ -137,17 +156,16 @@ final class WebView implements
          * @api
          */
         public readonly WebViewId $id,
-        /**
-         * Gets parent application window instance to which
-         * this webview instance belongs.
-         */
-        public readonly Window $window,
+        Window $parent,
         /**
          * Gets information DTO about the webview with which it was created.
          */
         public readonly WebViewCreateInfo $info,
         EventDispatcherInterface $dispatcher,
     ) {
+        // Parent reference
+        $this->reference = \WeakReference::create($parent);
+
         // Initialization WebView's fields and properties
         $this->listener = self::createEventListener($dispatcher);
 

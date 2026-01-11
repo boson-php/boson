@@ -8,7 +8,7 @@ use Boson\Application;
 use Boson\Extension\ExtensionInterface;
 use Boson\WebView\Api\Bindings\BindingsExtension;
 use Boson\WebView\Api\Data\DataExtension;
-use Boson\WebView\Api\LifecycleEvents\WebViewLifecycleEventsExtension;
+use Boson\WebView\Api\LifecycleEvents\LifecycleEventsExtension;
 use Boson\WebView\Api\Schemes\SchemesExtension;
 use Boson\WebView\Api\Scripts\ScriptsExtension;
 use Boson\WebView\Api\Security\SecurityExtension;
@@ -26,7 +26,7 @@ use Boson\Window\WindowCreateInfo;
     new DataExtension(),
     new SecurityExtension(),
     new SchemesExtension(),
-    new WebViewLifecycleEventsExtension(),
+    new LifecycleEventsExtension(),
 ]);
 
 /**

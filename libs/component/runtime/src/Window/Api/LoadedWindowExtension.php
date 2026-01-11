@@ -8,6 +8,7 @@ use Boson\Api\LoadedApplicationExtension;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\EventListener;
 use Boson\Internal\StructPointerId;
+use Boson\Window\Exception\NoWindowApiException;
 use Boson\Window\Window;
 
 /**
@@ -25,10 +26,22 @@ abstract class LoadedWindowExtension extends LoadedApplicationExtension
         get => $this->window->id;
     }
 
+    protected Window $window {
+        get => $this->reference->get()
+            ?? throw NoWindowApiException::becauseNoWindow();
+    }
+
+    /**
+     * @var \WeakReference<Window>
+     */
+    private readonly \WeakReference $reference;
+
     public function __construct(
-        protected readonly Window $window,
+        Window $window,
         EventListener $listener,
     ) {
+        $this->reference = \WeakReference::create($window);
+
         parent::__construct($window->app, $listener);
     }
 }

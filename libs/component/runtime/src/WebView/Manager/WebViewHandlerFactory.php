@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Manager;
 
+use Boson\Application;
 use Boson\Component\Saucer\SaucerInterface;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Exception\WebViewException;
@@ -22,23 +23,22 @@ final readonly class WebViewHandlerFactory
 {
     public function __construct(
         private SaucerInterface $saucer,
-        private Window $window,
     ) {}
 
-    public function create(WebViewCreateInfo $info): WebViewId
+    public function create(Window $window, WebViewCreateInfo $info): WebViewId
     {
         return WebViewId::fromHandle(
             api: $this->saucer,
-            handle: $this->createWebViewHandle($info),
+            handle: $this->createWebViewHandle($window, $info),
         );
     }
 
     #[RequiresDealloc]
-    private function createWebViewHandle(WebViewCreateInfo $info): CData
+    private function createWebViewHandle(Window $window, WebViewCreateInfo $info): CData
     {
-        $options = $this->saucer->saucer_webview_options_new($this->window->id->ptr);
+        $options = $this->saucer->saucer_webview_options_new($window->id->ptr);
 
-        $handle = $this->createWebViewHandleWithOptions($info, $options);
+        $handle = $this->createWebViewHandleWithOptions($options, $window, $info);
 
         $this->saucer->saucer_webview_options_free($options);
 
@@ -46,9 +46,9 @@ final readonly class WebViewHandlerFactory
     }
 
     #[RequiresDealloc]
-    private function createWebViewHandleWithOptions(WebViewCreateInfo $info, CData $options): CData
+    private function createWebViewHandleWithOptions(CData $options, Window $window, WebViewCreateInfo $info): CData
     {
-        $this->applyWebViewBeforeCreated($options, $info);
+        $this->applyWebViewBeforeCreated($options, $window, $info);
 
         $handle = $this->saucer->saucer_webview_new($options, \FFI::addr(
             $error = $this->saucer->new('int'),
@@ -58,7 +58,7 @@ final readonly class WebViewHandlerFactory
             throw new WebViewException('An error occurred while creating WebView', $error->cdata);
         }
 
-        $this->applyWebViewAfterCreated($handle, $info);
+        $this->applyWebViewAfterCreated($handle, $window, $info);
 
         return $handle;
     }
@@ -67,20 +67,20 @@ final readonly class WebViewHandlerFactory
      * Enable dev tools in case of the corresponding value was passed
      * explicitly to the create info options or debug mode was enabled.
      */
-    private function isDevToolsEnabled(WebViewCreateInfo $info): bool
+    private function isDevToolsEnabled(Window $window, WebViewCreateInfo $info): bool
     {
         return $info->webview->devTools
-            ?? $this->window->app->isDebug;
+            ?? $window->app->isDebug;
     }
 
     /**
      * Enable context menu in case of the corresponding value was passed
      * explicitly to the create info options or debug mode was enabled.
      */
-    private function isContextMenuEnabled(WebViewCreateInfo $info): bool
+    private function isContextMenuEnabled(Window $window, WebViewCreateInfo $info): bool
     {
         return $info->webview->contextMenu
-            ?? $this->window->app->isDebug;
+            ?? $window->app->isDebug;
     }
 
     /**
@@ -89,24 +89,24 @@ final readonly class WebViewHandlerFactory
      *
      * TODO Move this option to webview
      */
-    private function isDarkModeEnabled(WebViewCreateInfo $info): bool
+    private function isDarkModeEnabled(Window $window,WebViewCreateInfo $info): bool
     {
         return $info->forceDarkMode
-            ?? $this->window->info->decoration === WindowDecoration::DarkMode;
+            ?? $window->info->decoration === WindowDecoration::DarkMode;
     }
 
     /**
      * Gets real hardware acceleration option from configuration options
      */
-    private function isHardwareAccelerationEnabled(WebViewCreateInfo $info): bool
+    private function isHardwareAccelerationEnabled(Window $window,WebViewCreateInfo $info): bool
     {
         return $info->enableHardwareAcceleration
-            ?? $this->window->info->enableHardwareAcceleration;
+            ?? $window->info->enableHardwareAcceleration;
     }
 
-    private function applyWebViewBeforeCreated(CData $options, WebViewCreateInfo $info): void
+    private function applyWebViewBeforeCreated(CData $options, Window $window, WebViewCreateInfo $info): void
     {
-        if ($this->isDevToolsEnabled($info)) {
+        if ($this->isDevToolsEnabled($window, $info)) {
             /**
              * Force disable unnecessary XSS warnings in dev tools
              *
@@ -139,14 +139,14 @@ final readonly class WebViewHandlerFactory
         // Apply HW acceleration option
         $this->saucer->saucer_webview_options_set_hardware_acceleration(
             $options,
-            $this->isHardwareAccelerationEnabled($info),
+            $this->isHardwareAccelerationEnabled($window, $info),
         );
     }
 
-    private function applyWebViewAfterCreated(CData $handle, WebViewCreateInfo $info): void
+    private function applyWebViewAfterCreated(CData $handle, Window $window, WebViewCreateInfo $info): void
     {
-        $this->saucer->saucer_webview_set_dev_tools($handle, $this->isDevToolsEnabled($info));
-        $this->saucer->saucer_webview_set_context_menu($handle, $this->isContextMenuEnabled($info));
-        $this->saucer->saucer_webview_set_force_dark($handle, $this->isDarkModeEnabled($info));
+        $this->saucer->saucer_webview_set_dev_tools($handle, $this->isDevToolsEnabled($window, $info));
+        $this->saucer->saucer_webview_set_context_menu($handle, $this->isContextMenuEnabled($window, $info));
+        $this->saucer->saucer_webview_set_force_dark($handle, $this->isDarkModeEnabled($window, $info));
     }
 }

@@ -212,6 +212,8 @@ final class WindowManager implements
         foreach ($this->windows as $window) {
             $this->windows->detach($window);
         }
+
+        $this->listener->removeAllEventListeners();
     }
 
     public function getIterator(): \Traversable

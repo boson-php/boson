@@ -12,10 +12,10 @@ use Boson\WebView\WebView;
 /**
  * @template-extends Extension<WebView>
  */
-final class WebViewLifecycleEventsExtension extends Extension
+final class LifecycleEventsExtension extends Extension
 {
-    public function load(IdentifiableInterface $ctx, EventListener $listener): WebViewLifecycleEventsListener
+    public function load(IdentifiableInterface $ctx, EventListener $listener): LifecycleEventsListener
     {
-        return new WebViewLifecycleEventsListener($ctx, $listener);
+        return new LifecycleEventsListener($ctx, $listener);
     }
 }

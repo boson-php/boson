@@ -20,7 +20,7 @@ use Boson\Window\Event\WindowResized;
 use Boson\Window\Window;
 use FFI\CData;
 
-final class WindowLifecycleEventsListener extends LoadedWindowExtension
+final class LifecycleEventsListener extends LoadedWindowExtension
 {
     /**
      * @var non-empty-string

@@ -499,8 +499,6 @@ class Application implements
         }
 
         $this->isRunning = false;
-        $this->saucer->saucer_application_quit($this->id->ptr);
-
         $this->listener->dispatch(new ApplicationStopped($this));
     }
 

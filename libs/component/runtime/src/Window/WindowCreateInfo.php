@@ -6,7 +6,7 @@ namespace Boson\Window;
 
 use Boson\Extension\ExtensionInterface;
 use Boson\WebView\WebViewCreateInfo;
-use Boson\Window\Api\LifecycleEvents\WindowLifecycleEventsExtension;
+use Boson\Window\Api\LifecycleEvents\LifecycleEventsExtension;
 
 //
 // Note:
@@ -14,7 +14,7 @@ use Boson\Window\Api\LifecycleEvents\WindowLifecycleEventsExtension;
 // 2) Only define-like constants allows object instances.
 //
 \define($_ = 'Boson\Window\DEFAULT_WINDOW_EXTENSIONS', [
-    new WindowLifecycleEventsExtension(),
+    new LifecycleEventsExtension(),
 ]);
 
 /**
