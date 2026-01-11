@@ -916,6 +916,7 @@ final class Window implements
     public function __destruct()
     {
         $this->isClosed = true;
+        $this->extensions->destroy();
     }
 
     public function __get(string $name): object

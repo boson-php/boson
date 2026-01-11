@@ -33,7 +33,8 @@
         "boson-php/weak-types": "^0.19",
         "psr/container": "^2.0",
         "psr/event-dispatcher": "^1.0",
-        "react/promise": "^3.0"
+        "react/promise": "^3.0",
+        "internal/destroy": "^1.0"
     },
     "autoload": {
         "psr-4": {

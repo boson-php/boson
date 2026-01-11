@@ -23,6 +23,7 @@ use Boson\Internal\Poller\SaucerPoller;
 use Boson\Poller\PollerInterface;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\Shared\Marker\RequiresDealloc;
+use Boson\WebView\Manager\WebViewManager;
 use Boson\WebView\WebView;
 use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
@@ -75,11 +76,8 @@ class Application implements
     public readonly WindowManager $windows;
 
     /**
-     * Provides more convenient and faster access to the
-     * {@see WindowManager::$default} subsystem from
-     * child {@see $windows} property.
-     *
-     * @uses WindowManager::$default Default (first) window of the windows list
+     * Provides more convenient and faster access to the {@see WindowManager::$default}
+     * subsystem from child {@see $windows} property.
      *
      * @api
      */
@@ -95,10 +93,24 @@ class Application implements
     }
 
     /**
+     * Provides more convenient and faster access to the {@see Window::$webviews}
+     * subsystem from child {@see $window} property.
+     *
+     * @api
+     */
+    public WebViewManager $webviews {
+        /**
+         * Gets the webview manager of the default application window.
+         *
+         * @throws NoDefaultWindowException in case the default window was
+         *         already closed and removed earlier
+         */
+        get => $this->window->webviews;
+    }
+
+    /**
      * Provides more convenient and faster access to the {@see Window::$webview}
      * subsystem from {@see $window} property.
-     *
-     * @uses Window::$webview The webview of the default (first) window
      *
      * @api
      */
@@ -500,6 +512,8 @@ class Application implements
      */
     public function __destruct()
     {
+        $this->extensions->destroy();
+
         $this->saucer->saucer_application_quit($this->id->ptr);
     }
 

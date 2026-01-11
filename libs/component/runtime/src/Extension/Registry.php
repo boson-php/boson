@@ -10,12 +10,13 @@ use Boson\Extension\Exception\ExtensionAlreadyLoadedException;
 use Boson\Extension\Exception\ExtensionLoadingException;
 use Boson\Extension\Exception\ExtensionNotFoundException;
 use Boson\Extension\Loader\DependencyGraph;
+use Internal\Destroy\Destroyable;
 use Psr\Container\ContainerInterface;
 
 /**
  * @template TContext of IdentifiableInterface
  */
-final class Registry implements ContainerInterface
+final class Registry implements ContainerInterface, Destroyable
 {
     /**
      * @var list<object>
@@ -110,5 +111,28 @@ final class Registry implements ContainerInterface
     public function has(string $id): bool
     {
         return isset($this->publicExtensions[$id]);
+    }
+
+    public function destroy(): void
+    {
+        foreach ($this->privateExtensions as $extension) {
+            if ($extension instanceof Destroyable) {
+                $extension->destroy();
+            }
+        }
+
+        foreach ($this->publicExtensions as $extension) {
+            if ($extension instanceof Destroyable) {
+                $extension->destroy();
+            }
+        }
+
+        $this->privateExtensions = [];
+        $this->publicExtensions = [];
+    }
+
+    public function __destruct()
+    {
+        $this->destroy();
     }
 }

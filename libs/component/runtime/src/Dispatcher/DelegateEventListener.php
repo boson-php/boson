@@ -14,6 +14,7 @@ final class DelegateEventListener extends EventListener
         parent::__construct();
     }
 
+    #[\Override]
     public function dispatch(object $event): object
     {
         $this->delegate->dispatch(parent::dispatch($event));
