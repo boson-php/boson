@@ -72,7 +72,7 @@ final class WindowManager implements
         // Initialization Window Manager's fields and properties
         $this->windows = $this->createWindowsStorage();
         $this->listener = $this->createEventListener($dispatcher);
-        $this->factory = $this->createWindowHandlerFactory($api, $app);
+        $this->factory = $this->createWindowHandlerFactory();
 
         // Register Window Manager's subsystems
         $this->registerDefaultEventListeners();
@@ -120,6 +120,8 @@ final class WindowManager implements
         $this->listener->addEventListener(WindowClosed::class, function (WindowClosed $event) {
             $this->windows->detach($event->subject);
 
+            var_dump('DETACHED');
+
             // Recalculate default window in case of
             // previous default window was closed.
             if ($this->default === $event->subject) {
@@ -163,6 +165,8 @@ final class WindowManager implements
         //$this->api->saucer_window_free($window->id->ptr);
 
         $this->listener->dispatch(new WindowDestroyed($window));
+
+        \gc_collect_cycles();
     }
 
     /**

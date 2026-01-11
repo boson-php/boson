@@ -27,7 +27,7 @@ use FFI\CData;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView
  */
-final class LifecycleEventsListener extends LoadedWebViewExtension
+final class WebViewLifecycleEventsListener extends LoadedWebViewExtension
 {
     /**
      * @var non-empty-string

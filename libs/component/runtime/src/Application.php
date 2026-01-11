@@ -217,8 +217,8 @@ class Application implements
         $this->poller = $this->createApplicationPoller($this->saucer);
 
         // Initialization of Application's API
-        $this->extensions = new Registry($this, $this->listener, $info->extensions);
-        foreach ($this->extensions->boot() as $property => $extension) {
+        $this->extensions = new Registry($this->listener, $info->extensions);
+        foreach ($this->extensions->boot($this) as $property => $extension) {
             // Direct access to dynamic property is 5+ times
             // faster than magic `__get` call.
             $this->__set($property, $extension);

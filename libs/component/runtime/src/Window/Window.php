@@ -7,6 +7,8 @@ namespace Boson\Window;
 use Boson\Application;
 use Boson\Component\Saucer\SaucerInterface;
 use Boson\Component\Saucer\WindowEdge as SaucerWindowEdge;
+use Boson\Component\Saucer\WindowEvent;
+use Boson\Component\WeakType\WeakClosure;
 use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\DelegateEventListener;
@@ -484,12 +486,6 @@ final class Window implements
     private readonly Registry $extensions;
 
     /**
-     * Contains an internal bridge between system {@see SaucerInterface} events
-     * and the PSR {@see Window::$events} dispatcher.
-     */
-    private readonly SaucerWindowEventHandler $handler;
-
-    /**
      * @internal Please do not use the constructor directly. There is a
      *           corresponding {@see WindowFactoryInterface::create()} method
      *           for creating new windows, which ensures safe creation.
@@ -530,11 +526,10 @@ final class Window implements
         $this->max = self::createWindowMaxSize($saucer, $this->id);
         $this->webviews = new WebViewManager($saucer, $this, $info->webview, $this->listener);
         $this->decoration = self::createWindowDecorations($info);
-        $this->handler = self::createSaucerWindowEventHandler($saucer, $this, $this->listener);
 
         // Initialization of Window's API
-        $this->extensions = new Registry($this, $this->listener, $info->extensions);
-        foreach ($this->extensions->boot() as $property => $extension) {
+        $this->extensions = new Registry($this->listener, $info->extensions);
+        foreach ($this->extensions->boot($this) as $property => $extension) {
             // Direct access to dynamic property is 5+ times
             // faster than magic `__get` call.
             $this->__set($property, $extension);
@@ -626,23 +621,6 @@ final class Window implements
     private static function createWindowMaxSize(SaucerInterface $api, WindowId $id): MutableSizeInterface
     {
         return new ManagedWindowMaxBounds($api, $id->ptr);
-    }
-
-    /**
-     * Creates a new instance of {@see SaucerWindowEventHandler} that manages
-     * the window's native event handling and bridges them to the Saucer's
-     * event system.
-     *
-     * This method initializes an event handler that translates native window
-     * events (like resize, focus, close) into application events that can be
-     * handled by the event dispatcher.
-     */
-    private static function createSaucerWindowEventHandler(
-        SaucerInterface $api,
-        Window $window,
-        EventDispatcherInterface $dispatcher,
-    ): SaucerWindowEventHandler {
-        return new SaucerWindowEventHandler($api, $window, $dispatcher);
     }
 
     /**
@@ -899,11 +877,10 @@ final class Window implements
      */
     public function close(): void
     {
-        if ($this->isClosed === true) {
+        if ($this->isClosed) {
             return;
         }
 
-        $this->isClosed = true;
         $this->saucer->saucer_window_close($this->id->ptr);
     }
 
@@ -913,6 +890,8 @@ final class Window implements
 
         $this->webviews->destroy();
         $this->extensions->destroy();
+
+        var_dump(__METHOD__);
     }
 
     public function __get(string $name): object

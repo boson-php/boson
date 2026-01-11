@@ -6,7 +6,6 @@ namespace Boson\WebView\Manager;
 
 use Boson\Component\Saucer\SaucerInterface;
 use Boson\Component\WeakType\ObservableSet;
-use Boson\Component\WeakType\ReferenceReleaseCallback;
 use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
@@ -127,6 +126,8 @@ final class WebViewManager implements
      */
     private function onRelease(WebView $webview): void
     {
+        \gc_collect_cycles();
+
         //$this->api->saucer_webview_clear_scripts($window->id->ptr);
         //$this->api->saucer_webview_clear_embedded($window->id->ptr);
         //$this->api->saucer_free($window->id->ptr);

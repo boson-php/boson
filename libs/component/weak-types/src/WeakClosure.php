@@ -51,7 +51,6 @@ final readonly class WeakClosure
      * @internal Use the {@see WeakClosure::create()} instead
      *
      * @param TThis $reference The object bound to the original closure
-     * @param \Closure $callback The original closure to wrap
      */
     private function __construct(object $reference, \Closure $callback)
     {
@@ -64,21 +63,24 @@ final readonly class WeakClosure
      * Creates a {@see WeakClosure} from a callable, or returns the callable
      * unchanged if it is not bound to an object
      *
-     * @param callable $callback The callable to potentially wrap
-     * @return callable Returns a {@see WeakClosure} instance if the callable
-     *         is bound to an object, otherwise returns the original callable
-     * @throws \ReflectionException in case of internal error occurs
+     * @template TArgClosure of \Closure
+     *
+     * @param TArgClosure $callback The callable to potentially wrap
+     * @return TArgClosure Returns a {@see \Closure} instance with weak
+     *         reference to `$this`
+     *
+     * @noinspection PhpDocMissingThrowsInspection An exception never throws
      */
-    public static function create(callable $callback): callable
+    public static function create(\Closure $callback): \Closure
     {
-        $reference = new \ReflectionFunction($closure = $callback(...))
+        $reference = new \ReflectionFunction($callback)
             ->getClosureThis();
 
         if ($reference === null) {
-            return $closure;
+            return $callback;
         }
 
-        return new self($reference, $closure);
+        return (new self($reference, $callback))(...);
     }
 
     /**

@@ -7,7 +7,7 @@ namespace Boson\Tests\Stub;
 use Boson\Application;
 use Boson\Component\Saucer\SaucerTestingStub;
 use Boson\Shared\Marker\BlockingOperation;
-use Boson\WebView\Api\LifecycleEvents\LifecycleEventsListener;
+use Boson\WebView\Api\LifecycleEvents\WebViewLifecycleEventsListener;
 use Boson\Window\Internal\SaucerWindowEventHandler;
 use FFI\CData;
 
@@ -123,7 +123,7 @@ class TestingApplicationStub extends Application
 
     private function isWebViewEventsStruct(string $type): bool
     {
-        return new \ReflectionClassConstant(LifecycleEventsListener::class, 'WEBVIEW_HANDLER_STRUCT')
+        return new \ReflectionClassConstant(WebViewLifecycleEventsListener::class, 'WEBVIEW_HANDLER_STRUCT')
             ->getValue() === $type;
     }
 
