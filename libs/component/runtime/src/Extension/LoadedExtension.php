@@ -9,7 +9,7 @@ use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\Event;
 use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\Intention;
-use Boson\Internal\StructPointerId;
+use Boson\Shared\StructPointerId;
 
 /**
  * @template TContext of IdentifiableInterface<StructPointerId>

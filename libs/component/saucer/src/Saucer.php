@@ -6,6 +6,7 @@ namespace Boson\Component\Saucer;
 
 use Boson\Component\Saucer\Exception\InvalidLibraryException;
 use Boson\Component\Saucer\Loader\CpuArchitecture;
+use Boson\Component\Saucer\Loader\DesktopEnvironment;
 use Boson\Component\Saucer\Loader\LibraryDetector;
 use Boson\Component\Saucer\Loader\OperatingSystem;
 use Boson\Component\Saucer\Validator\VersionChecker;
@@ -38,12 +39,15 @@ final readonly class Saucer implements SaucerInterface
 
     public static function createFromGlobals(): self
     {
-        return self::createFromEnvironment(null, null);
+        return self::createFromEnvironment();
     }
 
-    public static function createFromEnvironment(?OperatingSystem $os, ?CpuArchitecture $arch): self
-    {
-        return self::createWithLibraryDetector(new LibraryDetector($os, $arch));
+    public static function createFromEnvironment(
+        ?OperatingSystem $os = null,
+        ?CpuArchitecture $arch = null,
+        ?DesktopEnvironment $de = null,
+    ): self {
+        return self::createWithLibraryDetector(new LibraryDetector($os, $arch, $de));
     }
 
     public static function createWithLibraryDetector(LibraryDetector $detector): self

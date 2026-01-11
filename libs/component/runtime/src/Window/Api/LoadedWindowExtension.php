@@ -7,7 +7,7 @@ namespace Boson\Window\Api;
 use Boson\Api\LoadedApplicationExtension;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\EventListener;
-use Boson\Internal\StructPointerId;
+use Boson\Shared\StructPointerId;
 use Boson\Window\Exception\WindowApiDereferenceException;
 use Boson\Window\Window;
 

@@ -6,7 +6,7 @@ namespace Boson\WebView\Api;
 
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\EventListener;
-use Boson\Internal\StructPointerId;
+use Boson\Shared\StructPointerId;
 use Boson\WebView\Exception\WebViewApiDereferenceException;
 use Boson\WebView\WebView;
 use Boson\Window\Api\LoadedWindowExtension;

@@ -18,7 +18,7 @@ use FFI\CData;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson
  */
-final class SaucerPoller implements PollerInterface
+final class ApplicationOrderedPoller implements PollerInterface
 {
     /**
      * @var array<array-key, \Closure(array-key):void>
@@ -37,6 +37,9 @@ final class SaucerPoller implements PollerInterface
      */
     private readonly IdValueGeneratorInterface $ids;
 
+    /**
+     * Reference to the event loop pointer
+     */
     private readonly CData $ptr;
 
     public function __construct(

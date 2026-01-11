@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boson\Internal;
+namespace Boson\Shared;
 
 use Boson\Contracts\Id\IntIdInterface;
 

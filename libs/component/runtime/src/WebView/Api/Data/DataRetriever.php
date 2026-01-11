@@ -57,11 +57,6 @@ final class DataRetriever extends LoadedWebViewExtension implements
     private readonly IdValueGeneratorInterface $ids;
 
     /**
-     * An application events poller interface.
-     */
-    private readonly PollerInterface $poller;
-
-    /**
      * Registry of pending request results.
      *
      * This array stores the deferred promises for pending requests,
@@ -81,7 +76,6 @@ final class DataRetriever extends LoadedWebViewExtension implements
         parent::__construct($context, $listener);
 
         $this->ids = clone $info->ids;
-        $this->poller = $this->app->poller;
 
         $bindings->bind($info->callback, $this->onResponseReceived(...));
         $bindings->bind($info->failureCallback, $this->onFailureReceived(...));

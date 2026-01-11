@@ -19,7 +19,7 @@ use Boson\Exception\ApplicationException;
 use Boson\Exception\WindowDereferenceException;
 use Boson\Extension\Exception\ExtensionNotFoundException;
 use Boson\Extension\Registry;
-use Boson\Internal\Poller\SaucerPoller;
+use Boson\Internal\Poller\ApplicationOrderedPoller;
 use Boson\Poller\PollerInterface;
 use Boson\Shared\Marker\BlockingOperation;
 use Boson\Shared\Marker\RequiresDealloc;
@@ -29,7 +29,6 @@ use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
 use Boson\Window\Window;
 use FFI\CData;
-use Internal\Destroy\Destroyable;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -188,24 +187,6 @@ class Application implements
          */
         public readonly ApplicationCreateInfo $info = new ApplicationCreateInfo(),
         ?EventDispatcherInterface $dispatcher = null,
-        /**
-         * @var array<array-key, mixed>
-         *
-         * @deprecated doesn't affect anything anymore and will be removed in future versions
-         */
-        private readonly array $bootHandlers = [],
-        /**
-         * @var array<array-key, mixed>
-         *
-         * @deprecated doesn't affect anything anymore and will be removed in future versions
-         */
-        private readonly array $quitHandlers = [],
-        /**
-         * @var array<array-key, mixed>
-         *
-         * @deprecated doesn't affect anything anymore and will be removed in future versions
-         */
-        private readonly array $deferRunners = [],
     ) {
         // Initialization Application's fields and properties
         $this->isDebug = $this->createIsDebugParameter($info->debug);
@@ -253,7 +234,7 @@ class Application implements
      */
     protected function createApplicationPoller(SaucerInterface $saucer): PollerInterface
     {
-        $poller = new SaucerPoller($this->id, $saucer);
+        $poller = new ApplicationOrderedPoller($this->id, $saucer);
 
         $poller->defer(function (): void {
             $this->isRunning = true;

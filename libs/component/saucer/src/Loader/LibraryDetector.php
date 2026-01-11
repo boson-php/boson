@@ -9,9 +9,9 @@ use Boson\Component\Saucer\Exception\Environment\UnsupportedOperatingSystemExcep
 
 final class LibraryDetector implements \Stringable
 {
-    private const string DEFAULT_BIN_DIR = __DIR__ . '/../../bin';
+    public const string DEFAULT_BIN_DIR = __DIR__ . '/../../bin';
 
-    private const ?string DEFAULT_PHAR_DIR = null;
+    public const ?string DEFAULT_PHAR_DIR = null;
 
     /**
      * @var non-empty-string

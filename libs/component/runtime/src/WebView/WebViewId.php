@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boson\WebView;
 
 use Boson\Component\Saucer\SaucerInterface;
-use Boson\Internal\StructPointerId;
+use Boson\Shared\StructPointerId;
 use FFI\CData;
 
 final readonly class WebViewId extends StructPointerId
