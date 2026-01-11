@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Component\WeakType;
 
+use Boson\Component\WeakType\Internal\ReferenceReleaseCallback;
+
 /**
  * The implementation calls the {@see ObservableCaptureSet::watch()} `$onRelease`
  * callback only if {@see ObservableCaptureSet} does not references to the object.

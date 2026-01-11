@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Component\WeakType;
 
+use Boson\Component\WeakType\Internal\ReferenceReleaseCallback;
+
 /**
  * When adding an object using {@see ObservableWeakSet::watch()} method,
  * this implementation does not increase its refcount.
