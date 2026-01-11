@@ -974,7 +974,7 @@ interface SaucerInterface
      * @param SaucerWebviewType $webview
      * @param SaucerStashType $content
      */
-public function saucer_webview_embed(CData $webview, string $path, CData $content, string $mime): void;
+    public function saucer_webview_embed(CData $webview, string $path, CData $content, string $mime): void;
 
     /**
      * @param SaucerWebviewType $webview
