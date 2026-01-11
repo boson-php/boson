@@ -16,6 +16,7 @@ use Boson\Extension\Exception\ExtensionNotFoundException;
 use Boson\Extension\Registry;
 use Boson\WebView\Manager\WebViewManager;
 use Boson\WebView\WebView;
+use Boson\Window\Event\WindowClosed;
 use Boson\Window\Event\WindowDecorationChanged;
 use Boson\Window\Event\WindowMaximized;
 use Boson\Window\Event\WindowMinimized;
@@ -628,26 +629,6 @@ final class Window implements
     }
 
     /**
-     * Creates WebView instance of the window.
-     *
-     * This method initializes and returns a {@see WebView} object
-     * that is responsible for managing window's webview.
-     */
-    private static function createWebView(
-        SaucerInterface $api,
-        Window $window,
-        WindowCreateInfo $info,
-        EventDispatcherInterface $dispatcher,
-    ): WebView {
-        return new WebView(
-            saucer: $api,
-            window: $window,
-            info: $info->webview,
-            dispatcher: $dispatcher,
-        );
-    }
-
-    /**
      * Creates a new instance of {@see SaucerWindowEventHandler} that manages
      * the window's native event handling and bridges them to the Saucer's
      * event system.
@@ -691,6 +672,15 @@ final class Window implements
      */
     private function registerDefaultEventListeners(): void
     {
+        $this->listener->addEventListener(WindowClosed::class, function (): void {
+            $this->isClosed = true;
+
+            $this->listener->removeAllEventListeners();
+
+            $this->webviews->destroy();
+            $this->extensions->destroy();
+        });
+
         $this->listener->addEventListener(WindowMinimized::class, function (WindowMinimized $e): void {
             $this->state = $e->isMinimized ? WindowState::Minimized : WindowState::Normal;
         });
@@ -909,13 +899,19 @@ final class Window implements
      */
     public function close(): void
     {
+        if ($this->isClosed === true) {
+            return;
+        }
+
         $this->isClosed = true;
         $this->saucer->saucer_window_close($this->id->ptr);
     }
 
     public function __destruct()
     {
-        $this->isClosed = true;
+        $this->close();
+
+        $this->webviews->destroy();
         $this->extensions->destroy();
     }
 

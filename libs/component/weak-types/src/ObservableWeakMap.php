@@ -4,35 +4,22 @@ declare(strict_types=1);
 
 namespace Boson\Component\WeakType;
 
-use Boson\Component\WeakType\Internal\ReferenceReleaseCallback;
-
 /**
- * Allows to store a set of objects with referenced values and
- * track their destruction (react to GC cleanup).
+ * When adding an object using {@see ObservableWeakMap::watch()} method,
+ * this implementation does not increase its refcount.
  *
- * ```
- * // ObservableWeakMap<ExampleId, CData>
- * $map = new ObservableWeakMap();
- *
- * $map->watch($id, $data, function (CData $ref) {
- *     echo vsprintf('ID has been destroyed, something can be done with its reference %s(%d)', [
- *         $ref::class,
- *         get_object_id($ref),
- *     ]);
- * ));
- * ```
- *
- * @api
- *
- * @template TKey of object = object
+ * @template TObservable of object = object
  * @template TValue of object = object
  *
- * @template-implements \IteratorAggregate<TKey, TValue>
+ * @template-implements \IteratorAggregate<TObservable, TValue>
+ * @template-implements ObservableMapInterface<TObservable, TValue>
  */
-final readonly class ObservableWeakMap implements \IteratorAggregate, \Countable
+final readonly class ObservableWeakMap implements
+    ObservableMapInterface,
+    \IteratorAggregate
 {
     /**
-     * @var \WeakMap<TKey, ReferenceReleaseCallback<TValue>>
+     * @var \WeakMap<TObservable, ReferenceReleaseCallback<TValue>>
      */
     private \WeakMap $memory;
 
@@ -41,13 +28,6 @@ final readonly class ObservableWeakMap implements \IteratorAggregate, \Countable
         $this->memory = new \WeakMap();
     }
 
-    /**
-     * @param TKey $key
-     * @param TValue $value
-     * @param \Closure(TValue):void $onRelease
-     *
-     * @return TKey
-     */
     public function watch(object $key, object $value, \Closure $onRelease): object
     {
         $this->memory[$key] = new ReferenceReleaseCallback($value, $onRelease);
@@ -55,11 +35,6 @@ final readonly class ObservableWeakMap implements \IteratorAggregate, \Countable
         return $key;
     }
 
-    /**
-     * @param TKey $key
-     *
-     * @return TValue|null
-     */
     public function find(object $key): ?object
     {
         if (!$this->memory->offsetExists($key)) {
@@ -67,6 +42,16 @@ final readonly class ObservableWeakMap implements \IteratorAggregate, \Countable
         }
 
         return $this->memory[$key]->reference;
+    }
+
+    public function has(object $key): bool
+    {
+        return $this->memory->offsetExists($key);
+    }
+
+    public function detach(object $key): void
+    {
+        unset($this->memory[$key]);
     }
 
     public function getIterator(): \Traversable

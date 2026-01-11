@@ -5,27 +5,24 @@ declare(strict_types=1);
 namespace Boson\Component\WeakType;
 
 /**
- * When adding an object using {@see ObservableWeakSet::watch()} method,
- * this implementation does not increase its refcount.
- *
- * The implementation calls the {@see ObservableWeakSet::watch()} `$onRelease`
- * callback only if there are no references left to the object.
+ * The implementation calls the {@see ObservableCaptureSet::watch()} `$onRelease`
+ * callback only if {@see ObservableCaptureSet} does not references to the object.
  *
  * @template TEntry of object = object
  *
  * @template-implements \IteratorAggregate<array-key, TEntry>
  * @template-implements ObservableSetInterface<TEntry>
  */
-final readonly class ObservableWeakSet implements ObservableSetInterface, \IteratorAggregate
+final readonly class ObservableCaptureSet implements ObservableSetInterface, \IteratorAggregate
 {
     /**
-     * @var \WeakMap<TEntry, ReferenceReleaseCallback<TEntry>>
+     * @var \SplObjectStorage<TEntry, ReferenceReleaseCallback<TEntry>>
      */
-    private \WeakMap $memory;
+    private \SplObjectStorage $memory;
 
     public function __construct()
     {
-        $this->memory = new \WeakMap();
+        $this->memory = new \SplObjectStorage();
     }
 
     /**
@@ -48,8 +45,8 @@ final readonly class ObservableWeakSet implements ObservableSetInterface, \Itera
 
     public function getIterator(): \Traversable
     {
-        foreach ($this->memory as $key => $_) {
-            yield $key;
+        foreach ($this->memory as $entry) {
+            yield $entry;
         }
     }
 

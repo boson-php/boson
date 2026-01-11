@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Boson\WebView\Manager;
 
 use Boson\Component\Saucer\SaucerInterface;
-use Boson\Component\WeakType\ObservableWeakSet;
+use Boson\Component\WeakType\ObservableSet;
+use Boson\Component\WeakType\ReferenceReleaseCallback;
 use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerProvider;
 use Boson\WebView\WebView;
 use Boson\WebView\WebViewCreateInfo;
-use Boson\Window\Event\WindowClosed;
 use Boson\Window\Window;
+use Internal\Destroy\Destroyable;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 
@@ -30,7 +31,8 @@ final class WebViewManager implements
     EventListenerInterface,
     WebViewCollectionInterface,
     WebViewFactoryInterface,
-    \IteratorAggregate
+    \IteratorAggregate,
+    Destroyable
 {
     use EventListenerProvider;
 
@@ -45,16 +47,9 @@ final class WebViewManager implements
     /**
      * Contains a list of all webviews in use.
      *
-     * @var \SplObjectStorage<WebView, mixed>
+     * @var ObservableSet<WebView>
      */
-    private readonly \SplObjectStorage $webviews;
-
-    /**
-     * Contains a list of subscriptions for webview destruction.
-     *
-     * @var ObservableWeakSet<WebView>
-     */
-    private readonly ObservableWeakSet $memory;
+    private readonly ObservableSet $webviews;
 
     /**
      * WebViews list aware event listener & dispatcher.
@@ -74,42 +69,22 @@ final class WebViewManager implements
     ) {
         // Initialization Window Manager's fields and properties
         $this->webviews = $this->createWebViewsStorage();
-        $this->memory = $this->createWindowsDestructorObserver();
         $this->listener = $this->createEventListener($dispatcher);
         $this->factory = $this->createWebViewHandlerFactory();
 
         // Register Window Manager's subsystems
-        $this->registerDefaultEventListeners();
-        $this->default = $this->createDefaultWebView($info);
+        $this->default = $this->create($info);
     }
 
     /**
-     * Creates a new instance of {@see \SplObjectStorage} for storing webview
-     * instances.
+     * Creates a new instance of {@see ObservableSet} for storing webview
+     * instances and track its destruction.
      *
-     * This storage is required to keep all webview objects in memory.
-     *
-     * @return \SplObjectStorage<WebView, mixed>
+     * @return ObservableSet<WebView>
      */
-    private function createWebViewsStorage(): \SplObjectStorage
+    private function createWebViewsStorage(): ObservableSet
     {
-        /** @var \SplObjectStorage<WebView, mixed> */
-        return new \SplObjectStorage();
-    }
-
-    /**
-     * Creates a new instance of {@see ObservableWeakSet} for tracking webview
-     * destruction.
-     *
-     * This set does NOT store objects in memory, but references the main
-     * storage created by {@see createWebViewsStorage()}.
-     *
-     * @return ObservableWeakSet<WebView>
-     */
-    private function createWindowsDestructorObserver(): ObservableWeakSet
-    {
-        /** @var ObservableWeakSet<WebView> */
-        return new ObservableWeakSet();
+        return new ObservableSet();
     }
 
     /**
@@ -129,66 +104,22 @@ final class WebViewManager implements
         return new WebViewHandlerFactory($this->api, $this->window);
     }
 
-    /**
-     * Registers default event listeners for the webview manager.
-     *
-     * This method sets up handlers for window lifecycle events, such as
-     * webview closure and default webview recalculation.
-     */
-    private function registerDefaultEventListeners(): void
-    {
-        // TODO
-        return;
-
-        $this->listener->addEventListener(WindowClosed::class, function (WindowClosed $event) {
-            $this->webviews->offsetUnset($event->subject);
-
-            // Recalculate default window in case of
-            // previous default window was closed.
-            if ($this->default === $event->subject) {
-                $this->default = $this->windows->count() > 0 ? $this->windows->current() : null;
-            }
-        });
-    }
-
-    /**
-     * Creates default window instance defined in default configuration
-     */
-    private function createDefaultWebView(WebViewCreateInfo $info): WebView
-    {
-        return $this->create($info);
-    }
 
     public function create(WebViewCreateInfo $info = new WebViewCreateInfo()): WebView
     {
-        $instance = $this->defer($info);
+        $instance = new WebView(
+            saucer: $this->api,
+            id: $this->factory->create($info),
+            window: $this->window,
+            info: $info,
+            dispatcher: $this->listener,
+        );
 
-        try {
-            return $instance;
-        } finally {
-            $this->initializeIfNotInitialized($instance);
-        }
-    }
+        $this->webviews->watch($instance, $this->onRelease(...));
 
-    public function defer(WebViewCreateInfo $info = new WebViewCreateInfo()): WebView
-    {
-        $instance = $this->createWebViewProxy($info);
-
-        $this->webviews->offsetSet($instance, $info);
+        $this->onCreate($instance);
 
         return $instance;
-    }
-
-    /**
-     * Creates a webview proxy that will be initialized later.
-     */
-    private function createWebViewProxy(WebViewCreateInfo $info): WebView
-    {
-        /** @var WebView */
-        return new \ReflectionClass(WebView::class)
-            ->newLazyGhost(function (WebView $webview) use ($info): void {
-                $this->onInitialize($webview, $info);
-            });
     }
 
     /**
@@ -211,34 +142,10 @@ final class WebViewManager implements
         // $this->listener->dispatch(new WindowCreated($window));
     }
 
-    private function onInitialize(WebView $webview, WebViewCreateInfo $info): void
-    {
-        $handle = $this->factory->create($info);
-
-        $webview->__construct(
-            saucer: $this->api,
-            id: $handle,
-            window: $this->window,
-            info: $info,
-            dispatcher: $this->listener,
-        );
-
-        $this->memory->watch($webview, $this->onRelease(...));
-
-        $this->onCreate($webview);
-    }
-
-    private function initializeIfNotInitialized(WebView $webview): void
-    {
-        // Getting any object`s field will force initialization
-        // of any proxy object.
-        $webview->id;
-    }
-
-    public function boot(): void
+    public function destroy(): void
     {
         foreach ($this->webviews as $webview) {
-            $this->initializeIfNotInitialized($webview);
+            $this->webviews->detach($webview);
         }
     }
 

@@ -155,4 +155,9 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
 
         return $string;
     }
+
+    public function __destruct()
+    {
+        var_dump(__METHOD__);
+    }
 }

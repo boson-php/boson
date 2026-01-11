@@ -92,4 +92,9 @@ final class SecurityInfo extends LoadedWebViewExtension implements SecurityInfoI
 
         return !\in_array($scheme, self::DEFAULT_SOFTWARE_INSECURE_SCHEMES, true);
     }
+
+    public function __destruct()
+    {
+        var_dump(__METHOD__);
+    }
 }

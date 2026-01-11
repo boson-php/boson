@@ -512,8 +512,12 @@ class Application implements
      */
     public function __destruct()
     {
+        $this->quit();
+
+        $this->windows->destroy();
         $this->extensions->destroy();
 
+        var_dump(__METHOD__);
         $this->saucer->saucer_application_quit($this->id->ptr);
     }
 

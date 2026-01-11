@@ -283,4 +283,9 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
     {
         $this->onLoad($_, $state);
     }
+
+    public function __destruct()
+    {
+        var_dump(__METHOD__);
+    }
 }

@@ -56,6 +56,11 @@ class EventListener implements EventListenerInterface, EventDispatcherInterface
         unset($this->listeners[$event]);
     }
 
+    public function removeAllEventListeners(): void
+    {
+        $this->listeners = [];
+    }
+
     /**
      * @template TArgEvent of object
      *

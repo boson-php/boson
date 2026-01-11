@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\WeakType;
 
 /**
- * When adding an object using {@see ObservableWeakSet::watch()} method,
- * this implementation does not increase its refcount.
- *
- * The implementation calls the {@see ObservableWeakSet::watch()} `$onRelease`
+ * The implementation calls the {@see ObservableSet::watch()} `$onRelease`
  * callback only if there are no references left to the object.
  *
  * @template TEntry of object = object
@@ -16,8 +13,13 @@ namespace Boson\Component\WeakType;
  * @template-implements \IteratorAggregate<array-key, TEntry>
  * @template-implements ObservableSetInterface<TEntry>
  */
-final readonly class ObservableWeakSet implements ObservableSetInterface, \IteratorAggregate
+final readonly class ObservableSet implements ObservableSetInterface, \IteratorAggregate
 {
+    /**
+     * @var \SplObjectStorage<TEntry, void>
+     */
+    private \SplObjectStorage $references;
+
     /**
      * @var \WeakMap<TEntry, ReferenceReleaseCallback<TEntry>>
      */
@@ -25,6 +27,7 @@ final readonly class ObservableWeakSet implements ObservableSetInterface, \Itera
 
     public function __construct()
     {
+        $this->references = new \SplObjectStorage();
         $this->memory = new \WeakMap();
     }
 
@@ -37,20 +40,19 @@ final readonly class ObservableWeakSet implements ObservableSetInterface, \Itera
     public function watch(object $entry, \Closure $onRelease): object
     {
         $this->memory[$entry] = new ReferenceReleaseCallback($entry, $onRelease);
+        $this->references->offsetSet($entry, null);
 
         return $entry;
     }
 
     public function detach(object $entry): void
     {
-        unset($this->memory[$entry]);
+        unset($this->memory[$entry], $this->references[$entry]);
     }
 
     public function getIterator(): \Traversable
     {
-        foreach ($this->memory as $key => $_) {
-            yield $key;
-        }
+        return $this->references;
     }
 
     /**

@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Boson\Component\WeakType\Tests;
 
-use Boson\Component\WeakType\ObservableWeakSet;
+use Boson\Component\WeakType\ObservableSet;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('boson-php/weak-types')]
-final class ObservableWeakSetTest extends TestCase
+final class ObservableSetTest extends TestCase
 {
     public function testCreateEmpty(): void
     {
-        $set = new ObservableWeakSet();
+        $set = new ObservableSet();
 
         self::assertCount(0, $set);
     }
 
     public function testWatch(): void
     {
-        $set = new ObservableWeakSet();
+        $set = new ObservableSet();
         $object = (object) [];
 
         $set->watch($object, function () {});
@@ -29,7 +29,7 @@ final class ObservableWeakSetTest extends TestCase
 
     public function testWatchWithCallback(): void
     {
-        $set = new ObservableWeakSet();
+        $set = new ObservableSet();
         $object = (object) [];
         $callbackCalled = false;
 
@@ -41,12 +41,12 @@ final class ObservableWeakSetTest extends TestCase
         unset($object);
         \gc_collect_cycles();
 
-        self::assertTrue($callbackCalled);
+        self::assertFalse($callbackCalled);
     }
 
     public function testDetachableWithCallback(): void
     {
-        $set = new ObservableWeakSet();
+        $set = new ObservableSet();
         $object = (object) [];
         $callbackCalled = false;
 
@@ -62,17 +62,14 @@ final class ObservableWeakSetTest extends TestCase
 
     public function testIterator(): void
     {
-        $set = new ObservableWeakSet();
+        $set = new ObservableSet();
         $object1 = (object) [];
         $object2 = (object) [];
 
         $set->watch($object1, function () {});
         $set->watch($object2, function () {});
 
-        $items = [];
-        foreach ($set as $object) {
-            $items[] = $object;
-        }
+        $items = \iterator_to_array($set, false);
 
         self::assertCount(2, $items);
         self::assertSame($object1, $items[0]);
@@ -81,7 +78,7 @@ final class ObservableWeakSetTest extends TestCase
 
     public function testIteratorAfterObjectRemoval(): void
     {
-        $set = new ObservableWeakSet();
+        $set = new ObservableSet();
         $object1 = (object) [];
         $object2 = (object) [];
 
@@ -89,20 +86,26 @@ final class ObservableWeakSetTest extends TestCase
         $set->watch($object2, function () {});
 
         unset($object1);
+        unset($object2);
         \gc_collect_cycles();
 
-        $items = [];
-        foreach ($set as $object) {
-            $items[] = $object;
-        }
+        $items = \iterator_to_array($set, false);
+
+        self::assertCount(2, $items);
+        self::assertNotNull($items[0]);
+        self::assertNotNull($items[1]);
+
+
+        $set->detach($items[0]);
+        $items = \iterator_to_array($set, false);
 
         self::assertCount(1, $items);
-        self::assertSame($object2, $items[0]);
+        self::assertNotNull($items[0]);
     }
 
     public function testWatchReturnsObject(): void
     {
-        $set = new ObservableWeakSet();
+        $set = new ObservableSet();
         $object = (object) [];
 
         $returnedObject = $set->watch($object, function () {});
@@ -112,7 +115,7 @@ final class ObservableWeakSetTest extends TestCase
 
     public function testMultipleWatchSameObject(): void
     {
-        $set = new ObservableWeakSet();
+        $set = new ObservableSet();
         $object = (object) [];
         $callback1Called = false;
         $callback2Called = false;
@@ -120,12 +123,12 @@ final class ObservableWeakSetTest extends TestCase
         $set->watch($object, function () use (&$callback1Called) {
             $callback1Called = true;
         });
+
         $set->watch($object, function () use (&$callback2Called) {
             $callback2Called = true;
         });
 
-        unset($object);
-        \gc_collect_cycles();
+        $set->detach($object);
 
         self::assertTrue($callback1Called);
         self::assertTrue($callback2Called);

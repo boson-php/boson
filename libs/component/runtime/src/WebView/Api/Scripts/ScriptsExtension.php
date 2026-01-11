@@ -9,6 +9,7 @@ use Boson\Dispatcher\EventListener;
 use Boson\Extension\Attribute\AvailableAs;
 use Boson\Extension\Extension;
 use Boson\WebView\WebView;
+use Internal\Destroy\Destroyable;
 
 /**
  * @template-extends Extension<WebView>

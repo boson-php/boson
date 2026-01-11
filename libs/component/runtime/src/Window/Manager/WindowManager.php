@@ -6,7 +6,7 @@ namespace Boson\Window\Manager;
 
 use Boson\Application;
 use Boson\Component\Saucer\SaucerInterface;
-use Boson\Component\WeakType\ObservableWeakSet;
+use Boson\Component\WeakType\ObservableSet;
 use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
@@ -16,6 +16,7 @@ use Boson\Window\Event\WindowCreated;
 use Boson\Window\Event\WindowDestroyed;
 use Boson\Window\Window;
 use Boson\Window\WindowCreateInfo;
+use Internal\Destroy\Destroyable;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 
@@ -32,7 +33,8 @@ final class WindowManager implements
     EventListenerInterface,
     WindowCollectionInterface,
     WindowFactoryInterface,
-    \IteratorAggregate
+    \IteratorAggregate,
+    Destroyable
 {
     use EventListenerProvider;
 
@@ -47,16 +49,9 @@ final class WindowManager implements
     /**
      * Contains a list of all windows in use.
      *
-     * @var \SplObjectStorage<Window, mixed>
+     * @var ObservableSet<Window>
      */
-    private readonly \SplObjectStorage $windows;
-
-    /**
-     * Contains a list of subscriptions for window destruction.
-     *
-     * @var ObservableWeakSet<Window>
-     */
-    private readonly ObservableWeakSet $memory;
+    private readonly ObservableSet $windows;
 
     /**
      * Windows list aware event listener & dispatcher.
@@ -76,42 +71,25 @@ final class WindowManager implements
     ) {
         // Initialization Window Manager's fields and properties
         $this->windows = $this->createWindowsStorage();
-        $this->memory = $this->createWindowsDestructorObserver();
         $this->listener = $this->createEventListener($dispatcher);
         $this->factory = $this->createWindowHandlerFactory($api, $app);
 
         // Register Window Manager's subsystems
         $this->registerDefaultEventListeners();
-        $this->default = $this->createDefaultWindow($info);
+        $this->default = $this->defer($info);
     }
 
     /**
-     * Creates a new instance of {@see \SplObjectStorage} for storing window
-     * instances.
+     * Creates a new instance of {@see ObservableSet} for storing window
+     * instances and tracking window destruction.
      *
      * This storage is required to keep all window objects in memory.
      *
-     * @return \SplObjectStorage<Window, mixed>
+     * @return ObservableSet<Window>
      */
-    private function createWindowsStorage(): \SplObjectStorage
+    private function createWindowsStorage(): ObservableSet
     {
-        /** @var \SplObjectStorage<Window, mixed> */
-        return new \SplObjectStorage();
-    }
-
-    /**
-     * Creates a new instance of {@see ObservableWeakSet} for tracking window
-     * destruction.
-     *
-     * This set does NOT store objects in memory, but references the main
-     * storage created by {@see createWindowsStorage()}.
-     *
-     * @return ObservableWeakSet<Window>
-     */
-    private function createWindowsDestructorObserver(): ObservableWeakSet
-    {
-        /** @var ObservableWeakSet<Window> */
-        return new ObservableWeakSet();
+        return new ObservableSet();
     }
 
     /**
@@ -140,54 +118,39 @@ final class WindowManager implements
     private function registerDefaultEventListeners(): void
     {
         $this->listener->addEventListener(WindowClosed::class, function (WindowClosed $event) {
-            $this->windows->offsetUnset($event->subject);
+            $this->windows->detach($event->subject);
 
             // Recalculate default window in case of
             // previous default window was closed.
             if ($this->default === $event->subject) {
-                $this->default = $this->windows->count() > 0 ? $this->windows->current() : null;
+                foreach ($this->windows as $window) {
+                    $this->default = $window;
+                    break;
+                }
             }
         });
-    }
-
-    /**
-     * Creates default window instance defined in default configuration
-     */
-    private function createDefaultWindow(WindowCreateInfo $info): Window
-    {
-        return $this->defer($info);
     }
 
     public function create(WindowCreateInfo $info = new WindowCreateInfo()): Window
     {
         $instance = $this->defer($info);
 
-        try {
-            return $instance;
-        } finally {
-            $this->initializeIfNotInitialized($instance);
-        }
-    }
-
-    public function defer(WindowCreateInfo $info = new WindowCreateInfo()): Window
-    {
-        $instance = $this->createWindowProxy($info);
-
-        $this->windows->offsetSet($instance, $info);
+        $this->initializeIfNotInitialized($instance);
 
         return $instance;
     }
 
-    /**
-     * Creates a window proxy that will be initialized later.
-     */
-    private function createWindowProxy(WindowCreateInfo $info): Window
+    public function defer(WindowCreateInfo $info = new WindowCreateInfo()): Window
     {
-        /** @var Window */
-        return new \ReflectionClass(Window::class)
+        /** @var Window $instance */
+        $instance = new \ReflectionClass(Window::class)
             ->newLazyGhost(function (Window $window) use ($info): void {
                 $this->onInitialize($window, $info);
             });
+
+        $this->windows->watch($instance, $this->onRelease(...));
+
+        return $instance;
     }
 
     /**
@@ -197,7 +160,7 @@ final class WindowManager implements
     {
         //$this->api->saucer_webview_clear_scripts($window->id->ptr);
         //$this->api->saucer_webview_clear_embedded($window->id->ptr);
-        //$this->api->saucer_free($window->id->ptr);
+        //$this->api->saucer_window_free($window->id->ptr);
 
         $this->listener->dispatch(new WindowDestroyed($window));
     }
@@ -222,8 +185,6 @@ final class WindowManager implements
             dispatcher: $this->listener,
         );
 
-        $this->memory->watch($window, $this->onRelease(...));
-
         $this->onCreate($window);
     }
 
@@ -231,13 +192,21 @@ final class WindowManager implements
     {
         // Getting any object`s field will force initialization
         // of any proxy object.
-        $window->id;
+        $_ = $window->id;
     }
 
     public function boot(): void
     {
+        /** @var Window $window */
         foreach ($this->windows as $window) {
             $this->initializeIfNotInitialized($window);
+        }
+    }
+
+    public function destroy(): void
+    {
+        foreach ($this->windows as $window) {
+            $this->windows->detach($window);
         }
     }
 

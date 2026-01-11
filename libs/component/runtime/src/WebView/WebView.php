@@ -306,7 +306,10 @@ final class WebView implements
 
     public function __destruct()
     {
+        $this->listener->removeAllEventListeners();
         $this->extensions->destroy();
+
+        var_dump(__METHOD__);
     }
 
     public function __get(string $name): object
