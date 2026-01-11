@@ -30,13 +30,26 @@ final readonly class SaucerWindowEventHandler
      */
     private const string WINDOW_HANDLER_STRUCT = <<<'CDATA'
         struct {
-            void (*onDecorated)(const saucer_handle *, bool decorated);
-            void (*onMaximize)(const saucer_handle *, bool state);
-            void (*onMinimize)(const saucer_handle *, bool state);
-            SAUCER_POLICY (*onClosing)(const saucer_handle *);
-            void (*onClosed)(const saucer_handle *);
-            void (*onResize)(const saucer_handle *, int width, int height);
-            void (*onFocus)(const saucer_handle *, bool focus);
+            // saucer_window_event_decorated
+            void (*onDecorated)(const saucer_window *, SAUCER_WINDOW_DECORATION, void *);
+
+            // saucer_window_event_maximize
+            void (*onMaximize)(const saucer_window *, bool state, void *);
+
+            // saucer_window_event_minimize
+            void (*onMinimize)(const saucer_window *, bool state, void *);
+
+            // saucer_window_event_close
+            SAUCER_POLICY (*onClosing)(const saucer_window *, void *);
+
+            // saucer_window_event_closed
+            void (*onClosed)(const saucer_window *, void *);
+
+            // saucer_window_event_resize
+            void (*onResize)(const saucer_window *, int width, int height, void *);
+
+            // saucer_window_event_focus
+            void (*onFocus)(const saucer_window *, bool focus, void *);
         }
         CDATA;
 
@@ -79,13 +92,13 @@ final readonly class SaucerWindowEventHandler
 
         $ptr = $this->window->id->ptr;
 
-        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_DECORATED, $handlers->onDecorated);
-        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_MAXIMIZE, $handlers->onMaximize);
-        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_MINIMIZE, $handlers->onMinimize);
-        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_CLOSE, $handlers->onClosing);
-        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_CLOSED, $handlers->onClosed);
-        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_RESIZE, $handlers->onResize);
-        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_FOCUS, $handlers->onFocus);
+        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_DECORATED, $handlers->onDecorated, false, null);
+        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_MAXIMIZE, $handlers->onMaximize, false, null);
+        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_MINIMIZE, $handlers->onMinimize, false, null);
+        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_CLOSE, $handlers->onClosing, false, null);
+        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_CLOSED, $handlers->onClosed, false, null);
+        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_RESIZE, $handlers->onResize, false, null);
+        $this->api->saucer_window_on($ptr, WindowEvent::SAUCER_WINDOW_EVENT_FOCUS, $handlers->onFocus, false, null);
     }
 
     private function onDecorated(CData $_, bool $decorated): void

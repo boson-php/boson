@@ -13,6 +13,7 @@ use Boson\WebView\Api\Schemes\SchemesExtension;
 use Boson\WebView\Api\Scripts\ScriptsExtension;
 use Boson\WebView\Api\Security\SecurityExtension;
 use Boson\WebView\WebViewCreateInfo\StorageDirectoryResolver;
+use Boson\Window\WindowCreateInfo;
 
 //
 // Note:
@@ -143,6 +144,27 @@ final readonly class WebViewCreateInfo
          *  - Dev Tools will bew disabled if debug mode is disabled.
          */
         public ?bool $devTools = null,
+        /**
+         * Enables graphics hardware acceleration in case of this option
+         * is set to {@see true} or disables in case {@see false}.
+         *
+         * By default, in case of {@see null}, uses parent (windows)
+         * configuration option:
+         * - {@see WindowCreateInfo::$enableHardwareAcceleration}
+         *
+         * Note: [MACOS] WKWebView does not allow to control
+         *       hardware-acceleration.
+         */
+        public ?bool $enableHardwareAcceleration = null,
+        /**
+         * Forces dark mode in case of this option
+         * is set to {@see true} or disables in case {@see false}.
+         *
+         * By default, in case of {@see null}, uses parent (windows)
+         * configuration option:
+         * - {@see WindowCreateInfo::$decoration}
+         */
+        public ?bool $forceDarkMode = null,
         iterable $extensions = self::DEFAULT_WEBVIEW_EXTENSIONS,
     ) {
         $this->storage = StorageDirectoryResolver::resolve($storage);

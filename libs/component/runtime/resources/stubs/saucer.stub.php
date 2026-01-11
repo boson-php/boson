@@ -15,34 +15,39 @@ namespace Boson\Internal\WebView {
     final class CSaucerWebViewEventsStruct extends CData
     {
         /**
-         * @var \Closure(CData):void
+         * @var \Closure(CData, CData):void
          */
         public \Closure $onDomReady;
 
         /**
-         * @var \Closure(CData, string):void
+         * @var \Closure(CData, string, CData):void
          */
         public \Closure $onNavigated;
 
         /**
-         * @var \Closure(CData, CData):void
+         * @var \Closure(CData, CData, CData):void
          */
         public \Closure $onNavigating;
 
         /**
-         * @var \Closure(CData, CData):void
+         * @var \Closure(CData, CData, CData):void
          */
         public \Closure $onFaviconChanged;
 
         /**
-         * @var \Closure(CData, string):void
+         * @var \Closure(CData, string, CData):void
          */
         public \Closure $onTitleChanged;
 
         /**
-         * @var \Closure(CData, array{State::SAUCER_STATE_*}):void
+         * @var \Closure(CData, State::SAUCER_STATE_*, CData):void
          */
         public \Closure $onLoad;
+
+        /**
+         * @var \Closure(CData, string, int<0, max>, CData):void
+         */
+        public \Closure $onMessage;
     }
 
 }

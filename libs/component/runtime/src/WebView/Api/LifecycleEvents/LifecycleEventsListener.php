@@ -34,12 +34,30 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
      */
     private const string WEBVIEW_HANDLER_STRUCT = <<<'CDATA'
         struct {
-            void (*onDomReady)(const saucer_handle *);
-            void (*onNavigated)(const saucer_handle *, const char *);
-            SAUCER_POLICY (*onNavigating)(const saucer_handle *, const saucer_navigation *);
-            void (*onFaviconChanged)(const saucer_handle *, const saucer_icon *);
-            void (*onTitleChanged)(const saucer_handle *, const char *);
-            void (*onLoad)(const saucer_handle *, const SAUCER_STATE *);
+         // TODO Add permissions event
+         // TODO Add fullscreen event
+        
+         // saucer_webview_event_dom_ready
+         void (*onDomReady)(const saucer_webview *, void *);
+        
+         // saucer_webview_event_navigated
+         // TODO Add saucer_url support
+         void (*onNavigated)(const saucer_webview *, saucer_url *, void *);
+        
+         // saucer_webview_event_navigate
+         SAUCER_POLICY (*onNavigating)(const saucer_webview *, const saucer_navigation *, void *);
+        
+         // saucer_webview_event_favicon
+         void (*onFaviconChanged)(const saucer_webview *, saucer_icon *, void *);
+        
+         // saucer_webview_event_title
+         void (*onTitleChanged)(const saucer_webview *, const char *, size_t, void *);
+        
+         // saucer_webview_event_load
+         void (*onLoad)(const saucer_webview *, SAUCER_STATE, void *);
+        
+         // saucer_webview_event_message
+         void (*onMessage)(const saucer_webview *, const char *, size_t, void *);
         }
         CDATA;
 
@@ -80,6 +98,7 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         $struct->onFaviconChanged = $this->onSafeFaviconChanged(...);
         $struct->onTitleChanged = $this->onSafeTitleChanged(...);
         $struct->onLoad = $this->onSafeLoad(...);
+        $struct->onMessage = $this->onSafeMessageReceived(...);
 
         return $struct;
     }
@@ -89,16 +108,15 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         /** @phpstan-var CSaucerWebViewEventsStruct $ctx */
         $ctx = $this->handlers;
 
-        $ptr = $this->webview->window->id->ptr;
+        $ptr = $this->webview->id->ptr;
 
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_DOM_READY, $ctx->onDomReady);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_NAVIGATED, $ctx->onNavigated);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_NAVIGATE, $ctx->onNavigating);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_FAVICON, $ctx->onFaviconChanged);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_TITLE, $ctx->onTitleChanged);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_LOAD, $ctx->onLoad);
-
-        $this->app->saucer->saucer_webview_on_message($ptr, $this->onSafeMessageReceived(...));
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_DOM_READY, $ctx->onDomReady, false, null);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_NAVIGATED, $ctx->onNavigated, false, null);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_NAVIGATE, $ctx->onNavigating, false, null);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_FAVICON, $ctx->onFaviconChanged, false, null);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_TITLE, $ctx->onTitleChanged, false, null);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_LOAD, $ctx->onLoad, false, null);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_MESSAGE, $ctx->onLoad, false, null);
     }
 
     private function onMessageReceived(string $message): bool
@@ -111,7 +129,7 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         return $event->isPropagationStopped;
     }
 
-    private function onSafeMessageReceived(string $message): bool
+    private function onSafeMessageReceived(CData $_, string $message, int $size): bool
     {
         try {
             return $this->onMessageReceived($message);
@@ -140,19 +158,19 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         }
     }
 
-    private function onNavigated(CData $_, string $url): void
+    private function onNavigated(CData $_, CData $url): void
     {
         try {
             $this->dispatch(new WebViewNavigated(
                 subject: $this->webview,
-                url: Request::castUrl($url),
+                url: Request::castUrl($this->urlToString($url)),
             ));
         } catch (\Throwable $e) {
             $this->webview->window->app->poller->throw($e);
         }
     }
 
-    private function onSafeNavigated(CData $_, string $url): void
+    private function onSafeNavigated(CData $_, CData $url): void
     {
         try {
             $this->onNavigated($_, $url);
@@ -161,25 +179,37 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         }
     }
 
+    private function urlToString(CData $url): string
+    {
+        $value = $this->app->saucer->new('char');
+        $size = $this->app->saucer->new('size_t');
+
+        $this->app->saucer->saucer_url_string($url, \FFI::addr($value), \FFI::addr($size));
+
+        if ($size->cdata === 0) {
+            return '';
+        }
+
+        return \FFI::string($value, $size->cdata);
+    }
+
     private function onNavigating(CData $_, CData $navigation): int
     {
         $this->changeState(WebViewState::Navigating);
 
-        $url = \FFI::string($this->app->saucer->saucer_navigation_url($navigation));
+        $saucerUrl = $this->app->saucer->saucer_navigation_url($navigation);
+        $bosonUrl = Request::castUrl($this->urlToString($saucerUrl));
+        $this->app->saucer->saucer_url_free($saucerUrl);
 
-        try {
-            return $this->intent(new WebViewNavigating(
-                subject: $this->webview,
-                url: Request::castUrl($url),
-                isNewWindow: $this->app->saucer->saucer_navigation_new_window($navigation),
-                isRedirection: $this->app->saucer->saucer_navigation_redirection($navigation),
-                isUserInitiated: $this->app->saucer->saucer_navigation_user_initiated($navigation),
-            ))
-                ? Policy::SAUCER_POLICY_ALLOW
-                : Policy::SAUCER_POLICY_BLOCK;
-        } finally {
-            $this->app->saucer->saucer_navigation_free($navigation);
-        }
+        return $this->intent(new WebViewNavigating(
+            subject: $this->webview,
+            url: $bosonUrl,
+            isNewWindow: $this->app->saucer->saucer_navigation_new_window($navigation),
+            isRedirection: $this->app->saucer->saucer_navigation_redirection($navigation),
+            isUserInitiated: $this->app->saucer->saucer_navigation_user_initiated($navigation),
+        ))
+            ? Policy::SAUCER_POLICY_ALLOW
+            : Policy::SAUCER_POLICY_BLOCK;
     }
 
     private function onSafeNavigating(CData $_, CData $navigation): int
@@ -199,13 +229,9 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
             return;
         }
 
-        try {
-            $this->app->saucer->saucer_window_set_icon($ptr, $icon);
+        $this->app->saucer->saucer_window_set_icon($this->webview->window->id->ptr, $icon);
 
-            $this->dispatch(new WebViewFaviconChanged($this->webview));
-        } finally {
-            $this->app->saucer->saucer_icon_free($icon);
-        }
+        $this->dispatch(new WebViewFaviconChanged($this->webview));
     }
 
     private function onSafeFaviconChanged(CData $ptr, CData $icon): void
@@ -217,28 +243,31 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         }
     }
 
-    private function onTitleChanged(CData $ptr, string $title): void
+    private function onTitleChanged(CData $ptr, string $title, int $length): void
     {
         if (!$this->intent(new WebViewTitleChanging($this->webview, $title))) {
             return;
         }
 
-        $this->app->saucer->saucer_window_set_title($ptr, $title);
+        $this->app->saucer->saucer_window_set_title($this->window->id->ptr, $title);
         $this->dispatch(new WebViewTitleChanged($this->webview, $title));
     }
 
-    private function onSafeTitleChanged(CData $ptr, string $title): void
+    private function onSafeTitleChanged(CData $ptr, string $title, int $length): void
     {
         try {
-            $this->onTitleChanged($ptr, $title);
+            $this->onTitleChanged($ptr, $title, $length);
         } catch (\Throwable $e) {
             $this->webview->window->app->poller->throw($e);
         }
     }
 
-    private function onLoad(CData $_, CData $state): void
+    /**
+     * @param State::SAUCER_STATE_* $state
+     */
+    private function onLoad(CData $_, int $state): void
     {
-        if ($state[0] === State::SAUCER_STATE_STARTED) {
+        if ($state === State::SAUCER_STATE_STARTED) {
             $this->changeState(WebViewState::Loading);
 
             return;
@@ -247,7 +276,10 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         $this->changeState(WebViewState::Ready);
     }
 
-    private function onSafeLoad(CData $_, CData $state): void
+    /**
+     * @param State::SAUCER_STATE_* $state
+     */
+    private function onSafeLoad(CData $_, int $state): void
     {
         $this->onLoad($_, $state);
     }

@@ -11,8 +11,7 @@ use FFI\CData;
 final readonly class WindowId extends StructPointerId
 {
     /**
-     * Returns new {@see WindowId} instance from given
-     * `saucer_handle*` struct pointer.
+     * Returns new {@see WindowId} instance from given `saucer_window*` struct pointer.
      *
      * @api
      */

@@ -358,8 +358,7 @@ class Application implements
      */
     private function onApplicationStarted(): void
     {
-        // Resolve main window lazy proxy (facade)
-        $_ = $this->window->isClosed;
+        $this->windows->boot();
     }
 
     /**

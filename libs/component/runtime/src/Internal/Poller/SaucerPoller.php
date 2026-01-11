@@ -40,11 +40,11 @@ final class SaucerPoller implements PollerInterface
     private readonly CData $ptr;
 
     public function __construct(
-        private readonly ApplicationId $id,
+        ApplicationId $id,
         private readonly SaucerInterface $saucer,
     ) {
         $this->ids = $this->createIdValueGenerator();
-        $this->ptr = $this->id->ptr;
+        $this->ptr = $this->saucer->saucer_loop_new($id->ptr);
     }
 
     /**
@@ -89,7 +89,7 @@ final class SaucerPoller implements PollerInterface
 
     private function executeInternalTask(): void
     {
-        $this->saucer->saucer_application_run_once($this->ptr);
+        $this->saucer->saucer_loop_iteration($this->ptr);
     }
 
     private function executePeriodicTask(): void
@@ -155,5 +155,10 @@ final class SaucerPoller implements PollerInterface
     public function cancel(int|string $taskId): void
     {
         unset($this->periodicMicroTasks[$taskId], $this->microTasks[$taskId]);
+    }
+
+    public function __destruct()
+    {
+        $this->saucer->saucer_loop_free($this->ptr);
     }
 }

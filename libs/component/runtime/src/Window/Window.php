@@ -14,13 +14,13 @@ use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerProvider;
 use Boson\Extension\Exception\ExtensionNotFoundException;
 use Boson\Extension\Registry;
-use Boson\Shared\Marker\RequiresDealloc;
+use Boson\WebView\Manager\WebViewManager;
 use Boson\WebView\WebView;
-use Boson\WebView\WebViewCreateInfo\FlagsListFormatter;
 use Boson\Window\Event\WindowDecorationChanged;
 use Boson\Window\Event\WindowMaximized;
 use Boson\Window\Event\WindowMinimized;
 use Boson\Window\Event\WindowStateChanged;
+use Boson\Window\Exception\NoDefaultWebViewException;
 use Boson\Window\Internal\SaucerWindowEventHandler;
 use Boson\Window\Internal\Size\ManagedWindowMaxBounds;
 use Boson\Window\Internal\Size\ManagedWindowMinBounds;
@@ -42,22 +42,30 @@ final class Window implements
     use EventListenerProvider;
 
     /**
-     * Unique window identifier.
-     *
-     * It is worth noting that the destruction of this object
-     * from memory (deallocation using PHP GC) means the physical
-     * destruction of all data associated with it, including unmanaged.
+     * Gets webviews list and methods for working with webviews.
      *
      * @api
      */
-    public readonly WindowId $id;
+    public readonly WebViewManager $webviews;
 
     /**
-     * Gets child webview instance attached to the window.
+     * Provides more convenient and faster access to the {@see WebViewManager::$default}
+     * subsystem from child {@see $webviews} property.
+     *
+     * @uses WebViewManager::$default Default (first) webview of the webviews list
      *
      * @api
      */
-    public readonly WebView $webview;
+    public WebView $webview {
+        /**
+         * Gets the default webview of the window.
+         *
+         * @throws NoDefaultWebViewException in case the default webview was
+         *         already closed and removed earlier
+         */
+        get => $this->webviews->default
+            ?? throw NoDefaultWebViewException::becauseNoDefaultWebView();
+    }
 
     /**
      * The title of the specified window encoded as UTF-8.
@@ -497,6 +505,14 @@ final class Window implements
          */
         private readonly SaucerInterface $saucer,
         /**
+         * Unique window identifier.
+         *
+         * It is worth noting that the destruction of this object
+         * from memory (deallocation using PHP GC) means the physical
+         * destruction of all data associated with it, including unmanaged.
+         */
+        public readonly WindowId $id,
+        /**
          * Gets parent application instance to which this window belongs.
          */
         public readonly Application $app,
@@ -507,12 +523,11 @@ final class Window implements
         EventDispatcherInterface $dispatcher,
     ) {
         // Initialization Window's fields and properties
-        $this->id = self::createWindowId($saucer, $app, $this->info);
         $this->listener = self::createEventListener($dispatcher);
         $this->size = self::createWindowSize($saucer, $this->id);
         $this->min = self::createWindowMinSize($saucer, $this->id);
         $this->max = self::createWindowMaxSize($saucer, $this->id);
-        $this->webview = self::createWebView($saucer, $this, $info, $this->listener);
+        $this->webviews = new WebViewManager($saucer, $this, $info->webview, $this->listener);
         $this->decoration = self::createWindowDecorations($info);
         $this->handler = self::createSaucerWindowEventHandler($saucer, $this, $this->listener);
 
@@ -659,118 +674,16 @@ final class Window implements
     }
 
     /**
-     * Creates new window ID and internal handle
-     */
-    private static function createWindowId(SaucerInterface $api, Application $app, WindowCreateInfo $info): WindowId
-    {
-        return WindowId::fromHandle(
-            api: $api,
-            handle: self::createWindowPointer($api, $app, $info),
-        );
-    }
-
-    /**
      * Gets current (physical) window title
      */
     private function getCurrentWindowTitle(): string
     {
-        $result = $this->saucer->saucer_window_title($this->id->ptr);
+        $result = $this->saucer->new('char*');
+        $size = $this->saucer->new('size_t');
 
-        try {
-            return \FFI::string($result);
-        } finally {
-            \FFI::free($result);
-        }
-    }
+        $this->saucer->saucer_window_title($this->id->ptr, \FFI::addr($result), \FFI::addr($size));
 
-    #[RequiresDealloc]
-    private static function createWindowPointer(SaucerInterface $api, Application $app, WindowCreateInfo $info): CData
-    {
-        $preferences = self::createPreferencesPointer($api, $app, $info);
-
-        // Enable dev tools in case of the corresponding value was passed
-        // explicitly to the create info options or debug mode was enabled.
-        $isDevToolsEnabled = $info->webview->devTools ?? $app->isDebug;
-
-        // Enable context menu in case of the corresponding value was passed
-        // explicitly to the create info options or debug mode was enabled.
-        $isContextMenuEnabled = $info->webview->contextMenu ?? $app->isDebug;
-
-        if ($isDevToolsEnabled) {
-            /**
-             * Force disable unnecessary XSS warnings in dev tools
-             *
-             * @link https://developer.chrome.com/blog/self-xss#can_you_disable_it_for_test_automation
-             */
-            $api->saucer_preferences_add_browser_flag(
-                $preferences,
-                '--unsafely-disable-devtools-self-xss-warnings',
-            );
-        }
-
-        try {
-            $handle = $api->saucer_new($preferences);
-
-            if ($info->decoration === WindowDecoration::DarkMode) {
-                $api->saucer_webview_set_force_dark_mode($handle, true);
-            }
-
-            if ($info->title !== '') {
-                $api->saucer_window_set_title($handle, $info->title);
-            }
-
-            if ($info->resizable === false) {
-                $api->saucer_window_set_resizable($handle, false);
-            }
-
-            if ($info->alwaysOnTop === true) {
-                $api->saucer_window_set_always_on_top($handle, true);
-            }
-
-            if ($info->clickThrough === true) {
-                $api->saucer_window_set_click_through($handle, true);
-            }
-
-            $api->saucer_window_set_size($handle, $info->width, $info->height);
-            $api->saucer_webview_set_context_menu($handle, $isContextMenuEnabled);
-            $api->saucer_webview_set_dev_tools($handle, $isDevToolsEnabled);
-
-            return $handle;
-        } finally {
-            $api->saucer_preferences_free($preferences);
-        }
-    }
-
-    #[RequiresDealloc]
-    private static function createPreferencesPointer(SaucerInterface $api, Application $app, WindowCreateInfo $info): CData
-    {
-        $preferences = $api->saucer_preferences_new($app->id->ptr);
-
-        // Hardware acceleration is enabled by default.
-        if ($info->enableHardwareAcceleration === false) {
-            $api->saucer_preferences_set_hardware_acceleration($preferences, false);
-        }
-
-        // The "persistent cookies" feature uses storage value.
-        // If this functionality is not required,
-        // then storage can be omitted.
-        if ($info->webview->storage === false) {
-            $api->saucer_preferences_set_persistent_cookies($preferences, false);
-        } else {
-            $api->saucer_preferences_set_storage_path($preferences, $info->webview->storage);
-        }
-
-        // Specify additional flags using the formatter.
-        foreach (FlagsListFormatter::format($info->webview->flags) as $value) {
-            $api->saucer_preferences_add_browser_flag($preferences, $value);
-        }
-
-        // Define the "user-agent" header if it is specified.
-        if ($info->webview->userAgent !== null) {
-            $api->saucer_preferences_set_user_agent($preferences, $info->webview->userAgent);
-        }
-
-        return $preferences;
+        return \FFI::string($result, $size->cdata);
     }
 
     /**
@@ -792,6 +705,9 @@ final class Window implements
      */
     private function updateDecoration(WindowDecoration $decoration): void
     {
+        // TODO
+        return;
+
         $ptr = $this->id->ptr;
 
         $this->saucer->saucer_webview_background(

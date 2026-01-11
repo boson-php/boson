@@ -45,15 +45,16 @@ final class ScriptsApi extends LoadedWebViewExtension implements
 
     public function preload(#[Language('JavaScript')] string $code, bool $permanent = false): LoadedScript
     {
-        $handle = $this->app->saucer->saucer_script_new($code, ScriptTime::SAUCER_SCRIPT_TIME_CREATION);
-
-        if ($permanent) {
-            $this->app->saucer->saucer_script_set_permanent($handle, true);
-        }
-
         return $this->registerAndInject(new LoadedScript(
             api: $this->app->saucer,
-            id: LoadedScriptId::fromScriptHandle($this->app->saucer, $handle),
+            webView: $this->webview,
+            id: LoadedScriptId::new($this->app->saucer->saucer_webview_inject(
+                $this->ptr,
+                $code,
+                ScriptTime::SAUCER_SCRIPT_TIME_CREATION,
+                true,
+                !$permanent,
+            )),
             code: $code,
             isPermanent: $permanent,
             time: LoadedScriptLoadingTime::OnCreated,
@@ -62,11 +63,16 @@ final class ScriptsApi extends LoadedWebViewExtension implements
 
     public function add(#[Language('JavaScript')] string $code): LoadedScript
     {
-        $handle = $this->app->saucer->saucer_script_new($code, ScriptTime::SAUCER_SCRIPT_TIME_READY);
-
         return $this->registerAndInject(new LoadedScript(
             api: $this->app->saucer,
-            id: LoadedScriptId::fromScriptHandle($this->app->saucer, $handle),
+            webView: $this->webview,
+            id: LoadedScriptId::new($this->app->saucer->saucer_webview_inject(
+                $this->ptr,
+                $code,
+                ScriptTime::SAUCER_SCRIPT_TIME_CREATION,
+                true,
+                true,
+            )),
             code: $code,
             isPermanent: false,
             time: LoadedScriptLoadingTime::OnReady,
@@ -76,8 +82,6 @@ final class ScriptsApi extends LoadedWebViewExtension implements
     private function registerAndInject(LoadedScript $script): LoadedScript
     {
         $this->scripts[$script] = null;
-
-        $this->app->saucer->saucer_webview_inject($this->ptr, $script->id->ptr);
 
         return $script;
     }
@@ -94,6 +98,6 @@ final class ScriptsApi extends LoadedWebViewExtension implements
 
     public function __destruct()
     {
-        $this->app->saucer->saucer_webview_clear_scripts($this->ptr);
+        $this->app->saucer->saucer_webview_uninject_all($this->ptr);;
     }
 }

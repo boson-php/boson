@@ -63,6 +63,11 @@ final class WindowManager implements
      */
     private readonly EventListener $listener;
 
+    /**
+     * Window creator instance
+     */
+    private readonly WindowHandlerFactory $factory;
+
     public function __construct(
         private readonly SaucerInterface $api,
         private readonly Application $app,
@@ -70,18 +75,14 @@ final class WindowManager implements
         EventDispatcherInterface $dispatcher,
     ) {
         // Initialization Window Manager's fields and properties
-        $this->windows = self::createWindowsStorage();
-        $this->memory = self::createWindowsDestructorObserver();
-        $this->listener = self::createEventListener($dispatcher);
-
-        // Initialization of Window Manager's API
-        // ...
+        $this->windows = $this->createWindowsStorage();
+        $this->memory = $this->createWindowsDestructorObserver();
+        $this->listener = $this->createEventListener($dispatcher);
+        $this->factory = $this->createWindowHandlerFactory($api, $app);
 
         // Register Window Manager's subsystems
         $this->registerDefaultEventListeners();
-
-        // Create default Window proxy instance
-        $this->default = $this->create($info, true);
+        $this->default = $this->createDefaultWindow($info);
     }
 
     /**
@@ -92,7 +93,7 @@ final class WindowManager implements
      *
      * @return \SplObjectStorage<Window, mixed>
      */
-    private static function createWindowsStorage(): \SplObjectStorage
+    private function createWindowsStorage(): \SplObjectStorage
     {
         /** @var \SplObjectStorage<Window, mixed> */
         return new \SplObjectStorage();
@@ -107,7 +108,7 @@ final class WindowManager implements
      *
      * @return ObservableWeakSet<Window>
      */
-    private static function createWindowsDestructorObserver(): ObservableWeakSet
+    private function createWindowsDestructorObserver(): ObservableWeakSet
     {
         /** @var ObservableWeakSet<Window> */
         return new ObservableWeakSet();
@@ -117,9 +118,17 @@ final class WindowManager implements
      * Creates local (windows-aware) event listener
      * based on the provided dispatcher.
      */
-    private static function createEventListener(PsrEventDispatcherInterface $dispatcher): EventListener
+    private function createEventListener(PsrEventDispatcherInterface $dispatcher): EventListener
     {
         return new DelegateEventListener($dispatcher);
+    }
+
+    /**
+     * Creates a new window handler factory
+     */
+    private function createWindowHandlerFactory(): WindowHandlerFactory
+    {
+        return new WindowHandlerFactory($this->api, $this->app);
     }
 
     /**
@@ -141,11 +150,28 @@ final class WindowManager implements
         });
     }
 
-    public function create(WindowCreateInfo $info = new WindowCreateInfo(), bool $defer = false): Window
+    /**
+     * Creates default window instance defined in default configuration
+     */
+    private function createDefaultWindow(WindowCreateInfo $info): Window
     {
-        $instance = $defer
-            ? $this->createWindowProxy($info)
-            : $this->createWindowInstance($info);
+        return $this->defer($info);
+    }
+
+    public function create(WindowCreateInfo $info = new WindowCreateInfo()): Window
+    {
+        $instance = $this->defer($info);
+
+        try {
+            return $instance;
+        } finally {
+            $this->initializeIfNotInitialized($instance);
+        }
+    }
+
+    public function defer(WindowCreateInfo $info = new WindowCreateInfo()): Window
+    {
+        $instance = $this->createWindowProxy($info);
 
         $this->windows->offsetSet($instance, $info);
 
@@ -159,58 +185,60 @@ final class WindowManager implements
     {
         /** @var Window */
         return new \ReflectionClass(Window::class)
-            ->newLazyProxy(function () use ($info): Window {
-                $instance = $this->createWindowInstance($info);
-
-                $this->swapWindowProxy($info, $instance);
-
-                return $instance;
+            ->newLazyGhost(function (Window $window) use ($info): void {
+                $this->onInitialize($window, $info);
             });
     }
 
     /**
-     * Swaps a window proxy with its actual instance.
-     *
-     * The problem is that the proxy ID in the storage and the real instance
-     * are different. Therefore, it is necessary to change the window proxy
-     * to the real instance after it initializing.
+     * Calls after window object has been release
      */
-    private function swapWindowProxy(WindowCreateInfo $info, Window $window): void
+    private function onRelease(Window $window): void
     {
-        foreach ($this->windows as $proxy) {
-            if ($this->windows->getInfo() === $info) {
-                $this->windows->offsetUnset($proxy);
-                $this->windows->offsetSet($window, $info);
+        //$this->api->saucer_webview_clear_scripts($window->id->ptr);
+        //$this->api->saucer_webview_clear_embedded($window->id->ptr);
+        //$this->api->saucer_free($window->id->ptr);
 
-                return;
-            }
-        }
+        $this->listener->dispatch(new WindowDestroyed($window));
     }
 
     /**
-     * Creates a new real window instance with the given information.
+     * Calls after window object has been created
      */
-    private function createWindowInstance(WindowCreateInfo $info): Window
+    private function onCreate(Window $window): void
     {
-        $window = new Window(
+        $this->listener->dispatch(new WindowCreated($window));
+    }
+
+    private function onInitialize(Window $window, WindowCreateInfo $info): void
+    {
+        $handle = $this->factory->create($info);
+
+        $window->__construct(
             saucer: $this->api,
+            id: $handle,
             app: $this->app,
             info: $info,
             dispatcher: $this->listener,
         );
 
-        // Clearing object pointers after window object release
-        $this->memory->watch($window, function (Window $window): void {
-            $this->api->saucer_webview_clear_scripts($window->id->ptr);
-            $this->api->saucer_webview_clear_embedded($window->id->ptr);
-            $this->api->saucer_free($window->id->ptr);
+        $this->memory->watch($window, $this->onRelease(...));
 
-            $this->listener->dispatch(new WindowDestroyed($window));
-        });
+        $this->onCreate($window);
+    }
 
-        $this->listener->dispatch(new WindowCreated($window));
+    private function initializeIfNotInitialized(Window $window): void
+    {
+        // Getting any object`s field will force initialization
+        // of any proxy object.
+        $window->id;
+    }
 
-        return $window;
+    public function boot(): void
+    {
+        foreach ($this->windows as $window) {
+            $this->initializeIfNotInitialized($window);
+        }
     }
 
     public function getIterator(): \Traversable

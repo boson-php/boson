@@ -65,11 +65,9 @@ final readonly class WindowCreateInfo
          */
         public int $height = self::DEFAULT_HEIGHT,
         /**
-         * Enables graphics hardware acceleration in case of this option
-         * is set to {@see true} or disables in case {@see false}.
+         * Enables hardware acceleration for all children webview instances.
          *
-         * Note: [MACOS] WKWebView does not allow to control
-         *       hardware-acceleration.
+         * @see WebViewCreateInfo::$enableHardwareAcceleration
          */
         public bool $enableHardwareAcceleration = true,
         /**

@@ -4,22 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\Scripts;
 
-use Boson\Component\Saucer\SaucerInterface;
-use Boson\Internal\StructPointerId;
-use FFI\CData;
+use Boson\Internal\PositiveIntId;
 
-final readonly class LoadedScriptId extends StructPointerId
-{
-    /**
-     * Returns new {@see LoadedScriptId} instance from given
-     * `saucer_script*` struct pointer.
-     *
-     * @api
-     */
-    final public static function fromScriptHandle(SaucerInterface $api, CData $handle): self
-    {
-        $id = self::getPointerIntValue($api, $handle);
-
-        return new self($id, $handle);
-    }
-}
+final readonly class LoadedScriptId extends PositiveIntId {}

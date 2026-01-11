@@ -43,16 +43,6 @@ final class WebView implements
     use EventListenerProvider;
 
     /**
-     * The webview identifier.
-     *
-     * In terms of implementation, it is equals to
-     * the {@see WindowId} Window's ID.
-     *
-     * @api
-     */
-    public readonly WebViewId $id;
-
-    /**
      * Contains webview URI instance.
      *
      * @api
@@ -84,7 +74,7 @@ final class WebView implements
          * ```
          */
         set(\Stringable|string $value) {
-            $this->saucer->saucer_webview_set_url($this->id->ptr, (string) $value);
+            $this->saucer->saucer_webview_set_url_str($this->id->ptr, (string) $value);
         }
     }
 
@@ -95,9 +85,7 @@ final class WebView implements
      */
     public string $html {
         set(#[Language('HTML')] \Stringable|string $html) {
-            $base64 = \base64_encode((string) $html);
-
-            $this->url = \sprintf('data:text/html;base64,%s', $base64);
+            $this->saucer->saucer_webview_set_html($this->id->ptr, $html);
         }
     }
 
@@ -141,6 +129,15 @@ final class WebView implements
          */
         private readonly SaucerInterface $saucer,
         /**
+         * The webview identifier.
+         *
+         * In terms of implementation, it is equals to
+         * the {@see WindowId} Window's ID.
+         *
+         * @api
+         */
+        public readonly WebViewId $id,
+        /**
          * Gets parent application window instance to which
          * this webview instance belongs.
          */
@@ -152,7 +149,6 @@ final class WebView implements
         EventDispatcherInterface $dispatcher,
     ) {
         // Initialization WebView's fields and properties
-        $this->id = self::createWebViewId($this->window);
         $this->listener = self::createEventListener($dispatcher);
 
         // Initialization of WebView's API
@@ -180,14 +176,6 @@ final class WebView implements
     public function has(string $id): bool
     {
         return $this->extensions->has($id);
-    }
-
-    /**
-     * Creates webview ID
-     */
-    private static function createWebViewId(Window $window): WebViewId
-    {
-        return WebViewId::fromWindowId($window->id);
     }
 
     /**
