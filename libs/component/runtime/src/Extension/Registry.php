@@ -113,22 +113,35 @@ final class Registry implements ContainerInterface, Destroyable
         return isset($this->publicExtensions[$id]);
     }
 
+    /**
+     * @internal for internal usage only
+     */
     public function destroy(): void
     {
+        $destroyed = new \SplObjectStorage();
+
         foreach ($this->privateExtensions as $extension) {
             if ($extension instanceof Destroyable) {
-                $extension->destroy();
+                $destroyed->offsetSet($extension);
             }
         }
 
         foreach ($this->publicExtensions as $extension) {
             if ($extension instanceof Destroyable) {
-                $extension->destroy();
+                $destroyed->offsetSet($extension);
             }
         }
 
         $this->privateExtensions = [];
         $this->publicExtensions = [];
+
+        foreach ($destroyed as $extension) {
+            $extension->destroy();
+        }
+
+        unset($destroyed);
+
+        \gc_collect_cycles();
     }
 
     public function __destruct()

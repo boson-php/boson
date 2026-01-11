@@ -10,7 +10,7 @@ use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerProvider;
-use Boson\WebView\Exception\NoParentWindowException;
+use Boson\WebView\Exception\WindowDereferenceException;
 use Boson\WebView\WebView;
 use Boson\WebView\WebViewCreateInfo;
 use Boson\Window\Window;
@@ -62,14 +62,15 @@ final class WebViewManager implements
     private readonly WebViewHandlerFactory $factory;
 
     /**
-     * Parent window reference
+     * Gets a reference to the parent window to which the
+     * specified all children webview instances belongs.
      */
     private Window $window {
         /**
-         * @throws NoParentWindowException in case of parent window has been removed
+         * @throws WindowDereferenceException in case of parent window has been removed
          */
         get => $this->reference->get()
-            ?? throw NoParentWindowException::becauseNoParentWindow();
+            ?? throw WindowDereferenceException::becauseNoParentWindow();
     }
 
     /**
@@ -144,12 +145,6 @@ final class WebViewManager implements
      */
     private function onRelease(WebView $webview): void
     {
-        \gc_collect_cycles();
-
-        //$this->api->saucer_webview_clear_scripts($window->id->ptr);
-        //$this->api->saucer_webview_clear_embedded($window->id->ptr);
-        //$this->api->saucer_free($window->id->ptr);
-
         // $this->listener->dispatch(new WindowDestroyed($window));
     }
 
@@ -161,15 +156,22 @@ final class WebViewManager implements
         // $this->listener->dispatch(new WindowCreated($window));
     }
 
+    /**
+     * @internal for internal usage only
+     */
     public function destroy(): void
     {
+        /** @var WebView $webview */
         foreach ($this->webviews as $webview) {
             $this->webviews->detach($webview);
+
+            $webview->destroy();
         }
 
         $this->default = null;
-
         $this->listener->removeAllEventListeners();
+
+        \gc_collect_cycles();
     }
 
     public function getIterator(): \Traversable

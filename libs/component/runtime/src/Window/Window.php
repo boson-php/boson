@@ -7,8 +7,6 @@ namespace Boson\Window;
 use Boson\Application;
 use Boson\Component\Saucer\SaucerInterface;
 use Boson\Component\Saucer\WindowEdge as SaucerWindowEdge;
-use Boson\Component\Saucer\WindowEvent;
-use Boson\Component\WeakType\WeakClosure;
 use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\DelegateEventListener;
@@ -23,13 +21,12 @@ use Boson\Window\Event\WindowDecorationChanged;
 use Boson\Window\Event\WindowMaximized;
 use Boson\Window\Event\WindowMinimized;
 use Boson\Window\Event\WindowStateChanged;
-use Boson\Window\Exception\NoDefaultWebViewException;
-use Boson\Window\Internal\SaucerWindowEventHandler;
+use Boson\Window\Exception\WebViewDereferenceException;
 use Boson\Window\Internal\Size\ManagedWindowMaxBounds;
 use Boson\Window\Internal\Size\ManagedWindowMinBounds;
 use Boson\Window\Internal\Size\ManagedWindowSize;
 use Boson\Window\Manager\WindowFactoryInterface;
-use FFI\CData;
+use Internal\Destroy\Destroyable;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -40,7 +37,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 final class Window implements
     IdentifiableInterface,
     EventListenerInterface,
-    ContainerInterface
+    ContainerInterface,
+    Destroyable
 {
     use EventListenerProvider;
 
@@ -63,11 +61,11 @@ final class Window implements
         /**
          * Gets the default webview of the window.
          *
-         * @throws NoDefaultWebViewException in case the default webview was
+         * @throws WebViewDereferenceException in case the default webview was
          *         already closed and removed earlier
          */
         get => $this->webviews->default
-            ?? throw NoDefaultWebViewException::becauseNoDefaultWebView();
+            ?? throw WebViewDereferenceException::becauseNoDefaultWebView();
     }
 
     /**
@@ -653,10 +651,7 @@ final class Window implements
         $this->listener->addEventListener(WindowClosed::class, function (): void {
             $this->isClosed = true;
 
-            $this->listener->removeAllEventListeners();
-
-            $this->webviews->destroy();
-            $this->extensions->destroy();
+            $this->destroy();
         });
 
         $this->listener->addEventListener(WindowMinimized::class, function (WindowMinimized $e): void {
@@ -884,14 +879,24 @@ final class Window implements
         $this->saucer->saucer_window_close($this->id->ptr);
     }
 
+    /**
+     * @internal for internal usage only
+     */
+    public function destroy(): void
+    {
+        $this->extensions->destroy();
+        $this->webviews->destroy();
+
+        $this->listener->removeAllEventListeners();
+
+        \gc_collect_cycles();
+    }
+
     public function __destruct()
     {
-        $this->close();
+        $this->destroy();
 
-        $this->webviews->destroy();
-        $this->extensions->destroy();
-
-        var_dump(__METHOD__);
+        $this->saucer->saucer_window_free($this->id->ptr);
     }
 
     public function __get(string $name): object

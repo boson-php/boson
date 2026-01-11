@@ -7,7 +7,7 @@ namespace Boson\WebView\Api;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\EventListener;
 use Boson\Internal\StructPointerId;
-use Boson\WebView\Exception\NoWebViewApiException;
+use Boson\WebView\Exception\WebViewApiDereferenceException;
 use Boson\WebView\WebView;
 use Boson\Window\Api\LoadedWindowExtension;
 
@@ -28,7 +28,7 @@ abstract class LoadedWebViewExtension extends LoadedWindowExtension
 
     protected WebView $webview {
         get => $this->reference->get()
-            ?? throw NoWebViewApiException::becauseNoWebView();
+            ?? throw WebViewApiDereferenceException::becauseNoWebView();
     }
 
     /**

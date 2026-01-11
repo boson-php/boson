@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Exception;
 
-final class NoParentWindowException extends WebViewException
+class WindowDereferenceException extends WebViewException
 {
     public static function becauseNoParentWindow(?\Throwable $previous = null): self
     {
-        $message = 'The webview cannot be controlled perhaps the parent window was removed (closed) earlier';
+        $message = 'The parent window cannot be accessed because it was previously destroyed (closed)';
 
         return new self($message, 0, $previous);
     }

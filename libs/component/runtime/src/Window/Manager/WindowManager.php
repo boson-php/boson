@@ -120,8 +120,6 @@ final class WindowManager implements
         $this->listener->addEventListener(WindowClosed::class, function (WindowClosed $event) {
             $this->windows->detach($event->subject);
 
-            var_dump('DETACHED');
-
             // Recalculate default window in case of
             // previous default window was closed.
             if ($this->default === $event->subject) {
@@ -160,13 +158,7 @@ final class WindowManager implements
      */
     private function onRelease(Window $window): void
     {
-        //$this->api->saucer_webview_clear_scripts($window->id->ptr);
-        //$this->api->saucer_webview_clear_embedded($window->id->ptr);
-        //$this->api->saucer_window_free($window->id->ptr);
-
         $this->listener->dispatch(new WindowDestroyed($window));
-
-        \gc_collect_cycles();
     }
 
     /**
@@ -207,13 +199,22 @@ final class WindowManager implements
         }
     }
 
+    /**
+     * @internal for internal usage only
+     */
     public function destroy(): void
     {
+        /** @var Window $window */
         foreach ($this->windows as $window) {
             $this->windows->detach($window);
+
+            $window->destroy();
         }
 
+        $this->default = null;
         $this->listener->removeAllEventListeners();
+
+        \gc_collect_cycles();
     }
 
     public function getIterator(): \Traversable

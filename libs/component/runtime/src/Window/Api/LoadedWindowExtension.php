@@ -8,7 +8,7 @@ use Boson\Api\LoadedApplicationExtension;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\EventListener;
 use Boson\Internal\StructPointerId;
-use Boson\Window\Exception\NoWindowApiException;
+use Boson\Window\Exception\WindowApiDereferenceException;
 use Boson\Window\Window;
 
 /**
@@ -28,7 +28,7 @@ abstract class LoadedWindowExtension extends LoadedApplicationExtension
 
     protected Window $window {
         get => $this->reference->get()
-            ?? throw NoWindowApiException::becauseNoWindow();
+            ?? throw WindowApiDereferenceException::becauseNoWindow();
     }
 
     /**

@@ -26,9 +26,10 @@ use Boson\WebView\Api\Scripts\ScriptsApiInterface;
 use Boson\WebView\Api\WebComponents\Exception\ComponentAlreadyDefinedException;
 use Boson\WebView\Api\WebComponents\Exception\WebComponentsApiException;
 use Boson\WebView\Api\WebComponents\WebComponentsApiInterface;
-use Boson\WebView\Exception\NoParentWindowException;
+use Boson\WebView\Exception\WindowDereferenceException;
 use Boson\Window\Window;
 use Boson\Window\WindowId;
+use Internal\Destroy\Destroyable;
 use JetBrains\PhpStorm\Language;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -40,9 +41,18 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 final class WebView implements
     IdentifiableInterface,
     EventListenerInterface,
-    ContainerInterface
+    ContainerInterface,
+    Destroyable
 {
     use EventListenerProvider;
+
+    /**
+     * Gets a reference to the parent application to which the
+     * specified webview instance belongs.
+     */
+    public Application $app {
+        get => $this->window->app;
+    }
 
     /**
      * Gets a reference to the parent window to which the
@@ -50,10 +60,10 @@ final class WebView implements
      */
     public Window $window {
         /**
-         * @throws NoParentWindowException in case of parent window has been removed
+         * @throws WindowDereferenceException in case of parent window has been removed
          */
         get => $this->reference->get()
-            ?? throw NoParentWindowException::becauseNoParentWindow();
+            ?? throw WindowDereferenceException::becauseNoParentWindow();
     }
 
     /**
@@ -156,7 +166,7 @@ final class WebView implements
          * @api
          */
         public readonly WebViewId $id,
-        Window $parent,
+        private readonly Window $parent,
         /**
          * Gets information DTO about the webview with which it was created.
          */
@@ -322,12 +332,20 @@ final class WebView implements
         $this->saucer->saucer_webview_reload($this->id->ptr);
     }
 
+    /**
+     * @internal for internal usage only
+     */
+    public function destroy(): void
+    {
+        $this->extensions->destroy();
+        $this->listener->removeAllEventListeners();
+
+        \gc_collect_cycles();
+    }
+
     public function __destruct()
     {
-        $this->listener->removeAllEventListeners();
-        $this->extensions->destroy();
-
-        var_dump(__METHOD__);
+        $this->destroy();
     }
 
     public function __get(string $name): object

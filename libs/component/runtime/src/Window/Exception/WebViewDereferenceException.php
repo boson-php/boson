@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boson\Window\Exception;
 
-final class NoDefaultWebViewException extends WindowException
+class WebViewDereferenceException extends WindowException
 {
     public static function becauseNoDefaultWebView(?\Throwable $previous = null): self
     {

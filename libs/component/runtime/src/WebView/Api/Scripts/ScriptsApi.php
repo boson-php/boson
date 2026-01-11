@@ -98,6 +98,6 @@ final class ScriptsApi extends LoadedWebViewExtension implements
 
     public function __destruct()
     {
-        $this->app->saucer->saucer_webview_uninject_all($this->ptr);;
+        $this->app->saucer->saucer_webview_uninject_all($this->ptr);
     }
 }

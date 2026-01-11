@@ -213,9 +213,4 @@ final class DataRetriever extends LoadedWebViewExtension implements
 
         $deferred->reject(new ClientErrorException($error));
     }
-
-    public function __destruct()
-    {
-        var_dump(__METHOD__);
-    }
 }

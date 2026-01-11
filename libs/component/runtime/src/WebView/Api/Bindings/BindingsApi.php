@@ -197,9 +197,4 @@ final class BindingsApi extends LoadedWebViewExtension implements
     {
         return \count($this->functions);
     }
-
-    public function __destruct()
-    {
-        var_dump(__METHOD__);
-    }
 }

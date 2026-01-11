@@ -16,7 +16,7 @@ use Boson\Event\ApplicationStarting;
 use Boson\Event\ApplicationStopped;
 use Boson\Event\ApplicationStopping;
 use Boson\Exception\ApplicationException;
-use Boson\Exception\NoDefaultWindowException;
+use Boson\Exception\WindowDereferenceException;
 use Boson\Extension\Exception\ExtensionNotFoundException;
 use Boson\Extension\Registry;
 use Boson\Internal\Poller\SaucerPoller;
@@ -29,6 +29,7 @@ use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
 use Boson\Window\Window;
 use FFI\CData;
+use Internal\Destroy\Destroyable;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -85,11 +86,11 @@ class Application implements
         /**
          * Gets the default window of the application.
          *
-         * @throws NoDefaultWindowException in case the default window was
+         * @throws WindowDereferenceException in case the default window was
          *         already closed and removed earlier
          */
         get => $this->windows->default
-            ?? throw NoDefaultWindowException::becauseNoDefaultWindow();
+            ?? throw WindowDereferenceException::becauseNoDefaultWindow();
     }
 
     /**
@@ -102,7 +103,7 @@ class Application implements
         /**
          * Gets the webview manager of the default application window.
          *
-         * @throws NoDefaultWindowException in case the default window was
+         * @throws WindowDereferenceException in case the default window was
          *         already closed and removed earlier
          */
         get => $this->window->webviews;
@@ -118,7 +119,7 @@ class Application implements
         /**
          * Gets the WebView instance associated with the default window.
          *
-         * @throws NoDefaultWindowException in case the default window was
+         * @throws WindowDereferenceException in case the default window was
          *         already closed and removed earlier
          */
         get => $this->window->webview;
@@ -512,10 +513,11 @@ class Application implements
     {
         $this->quit();
 
-        $this->windows->destroy();
         $this->extensions->destroy();
+        $this->windows->destroy();
 
-        var_dump(__METHOD__);
+        $this->listener->removeAllEventListeners();
+
         $this->saucer->saucer_application_quit($this->id->ptr);
     }
 
