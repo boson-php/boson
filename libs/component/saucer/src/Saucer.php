@@ -243,6 +243,13 @@ typedef void (*saucer_webview_event_favicon)(saucer_webview *, saucer_icon *, vo
 typedef void (*saucer_webview_event_title)(saucer_webview *, const char *, size_t, void *);
 typedef void (*saucer_webview_event_load)(saucer_webview *, SAUCER_STATE, void *);
 
+// .loop
+typedef struct saucer_loop saucer_loop;
+
+// .desktop
+typedef struct saucer_desktop saucer_desktop;
+typedef struct saucer_picker_options saucer_picker_options;
+
 
 /// Saucer Functions
 
@@ -513,3 +520,30 @@ void saucer_webview_off_all(saucer_webview *, SAUCER_WEBVIEW_EVENT);
 void saucer_webview_register_scheme(const char *);
 
 void saucer_webview_native(saucer_webview *, size_t, void *, size_t *);
+
+// .loop
+void saucer_loop_free(saucer_loop *);
+saucer_loop *saucer_loop_new(saucer_application *);
+
+void saucer_loop_run(saucer_loop *);
+void saucer_loop_iteration(saucer_loop *);
+
+void saucer_loop_quit(saucer_loop *);
+
+// .desktop
+saucer_picker_options *saucer_picker_options_new();
+void saucer_picker_options_free(saucer_picker_options *);
+void saucer_picker_options_set_initial(saucer_picker_options *, const char *);
+void saucer_picker_options_set_filters(saucer_picker_options *, const char *, size_t);
+
+void saucer_desktop_free(saucer_desktop *);
+saucer_desktop *saucer_desktop_new(saucer_application *);
+
+void saucer_desktop_mouse_position(saucer_desktop *, int *x, int *y);
+
+void saucer_picker_pick_file(saucer_desktop *, saucer_picker_options *, char *, size_t *, int *error);
+void saucer_picker_pick_folder(saucer_desktop *, saucer_picker_options *, char *, size_t *, int *error);
+void saucer_picker_pick_files(saucer_desktop *, saucer_picker_options *, char *, size_t *, int *error);
+void saucer_picker_save(saucer_desktop *, saucer_picker_options *, char *, size_t *, int *error);
+
+void saucer_desktop_open(saucer_desktop *, const char *);

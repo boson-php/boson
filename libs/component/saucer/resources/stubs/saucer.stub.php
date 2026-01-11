@@ -841,7 +841,7 @@ interface SaucerInterface
      * @param IntPtr $error
      * @return SaucerWebviewType
      */
-public function saucer_webview_new(CData $options, CData $error): CData;
+    public function saucer_webview_new(CData $options, CData $error): CData;
 
     /**
      * @param SaucerWebviewType $webview
