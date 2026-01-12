@@ -19,9 +19,10 @@ use Boson\Window\Event\WindowMinimized;
 use Boson\Window\Event\WindowResized;
 use Boson\Window\Window;
 use FFI\CData;
-use Internal\Destroy\Destroyable;
+use Internal\Destroy\Destroyable as DestroyableInterface;
 
-final class LifecycleEventsListener extends LoadedWindowExtension implements Destroyable
+final class LifecycleEventsListener extends LoadedWindowExtension implements
+    DestroyableInterface
 {
     /**
      * @var non-empty-string
@@ -61,7 +62,7 @@ final class LifecycleEventsListener extends LoadedWindowExtension implements Des
     /**
      * @var array<WindowEvent::SAUCER_WINDOW_EVENT_*, int<0, max>>
      */
-    private readonly array $listeners;
+    private array $listeners;
 
     public function __construct(
         Window $window,
@@ -273,5 +274,17 @@ final class LifecycleEventsListener extends LoadedWindowExtension implements Des
         foreach ($this->listeners as $event => $id) {
             $this->saucer->saucer_window_off($this->ptr, $event, $id);
         }
+
+        $this->handlers->onDecorated = null;
+        $this->handlers->onMaximize = null;
+        $this->handlers->onMinimize = null;
+        $this->handlers->onClosing = null;
+        $this->handlers->onClosed = null;
+        $this->handlers->onResize = null;
+        $this->handlers->onFocus = null;
+
+        \FFI::free(\FFI::addr($this->handlers));
+
+        $this->listeners = [];
     }
 }

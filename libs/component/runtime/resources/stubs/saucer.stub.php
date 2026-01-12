@@ -15,39 +15,39 @@ namespace Boson\Internal\WebView {
     final class CSaucerWebViewEventsStruct extends CData
     {
         /**
-         * @var \Closure(CData, CData):void
+         * @var null|\Closure(CData, CData):void
          */
-        public \Closure $onDomReady;
+        public null|\Closure $onDomReady;
 
         /**
-         * @var \Closure(CData, string, CData):void
+         * @var null|\Closure(CData, string, CData):void
          */
-        public \Closure $onNavigated;
+        public null|\Closure $onNavigated;
 
         /**
-         * @var \Closure(CData, CData, CData):void
+         * @var null|\Closure(CData, CData, CData):void
          */
-        public \Closure $onNavigating;
+        public null|\Closure $onNavigating;
 
         /**
-         * @var \Closure(CData, CData, CData):void
+         * @var null|\Closure(CData, CData, CData):void
          */
-        public \Closure $onFaviconChanged;
+        public null|\Closure $onFaviconChanged;
 
         /**
-         * @var \Closure(CData, string, CData):void
+         * @var null|\Closure(CData, string, CData):void
          */
-        public \Closure $onTitleChanged;
+        public null|\Closure $onTitleChanged;
 
         /**
-         * @var \Closure(CData, State::SAUCER_STATE_*, CData):void
+         * @var null|\Closure(CData, State::SAUCER_STATE_*, CData):void
          */
-        public \Closure $onLoad;
+        public null|\Closure $onLoad;
 
         /**
-         * @var \Closure(CData, string, int<0, max>, CData):void
+         * @var null|\Closure(CData, string, int<0, max>, CData):void
          */
-        public \Closure $onMessage;
+        public null|\Closure $onMessage;
     }
 
 }
@@ -68,39 +68,39 @@ namespace Boson\Internal\Window {
     final class CSaucerWindowEventsStruct extends CData
     {
         /**
-         * @var \Closure(CData, bool): void
+         * @var null|\Closure(CData, bool): void
          */
-        public \Closure $onDecorated;
+        public null|\Closure $onDecorated;
 
         /**
-         * @var \Closure(CData, bool): void
+         * @var null|\Closure(CData, bool): void
          */
-        public \Closure $onMaximize;
+        public null|\Closure $onMaximize;
 
         /**
-         * @var \Closure(CData, bool): void
+         * @var null|\Closure(CData, bool): void
          */
-        public \Closure $onMinimize;
+        public null|\Closure $onMinimize;
 
         /**
-         * @var \Closure(CData): Policy::SAUCER_POLICY_*
+         * @var null|\Closure(CData): Policy::SAUCER_POLICY_*
          */
-        public \Closure $onClosing;
+        public null|\Closure $onClosing;
 
         /**
-         * @var \Closure(CData): void
+         * @var null|\Closure(CData): void
          */
-        public \Closure $onClosed;
+        public null|\Closure $onClosed;
 
         /**
-         * @var \Closure(CData, int<0, 2147483647>, int<0, 2147483647>): void
+         * @var null|\Closure(CData, int<0, 2147483647>, int<0, 2147483647>): void
          */
-        public \Closure $onResize;
+        public null|\Closure $onResize;
 
         /**
-         * @var \Closure(CData, bool): void
+         * @var null|\Closure(CData, bool): void
          */
-        public \Closure $onFocus;
+        public null|\Closure $onFocus;
     }
 
 }

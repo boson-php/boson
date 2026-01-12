@@ -10,6 +10,7 @@ use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerProvider;
+use Boson\Extension\Registry;
 use Boson\WebView\Exception\WindowDereferenceException;
 use Boson\WebView\WebView;
 use Boson\WebView\WebViewCreateInfo;
@@ -120,7 +121,7 @@ final class WebViewManager implements
      */
     private function createWebViewHandlerFactory(): WebViewHandlerFactory
     {
-        return new WebViewHandlerFactory($this->api, $this->window);
+        return new WebViewHandlerFactory($this->api);
     }
 
     public function create(WebViewCreateInfo $info = new WebViewCreateInfo()): WebView

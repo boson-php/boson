@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Manager;
 
-use Boson\Application;
 use Boson\Component\Saucer\SaucerInterface;
+use Boson\Component\WeakType\ObservableSetInterface;
+use Boson\Component\WeakType\ObservableWeakSet;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Exception\WebViewException;
 use Boson\WebView\WebViewCreateInfo;
@@ -21,16 +22,27 @@ use FFI\CData;
  */
 final readonly class WebViewHandlerFactory
 {
+    /**
+     * @var ObservableSetInterface<WebViewId>
+     */
+    private ObservableSetInterface $ids;
+
     public function __construct(
         private SaucerInterface $saucer,
-    ) {}
+    ) {
+        $this->ids = new ObservableWeakSet();
+    }
 
     public function create(Window $window, WebViewCreateInfo $info): WebViewId
     {
-        return WebViewId::fromHandle(
+        $id = WebViewId::fromHandle(
             api: $this->saucer,
             handle: $this->createWebViewHandle($window, $info),
         );
+
+        return $this->ids->watch($id, function (WebViewId $id) {
+            // $this->saucer->saucer_webview_free($id->ptr);
+        });
     }
 
     #[RequiresDealloc]

@@ -29,7 +29,7 @@ use Boson\WebView\Api\WebComponents\WebComponentsApiInterface;
 use Boson\WebView\Exception\WindowDereferenceException;
 use Boson\Window\Window;
 use Boson\Window\WindowId;
-use Internal\Destroy\Destroyable;
+use Internal\Destroy\Destroyable as DestroyableInterface;
 use JetBrains\PhpStorm\Language;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -42,7 +42,7 @@ final class WebView implements
     IdentifiableInterface,
     EventListenerInterface,
     ContainerInterface,
-    Destroyable
+    DestroyableInterface
 {
     use EventListenerProvider;
 

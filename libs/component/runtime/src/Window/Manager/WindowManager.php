@@ -16,7 +16,7 @@ use Boson\Window\Event\WindowCreated;
 use Boson\Window\Event\WindowDestroyed;
 use Boson\Window\Window;
 use Boson\Window\WindowCreateInfo;
-use Internal\Destroy\Destroyable;
+use Internal\Destroy\Destroyable as DestroyableInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 
@@ -34,7 +34,7 @@ final class WindowManager implements
     WindowCollectionInterface,
     WindowFactoryInterface,
     \IteratorAggregate,
-    Destroyable
+    DestroyableInterface
 {
     use EventListenerProvider;
 
@@ -207,8 +207,6 @@ final class WindowManager implements
         /** @var Window $window */
         foreach ($this->windows as $window) {
             $this->windows->detach($window);
-
-            $window->destroy();
         }
 
         $this->default = null;

@@ -10,13 +10,13 @@ use Boson\Extension\Exception\ExtensionAlreadyLoadedException;
 use Boson\Extension\Exception\ExtensionLoadingException;
 use Boson\Extension\Exception\ExtensionNotFoundException;
 use Boson\Extension\Loader\DependencyGraph;
-use Internal\Destroy\Destroyable;
+use Internal\Destroy\Destroyable as DestroyableInterface;
 use Psr\Container\ContainerInterface;
 
 /**
  * @template TContext of IdentifiableInterface
  */
-final class Registry implements ContainerInterface, Destroyable
+final class Registry implements ContainerInterface, DestroyableInterface
 {
     /**
      * @var list<object>
@@ -121,13 +121,13 @@ final class Registry implements ContainerInterface, Destroyable
         $destroyed = new \SplObjectStorage();
 
         foreach ($this->privateExtensions as $extension) {
-            if ($extension instanceof Destroyable) {
+            if ($extension instanceof DestroyableInterface) {
                 $destroyed->offsetSet($extension);
             }
         }
 
         foreach ($this->publicExtensions as $extension) {
-            if ($extension instanceof Destroyable) {
+            if ($extension instanceof DestroyableInterface) {
                 $destroyed->offsetSet($extension);
             }
         }

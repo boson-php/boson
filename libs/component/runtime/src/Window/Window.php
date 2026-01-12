@@ -26,7 +26,6 @@ use Boson\Window\Internal\Size\ManagedWindowMaxBounds;
 use Boson\Window\Internal\Size\ManagedWindowMinBounds;
 use Boson\Window\Internal\Size\ManagedWindowSize;
 use Boson\Window\Manager\WindowFactoryInterface;
-use Internal\Destroy\Destroyable;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -37,8 +36,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 final class Window implements
     IdentifiableInterface,
     EventListenerInterface,
-    ContainerInterface,
-    Destroyable
+    ContainerInterface
 {
     use EventListenerProvider;
 
@@ -651,7 +649,12 @@ final class Window implements
         $this->listener->addEventListener(WindowClosed::class, function (): void {
             $this->isClosed = true;
 
-            $this->destroy();
+            $this->extensions->destroy();
+            $this->webviews->destroy();
+
+            $this->listener->removeAllEventListeners();
+
+            \gc_collect_cycles();
         });
 
         $this->listener->addEventListener(WindowMinimized::class, function (WindowMinimized $e): void {
@@ -877,26 +880,6 @@ final class Window implements
         }
 
         $this->saucer->saucer_window_close($this->id->ptr);
-    }
-
-    /**
-     * @internal for internal usage only
-     */
-    public function destroy(): void
-    {
-        $this->extensions->destroy();
-        $this->webviews->destroy();
-
-        $this->listener->removeAllEventListeners();
-
-        \gc_collect_cycles();
-    }
-
-    public function __destruct()
-    {
-        $this->destroy();
-
-        $this->saucer->saucer_window_free($this->id->ptr);
     }
 
     public function __get(string $name): object

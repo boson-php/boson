@@ -6,6 +6,8 @@ namespace Boson\Window\Manager;
 
 use Boson\Application;
 use Boson\Component\Saucer\SaucerInterface;
+use Boson\Component\WeakType\ObservableSetInterface;
+use Boson\Component\WeakType\ObservableWeakSet;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\Window\Exception\WindowException;
 use Boson\Window\WindowCreateInfo;
@@ -18,17 +20,28 @@ use FFI\CData;
  */
 final readonly class WindowHandlerFactory
 {
+    /**
+     * @var ObservableSetInterface<WindowId>
+     */
+    private ObservableSetInterface $ids;
+
     public function __construct(
         private SaucerInterface $saucer,
         private Application $app,
-    ) {}
+    ) {
+        $this->ids = new ObservableWeakSet();
+    }
 
     public function create(WindowCreateInfo $info): WindowId
     {
-        return WindowId::fromHandle(
+        $id = WindowId::fromHandle(
             api: $this->saucer,
             handle: $this->createWindowHandle($info),
         );
+
+        return $this->ids->watch($id, function (WindowId $id): void {
+            $this->saucer->saucer_window_free($id->ptr);
+        });
     }
 
     #[RequiresDealloc]
