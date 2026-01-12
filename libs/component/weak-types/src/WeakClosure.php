@@ -67,8 +67,8 @@ final readonly class WeakClosure
      *
      * @param TArgClosure $callback The callable to potentially wrap
      *
-     * @return TArgClosure Returns a {@see \Closure} instance with weak
-     *         reference to `$this`
+     * @return TArgClosure|\Closure Returns a {@see \Closure}
+     *         instance with weak reference to `$this`
      *
      * @noinspection PhpDocMissingThrowsInspection An exception never throws
      */
