@@ -101,16 +101,15 @@ final readonly class WebViewHandlerFactory
      *
      * TODO Move this option to webview
      */
-    private function isDarkModeEnabled(Window $window,WebViewCreateInfo $info): bool
+    private function isDarkModeEnabled(Window $window, WebViewCreateInfo $info): bool
     {
-        return $info->forceDarkMode
-            ?? $window->info->decoration === WindowDecoration::DarkMode;
+        return $info->forceDarkMode === true;
     }
 
     /**
      * Gets real hardware acceleration option from configuration options
      */
-    private function isHardwareAccelerationEnabled(Window $window,WebViewCreateInfo $info): bool
+    private function isHardwareAccelerationEnabled(Window $window, WebViewCreateInfo $info): bool
     {
         return $info->enableHardwareAcceleration
             ?? $window->info->enableHardwareAcceleration;

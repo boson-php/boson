@@ -6,6 +6,7 @@ namespace Boson\Window;
 
 use Boson\Application;
 use Boson\Component\Saucer\SaucerInterface;
+use Boson\Component\Saucer\WindowDecoration as SaucerWindowDecoration;
 use Boson\Component\Saucer\WindowEdge as SaucerWindowEdge;
 use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Contracts\Id\IdentifiableInterface;
@@ -50,8 +51,6 @@ final class Window implements
     /**
      * Provides more convenient and faster access to the {@see WebViewManager::$default}
      * subsystem from child {@see $webviews} property.
-     *
-     * @uses WebViewManager::$default Default (first) webview of the webviews list
      *
      * @api
      */
@@ -109,10 +108,10 @@ final class Window implements
          * Gets current window decoration value.
          *
          * ```
-         * if ($window->decoration === WindowDecoration::DarkMode) {
-         *     echo 'Dark mode enabled!;
+         * if ($window->decoration === WindowDecoration::Default) {
+         *     echo 'Window is default';
          * } else {
-         *     echo 'Dark mode disabled!';
+         *     echo 'Window has custom decoration';
          * }
          * ```
          */
@@ -121,37 +120,33 @@ final class Window implements
          * Updates current window decorations mode.
          *
          * ```
-         * // Toggle dark mode
-         * $window->decoration = $window->decoration === WindowDecoration::DarkMode
+         * // Toggle decorations
+         * $window->decoration = $window->decoration === WindowDecoration::Frameless
          *     ? WindowDecoration::Default
-         *     : WindowDecoration::DarkMode;
+         *     : WindowDecoration::Frameless;
          * ```
          */
         set {
-            /**
-             * Skip (just initialize) in case of decoration is uninitialized.
-             *
-             * @phpstan-ignore-next-line : PHPStan cannot detect uninitialized property state
-             */
-            if (!isset($this->decoration)) {
-                $this->decoration = $value;
-                $this->updateDecoration($value);
-
-                return;
-            }
+            $isInitialized = isset($this->decoration);
 
             // Do nothing if decoration is equal to previous one.
-            if ($value === $this->decoration) {
+            if ($isInitialized && $value === $this->decoration) {
                 return;
             }
 
-            $this->updateDecoration($value);
+            $this->saucer->saucer_window_set_decorations($this->id->ptr, match ($value) {
+                WindowDecoration::Full => SaucerWindowDecoration::SAUCER_WINDOW_DECORATION_FULL,
+                WindowDecoration::Frameless => SaucerWindowDecoration::SAUCER_WINDOW_DECORATION_PARTIAL,
+                WindowDecoration::None => SaucerWindowDecoration::SAUCER_WINDOW_DECORATION_NONE,
+            });
 
-            $this->listener->dispatch(new WindowDecorationChanged(
-                subject: $this,
-                decoration: $value,
-                previous: $this->decoration,
-            ));
+            if ($isInitialized) {
+                $this->listener->dispatch(new WindowDecorationChanged(
+                    subject: $this,
+                    decoration: $value,
+                    previous: $this->decoration,
+                ));
+            }
 
             $this->decoration = $value;
         }
@@ -664,89 +659,6 @@ final class Window implements
         $this->listener->addEventListener(WindowMaximized::class, function (WindowMaximized $e): void {
             $this->state = $e->isMaximized ? WindowState::Maximized : WindowState::Normal;
         });
-    }
-
-    /**
-     * Apply selected decoration to the window styles.
-     */
-    private function updateDecoration(WindowDecoration $decoration): void
-    {
-        // TODO
-        return;
-
-        $ptr = $this->id->ptr;
-
-        $this->saucer->saucer_webview_background(
-            $ptr,
-            \FFI::addr($r = $this->saucer->new('uint8_t')),
-            \FFI::addr($g = $this->saucer->new('uint8_t')),
-            \FFI::addr($b = $this->saucer->new('uint8_t')),
-            \FFI::addr($a = $this->saucer->new('uint8_t')),
-        );
-
-        $isDarkModeWasEnabled = $this->saucer->saucer_webview_force_dark_mode($ptr);
-
-        // Please note that the order of function calls is important,
-        // as there is a bug in the kernel of saucer v6.0 that causes
-        // loss of state after change decorations.
-        //
-        // ```
-        // if (!decorated) {
-        //     impl::set_style(m_impl->hwnd.get(), 0); // previous WS_XXX
-        //                                             // state has been lost?
-        //     return;
-        // }
-        // ```
-        //
-        // We need to figure it out...
-        switch ($decoration) {
-            case WindowDecoration::DarkMode:
-                if ($a->cdata !== 255) {
-                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                    $this->saucer->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
-                }
-
-                $this->saucer->saucer_window_set_decorations($ptr, true);
-
-                // Refresh in case of dark mode was disabled
-                if ($isDarkModeWasEnabled === false) {
-                    $this->saucer->saucer_webview_set_force_dark_mode($ptr, true);
-                    $this->refresh();
-                }
-                break;
-
-            case WindowDecoration::Frameless:
-                if ($a->cdata !== 255) {
-                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                    $this->saucer->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
-                }
-
-                $this->saucer->saucer_window_set_decorations($ptr, false);
-                break;
-
-            case WindowDecoration::Transparent:
-                $this->saucer->saucer_window_set_decorations($ptr, false);
-
-                if ($a->cdata !== 0) {
-                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                    $this->saucer->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 0);
-                }
-                break;
-
-            default:
-                if ($a->cdata !== 255) {
-                    /** @phpstan-ignore-next-line : PHPStan does not support FFI correctly */
-                    $this->saucer->saucer_webview_set_background($ptr, $r->cdata, $g->cdata, $b->cdata, 255);
-                }
-
-                $this->saucer->saucer_window_set_decorations($ptr, true);
-
-                // Refresh in case of dark mode was enabled
-                if ($isDarkModeWasEnabled) {
-                    $this->saucer->saucer_webview_set_force_dark_mode($ptr, false);
-                    $this->refresh();
-                }
-        }
     }
 
     /**

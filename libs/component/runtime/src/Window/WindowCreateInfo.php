@@ -93,7 +93,7 @@ final readonly class WindowCreateInfo
          * Enable or disable title bar, minimize, maximize, exit buttons,
          * transparency and so on...
          */
-        public WindowDecoration $decoration = WindowDecoration::Default,
+        public WindowDecoration $decoration = WindowDecoration::DEFAULT,
         iterable $extensions = self::DEFAULT_WINDOW_EXTENSIONS,
         /**
          * Information (configuration) about creating a new webview object
