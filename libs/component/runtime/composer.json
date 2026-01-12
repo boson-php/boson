@@ -18,19 +18,19 @@
         "php": "^8.4",
         "ext-ffi": "*",
         "ext-iconv": "*",
-        "boson-php/cpu-info": "^0.19",
-        "boson-php/event-listener-contracts": "^0.19",
-        "boson-php/http": "^0.19",
-        "boson-php/http-contracts": "^0.19",
-        "boson-php/id-contracts": "^0.19",
-        "boson-php/value-object-contracts": "^0.19",
-        "boson-php/os-info": "^0.19",
-        "boson-php/saucer": "^0.19",
-        "boson-php/uri": "^0.19",
-        "boson-php/uri-contracts": "^0.19",
-        "boson-php/uri-factory": "^0.19",
-        "boson-php/uri-factory-contracts": "^0.19",
-        "boson-php/weak-types": "^0.19",
+        "boson-php/cpu-info": "^0.20",
+        "boson-php/event-listener-contracts": "^0.20",
+        "boson-php/http": "^0.20",
+        "boson-php/http-contracts": "^0.20",
+        "boson-php/id-contracts": "^0.20",
+        "boson-php/value-object-contracts": "^0.20",
+        "boson-php/os-info": "^0.20",
+        "boson-php/saucer": "^0.20",
+        "boson-php/uri": "^0.20",
+        "boson-php/uri-contracts": "^0.20",
+        "boson-php/uri-factory": "^0.20",
+        "boson-php/uri-factory-contracts": "^0.20",
+        "boson-php/weak-types": "^0.20",
         "psr/container": "^2.0",
         "psr/event-dispatcher": "^1.0",
         "react/promise": "^3.0",
@@ -51,8 +51,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.19.x-dev",
-            "dev-main": "0.19.x-dev"
+            "dev-master": "0.20.x-dev",
+            "dev-main": "0.20.x-dev"
         }
     },
     "config": {

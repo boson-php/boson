@@ -19,7 +19,7 @@
         "ext-pcre": "*",
         "ext-ffi": "*",
         "ffi/env": "^1.0",
-        "boson-php/value-object-contracts": "^0.19"
+        "boson-php/value-object-contracts": "^0.20"
     },
     "autoload": {
         "psr-4": {
@@ -36,8 +36,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.19.x-dev",
-            "dev-main": "0.19.x-dev"
+            "dev-master": "0.20.x-dev",
+            "dev-main": "0.20.x-dev"
         }
     },
     "config": {

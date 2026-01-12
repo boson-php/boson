@@ -22,9 +22,9 @@
         "php": "^8.4",
         "laravel/framework": "^10.10.1|^11.0|^12.0",
         "laravel/octane": "^2.9",
-        "boson-php/http-static-provider": "^0.19",
-        "boson-php/laravel-http-bridge": "^0.19",
-        "boson-php/runtime": "^0.19"
+        "boson-php/http-static-provider": "^0.20",
+        "boson-php/laravel-http-bridge": "^0.20",
+        "boson-php/runtime": "^0.20"
     },
     "autoload": {
         "psr-4": {
@@ -41,8 +41,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.19.x-dev",
-            "dev-main": "0.19.x-dev"
+            "dev-master": "0.20.x-dev",
+            "dev-main": "0.20.x-dev"
         },
         "laravel": {
             "providers": [
