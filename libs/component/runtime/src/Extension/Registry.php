@@ -51,6 +51,7 @@ final class Registry implements ContainerInterface, DestroyableInterface
 
     /**
      * @param TContext $context
+     *
      * @return array<non-empty-string, object>
      * @throws ExtensionLoadingException
      */

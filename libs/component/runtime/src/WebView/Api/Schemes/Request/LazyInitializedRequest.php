@@ -50,6 +50,7 @@ final class LazyInitializedRequest implements RequestInterface
         if ($length->cdata === 0) {
             /**
              * @var non-empty-string
+             *
              * @phpstan-var non-empty-uppercase-string
              */
             return (string) Request::DEFAULT_METHOD;
@@ -60,6 +61,7 @@ final class LazyInitializedRequest implements RequestInterface
 
         /**
          * @var non-empty-string
+         *
          * @phpstan-var non-empty-uppercase-string
          */
         return \FFI::string(\FFI::addr($method), $length->cdata);

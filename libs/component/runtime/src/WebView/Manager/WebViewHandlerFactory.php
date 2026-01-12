@@ -13,7 +13,6 @@ use Boson\WebView\WebViewCreateInfo;
 use Boson\WebView\WebViewCreateInfo\FlagsListFormatter;
 use Boson\WebView\WebViewId;
 use Boson\Window\Window;
-use Boson\Window\WindowDecoration;
 use FFI\CData;
 
 /**

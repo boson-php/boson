@@ -48,9 +48,9 @@ final readonly class WeakClosure
     private \Closure $callback;
 
     /**
-     * @internal Use the {@see WeakClosure::create()} instead
-     *
      * @param TThis $reference The object bound to the original closure
+     *
+     * @internal Use the {@see WeakClosure::create()} instead
      */
     private function __construct(object $reference, \Closure $callback)
     {
@@ -66,6 +66,7 @@ final readonly class WeakClosure
      * @template TArgClosure of \Closure
      *
      * @param TArgClosure $callback The callable to potentially wrap
+     *
      * @return TArgClosure Returns a {@see \Closure} instance with weak
      *         reference to `$this`
      *
@@ -91,6 +92,7 @@ final readonly class WeakClosure
      * the callback is invoked statically within the original class scope
      *
      * @param mixed ...$args Arguments to pass to the callback
+     *
      * @return mixed The result of the callback execution
      */
     public function __invoke(mixed ...$args): mixed

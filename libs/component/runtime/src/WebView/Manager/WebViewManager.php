@@ -10,7 +10,6 @@ use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Dispatcher\DelegateEventListener;
 use Boson\Dispatcher\EventListener;
 use Boson\Dispatcher\EventListenerProvider;
-use Boson\Extension\Registry;
 use Boson\WebView\Exception\WindowDereferenceException;
 use Boson\WebView\WebView;
 use Boson\WebView\WebViewCreateInfo;
