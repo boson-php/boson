@@ -306,10 +306,10 @@ interface SaucerInterface
     /**
      * @param SaucerIconType $icon
      * @param int<0, max> $idx
-     * @param CData $result
-     * @param CData $size
+     * @param CData|null $result
+     * @param CData|null $size
      */
-    public function saucer_icon_native(CData $icon, int $idx, CData $result, CData $size): void;
+    public function saucer_icon_native(CData $icon, int $idx, CData|null $result, CData|null $size): void;
 
 
     /**
@@ -366,10 +366,10 @@ interface SaucerInterface
 
     /**
      * @param SaucerWindowType $window
-     * @param CharPtr $title
-     * @param SizeTPtr $size
+     * @param CharPtr|null $title
+     * @param SizeTPtr|null $size
      */
-    public function saucer_window_title(CData $window, CData $title, CData $size): void;
+    public function saucer_window_title(CData $window, CData|null $title, CData|null $size): void;
 
     /**
      * @param SaucerWindowType $window
@@ -564,9 +564,9 @@ interface SaucerInterface
     /**
      * @param SaucerWindowType $window
      * @param int<0, max> $idx
-     * @param SizeTPtr $size
+     * @param SizeTPtr|null $size
      */
-    public function saucer_window_native(CData $window, int $idx, CData $result, CData $size): void;
+    public function saucer_window_native(CData $window, int $idx, CData|null $result, CData|null $size): void;
 
     /**
      * @param SaucerUrlType $url
@@ -599,31 +599,31 @@ interface SaucerInterface
 
     /**
      * @param SaucerUrlType $url
-     * @param CharPtr $string
-     * @param SizeTPtr $size
+     * @param CharPtr|null $string
+     * @param SizeTPtr|null $size
      */
-    public function saucer_url_string(CData $url, CData $string, CData $size): void;
+    public function saucer_url_string(CData $url, CData|null $string, CData|null $size): void;
 
     /**
      * @param SaucerUrlType $url
-     * @param CharPtr $path
-     * @param SizeTPtr $size
+     * @param CharPtr|null $path
+     * @param SizeTPtr|null $size
      */
-    public function saucer_url_path(CData $url, CData $path, CData $size): void;
+    public function saucer_url_path(CData $url, CData|null $path, CData|null $size): void;
 
     /**
      * @param SaucerUrlType $url
-     * @param CharPtr $scheme
-     * @param SizeTPtr $size
+     * @param CharPtr|null $scheme
+     * @param SizeTPtr|null $size
      */
-    public function saucer_url_scheme(CData $url, CData $scheme, CData $size): void;
+    public function saucer_url_scheme(CData $url, CData|null $scheme, CData|null $size): void;
 
     /**
      * @param SaucerUrlType $url
-     * @param CharPtr $host
-     * @param SizeTPtr $size
+     * @param CharPtr|null $host
+     * @param SizeTPtr|null $size
      */
-    public function saucer_url_host(CData $url, CData $host, CData $size): void;
+    public function saucer_url_host(CData $url, CData|null $host, CData|null $size): void;
 
     /**
      * @param SaucerUrlType $url
@@ -633,24 +633,24 @@ interface SaucerInterface
 
     /**
      * @param SaucerUrlType $url
-     * @param CharPtr $user
-     * @param SizeTPtr $size
+     * @param CharPtr|null $user
+     * @param SizeTPtr|null $size
      */
-    public function saucer_url_user(CData $url, CData $user, CData $size): void;
+    public function saucer_url_user(CData $url, CData|null $user, CData|null $size): void;
 
     /**
      * @param SaucerUrlType $url
-     * @param CharPtr $password
-     * @param SizeTPtr $size
+     * @param CharPtr|null $password
+     * @param SizeTPtr|null $size
      */
-    public function saucer_url_password(CData $url, CData $password, CData $size): void;
+    public function saucer_url_password(CData $url, CData|null $password, CData|null $size): void;
 
     /**
      * @param SaucerUrlType $url
      * @param int<0, max> $idx
-     * @param SizeTPtr $size
+     * @param SizeTPtr|null $size
      */
-    public function saucer_url_native(CData $url, int $idx, CData $result, CData $size): void;
+    public function saucer_url_native(CData $url, int $idx, CData|null $result, CData|null $size): void;
 
     /**
      * @param SaucerSchemeResponseType $response
@@ -693,10 +693,10 @@ interface SaucerInterface
 
     /**
      * @param SaucerSchemeRequestType $request
-     * @param CharPtr $method
-     * @param SizeTPtr $size
+     * @param CharPtr|null $method
+     * @param SizeTPtr|null $size
      */
-    public function saucer_scheme_request_method(CData $request, CData $method, CData $size): void;
+    public function saucer_scheme_request_method(CData $request, CData|null $method, CData|null $size): void;
 
     /**
      * @param SaucerSchemeRequestType $request
@@ -706,10 +706,10 @@ interface SaucerInterface
 
     /**
      * @param SaucerSchemeRequestType $request
-     * @param CharPtr $headers
-     * @param SizeTPtr $size
+     * @param CharPtr|null $headers
+     * @param SizeTPtr|null $size
      */
-    public function saucer_scheme_request_headers(CData $request, CData $headers, CData $size): void;
+    public function saucer_scheme_request_headers(CData $request, CData|null $headers, CData|null $size): void;
 
     /**
      * @param SaucerSchemeExecutorType $executor
@@ -765,9 +765,9 @@ interface SaucerInterface
     /**
      * @param SaucerPermissionRequestType $request
      * @param int<0, max> $idx
-     * @param SizeTPtr $size
+     * @param SizeTPtr|null $size
      */
-    public function saucer_permission_request_native(CData $request, int $idx, CData $result, CData $size): void;
+    public function saucer_permission_request_native(CData $request, int $idx, CData|null $result, CData|null $size): void;
 
     /**
      * @param SaucerNavigationType $nav
@@ -858,10 +858,10 @@ interface SaucerInterface
 
     /**
      * @param SaucerWebviewType $webview
-     * @param CharPtr $title
-     * @param SizeTPtr $size
+     * @param CharPtr|null $title
+     * @param SizeTPtr|null $size
      */
-    public function saucer_webview_page_title(CData $webview, CData $title, CData $size): void;
+    public function saucer_webview_page_title(CData $webview, CData|null $title, CData|null $size): void;
 
     /**
      * @param SaucerWebviewType $webview
@@ -1056,9 +1056,9 @@ interface SaucerInterface
     /**
      * @param SaucerWebviewType $webview
      * @param int<0, max> $idx
-     * @param SizeTPtr $size
+     * @param SizeTPtr|null $size
      */
-    public function saucer_webview_native(CData $webview, int $idx, CData $result, CData $size): void;
+    public function saucer_webview_native(CData $webview, int $idx, CData|null $result, CData|null $size): void;
 
     /**
      * @param SaucerLoopType $loop
@@ -1128,38 +1128,38 @@ interface SaucerInterface
     /**
      * @param SaucerDesktopType $desktop
      * @param SaucerPickerOptionsType $options
-     * @param CharPtr $file
-     * @param SizeTPtr $size
-     * @param IntPtr $error
+     * @param CharPtr|null $file
+     * @param SizeTPtr|null $size
+     * @param IntPtr|null $error
      */
-    public function saucer_picker_pick_file(CData $desktop, CData $options, CData $file, CData $size, CData $error): void;
+    public function saucer_picker_pick_file(CData $desktop, CData $options, CData|null $file, CData|null $size, CData|null $error): void;
 
     /**
      * @param SaucerDesktopType $desktop
      * @param SaucerPickerOptionsType $options
-     * @param CharPtr $folder
-     * @param SizeTPtr $size
-     * @param IntPtr $error
+     * @param CharPtr|null $folder
+     * @param SizeTPtr|null $size
+     * @param IntPtr|null $error
      */
-    public function saucer_picker_pick_folder(CData $desktop, CData $options, CData $folder, CData $size, CData $error): void;
+    public function saucer_picker_pick_folder(CData $desktop, CData $options, CData|null $folder, CData|null $size, CData|null $error): void;
 
     /**
      * @param SaucerDesktopType $desktop
      * @param SaucerPickerOptionsType $options
-     * @param CharPtr $files
-     * @param SizeTPtr $size
-     * @param IntPtr $error
+     * @param CharPtr|null $files
+     * @param SizeTPtr|null $size
+     * @param IntPtr|null $error
      */
-    public function saucer_picker_pick_files(CData $desktop, CData $options, CData $files, CData $size, CData $error): void;
+    public function saucer_picker_pick_files(CData $desktop, CData $options, CData|null $files, CData|null $size, CData|null $error): void;
 
     /**
      * @param SaucerDesktopType $desktop
      * @param SaucerPickerOptionsType $options
-     * @param CharPtr $location
-     * @param SizeTPtr $size
-     * @param IntPtr $error
+     * @param CharPtr|null $location
+     * @param SizeTPtr|null $size
+     * @param IntPtr|null $error
      */
-    public function saucer_picker_save(CData $desktop, CData $options, CData $location, CData $size, CData $error): void;
+    public function saucer_picker_save(CData $desktop, CData $options, CData|null $location, CData|null $size, CData|null $error): void;
 
     /**
      * @param SaucerDesktopType $desktop

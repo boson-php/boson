@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\Schemes;
 
-use Boson\Component\Saucer\Launch;
-use Boson\Component\Saucer\SchemeError;
+use Boson\Component\Http\Component\StatusCode;
 use Boson\Contracts\Http\RequestInterface;
 use Boson\Contracts\Http\ResponseInterface;
 use Boson\Dispatcher\EventListener;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Api\LoadedWebViewExtension;
 use Boson\WebView\Api\Schemes\Event\SchemeRequestReceived;
+use Boson\WebView\Api\Schemes\Request\LazyInitializedRequest;
 use Boson\WebView\WebView;
 use FFI\CData;
 
@@ -44,51 +44,44 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
                 $this->ptr,
                 $scheme,
                 $this->onSafeRequest(...),
-                Launch::SAUCER_LAUNCH_SYNC,
             );
         }
     }
 
-    private function onSafeRequest(CData $_, CData $request, CData $executor): void
+    private function onSafeRequest(CData $request, CData $executor): void
     {
         try {
-            $this->onRequest($_, $request, $executor);
+            $this->onRequest($request, $executor);
         } catch (\Throwable $e) {
-            $code = SchemeError::SAUCER_SCHEME_ERROR_FAILED;
-            $this->app->saucer->saucer_scheme_executor_reject($executor, $code);
+            $status = StatusCode::InternalServerError;
+            $this->app->saucer->saucer_scheme_executor_reject($executor, $status->code);
 
             $this->app->poller->throw($e);
-
-            return;
         }
     }
 
-    private function onRequest(CData $_, CData $request, CData $executor): void
+    private function onRequest(CData $request, CData $executor): void
     {
-        try {
-            $processable = $this->intent($intention = new SchemeRequestReceived(
-                subject: $this->webview,
-                request: $this->createRequest($request),
-            ));
+        $processable = $this->intent($intention = new SchemeRequestReceived(
+            subject: $this->webview,
+            request: $this->createRequest($request),
+        ));
 
-            // Abort request in case of intention is cancelled.
-            if ($processable === false) {
-                $code = SchemeError::SAUCER_SCHEME_ERROR_ABORTED;
-                $this->app->saucer->saucer_scheme_executor_reject($executor, $code);
+        // Abort request in case of intention is cancelled.
+        if ($processable === false) {
+            $status = StatusCode::Forbidden;
+            $this->app->saucer->saucer_scheme_executor_reject($executor, $status->code);
 
-                return;
-            }
-
-            // Do not dispatch custom response in case
-            // of response is not provided.
-            if (($response = $intention->response) === null) {
-                return;
-            }
-
-            $this->dispatchRequest($response, $executor);
-        } finally {
-            $this->app->saucer->saucer_scheme_executor_free($executor);
+            return;
         }
+
+        // Do not dispatch custom response in case
+        // of response is not provided.
+        if (($response = $intention->response) === null) {
+            return;
+        }
+
+        $this->dispatchRequest($response, $executor);
     }
 
     private function createRequest(CData $request): RequestInterface
@@ -104,8 +97,7 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
         $stash = $this->createResponseStash($response);
         $struct = $this->createUnmanagedResponse($response, $stash);
 
-        $this->app->saucer->saucer_scheme_executor_resolve($executor, $struct);
-
+        $this->app->saucer->saucer_scheme_executor_accept($executor, $struct);
         $this->app->saucer->saucer_scheme_response_free($struct);
     }
 
@@ -120,7 +112,7 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
         $this->app->saucer->saucer_scheme_response_set_status($struct, $status);
 
         foreach ($response->headers as $header => $value) {
-            $this->app->saucer->saucer_scheme_response_add_header($struct, $header, $value);
+            $this->app->saucer->saucer_scheme_response_append_header($struct, $header, $value);
         }
 
         return $struct;
@@ -134,13 +126,13 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
         if ($length === 0) {
             $ptr = $this->app->saucer->new('uint8_t*');
 
-            return $this->app->saucer->saucer_stash_from($ptr, 0);
+            return $this->app->saucer->saucer_stash_new_from($ptr, 0);
         }
 
         $string = $this->createResponseBodyData($response);
         $uint8Array = $this->app->saucer->cast('uint8_t*', \FFI::addr($string));
 
-        return $this->app->saucer->saucer_stash_from($uint8Array, $length);
+        return $this->app->saucer->saucer_stash_new_from($uint8Array, $length);
     }
 
     private function createResponseBodyData(ResponseInterface $response): CData
