@@ -127,6 +127,7 @@ final class Window implements
          * ```
          */
         set {
+            /** @phpstan-ignore-next-line : PHPStan false-positive check */
             $isInitialized = isset($this->decoration);
 
             // Do nothing if decoration is equal to previous one.
@@ -628,12 +629,17 @@ final class Window implements
      */
     private function getCurrentWindowTitle(): string
     {
-        $result = $this->saucer->new('char*');
-        $size = $this->saucer->new('size_t');
+        $length = $this->saucer->new('size_t');
+        $this->saucer->saucer_window_title($this->id->ptr, null, \FFI::addr($length));
 
-        $this->saucer->saucer_window_title($this->id->ptr, \FFI::addr($result), \FFI::addr($size));
+        if ($length->cdata === 0) {
+            return '';
+        }
 
-        return \FFI::string($result, $size->cdata);
+        $result = $this->saucer->new('char');
+        $this->saucer->saucer_window_title($this->id->ptr, \FFI::addr($result), \FFI::addr($length));
+
+        return \FFI::string(\FFI::addr($result), $length->cdata);
     }
 
     /**
