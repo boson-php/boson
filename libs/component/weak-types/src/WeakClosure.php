@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Boson\Component\WeakType;
 
 /**
- * A wrapper class that maintains a weak reference to the bound object of a closure
+ * A wrapper class that maintains a weak reference to the bound object
+ * of a closure.
  *
  * This class allows callbacks to be executed even if their originally bound
  * object has been garbage collected. When the object is alive, the callback
  * executes with the object as context. When the object is dead, it falls back
  * to executing the callback without object context (statically), but within
- * the original class scope
+ * the original class scope.
  *
  * ```
  * $closure = WeakClosure::create(function() {
@@ -27,41 +28,86 @@ namespace Boson\Component\WeakType;
 final readonly class WeakClosure
 {
     /**
-     * Weak reference to the bound object of the original closure
+     * The class name of the bound object.
      *
-     * @var \WeakReference<TThis>
-     */
-    private \WeakReference $reference;
-
-    /**
-     * The class name of the bound object
-     *
-     * Used for static callback execution when the object is garbage collected
+     * Used for static callback execution when the object is garbage collected.
      *
      * @var class-string<TThis>
      */
     private string $class;
 
     /**
-     * The original closure wrapped by this {@see WeakClosure} instance
+     * Weak reference to the bound object of the original closure.
+     *
+     * @var \WeakReference<TThis>
+     */
+    private \WeakReference $object;
+
+    /**
+     * The original closure wrapped by this {@see WeakClosure} instance.
      */
     private \Closure $callback;
+
+    /**
+     * Indicates whether the closure is an internal PHP function.
+     */
+    private bool $isInternal;
 
     /**
      * @param TThis $reference The object bound to the original closure
      *
      * @internal Use the {@see WeakClosure::create()} instead
      */
-    private function __construct(object $reference, \Closure $callback)
-    {
-        $this->reference = \WeakReference::create($reference);
-        $this->callback = $callback->bindTo($this);
-        $this->class = $reference::class;
+    private function __construct(
+        object $reference,
+        \Closure $callback,
+        \ReflectionFunction $reflection,
+    ) {
+        $this->object = \WeakReference::create($reference);
+        $this->callback = self::unbind($this->object, $callback, $reflection);
+        $this->class = self::getClass($reference, $reflection);
+        $this->isInternal = $reflection->isInternal();
     }
 
     /**
-     * Creates a {@see WeakClosure} from a callable, or returns the callable
-     * unchanged if it is not bound to an object
+     * @param TThis $reference
+     * @return class-string
+     */
+    private static function getClass(object $reference, \ReflectionFunction $reflection): string
+    {
+        $class = $reflection->getClosureScopeClass();
+
+        if ($class === null) {
+            return $reference::class;
+        }
+
+        return $class->name;
+    }
+
+    /**
+     * Unbind `$this` context from a passed closure and creates a new
+     * closure that references the target object weakly.
+     */
+    private static function unbind(object $target, \Closure $callback, \ReflectionFunction $reflection): \Closure
+    {
+        if ($reflection->isAnonymous()) {
+            return $callback->bindTo($target);
+        }
+
+        $method = $reflection->getShortName();
+
+        return function (mixed ...$args) use ($method): mixed {
+            return $this->{$method}(...$args);
+        };
+    }
+
+    /**
+     * Creates a weak closure from the passed.
+     *
+     * If the closure is not bound to an object, returns it unchanged.
+     *
+     * Otherwise, wraps it in a {@see WeakClosure} that maintains a weak
+     * reference to the bound object
      *
      * @template TArgClosure of \Closure
      *
@@ -74,14 +120,15 @@ final readonly class WeakClosure
      */
     public static function create(\Closure $callback): \Closure
     {
-        $reference = new \ReflectionFunction($callback)
-            ->getClosureThis();
+        $reflection = new \ReflectionFunction($callback);
 
-        if ($reference === null) {
+        $context = $reflection->getClosureThis();
+
+        if ($context === null) {
             return $callback;
         }
 
-        return (new self($reference, $callback))(...);
+        return (new self($context, $callback, $reflection))(...);
     }
 
     /**
@@ -94,15 +141,28 @@ final readonly class WeakClosure
      * @param mixed ...$args Arguments to pass to the callback
      *
      * @return mixed The result of the callback execution
+     *
+     * @throws \RuntimeException If the GC has freed the bound object
      */
     public function __invoke(mixed ...$args): mixed
     {
-        $self = $this->reference->get();
+        $self = $this->object->get();
 
         if ($self === null) {
-            $callback = $this->callback->bindTo(null, $this->class);
+            $shortClassName = $this->class;
 
-            return $callback(...$args);
+            if (\is_int($shortClassNameOffset = \strpos($shortClassName, "\0"))) {
+                $shortClassName = \substr($shortClassName, 0, $shortClassNameOffset);
+            }
+
+            throw new \RuntimeException(\sprintf(
+                'Cannot call a closure, instance of %s has already been removed by the GC',
+                $shortClassName,
+            ));
+        }
+
+        if ($this->isInternal) {
+            return $this->callback->bindTo($self)(...$args);
         }
 
         return $this->callback->call($self, ...$args);
