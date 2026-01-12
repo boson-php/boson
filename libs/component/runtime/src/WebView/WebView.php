@@ -177,7 +177,7 @@ final class WebView implements
         $this->reference = \WeakReference::create($parent);
 
         // Initialization WebView's fields and properties
-        $this->listener = self::createEventListener($dispatcher);
+        $this->listener = new DelegateEventListener($dispatcher);
 
         // Initialization of WebView's API
         $this->extensions = new Registry($this->listener, $info->extensions);
@@ -204,15 +204,6 @@ final class WebView implements
     public function has(string $id): bool
     {
         return $this->extensions->has($id);
-    }
-
-    /**
-     * Creates local (webview-aware) event listener
-     * based on the provided dispatcher.
-     */
-    private static function createEventListener(EventDispatcherInterface $dispatcher): EventListener
-    {
-        return new DelegateEventListener($dispatcher);
     }
 
     /**

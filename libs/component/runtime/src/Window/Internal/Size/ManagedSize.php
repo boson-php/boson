@@ -25,14 +25,14 @@ abstract class ManagedSize implements MutableSizeInterface
             $this->syncSizeValues();
 
             /** @var int<0, 2147483647> */
-            return $this->unmanagedWidthValue->cdata;
+            return $this->widthValue->cdata;
         }
         set {
             $this->update(width: $value);
         }
     }
 
-    private readonly CData $unmanagedWidthValue;
+    private readonly CData $widthValue;
 
     /**
      * @var int<0, 2147483647>
@@ -42,28 +42,28 @@ abstract class ManagedSize implements MutableSizeInterface
             $this->syncSizeValues();
 
             /** @var int<0, 2147483647> */
-            return $this->unmanagedHeightValue->cdata;
+            return $this->heightValue->cdata;
         }
         set {
             $this->update(height: $value);
         }
     }
 
-    private readonly CData $unmanagedHeightValue;
+    private readonly CData $heightValue;
 
     public function __construct(
         protected readonly SaucerInterface $api,
         protected readonly CData $handle,
     ) {
-        $this->unmanagedWidthValue = $this->api->new('int');
-        $this->unmanagedHeightValue = $this->api->new('int');
+        $this->widthValue = $this->api->new('int');
+        $this->heightValue = $this->api->new('int');
     }
 
     protected function syncSizeValues(): void
     {
         $this->getCurrentSizeValuesByRef(
-            width: \FFI::addr($this->unmanagedWidthValue),
-            height: \FFI::addr($this->unmanagedHeightValue),
+            width: \FFI::addr($this->widthValue),
+            height: \FFI::addr($this->heightValue),
         );
     }
 
@@ -86,4 +86,12 @@ abstract class ManagedSize implements MutableSizeInterface
      * @param int<0, 2147483647> $height
      */
     abstract protected function setSizeValues(int $width, int $height): void;
+
+    public function __debugInfo(): array
+    {
+        return [
+            'width' => $this->width,
+            'height' => $this->height,
+        ];
+    }
 }

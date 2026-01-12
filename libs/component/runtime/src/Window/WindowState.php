@@ -20,4 +20,6 @@ enum WindowState
      * Maximized (i.e. zoomed) window state.
      */
     case Maximized;
+
+    public const self DEFAULT = self::Normal;
 }
