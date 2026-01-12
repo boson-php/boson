@@ -448,7 +448,7 @@ final class Window implements
     public private(set) bool $isClosed = false;
 
     /**
-     * Window aware event listener & dispatcher.
+     * Window aware event listener and dispatcher.
      */
     private readonly EventListener $listener;
 
@@ -501,7 +501,7 @@ final class Window implements
         $this->extensions = new Registry($this->listener, $info->extensions);
         foreach ($this->extensions->boot($this) as $property => $extension) {
             // Direct access to dynamic property is 5+ times
-            // faster than magic `__get` call.
+            // faster than the magic `__get` call.
             $this->__set($property, $extension);
         }
 
