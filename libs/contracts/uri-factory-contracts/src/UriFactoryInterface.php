@@ -8,7 +8,7 @@ use Boson\Contracts\Uri\Factory\Exception\InvalidUriExceptionInterface;
 use Boson\Contracts\Uri\UriInterface;
 
 /**
- * Provides interface to create URI instances.
+ * Provides an interface to create URI instances.
  */
 interface UriFactoryInterface
 {

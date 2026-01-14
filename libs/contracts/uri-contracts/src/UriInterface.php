@@ -11,7 +11,7 @@ use Boson\Contracts\Uri\Component\SchemeInterface;
 use Boson\Contracts\ValueObject\StringValueObjectInterface;
 
 /**
- * Value object representing a URI.
+ * Value object representing URI.
  *
  * The URI is structured as follows:
  *
