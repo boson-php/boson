@@ -7,7 +7,7 @@ namespace Boson\Window;
 enum WindowState
 {
     /**
-     * Standard window state with custom (user defined) sizes.
+     * Standard window state with custom (user-defined) sizes.
      */
     case Normal;
 

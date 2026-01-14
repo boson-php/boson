@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Boson\WebView\Api\Schemes\Event;
+
+use Boson\Contracts\Http\RequestInterface;
+use Boson\Contracts\Http\ResponseInterface;
+use Boson\Shared\Marker\AsWebViewIntention;
+use Boson\WebView\WebView;
+
+#[AsWebViewIntention]
+final class SchemeRequestReceive extends SchemesApiIntention
+{
+    public function __construct(
+        WebView $subject,
+        public readonly RequestInterface $request,
+        public ?ResponseInterface $response = null,
+        ?int $time = null,
+    ) {
+        parent::__construct($subject, $time);
+    }
+}

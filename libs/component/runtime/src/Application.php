@@ -69,7 +69,7 @@ class Application implements
     public readonly ApplicationId $id;
 
     /**
-     * Gets windows list and methods for working with windows.
+     * Gets a windows list and methods for working with windows.
      *
      * @api
      */
@@ -138,7 +138,7 @@ class Application implements
     public readonly bool $isDebug;
 
     /**
-     * Gets running state of an application.
+     * Gets the running state of an application.
      *
      * Contains {@see true} in case of application is running
      * or {@see false} instead.
@@ -182,7 +182,7 @@ class Application implements
      */
     public function __construct(
         /**
-         * Gets an information DTO about the application
+         * Gets information DTO about the application
          * with which it was created.
          */
         public readonly ApplicationCreateInfo $info = new ApplicationCreateInfo(),
@@ -202,7 +202,7 @@ class Application implements
         $this->extensions = new Registry($this->listener, $info->extensions);
         foreach ($this->extensions->boot($this) as $property => $extension) {
             // Direct access to dynamic property is 5+ times
-            // faster than magic `__get` call.
+            // faster than the magic `__get` call.
             $this->__set($property, $extension);
         }
 
@@ -311,7 +311,7 @@ class Application implements
     }
 
     /**
-     * Register list of protocol names that will be
+     * Register a list of protocol names that will be
      * intercepted by the application.
      */
     private function registerSchemes(): void
@@ -348,7 +348,7 @@ class Application implements
     /**
      * Handles an application started event.
      *
-     * Resolve main window lazy proxy (facade).
+     * Resolve the main window lazy proxy (facade).
      */
     private function onApplicationStarted(): void
     {
@@ -356,7 +356,7 @@ class Application implements
     }
 
     /**
-     * Creates local (application-aware) event listener
+     * Creates a local (application-aware) event listener
      * based on the provided dispatcher.
      */
     protected function createEventListener(?EventDispatcherInterface $dispatcher): EventListener
@@ -439,7 +439,7 @@ class Application implements
     /**
      * Runs the application, starting the main event loop.
      *
-     * This method blocks main thread until the
+     * This method blocks the main thread until the
      * application is quit.
      *
      * @api

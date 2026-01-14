@@ -7,14 +7,14 @@ namespace Boson\Window;
 interface SizeInterface extends \Stringable
 {
     /**
-     * Gets desired width, in screen coordinates, of the content area.
+     * Gets the desired width, in screen coordinates, of the content area.
      *
      * @var int<0, 2147483647>
      */
     public int $width { get; }
 
     /**
-     * Gets desired height, in screen coordinates, of the content area.
+     * Gets the desired height, in screen coordinates, of the content area.
      *
      * @var int<0, 2147483647>
      */

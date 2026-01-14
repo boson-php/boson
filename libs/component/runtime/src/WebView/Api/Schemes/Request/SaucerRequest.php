@@ -16,7 +16,7 @@ use FFI\CData;
  * @internal this is an internal library class, please do not use it in your code
  * @psalm-internal Boson\WebView\Scheme
  */
-final class LazyInitializedRequest implements RequestInterface
+final class SaucerRequest implements RequestInterface
 {
     public MethodInterface $method {
         get => $this->method ??= Request::castMethod($this->parseRawMethodString());
@@ -56,15 +56,15 @@ final class LazyInitializedRequest implements RequestInterface
             return (string) Request::DEFAULT_METHOD;
         }
 
-        $method = $this->api->new('char');
-        $this->api->saucer_scheme_request_method($this->ptr, \FFI::addr($method), \FFI::addr($length));
+        $method = $this->api->new("char[{$length->cdata}]");
+        $this->api->saucer_scheme_request_method($this->ptr, \FFI::addr($method[0]), \FFI::addr($length));
 
         /**
          * @var non-empty-string
          *
          * @phpstan-var non-empty-uppercase-string
          */
-        return \FFI::string(\FFI::addr($method), $length->cdata);
+        return \FFI::string(\FFI::addr($method[0]), $length->cdata);
     }
 
     private function parseRawUriString(): string
@@ -79,10 +79,10 @@ final class LazyInitializedRequest implements RequestInterface
                 return '';
             }
 
-            $url = $this->api->new('char');
-            $this->api->saucer_url_string($ptr, \FFI::addr($url), \FFI::addr($length));
+            $url = $this->api->new("char[{$length->cdata}]");
+            $this->api->saucer_url_string($ptr, \FFI::addr($url[0]), \FFI::addr($length));
 
-            return \FFI::string(\FFI::addr($url), $length->cdata);
+            return \FFI::string(\FFI::addr($url[0]), $length->cdata);
         } finally {
             $this->api->saucer_url_free($ptr);
         }
@@ -100,10 +100,10 @@ final class LazyInitializedRequest implements RequestInterface
             return [];
         }
 
-        $value = $this->api->new('char');
-        $this->api->saucer_scheme_request_headers($this->ptr, \FFI::addr($value), \FFI::addr($length));
+        $value = $this->api->new("char[{$length->cdata}]");
+        $this->api->saucer_scheme_request_headers($this->ptr, \FFI::addr($value[0]), \FFI::addr($length));
 
-        $header = \FFI::string(\FFI::addr($value), $length->cdata);
+        $header = \FFI::string(\FFI::addr($value[0]), $length->cdata);
 
         foreach (\explode("\0", $header) as $headerLine) {
             [$headerName, $headerValue] = \explode(':', $headerLine, 2);

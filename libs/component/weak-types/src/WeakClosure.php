@@ -71,6 +71,7 @@ final readonly class WeakClosure
 
     /**
      * @param TThis $reference
+     *
      * @return class-string
      */
     private static function getClass(object $reference, \ReflectionFunction $reflection): string
@@ -141,7 +142,6 @@ final readonly class WeakClosure
      * @param mixed ...$args Arguments to pass to the callback
      *
      * @return mixed The result of the callback execution
-     *
      * @throws \RuntimeException If the GC has freed the bound object
      */
     public function __invoke(mixed ...$args): mixed

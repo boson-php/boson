@@ -17,7 +17,7 @@ use Boson\Window\WindowCreateInfo;
 //
 // Note:
 // 1) This "$_" assign hack removes these constants from IDE autocomplete.
-// 2) Only define-like constants allows object instances.
+// 2) Only define-like constants allow object instances.
 //
 \define($_ = 'Boson\DEFAULT_APPLICATION_EXTENSIONS', [
     new CentralProcessorExtension(),

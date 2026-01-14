@@ -181,16 +181,17 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
 
     private function urlToString(CData $url): string
     {
-        $value = $this->app->saucer->new('char');
-        $size = $this->app->saucer->new('size_t');
+        $length = $this->app->saucer->new('size_t');
+        $this->app->saucer->saucer_url_string($url, null, \FFI::addr($length));
 
-        $this->app->saucer->saucer_url_string($url, \FFI::addr($value), \FFI::addr($size));
-
-        if ($size->cdata === 0) {
+        if ($length->cdata === 0) {
             return '';
         }
 
-        return \FFI::string($value, $size->cdata);
+        $value = $this->app->saucer->new("char[{$length->cdata}]");
+        $this->app->saucer->saucer_url_string($url, \FFI::addr($value[0]), \FFI::addr($length));
+
+        return \FFI::string(\FFI::addr($value[0]), $length->cdata);
     }
 
     private function onNavigating(CData $_, CData $navigation): int

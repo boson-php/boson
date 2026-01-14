@@ -89,7 +89,6 @@ final class WebViewManager implements
         $this->listener = new DelegateEventListener($dispatcher);
         $this->factory = new WebViewHandlerFactory($this->api);
 
-
         $this->default = $this->create($info);
     }
 

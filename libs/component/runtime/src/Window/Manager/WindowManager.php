@@ -72,7 +72,6 @@ final class WindowManager implements
         $this->listener = new DelegateEventListener($dispatcher);
         $this->factory = new WindowHandlerFactory($this->api, $this->app);
 
-
         $this->registerDefaultEventListeners();
         $this->default = $this->defer($info);
     }

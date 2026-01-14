@@ -5,33 +5,49 @@ declare(strict_types=1);
 namespace Boson\WebView\Api\Schemes;
 
 use Boson\Component\Http\Component\StatusCode;
+use Boson\Contracts\Http\Component\StatusCodeInterface;
 use Boson\Contracts\Http\RequestInterface;
 use Boson\Contracts\Http\ResponseInterface;
 use Boson\Dispatcher\EventListener;
-use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Api\LoadedWebViewExtension;
-use Boson\WebView\Api\Schemes\Event\SchemeRequestReceived;
-use Boson\WebView\Api\Schemes\Request\LazyInitializedRequest;
+use Boson\WebView\Api\Schemes\Event\SchemeRequestFail;
+use Boson\WebView\Api\Schemes\Event\SchemeRequestReceive;
+use Boson\WebView\Api\Schemes\Event\SchemeRequestReject;
+use Boson\WebView\Api\Schemes\Event\SchemeResponseProceed;
+use Boson\WebView\Api\Schemes\Event\SchemeResponseRejected;
+use Boson\WebView\Api\Schemes\Handler\ErrorHandlerInterface;
+use Boson\WebView\Api\Schemes\Request\SaucerRequestFactory;
+use Boson\WebView\Api\Schemes\Request\SaucerResponseFactory;
 use Boson\WebView\WebView;
 use FFI\CData;
 
 final class SchemesProvider extends LoadedWebViewExtension implements SchemesProviderInterface
 {
-    /**
-     * @var list<non-empty-lowercase-string>
-     */
+    private const StatusCodeInterface DEFAULT_SERVER_REJECTION = StatusCode::Forbidden;
+    private const StatusCodeInterface DEFAULT_SERVER_ERROR = StatusCode::InternalServerError;
+
     public readonly array $schemes;
 
-    private readonly MimeTypeReader $mimeTypes;
+    private readonly SaucerRequestFactory $requests;
 
-    public function __construct(WebView $context, EventListener $listener)
-    {
+    private readonly SaucerResponseFactory $responses;
+
+    public function __construct(
+        /**
+         * @var list<ErrorHandlerInterface>
+         */
+        private readonly array $handlers,
+        WebView $context,
+        EventListener $listener,
+    ) {
         parent::__construct($context, $listener);
 
-        $this->mimeTypes = new MimeTypeReader();
-        $this->schemes = $this->app->info->schemes;
+        $this->requests = new SaucerRequestFactory($this->saucer);
+        $this->responses = new SaucerResponseFactory($this->saucer, new MimeTypeReader());
 
-        $this->createSchemeInterceptors($this->schemes);
+        $this->createSchemeInterceptors(
+            $this->schemes = $this->app->info->schemes,
+        );
     }
 
     /**
@@ -50,27 +66,29 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
 
     private function onSafeRequest(CData $request, CData $executor): void
     {
-        try {
-            $this->onRequest($request, $executor);
-        } catch (\Throwable $e) {
-            $status = StatusCode::InternalServerError;
-            $this->app->saucer->saucer_scheme_executor_reject($executor, $status->code);
+        $bosonRequest = $this->requests->createFromSaucerRequest($request);
 
-            $this->app->poller->throw($e);
+        try {
+            $this->handle($bosonRequest, $executor);
+        } catch (\Throwable $e) {
+            try {
+                $this->fail($bosonRequest, $e, $executor);
+            } catch (\Throwable) {
+                $this->reject($bosonRequest, self::DEFAULT_SERVER_ERROR, $executor);
+            }
         }
     }
 
-    private function onRequest(CData $request, CData $executor): void
+    private function handle(RequestInterface $request, CData $executor): void
     {
-        $processable = $this->intent($intention = new SchemeRequestReceived(
+        $processable = $this->intent($intention = new SchemeRequestReceive(
             subject: $this->webview,
-            request: $this->createRequest($request),
+            request: $request,
         ));
 
         // Abort request in case of intention is cancelled.
         if ($processable === false) {
-            $status = StatusCode::Forbidden;
-            $this->app->saucer->saucer_scheme_executor_reject($executor, $status->code);
+            $this->reject($request, self::DEFAULT_SERVER_REJECTION, $executor);
 
             return;
         }
@@ -81,70 +99,83 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
             return;
         }
 
-        $this->dispatchRequest($response, $executor);
+        $this->accept($request, $response, $executor);
     }
 
-    private function createRequest(CData $request): RequestInterface
+    private function fetchFailResponse(RequestInterface $request, \Throwable $exception): ?ResponseInterface
     {
-        return new LazyInitializedRequest(
-            api: $this->app->saucer,
-            ptr: $request,
-        );
-    }
+        foreach ($this->handlers as $handler) {
+            $response = $handler->handle($this->webview, $request, $exception);
 
-    private function dispatchRequest(ResponseInterface $response, CData $executor): void
-    {
-        $stash = $this->createResponseStash($response);
-        $struct = $this->createUnmanagedResponse($response, $stash);
-
-        $this->app->saucer->saucer_scheme_executor_accept($executor, $struct);
-        $this->app->saucer->saucer_scheme_response_free($struct);
-    }
-
-    #[RequiresDealloc]
-    private function createUnmanagedResponse(ResponseInterface $response, CData $stash): CData
-    {
-        $mime = $this->mimeTypes->getFromResponse($response);
-        $struct = $this->app->saucer->saucer_scheme_response_new($stash, $mime);
-
-        $status = \max(-2147483648, \min(2147483647, $response->status->code));
-
-        $this->app->saucer->saucer_scheme_response_set_status($struct, $status);
-
-        foreach ($response->headers as $header => $value) {
-            $this->app->saucer->saucer_scheme_response_append_header($struct, $header, $value);
+            if ($response instanceof ResponseInterface) {
+                return $response;
+            }
         }
 
-        return $struct;
+        return null;
     }
 
-    #[RequiresDealloc]
-    private function createResponseStash(ResponseInterface $response): CData
+    private function fail(RequestInterface $request, \Throwable $exception, CData $executor): void
     {
-        $length = \strlen($response->body);
+        $processable = $this->intent($intention = new SchemeRequestFail(
+            subject: $this->webview,
+            request: $request,
+            exception: $exception,
+            response: $this->fetchFailResponse($request, $exception),
+        ));
 
-        if ($length === 0) {
-            $ptr = $this->app->saucer->new('uint8_t*');
+        if ($processable === false) {
+            $this->reject($request, self::DEFAULT_SERVER_ERROR, $executor);
 
-            return $this->app->saucer->saucer_stash_new_from($ptr, 0);
+            return;
         }
 
-        $string = $this->createResponseBodyData($response);
-        $uint8Array = $this->app->saucer->cast('uint8_t*', \FFI::addr($string));
+        if ($intention->response === null) {
+            $this->reject($request, self::DEFAULT_SERVER_ERROR, $executor);
 
-        return $this->app->saucer->saucer_stash_new_from($uint8Array, $length);
+            $this->app->poller->throw($exception);
+
+            return;
+        }
+
+        $this->accept($request, $intention->response, $executor);
     }
 
-    private function createResponseBodyData(ResponseInterface $response): CData
+    private function reject(RequestInterface $request, StatusCodeInterface $status, CData $executor): void
     {
-        $length = \strlen($response->body);
-        $string = $this->app->saucer->new("char[$length]");
+        $processable = $this->intent($intention = new SchemeRequestReject(
+            subject: $this->webview,
+            request: $request,
+            status: $status,
+        ));
 
-        // Avoid indirect property modification
-        $body = $response->body;
+        if ($processable === false) {
+            $status = $intention->status;
+        }
 
-        \FFI::memcpy($string, $body, $length);
+        $this->app->saucer->saucer_scheme_executor_reject($executor, $status->code);
 
-        return $string;
+        $this->dispatch(new SchemeResponseRejected(
+            subject: $this->webview,
+            request: $request,
+            status: $status,
+        ));
+    }
+
+    private function accept(RequestInterface $request, ResponseInterface $response, CData $executor): void
+    {
+        [$saucerResponse, $saucerOptionalStash] = $this->responses->createFromBosonResponse($response);
+
+        $this->app->saucer->saucer_scheme_executor_accept($executor, $saucerResponse);
+
+        if ($saucerOptionalStash !== null) {
+            $this->app->saucer->saucer_stash_free($saucerOptionalStash);
+        }
+
+        $this->dispatch(new SchemeResponseProceed(
+            subject: $this->webview,
+            request: $request,
+            response: $response,
+        ));
     }
 }

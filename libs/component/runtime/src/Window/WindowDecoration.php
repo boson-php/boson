@@ -17,7 +17,7 @@ enum WindowDecoration
     case Full;
 
     /**
-     * A "frameless" windows is a window which hides the default window
+     * A "frameless" window is a window that hides the default window
      * buttons & handle assigned to it by the operating system.
      *
      * Titlebar:   ✖

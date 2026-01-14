@@ -42,6 +42,7 @@
         }
     },
     "require-dev": {
+        "filp/whoops": "^2.18",
         "phpunit/phpunit": "^12.0"
     },
     "autoload-dev": {
@@ -63,6 +64,9 @@
         "preferred-install": {
             "*": "dist"
         }
+    },
+    "suggest": {
+        "filp/whoops": "Required for friendly error pages in development (^2.18)"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

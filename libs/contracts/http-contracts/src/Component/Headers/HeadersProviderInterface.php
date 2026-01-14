@@ -12,7 +12,7 @@ use Boson\Contracts\Http\Component\HeadersInterface;
 interface HeadersProviderInterface
 {
     /**
-     * Gets immutable HTTP headers list of the instance.
+     * Gets an immutable HTTP headers list of the instance.
      *
      * @link https://datatracker.ietf.org/doc/html/rfc4229
      *

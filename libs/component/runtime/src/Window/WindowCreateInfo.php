@@ -11,7 +11,7 @@ use Boson\Window\Api\LifecycleEvents\LifecycleEventsExtension;
 //
 // Note:
 // 1) This "$_" assign hack removes these constants from IDE autocomplete.
-// 2) Only define-like constants allows object instances.
+// 2) Only define-like constants allow object instances.
 //
 \define($_ = 'Boson\Window\DEFAULT_WINDOW_EXTENSIONS', [
     new LifecycleEventsExtension(),
@@ -30,14 +30,14 @@ final readonly class WindowCreateInfo
     public const array DEFAULT_WINDOW_EXTENSIONS = DEFAULT_WINDOW_EXTENSIONS;
 
     /**
-     * Gets default window width.
+     * Gets the default window width.
      */
-    public const int DEFAULT_WIDTH = 640;
+    public const int DEFAULT_WIDTH = 1024;
 
     /**
-     * Gets default window height.
+     * Gets the default window height.
      */
-    public const int DEFAULT_HEIGHT = 480;
+    public const int DEFAULT_HEIGHT = 768;
 
     /**
      * @var list<ExtensionInterface<Window>>

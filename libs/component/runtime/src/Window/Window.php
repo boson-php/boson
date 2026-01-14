@@ -552,10 +552,10 @@ final class Window implements
             return '';
         }
 
-        $result = $this->saucer->new('char');
-        $this->saucer->saucer_window_title($this->id->ptr, \FFI::addr($result), \FFI::addr($length));
+        $title = $this->saucer->new("char[{$length->cdata}]");
+        $this->saucer->saucer_scheme_request_method($this->id->ptr, \FFI::addr($title[0]), \FFI::addr($length));
 
-        return \FFI::string(\FFI::addr($result), $length->cdata);
+        return \FFI::string(\FFI::addr($title[0]), $length->cdata);
     }
 
     /**
