@@ -7,6 +7,7 @@ namespace Boson\WebView;
 use Boson\Application;
 use Boson\Component\Http\Request;
 use Boson\Component\Saucer\SaucerInterface;
+use Boson\Component\Uri\Uri;
 use Boson\Contracts\EventListener\EventListenerInterface;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Contracts\Uri\UriInterface;
@@ -80,7 +81,13 @@ final class WebView implements
          * ```
          */
         get {
-            $result = $this->saucer->saucer_webview_url($this->id->ptr);
+            $result = $this->saucer->saucer_webview_url($this->id->ptr, \FFI::addr(
+                $error = $this->saucer->new('int'),
+            ));
+
+            if ($error->cdata !== 0) {
+                return new Uri();
+            }
 
             try {
                 return Request::castUrl(\FFI::string($result));
