@@ -9,6 +9,8 @@ use Boson\Dispatcher\EventListener;
 use Boson\Extension\Attribute\AvailableAs;
 use Boson\Extension\Extension;
 use Boson\WebView\Api\Schemes\Handler\ErrorHandlerInterface;
+use Boson\WebView\Api\Schemes\Handler\ProductionErrorHandler;
+use Boson\WebView\Api\Schemes\Handler\StderrErrorHandler;
 use Boson\WebView\Api\Schemes\Handler\WhoopsErrorHandler;
 use Boson\WebView\WebView;
 
@@ -18,7 +20,9 @@ use Boson\WebView\WebView;
 // 2) Only define-like constants allow object instances.
 //
 \define($_ = 'Boson\WebView\Api\Schemes\DEFAULT_ERROR_HANDLERS', [
+    new StderrErrorHandler(),
     new WhoopsErrorHandler(),
+    new ProductionErrorHandler(),
 ]);
 
 /**

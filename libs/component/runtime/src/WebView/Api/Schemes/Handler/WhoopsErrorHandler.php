@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\WebView\Api\Schemes\Handler;
 
-use Boson\Component\Http\Component\StatusCode;
 use Boson\Component\Http\Response;
 use Boson\Contracts\Http\Component\StatusCodeInterface;
 use Boson\Contracts\Http\RequestInterface;
@@ -15,8 +14,6 @@ use Whoops\Run as WhoopsHandler;
 
 final readonly class WhoopsErrorHandler implements ErrorHandlerInterface
 {
-    private const StatusCodeInterface DEFAULT_ERROR_CODE = StatusCode::InternalServerError;
-
     private ?WhoopsHandler $handler;
 
     public function __construct(
