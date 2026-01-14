@@ -81,7 +81,7 @@ final class WebView implements
          * ```
          */
         get {
-            $result = $this->saucer->saucer_webview_url($this->id->ptr, \FFI::addr(
+            $ptr = $this->saucer->saucer_webview_url($this->id->ptr, \FFI::addr(
                 $error = $this->saucer->new('int'),
             ));
 
@@ -90,9 +90,21 @@ final class WebView implements
             }
 
             try {
-                return Request::castUrl(\FFI::string($result));
+                $length = $this->saucer->new('size_t');
+                $this->saucer->saucer_url_string($ptr, null, \FFI::addr($length));
+
+                if ($length->cdata === 0) {
+                    return new Uri();
+                }
+
+                $url = $this->saucer->new("char[{$length->cdata}]");
+                $this->saucer->saucer_url_string($ptr, \FFI::addr($url[0]), \FFI::addr($length));
+
+                $urlString = \FFI::string(\FFI::addr($url[0]), $length->cdata);
+
+                return Request::castUrl($urlString);
             } finally {
-                \FFI::free($result);
+                \FFI::free($ptr);
             }
         }
         /**
