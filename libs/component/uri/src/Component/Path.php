@@ -12,13 +12,6 @@ use Boson\Contracts\Uri\Component\PathInterface;
 final readonly class Path implements PathInterface, \IteratorAggregate
 {
     /**
-     * Provides segment delimiter of the path component.
-     *
-     * @var non-empty-string
-     */
-    public const string PATH_SEGMENT_DELIMITER = '/';
-
-    /**
      * @var list<non-empty-string>
      */
     private array $segments;
@@ -67,14 +60,14 @@ final readonly class Path implements PathInterface, \IteratorAggregate
             $segments[] = \rawurlencode($segment);
         }
 
-        $path = \implode(self::PATH_SEGMENT_DELIMITER, $segments);
+        $path = \implode('/', $segments);
 
         if ($this->isAbsolute) {
-            $path = self::PATH_SEGMENT_DELIMITER . $path;
+            $path = '/' . $path;
         }
 
         if ($segments !== [] && $this->hasTrailingSlash) {
-            $path .= self::PATH_SEGMENT_DELIMITER;
+            $path .= '/';
         }
 
         return $path;

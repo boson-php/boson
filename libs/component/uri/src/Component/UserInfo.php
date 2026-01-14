@@ -8,11 +8,6 @@ use Boson\Contracts\Uri\Component\UserInfoInterface;
 
 final readonly class UserInfo implements UserInfoInterface
 {
-    /**
-     * @var non-empty-string
-     */
-    public const string USER_INFO_USER_PASSWORD_DELIMITER = ':';
-
     public function __construct(
         /**
          * @var non-empty-string
@@ -43,9 +38,7 @@ final readonly class UserInfo implements UserInfoInterface
     public function __toString(): string
     {
         if ($this->password !== null) {
-            return $this->user
-                . self::USER_INFO_USER_PASSWORD_DELIMITER
-                . $this->password;
+            return $this->user . ':' . $this->password;
         }
 
         return $this->user;

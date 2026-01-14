@@ -15,29 +15,7 @@ use Boson\Contracts\Uri\UriInterface;
 final class Uri implements UriInterface
 {
     /**
-     * @var non-empty-string
-     */
-    public const string URI_SCHEMA_SUFFIX = ':';
-
-    /**
-     * @var non-empty-string
-     */
-    public const string URI_AUTHORITY_PREFIX = '//';
-
-    /**
-     * @var non-empty-string
-     */
-    public const string URI_QUERY_PREFIX = '?';
-
-    /**
-     * @var non-empty-string
-     */
-    public const string URI_FRAGMENT_PREFIX = '#';
-
-    /**
      * Gets the user component of the URI.
-     *
-     * @uses \Boson\Contracts\Uri\Component\UserInfoInterface::$user
      *
      * @var non-empty-string|null
      */
@@ -48,8 +26,6 @@ final class Uri implements UriInterface
     /**
      * Gets the password component of the URI.
      *
-     * @uses \Boson\Contracts\Uri\Component\UserInfoInterface::$password
-     *
      * @var non-empty-string|null
      */
     public ?string $password {
@@ -59,8 +35,6 @@ final class Uri implements UriInterface
     /**
      * Gets the host component of the URI.
      *
-     * @uses \Boson\Contracts\Uri\Component\AuthorityInterface::$host
-     *
      * @var non-empty-string|null
      */
     public ?string $host {
@@ -69,8 +43,6 @@ final class Uri implements UriInterface
 
     /**
      * Gets the port component of the URI.
-     *
-     * @uses \Boson\Contracts\Uri\Component\AuthorityInterface::$port
      *
      * @var int<0, 65535>|null
      */
@@ -116,22 +88,21 @@ final class Uri implements UriInterface
         $result = '';
 
         if ($this->scheme !== null) {
-            $result .= $this->scheme . self::URI_SCHEMA_SUFFIX;
+            $result .= $this->scheme . ':';
         }
 
         if ($this->authority !== null) {
-            $result .= self::URI_AUTHORITY_PREFIX
-                . $this->authority;
+            $result .= '//' . $this->authority;
         }
 
         $result .= $this->path;
 
         if ($this->query->count() !== 0) {
-            $result .= self::URI_QUERY_PREFIX . $this->query;
+            $result .= '?' . $this->query;
         }
 
         if ($this->fragment !== null) {
-            $result .= self::URI_FRAGMENT_PREFIX . \rawurlencode($this->fragment);
+            $result .= '#' . \rawurlencode($this->fragment);
         }
 
         return $result;

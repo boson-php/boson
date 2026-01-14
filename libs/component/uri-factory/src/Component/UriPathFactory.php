@@ -11,11 +11,6 @@ use Boson\Contracts\Uri\Factory\Component\UriPathFactoryInterface;
 
 final readonly class UriPathFactory implements UriPathFactoryInterface
 {
-    /**
-     * @var non-empty-string
-     */
-    private const string SEGMENT_DELIMITER = Path::PATH_SEGMENT_DELIMITER;
-
     public function createPathFromString(\Stringable|string $path): PathInterface
     {
         if ($path instanceof PathInterface) {
@@ -51,7 +46,7 @@ final readonly class UriPathFactory implements UriPathFactoryInterface
     {
         $result = [];
 
-        foreach (\explode(self::SEGMENT_DELIMITER, $path) as $segment) {
+        foreach (\explode('/', $path) as $segment) {
             if ($segment !== '') {
                 $result[] = \urldecode($segment);
             }

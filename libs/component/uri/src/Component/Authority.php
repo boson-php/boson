@@ -10,19 +10,7 @@ use Boson\Contracts\Uri\Component\UserInfoInterface;
 final class Authority implements AuthorityInterface
 {
     /**
-     * @var non-empty-string
-     */
-    public const string AUTHORITY_HOST_PORT_DELIMITER = ':';
-
-    /**
-     * @var non-empty-string
-     */
-    public const string AUTHORITY_USER_INFO_DELIMITER = '@';
-
-    /**
      * Gets the user component of the URI.
-     *
-     * @uses \Boson\Contracts\Uri\Component\UserInfoInterface::$user
      *
      * @var non-empty-string|null
      */
@@ -32,8 +20,6 @@ final class Authority implements AuthorityInterface
 
     /**
      * Gets the password component of the URI.
-     *
-     * @uses \Boson\Contracts\Uri\Component\UserInfoInterface::$password
      *
      * @var non-empty-string|null
      */
@@ -73,11 +59,11 @@ final class Authority implements AuthorityInterface
         $result = $this->host;
 
         if ($this->port !== null) {
-            $result .= self::AUTHORITY_HOST_PORT_DELIMITER . $this->port;
+            $result .= ':' . $this->port;
         }
 
         if ($this->userInfo !== null) {
-            return $this->userInfo . self::AUTHORITY_USER_INFO_DELIMITER . $result;
+            return $this->userInfo . '@' . $result;
         }
 
         return $result;
