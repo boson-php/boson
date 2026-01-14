@@ -34,35 +34,35 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
      */
     private const string WEBVIEW_HANDLER_STRUCT = <<<'CDATA'
         struct {
-         // TODO Add permissions event
-         // TODO Add fullscreen event
+            // TODO Add permissions event
+            // TODO Add fullscreen event
 
-         // saucer_webview_event_dom_ready
-         void (*onDomReady)(const saucer_webview *, void *);
+            // saucer_webview_event_dom_ready
+            void (*onDomReady)(const saucer_webview *, void *);
 
-         // saucer_webview_event_navigated
-         // TODO Add saucer_url support
-         void (*onNavigated)(const saucer_webview *, saucer_url *, void *);
+            // saucer_webview_event_navigated
+            // TODO Add saucer_url support
+            void (*onNavigated)(const saucer_webview *, saucer_url *, void *);
 
-         // saucer_webview_event_navigate
-         SAUCER_POLICY (*onNavigating)(const saucer_webview *, const saucer_navigation *, void *);
+            // saucer_webview_event_navigate
+            SAUCER_POLICY (*onNavigating)(const saucer_webview *, const saucer_navigation *, void *);
 
-         // saucer_webview_event_favicon
-         void (*onFaviconChanged)(const saucer_webview *, saucer_icon *, void *);
+            // saucer_webview_event_favicon
+            void (*onFaviconChanged)(const saucer_webview *, saucer_icon *, void *);
 
-         // saucer_webview_event_title
-         void (*onTitleChanged)(const saucer_webview *, const char *, size_t, void *);
+            // saucer_webview_event_title
+            void (*onTitleChanged)(const saucer_webview *, const char *, size_t, void *);
 
-         // saucer_webview_event_load
-         void (*onLoad)(const saucer_webview *, SAUCER_STATE, void *);
+            // saucer_webview_event_load
+            void (*onLoad)(const saucer_webview *, SAUCER_STATE, void *);
 
-         // saucer_webview_event_message
-         void (*onMessage)(const saucer_webview *, const char *, size_t, void *);
+            // saucer_webview_event_message
+            void (*onMessage)(const saucer_webview *, const char *, size_t, void *);
         }
         CDATA;
 
     /**
-     * Contains managed struct with event handlers.
+     * Contains a managed struct with event handlers.
      *
      * @phpstan-var CSaucerWebViewEventsStruct
      */
@@ -116,7 +116,7 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_FAVICON, $ctx->onFaviconChanged, false, null);
         $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_TITLE, $ctx->onTitleChanged, false, null);
         $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_LOAD, $ctx->onLoad, false, null);
-        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_MESSAGE, $ctx->onLoad, false, null);
+        $this->app->saucer->saucer_webview_on($ptr, Event::SAUCER_WEBVIEW_EVENT_MESSAGE, $ctx->onMessage, false, null);
     }
 
     private function onMessageReceived(string $message): bool
