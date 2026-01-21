@@ -33,16 +33,6 @@ final class AutorunExtension extends Extension
 
     public function load(IdentifiableInterface $ctx, EventListener $listener): null
     {
-        /**
-         * Checks for the presence of a deprecated config flag.
-         *
-         * TODO The {@see ApplicationCreateInfo::$autorun} check should be
-         *      removed after the flag is removed.
-         */
-        if (!$ctx->info->autorun) {
-            return null;
-        }
-
         $this->listenStartup($ctx, $listener);
 
         $callback = function () use ($ctx, $listener): void {

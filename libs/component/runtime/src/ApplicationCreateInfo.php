@@ -86,19 +86,6 @@ final readonly class ApplicationCreateInfo
          * @var non-empty-string|null
          */
         public ?string $library = null,
-        /**
-         * Automatically starts the application if set to {@see true}.
-         *
-         * @deprecated will be removed in future versions it and replaced by
-         *             the presence of the {@see AutorunExtension}
-         *             in the {@see $extensions} list.
-         *
-         *             To disable this functionality, you should remove the
-         *             {@see AutorunExtension} from the
-         *             {@see $extensions} list, instead of setting the field
-         *             to {@see false}.
-         */
-        public bool $autorun = true,
         iterable $extensions = self::DEFAULT_APPLICATION_EXTENSIONS,
         /**
          * Main (default) window configuration DTO.
