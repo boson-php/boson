@@ -14,7 +14,6 @@ use Boson\Application;
 use Boson\Component\OsInfo\Family;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\EventListener;
-use Boson\Extension\Attribute\AvailableAs;
 use Boson\Extension\Attribute\DependsOn;
 use Boson\Extension\Extension;
 use FFI\Env\Runtime;
@@ -22,7 +21,6 @@ use FFI\Env\Runtime;
 /**
  * @template-extends Extension<Application>
  */
-#[AvailableAs('console', ConsoleApiInterface::class)]
 #[DependsOn(OperatingSystemExtension::class)]
 final class ConsoleExtension extends Extension
 {
