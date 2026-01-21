@@ -137,35 +137,35 @@ final class SaucerDialogApi extends LoadedApplicationExtension implements
         $this->dispatch(new UriOpened($this->app, $uri));
     }
 
-    public function selectDirectory(?string $path = null, iterable $filter = []): ?string
+    public function selectDirectory(?string $directory = null, iterable $filter = []): ?string
     {
-        if (!$this->intent(new DirectorySelecting($this->app, $path, $filter))) {
+        if (!$this->intent(new DirectorySelecting($this->app, $directory, $filter))) {
             return null;
         }
 
         $filter = \iterator_to_array($filter, false);
 
-        $result = $this->selectOne($path, $filter, $this->app->saucer->saucer_picker_pick_folder(...));
+        $result = $this->selectOne($directory, $filter, $this->app->saucer->saucer_picker_pick_folder(...));
 
         if ($result !== null) {
-            $this->dispatch(new DirectorySelected($this->app, $result, $path, $filter));
+            $this->dispatch(new DirectorySelected($this->app, $result, $directory, $filter));
         }
 
         return $result;
     }
 
-    public function selectFile(?string $path = null, iterable $filter = []): ?string
+    public function selectFile(?string $directory = null, iterable $filter = []): ?string
     {
-        if (!$this->intent(new FileSelecting($this->app, $path, $filter))) {
+        if (!$this->intent(new FileSelecting($this->app, $directory, $filter))) {
             return null;
         }
 
         $filter = \iterator_to_array($filter, false);
 
-        $result = $this->selectOne($path, $filter, $this->app->saucer->saucer_picker_pick_file(...));
+        $result = $this->selectOne($directory, $filter, $this->app->saucer->saucer_picker_pick_file(...));
 
         if ($result !== null) {
-            $this->dispatch(new FileSelected($this->app, $result, $path, $filter));
+            $this->dispatch(new FileSelected($this->app, $result, $directory, $filter));
         }
 
         return $result;
@@ -174,18 +174,18 @@ final class SaucerDialogApi extends LoadedApplicationExtension implements
     /**
      * @return list<non-empty-string>
      */
-    public function selectFiles(?string $path = null, iterable $filter = []): array
+    public function selectFiles(?string $directory = null, iterable $filter = []): array
     {
-        if (!$this->intent(new FilesSelecting($this->app, $path, $filter))) {
+        if (!$this->intent(new FilesSelecting($this->app, $directory, $filter))) {
             return [];
         }
 
         $filter = \iterator_to_array($filter, false);
 
-        $result = $this->selectMany($path, $filter, $this->app->saucer->saucer_picker_pick_files(...));
+        $result = $this->selectMany($directory, $filter, $this->app->saucer->saucer_picker_pick_files(...));
 
         foreach ($result as $selection) {
-            $this->dispatch(new FileSelected($this->app, $selection, $path, $filter));
+            $this->dispatch(new FileSelected($this->app, $selection, $directory, $filter));
         }
 
         return $result;
