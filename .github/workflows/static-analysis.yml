@@ -7,39 +7,16 @@ on:
 jobs:
   phpstan:
     name: Linter
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        php: [ '8.4' ]
-        os: [ ubuntu-latest ]
+    runs-on: ubuntu-latest
     steps:
-      - name: Set Git To Use LF
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
+        uses: actions/checkout@v5
+
+      - name: Setup PHP ${{ matrix.php }} Environment
+        uses: ./.github/actions/setup-php
         with:
-          php-version: ${{ matrix.php }}
-      - name: Validate Composer
-        run: composer validate
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - name: Restore Composer Cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
-      - name: Install Dependencies
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer update --prefer-dist --no-interaction --no-progress
+          os: ubuntu-latest
+          php: 8.4
+
       - name: Static Analysis
-        run: composer linter:check
+        run: composer linter:check -- --error-format=github --ansi

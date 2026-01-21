@@ -1,0 +1,55 @@
+name: Setup PHP Environment
+
+inputs:
+  os:
+    description: 'Operating System'
+    required: false
+    default: 'ubuntu-latest'
+  php:
+    description: 'PHP Version'
+    required: false
+    default: '8.4'
+  stability:
+    description: 'Composer Dependencies Stability'
+    required: false
+    default: 'stable'
+
+runs:
+  using: composite
+  steps:
+    - name: Set Git To Use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+
+    - name: Checkout
+      uses: actions/checkout@v5
+
+    - name: Setup PHP ${{ matrix.php }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: ffi
+        tools: pecl
+        ini-values: "memory_limit=-1"
+
+    - name: Validate Composer
+      run: composer validate
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Restore Composer Cache
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-${{ matrix.php }}-composer-
+
+    - name: Install Dependencies
+      uses: nick-invision/retry@v2
+      with:
+        timeout_minutes: 5
+        max_attempts: 3
+        command: composer update --prefer-${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
