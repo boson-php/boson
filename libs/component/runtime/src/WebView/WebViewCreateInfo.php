@@ -127,12 +127,12 @@ final readonly class WebViewCreateInfo
         string|false|null $storage = false,
         iterable $flags = [],
         /**
-         * Enable or disable default webview context menu (right mouse button).
+         * Enable or disable a default webview context menu (right mouse button).
          *
          * If {@see null} is passed (by default), the behavior depends
          * on the application's debug ({@see Application::$isDebug}) settings:
-         *  - Context menu will be enabled if debug mode is enabled.
-         *  - Context menu will bew disabled if debug mode is disabled.
+         *  - A context menu will be enabled if debug mode is enabled.
+         *  - A context menu will be disabled if debug mode is disabled.
          */
         public ?bool $contextMenu = null,
         /**
@@ -148,11 +148,11 @@ final readonly class WebViewCreateInfo
          * Enables graphics hardware acceleration in case of this option
          * is set to {@see true} or disables in case {@see false}.
          *
-         * By default, in case of {@see null}, uses parent (windows)
+         * By default, in case of {@see null}, uses a parent (windows)
          * configuration option:
          * - {@see WindowCreateInfo::$enableHardwareAcceleration}
          *
-         * Note: [MACOS] WKWebView does not allow to control
+         * Note: [MACOS] WKWebView does not allow controlling
          *       hardware-acceleration.
          */
         public ?bool $enableHardwareAcceleration = null,
@@ -160,9 +160,9 @@ final readonly class WebViewCreateInfo
          * Forces dark mode in case of this option
          * is set to {@see true} or disables in case {@see false}.
          *
-         * By default, in case of {@see null}, uses parent (windows)
+         * By default, in case of {@see null}, uses a parent (windows)
          * configuration option:
-         * - {@see WindowCreateInfo::$decoration}
+         * - {@see WindowCreateInfo::$forceDarkMode}
          */
         public ?bool $forceDarkMode = null,
         iterable $extensions = self::DEFAULT_WEBVIEW_EXTENSIONS,

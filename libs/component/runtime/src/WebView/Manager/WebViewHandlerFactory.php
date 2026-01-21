@@ -85,7 +85,7 @@ final readonly class WebViewHandlerFactory
     }
 
     /**
-     * Enable context menu in case of the corresponding value was passed
+     * Enable a context menu in case of the corresponding value was passed
      * explicitly to the create info options or debug mode was enabled.
      */
     private function isContextMenuEnabled(Window $window, WebViewCreateInfo $info): bool
@@ -95,18 +95,17 @@ final readonly class WebViewHandlerFactory
     }
 
     /**
-     * Enable dark mode in case of the corresponding value was passed in
+     * Enable dark mode in case of the corresponding value was passed in the
      * parent window config instance.
-     *
-     * TODO Move this option to webview
      */
     private function isDarkModeEnabled(Window $window, WebViewCreateInfo $info): bool
     {
-        return $info->forceDarkMode === true;
+        return $info->forceDarkMode
+            ?? $window->info->forceDarkMode;
     }
 
     /**
-     * Gets real hardware acceleration option from configuration options
+     * Gets a real hardware acceleration option from configuration options
      */
     private function isHardwareAccelerationEnabled(Window $window, WebViewCreateInfo $info): bool
     {
@@ -118,7 +117,7 @@ final readonly class WebViewHandlerFactory
     {
         if ($this->isDevToolsEnabled($window, $info)) {
             /**
-             * Force disable unnecessary XSS warnings in dev tools
+             * Force to disable unnecessary XSS warnings in dev tools
              *
              * @link https://developer.chrome.com/blog/self-xss#can_you_disable_it_for_test_automation
              */

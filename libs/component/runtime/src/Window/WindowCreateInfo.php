@@ -72,6 +72,13 @@ final readonly class WindowCreateInfo
          */
         public bool $enableHardwareAcceleration = true,
         /**
+         * Forces dark mode for all children webview instances in case of
+         * this option is set to {@see true} or disables in case {@see false}.
+         *
+         * @see WebViewCreateInfo::$forceDarkMode
+         */
+        public bool $forceDarkMode = false,
+        /**
          * Displays a window when the application starts.
          */
         public bool $visible = true,
@@ -90,7 +97,7 @@ final readonly class WindowCreateInfo
         /**
          * Manage window decorations.
          *
-         * Enable or disable title bar, minimize, maximize, exit buttons,
+         * Enable or disable the title bar, minimize, maximize, exit buttons,
          * transparency and so on...
          */
         public WindowDecoration $decoration = WindowDecoration::DEFAULT,
