@@ -17,6 +17,7 @@ use Boson\WebView\Event\WebViewFaviconChanging;
 use Boson\WebView\Event\WebViewMessageReceived;
 use Boson\WebView\Event\WebViewNavigated;
 use Boson\WebView\Event\WebViewNavigating;
+use Boson\WebView\Event\WebViewStateChanged;
 use Boson\WebView\Event\WebViewTitleChanged;
 use Boson\WebView\Event\WebViewTitleChanging;
 use Boson\WebView\WebView;
@@ -85,7 +86,18 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
 
     private function changeState(WebViewState $state): void
     {
+        $before = $this->state->getRawValue($this->webview);
+
+        if ($before === $state) {
+            return;
+        }
+
         $this->state->setRawValue($this->webview, $state);
+
+        $this->dispatch(new WebViewStateChanged(
+            subject: $this->webview,
+            state: $state,
+        ));
     }
 
     private function createEventHandlers(): CData
