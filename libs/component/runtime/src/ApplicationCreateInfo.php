@@ -87,20 +87,6 @@ final readonly class ApplicationCreateInfo
          */
         public ?string $library = null,
         /**
-         * Automatically terminates the application if
-         * all windows have been closed.
-         *
-         * @deprecated will be removed in future versions it and replaced by
-         *             the presence of the {@see QuitOnCloseExtension}
-         *             in the {@see $extensions} list.
-         *
-         *             To disable this functionality, you should remove the
-         *             {@see QuitOnCloseExtension} from the
-         *             {@see $extensions} list, instead of setting the field
-         *             to {@see false}.
-         */
-        public bool $quitOnClose = true,
-        /**
          * Automatically starts the application if set to {@see true}.
          *
          * @deprecated will be removed in future versions it and replaced by

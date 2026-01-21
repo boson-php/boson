@@ -328,21 +328,7 @@ class Application implements
      */
     private function registerDefaultEventListeners(): void
     {
-        $this->listener->addEventListener(WindowClosed::class, $this->onWindowClose(...));
         $this->listener->addEventListener(ApplicationStarted::class, $this->onApplicationStarted(...));
-    }
-
-    /**
-     * Handles the window close event.
-     *
-     * If {@see $quitOnClose} is enabled ({@see true}) and
-     * all windows are closed, the application will quit.
-     */
-    private function onWindowClose(): void
-    {
-        if ($this->info->quitOnClose && $this->windows->count() === 0) {
-            $this->quit();
-        }
     }
 
     /**
