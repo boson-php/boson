@@ -42,7 +42,7 @@ final class Window implements
     use EventListenerProvider;
 
     /**
-     * Gets webviews list and methods for working with webviews.
+     * Gets a webviews list and methods for working with webviews.
      *
      * @api
      */
@@ -201,6 +201,7 @@ final class Window implements
          * ```
          */
         set(SizeInterface $size) {
+            $this->size ??= new ManagedWindowSize($this->saucer, $this->id->ptr);
             $this->size->update($size->width, $size->height);
         }
     }
@@ -260,6 +261,7 @@ final class Window implements
          * ```
          */
         set(SizeInterface $size) {
+            $this->min ??= new ManagedWindowMinBounds($this->saucer, $this->id->ptr);
             $this->min->update($size->width, $size->height);
         }
     }
@@ -304,7 +306,7 @@ final class Window implements
          */
         get => $this->max ??= new ManagedWindowMaxBounds($this->saucer, $this->id->ptr);
         /**
-         * Allows to update window maximal size bound using any
+         * Allows updating window maximal size bound using any
          * {@see SizeInterface} (for example {@see Size}) instance.
          *
          * ```
@@ -319,6 +321,7 @@ final class Window implements
          * ```
          */
         set(SizeInterface $size) {
+            $this->max ??= new ManagedWindowMaxBounds($this->saucer, $this->id->ptr);
             $this->max->update($size->width, $size->height);
         }
     }
@@ -330,7 +333,7 @@ final class Window implements
      */
     public bool $isVisible {
         /**
-         * Gets current window visibility state.
+         * Gets the current window visibility state.
          *
          * ```
          * if ($window->isVisible) {
@@ -363,13 +366,13 @@ final class Window implements
     }
 
     /**
-     * Contains window "always on top" option.
+     * Contains the window "always on top" option.
      *
      * @api
      */
     public bool $isAlwaysOnTop {
         /**
-         * Gets current window "always on top" option.
+         * Gets the current window "always on top" option.
          *
          * ```
          * if ($window->isAlwaysOnTop) {
@@ -388,7 +391,7 @@ final class Window implements
          * // Make window always on top
          * $window->isAlwaysOnTop = true;
          *
-         * // Disable window always on top feature
+         * // Disable a window always on top feature
          * $window->isVisible = false;
          * ```
          */
@@ -404,7 +407,7 @@ final class Window implements
      */
     public bool $isClickThrough {
         /**
-         * Gets current window "click through" option.
+         * Gets the current window "click through" option.
          *
          * ```
          * if ($window->isClickThrough) {
@@ -416,7 +419,7 @@ final class Window implements
          */
         get => $this->saucer->saucer_window_click_through($this->id->ptr);
         /**
-         * Sets window "click through" feature in case of property was be set
+         * Sets window "click through" feature in case of property was being set
          * to {@see true} or disable this feature in case of {@see false}.
          *
          * ```
@@ -433,7 +436,7 @@ final class Window implements
     }
 
     /**
-     * Gets current window closed state.
+     * Gets the current window closed state.
      *
      * ```
      * if ($window->isClosed) {
@@ -584,28 +587,11 @@ final class Window implements
     }
 
     /**
-     * Magic hack to refresh the window without internal API calls :3
-     */
-    private function refresh(): void
-    {
-        $height = $this->size->height;
-
-        // Avoid height overflow
-        if ($height >= 2147483647) {
-            $this->size->height = $height - 1;
-        } else {
-            $this->size->height = $height + 1;
-        }
-
-        $this->size->height = $height;
-    }
-
-    /**
      * Start window dragging.
      *
      * @api
      */
-    public function startDrag(): void
+    public function drag(): void
     {
         $this->saucer->saucer_window_start_drag($this->id->ptr);
     }
@@ -615,7 +601,7 @@ final class Window implements
      *
      * @api
      */
-    public function startResize(WindowEdge|WindowCorner $direction): void
+    public function resize(WindowEdge|WindowCorner $direction): void
     {
         $this->saucer->saucer_window_start_resize($this->id->ptr, match ($direction) {
             WindowEdge::Top => SaucerWindowEdge::SAUCER_WINDOW_EDGE_TOP,
@@ -670,11 +656,9 @@ final class Window implements
     }
 
     /**
-     * Set window as maximized.
+     * Set the window as maximized.
      *
      * @api
-     *
-     * @since frontend 0.2.0
      */
     public function maximize(): void
     {
@@ -682,7 +666,7 @@ final class Window implements
     }
 
     /**
-     * Set window as maximized.
+     * Set the window as maximized.
      *
      * @api
      */
