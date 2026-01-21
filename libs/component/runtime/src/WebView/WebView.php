@@ -61,14 +61,14 @@ final class WebView implements
      */
     public Window $window {
         /**
-         * @throws WindowDereferenceException in case of parent window has been removed
+         * @throws WindowDereferenceException in case of a parent window has been removed
          */
         get => $this->reference->get()
             ?? throw WindowDereferenceException::becauseNoParentWindow();
     }
 
     /**
-     * Contains webview URI instance.
+     * Contains a webview URI instance.
      *
      * @api
      */
@@ -228,7 +228,7 @@ final class WebView implements
     /**
      * Binds a PHP callback to a new global JavaScript function.
      *
-     * Note: This is facade method of the {@see BindingsApi::bind()},
+     * Note: This is a facade method of the {@see BindingsApi::bind()},
      *       that provides by the {@see $bindings} field. This means that
      *       calling `$webview->functions->bind(...)` should have the same effect.
      *
