@@ -12,7 +12,7 @@ use Boson\Contracts\ValueObject\StringValueObjectInterface;
 interface StandardInterface extends StringValueObjectInterface
 {
     /**
-     * Gets the name of standard.
+     * Gets the name of a standard.
      *
      * @var non-empty-string
      */

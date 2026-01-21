@@ -46,4 +46,16 @@ final class CentralProcessorInfo implements CentralProcessorInfoInterface
     {
         return $this->cpu->isSupports($instructionSet);
     }
+
+    public function __debugInfo(): array
+    {
+        return [
+            'arch' => $this->arch,
+            'vendor' => $this->vendor,
+            'name' => $this->name,
+            'cores' => $this->cores,
+            'threads' => $this->threads,
+            'instructionSets' => $this->instructionSets,
+        ];
+    }
 }

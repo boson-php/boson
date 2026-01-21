@@ -34,4 +34,11 @@ trait InstructionSetImpl
     {
         return $this->name;
     }
+
+    public function __debugInfo(): array
+    {
+        return [
+            'name' => $this->name,
+        ];
+    }
 }

@@ -46,4 +46,15 @@ final class OperatingSystemInfo implements OperatingSystemInfoInterface
     {
         return $this->os->isSupports($standard);
     }
+
+    public function __debugInfo(): array
+    {
+        return [
+            'name' => $this->name,
+            'version' => $this->version,
+            'edition' => $this->edition,
+            'family' => $this->family,
+            'standards' => $this->standards,
+        ];
+    }
 }

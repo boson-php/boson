@@ -40,4 +40,12 @@ trait StandardImpl
     {
         return $this->toString();
     }
+
+    public function __debugInfo(): array
+    {
+        return [
+            'name' => $this->name,
+            'parent' => $this->parent,
+        ];
+    }
 }
