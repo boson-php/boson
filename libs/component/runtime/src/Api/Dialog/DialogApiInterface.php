@@ -9,5 +9,4 @@ namespace Boson\Api\Dialog;
  */
 interface DialogApiInterface extends
     FileOpenerInterface,
-    FileSelectorInterface,
-    DirectorySelectorInterface {}
+    FileSelectorInterface {}
