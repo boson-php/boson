@@ -27,29 +27,33 @@ class TestingApplicationStub extends Application
         $stub->addDefaultMethod('cast', fn(string $t, CData $ptr) => $ptr);
         $stub->addDefaultMethod('new', $this->createStruct(...));
 
-        $stub->addDefaultMethod('saucer_application_new', fn(mixed ...$args): CData
-            => $this->createStruct('saucer_application_new', $args));
+        $stub->addDefaultMethod(...$this->shouldReturnStruct('saucer_application_new'));
+        $stub->addDefaultMethod('saucer_application_quit');
 
-        $stub->addDefaultMethod('saucer_application_options_new', fn(mixed ...$args): CData
-            => $this->createStruct('saucer_application_options_new', $args));
+        $stub->addDefaultMethod(...$this->shouldReturnStruct('saucer_application_options_new'));
+        $stub->addDefaultMethod('saucer_application_options_free');
 
-        $stub->addDefaultMethod('saucer_loop_new', fn(mixed ...$args): CData
-            => $this->createStruct('saucer_loop_new', $args));
+        $stub->addDefaultMethod(...$this->shouldReturnStruct('saucer_loop_new'));
+        $stub->addDefaultMethod('saucer_loop_free');
 
-        $stub->addDefaultMethod('saucer_desktop_new', fn(mixed ...$args): CData
-            => $this->createStruct('saucer_desktop_new', $args));
+        $stub->addDefaultMethod(...$this->shouldReturnStruct('saucer_desktop_new'));
+        $stub->addDefaultMethod('saucer_desktop_free');
 
-        $stub->addDefaultMethod('saucer_window_new', fn(mixed ...$args): CData
-            => $this->createStruct('saucer_window_new', $args));
+        $stub->addDefaultMethod(...$this->shouldReturnStruct('saucer_window_new'));
+        $stub->addDefaultMethod('saucer_window_free');
 
-        $stub->addDefaultMethod('saucer_webview_options_new', fn(mixed ...$args): CData
-            => $this->createStruct('saucer_webview_options_new', $args));
+        $stub->addDefaultMethod(...$this->shouldReturnStruct('saucer_webview_options_new'));
+        $stub->addDefaultMethod('saucer_webview_options_free');
 
-        $stub->addDefaultMethod('saucer_webview_new', fn(mixed ...$args): CData
-            => $this->createStruct('saucer_webview_new', $args));
+        $stub->addDefaultMethod(...$this->shouldReturnStruct('saucer_webview_new'));
+        $stub->addDefaultMethod('saucer_webview_free');
 
-        $stub->addDefaultMethod('saucer_script_new', fn(mixed ...$args): CData
-            => $this->createStruct('saucer_script_new', $args));
+        $stub->addDefaultMethod('saucer_webview_inject');
+        $stub->addDefaultMethod('saucer_webview_uninject_all');
+        $stub->addDefaultMethod('saucer_webview_uninject');
+
+        $stub->addDefaultMethod(...$this->shouldReturnStruct('saucer_stash_new_from'));
+        $stub->addDefaultMethod('saucer_stash_free');
 
         $stub->addDefaultMethod('saucer_webview_options_append_browser_flag');
         $stub->addDefaultMethod('saucer_webview_options_set_persistent_cookies');
@@ -77,18 +81,14 @@ class TestingApplicationStub extends Application
 
         $stub->addDefaultMethod('saucer_script_set_permanent');
 
-        // cleanup
-
-        $stub->addDefaultMethod('saucer_application_options_free');
-        $stub->addDefaultMethod('saucer_desktop_free');
-        $stub->addDefaultMethod('saucer_loop_free');
-        $stub->addDefaultMethod('saucer_window_free');
-        $stub->addDefaultMethod('saucer_webview_options_free');
-        $stub->addDefaultMethod('saucer_application_quit');
-        $stub->addDefaultMethod('saucer_webview_uninject_all');
-        $stub->addDefaultMethod('saucer_webview_uninject');
-
         return $stub;
+    }
+
+    private function shouldReturnStruct(string $method, bool $managed = true): array
+    {
+        return [$method, function (mixed ...$args) use ($method, $managed): CData {
+            return $this->createStruct($method, $args, $managed);
+        }];
     }
 
     #[\Override]
@@ -106,7 +106,7 @@ class TestingApplicationStub extends Application
      * @param non-empty-string $type
      * @param array<array-key, mixed> $args
      */
-    protected function createStruct(string $type, array $args = []): CData
+    protected function createStruct(string $type, array $args = [], bool $managed = true): CData
     {
         return match (true) {
             $this->isWebViewEventsStruct($type) => \FFI::cdef(<<<'C'
@@ -114,20 +114,22 @@ class TestingApplicationStub extends Application
                     typedef void* saucer_url;
                     typedef void* saucer_navigation;
                     typedef void* saucer_icon;
+                    typedef void* saucer_permission_request;
 
                     typedef int32_t SAUCER_POLICY;
+                    typedef int32_t SAUCER_STATUS;
                     typedef int32_t SAUCER_STATE;
                     C)
-                ->new($type),
+                ->new($type, false),
             $this->isWindowEventsStruct($type) => \FFI::cdef(<<<'C'
                     typedef void* saucer_window;
 
                     typedef int32_t SAUCER_POLICY;
                     typedef int32_t SAUCER_WINDOW_DECORATION;
                     C)
-                ->new($type),
+                ->new($type, false),
             default => \FFI::cdef()
-                ->new('int64_t'),
+                ->new('int64_t', $managed),
         };
     }
 

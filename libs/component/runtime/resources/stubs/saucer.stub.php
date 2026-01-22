@@ -2,7 +2,9 @@
 
 namespace Boson\Internal\WebView {
 
+    use Boson\Component\Saucer\Policy;
     use Boson\Component\Saucer\State;
+    use Boson\Component\Saucer\Status;
     use FFI\CData;
 
     /**
@@ -15,17 +17,27 @@ namespace Boson\Internal\WebView {
     final class CSaucerWebViewEventsStruct extends CData
     {
         /**
+         * @var null|\Closure(CData, CData, CData):(Status::SAUCER_STATE_*)
+         */
+        public null|\Closure $onPermissionRequested;
+
+        /**
+         * @var null|\Closure(CData, bool, CData):(Policy::SAUCER_POLICY_*)
+         */
+        public null|\Closure $onFullscreen;
+
+        /**
          * @var null|\Closure(CData, CData):void
          */
         public null|\Closure $onDomReady;
 
         /**
-         * @var null|\Closure(CData, string, CData):void
+         * @var null|\Closure(CData, CData, CData):void
          */
         public null|\Closure $onNavigated;
 
         /**
-         * @var null|\Closure(CData, CData, CData):void
+         * @var null|\Closure(CData, CData, CData):(Policy::SAUCER_POLICY_*)
          */
         public null|\Closure $onNavigating;
 
@@ -35,7 +47,7 @@ namespace Boson\Internal\WebView {
         public null|\Closure $onFaviconChanged;
 
         /**
-         * @var null|\Closure(CData, string, CData):void
+         * @var null|\Closure(CData, string, int<0, max>, CData):void
          */
         public null|\Closure $onTitleChanged;
 
@@ -45,7 +57,7 @@ namespace Boson\Internal\WebView {
         public null|\Closure $onLoad;
 
         /**
-         * @var null|\Closure(CData, string, int<0, max>, CData):void
+         * @var null|\Closure(CData, string, int<0, max>, CData):(Status::SAUCER_STATE_*)
          */
         public null|\Closure $onMessage;
     }

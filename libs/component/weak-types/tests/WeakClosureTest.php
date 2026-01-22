@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
+namespace Boson\Component\WeakType\Tests;
+
 use Boson\Component\WeakType\Tests\WeakClosureTest\ParentStub;
 use Boson\Component\WeakType\Tests\WeakClosureTest\StaticStub;
 use Boson\Component\WeakType\WeakClosure;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
+#[Group('boson-php/weak-types')]
 final class WeakClosureTest extends TestCase
 {
     public function testCreateReturnsSameInstance(): void
@@ -47,7 +51,7 @@ final class WeakClosureTest extends TestCase
 
         gc_collect_cycles();
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $closure();
     }
 
@@ -59,7 +63,7 @@ final class WeakClosureTest extends TestCase
                 return 123;
             }
 
-            public function get(): Closure
+            public function get(): \Closure
             {
                 return $this->foo(...);
             }
@@ -74,7 +78,7 @@ final class WeakClosureTest extends TestCase
     {
         $closure = (function () {
             $object = new class extends ParentStub {
-                public function get(): Closure
+                public function get(): \Closure
                 {
                     return $this->value(...);
                 }
@@ -85,7 +89,7 @@ final class WeakClosureTest extends TestCase
 
         gc_collect_cycles();
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $closure();
     }
 
@@ -120,9 +124,9 @@ final class WeakClosureTest extends TestCase
 
         try {
             $closure();
-        } catch (RuntimeException) {}
+        } catch (\RuntimeException) {}
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $closure();
     }
 

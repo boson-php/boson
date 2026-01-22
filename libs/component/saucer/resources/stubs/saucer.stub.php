@@ -236,11 +236,11 @@ interface SaucerInterface
     public function saucer_stash_copy(CData $stash): CData;
 
     /**
-     * @param UInt8Ptr $data
+     * @param UInt8Ptr|null $data
      * @param int<0, max> $size
      * @return SaucerStashType
      */
-    public function saucer_stash_new_from(CData $data, int $size): CData;
+    public function saucer_stash_new_from(?CData $data, int $size): CData;
 
     /**
      * @param UInt8Ptr $data

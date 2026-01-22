@@ -53,7 +53,7 @@ final class LifecycleEventsListener extends LoadedWindowExtension implements
         CDATA;
 
     /**
-     * Contains managed struct with event handlers.
+     * Contains a managed struct with event handlers.
      *
      * @phpstan-var CSaucerWindowEventsStruct
      */
