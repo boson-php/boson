@@ -11,7 +11,10 @@ use Boson\Api\Dialog\Event\FileSelecting;
 use Boson\Api\Dialog\Event\FilesSelecting;
 use Boson\Api\Dialog\Event\UriOpened;
 use Boson\Api\Dialog\Event\UriOpening;
+use Boson\Api\Dialog\Exception\InternalErrorDialogException;
 use Boson\Api\LoadedApplicationExtension;
+use Boson\Application;
+use Boson\Dispatcher\EventListener;
 use Boson\Shared\Marker\RequiresDealloc;
 use FFI\CData;
 
@@ -25,6 +28,15 @@ final class SaucerDialogApi extends LoadedApplicationExtension implements
     protected CData $ptr {
         /** @phpstan-ignore-next-line : PHPStan does not support property inheritance */
         get => $this->app->saucer->saucer_desktop_new(parent::$ptr::get());
+    }
+
+    private readonly int $isCanceledCode;
+
+    public function __construct(Application $app, EventListener $listener)
+    {
+        parent::__construct($app, $listener);
+
+        $this->isCanceledCode = $this->app->saucer->boson_error_code_canceled();
     }
 
     private function applyDirectory(CData $options, ?string $directory): void
@@ -79,8 +91,14 @@ final class SaucerDialogApi extends LoadedApplicationExtension implements
         $options = $this->createOptions($directory, $filter);
 
         try {
+            $error = $this->saucer->new('int');
+
             $length = $this->saucer->new('size_t');
-            $selector($this->ptr, $options, null, \FFI::addr($length), null);
+            $selector($this->ptr, $options, null, \FFI::addr($length), \FFI::addr($error));
+
+            if ($error->cdata !== 0 && $error->cdata !== $this->isCanceledCode) {
+                throw new InternalErrorDialogException('An error occurred while selecting a file/directory', $error->cdata);
+            }
 
             if ($length->cdata === 0) {
                 return null;
@@ -106,8 +124,14 @@ final class SaucerDialogApi extends LoadedApplicationExtension implements
         $options = $this->createOptions($directory, $filter);
 
         try {
+            $error = $this->saucer->new('int');
+
             $length = $this->saucer->new('size_t');
-            $selector($this->ptr, $options, null, \FFI::addr($length), null);
+            $selector($this->ptr, $options, null, \FFI::addr($length), \FFI::addr($error));
+
+            if ($error->cdata !== 0 && $error->cdata !== $this->isCanceledCode) {
+                throw new InternalErrorDialogException('An error occurred while selecting a files/directories', $error->cdata);
+            }
 
             if ($length->cdata === 0) {
                 return [];

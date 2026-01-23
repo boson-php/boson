@@ -81,13 +81,7 @@ final class WebView implements
          * ```
          */
         get {
-            $ptr = $this->saucer->saucer_webview_url($this->id->ptr, \FFI::addr(
-                $error = $this->saucer->new('int'),
-            ));
-
-            if ($error->cdata !== 0) {
-                return new Uri();
-            }
+            $ptr = $this->saucer->saucer_webview_url($this->id->ptr);
 
             try {
                 $length = $this->saucer->new('size_t');

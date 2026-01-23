@@ -60,6 +60,7 @@ final class SchemesProvider extends LoadedWebViewExtension implements SchemesPro
                 $this->ptr,
                 $scheme,
                 $this->onSafeRequest(...),
+                null,
             );
         }
     }

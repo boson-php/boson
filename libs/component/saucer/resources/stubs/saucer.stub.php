@@ -51,7 +51,7 @@ use FFI\CType;
  * @phsptan-type saucer_window_event_resize callable(SaucerWindowType, int, int, CData|null): (void)
  * @phsptan-type saucer_window_event_focus callable(SaucerWindowType, bool, CData|null): (void)
  * @phsptan-type saucer_window_event_close callable(SaucerWindowType, CData|null): (Policy::SAUCER_POLICY_*)
- * @phsptan-type saucer_scheme_handler callable(SaucerSchemeRequestType, SaucerSchemeExecutorType): (void)
+ * @phsptan-type saucer_scheme_handler callable(SaucerSchemeRequestType, SaucerSchemeExecutorType, CData|null): (void)
  * @phsptan-type saucer_webview_event_permission callable(SaucerWebviewType, SaucerPermissionRequestType, CData|null): (Status::SAUCER_STATE_*)
  * @phsptan-type saucer_webview_event_fullscreen callable(SaucerWebviewType, bool, CData|null): (Policy::SAUCER_POLICY_*)
  * @phsptan-type saucer_webview_event_dom_ready callable(SaucerWebviewType, CData|null): (void)
@@ -78,10 +78,145 @@ interface SaucerInterface
      */
     public function cast(CType|string $type, CData|int|float|bool|null $ptr): CData;
 
+    // BOSON MODULE
+
     /**
      * @return non-empty-string
      */
     public function boson_version(): string;
+
+    /**
+     * @return Backend::BOSON_BACKEND_*
+     *
+     * @internal This is an unstable API and may change in the future
+     */
+    public function boson_get_backend(): int;
+
+    /**
+     * @return non-empty-string
+     *
+     * @internal This is an unstable API and may change in the future
+     */
+    public function boson_get_backend_str(): string;
+
+    /**
+     * Returns system `std::errc::operation_canceled` code
+     *
+     * @internal This is an unstable API and may change in the future
+     */
+    public function boson_error_code_canceled(): int;
+
+    // LOOP MODULE
+
+    /**
+     * @param SaucerLoopType $loop
+     */
+    public function saucer_loop_free(CData $loop): void;
+
+    /**
+     * @param SaucerApplicationType $app
+     * @return SaucerLoopType
+     */
+    public function saucer_loop_new(CData $app): CData;
+
+    /**
+     * @param SaucerLoopType $loop
+     */
+    public function saucer_loop_run(CData $loop): void;
+
+    /**
+     * @param SaucerLoopType $loop
+     */
+    public function saucer_loop_iteration(CData $loop): void;
+
+    /**
+     * @param SaucerLoopType $loop
+     */
+    public function saucer_loop_quit(CData $loop): void;
+
+    // DESKTOP MODULE
+
+    /**
+     * @return SaucerPickerOptionsType
+     */
+    public function saucer_picker_options_new(): CData;
+
+    /**
+     * @param SaucerPickerOptionsType $options
+     */
+    public function saucer_picker_options_free(CData $options): void;
+
+    /**
+     * @param SaucerPickerOptionsType $options
+     */
+    public function saucer_picker_options_set_initial(CData $options, string $initial): void;
+
+    /**
+     * @param SaucerPickerOptionsType $options
+     * @param int<0, max> $size
+     */
+    public function saucer_picker_options_set_filters(CData $options, string $filters, int $size): void;
+
+    /**
+     * @param SaucerDesktopType $desktop
+     */
+    public function saucer_desktop_free(CData $desktop): void;
+
+    /**
+     * @param SaucerApplicationType $app
+     * @return SaucerDesktopType
+     */
+    public function saucer_desktop_new(CData $app): CData;
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param int<-2147483648, 2147483647> $x
+     * @param int<-2147483648, 2147483647> $y
+     */
+    public function saucer_desktop_mouse_position(CData $desktop, int $x, int $y): void;
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param SaucerPickerOptionsType $options
+     * @param CharPtr|null $file
+     * @param SizeTPtr|null $size
+     * @param IntPtr|null $error
+     */
+    public function saucer_picker_pick_file(CData $desktop, CData $options, CData|null $file, CData|null $size, CData|null $error): void;
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param SaucerPickerOptionsType $options
+     * @param CharPtr|null $folder
+     * @param SizeTPtr|null $size
+     * @param IntPtr|null $error
+     */
+    public function saucer_picker_pick_folder(CData $desktop, CData $options, CData|null $folder, CData|null $size, CData|null $error): void;
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param SaucerPickerOptionsType $options
+     * @param CharPtr|null $files
+     * @param SizeTPtr|null $size
+     * @param IntPtr|null $error
+     */
+    public function saucer_picker_pick_files(CData $desktop, CData $options, CData|null $files, CData|null $size, CData|null $error): void;
+
+    /**
+     * @param SaucerDesktopType $desktop
+     * @param SaucerPickerOptionsType $options
+     * @param CharPtr|null $location
+     * @param SizeTPtr|null $size
+     * @param IntPtr|null $error
+     */
+    public function saucer_picker_save(CData $desktop, CData $options, CData|null $location, CData|null $size, CData|null $error): void;
+
+    /**
+     * @param SaucerDesktopType $desktop
+     */
+    public function saucer_desktop_open(CData $desktop, string $path): void;
+
+    // SAUCER
 
     /**
      * @param SaucerScreenType $screen
@@ -845,10 +980,9 @@ interface SaucerInterface
 
     /**
      * @param SaucerWebviewType $webview
-     * @param IntPtr $error
      * @return SaucerUrlType
      */
-    public function saucer_webview_url(CData $webview, CData $error): CData;
+    public function saucer_webview_url(CData $webview): CData;
 
     /**
      * @param SaucerWebviewType $webview
@@ -1014,7 +1148,7 @@ interface SaucerInterface
      * @param non-empty-string $scheme
      * @param (callable(SaucerSchemeRequestType, SaucerSchemeExecutorType): void)|CData $handler
      */
-    public function saucer_webview_handle_scheme(CData $webview, string $scheme, callable|CData $handler): void;
+    public function saucer_webview_handle_scheme(CData $webview, string $scheme, callable|CData $handler, CData|null $data): void;
 
     /**
      * @param SaucerWebviewType $webview
@@ -1060,109 +1194,4 @@ interface SaucerInterface
      */
     public function saucer_webview_native(CData $webview, int $idx, CData|null $result, CData|null $size): void;
 
-    /**
-     * @param SaucerLoopType $loop
-     */
-    public function saucer_loop_free(CData $loop): void;
-
-    /**
-     * @param SaucerApplicationType $app
-     * @return SaucerLoopType
-     */
-    public function saucer_loop_new(CData $app): CData;
-
-    /**
-     * @param SaucerLoopType $loop
-     */
-    public function saucer_loop_run(CData $loop): void;
-
-    /**
-     * @param SaucerLoopType $loop
-     */
-    public function saucer_loop_iteration(CData $loop): void;
-
-    /**
-     * @param SaucerLoopType $loop
-     */
-    public function saucer_loop_quit(CData $loop): void;
-
-    /**
-     * @return SaucerPickerOptionsType
-     */
-    public function saucer_picker_options_new(): CData;
-
-    /**
-     * @param SaucerPickerOptionsType $options
-     */
-    public function saucer_picker_options_free(CData $options): void;
-
-    /**
-     * @param SaucerPickerOptionsType $options
-     */
-    public function saucer_picker_options_set_initial(CData $options, string $initial): void;
-
-    /**
-     * @param SaucerPickerOptionsType $options
-     * @param int<0, max> $size
-     */
-    public function saucer_picker_options_set_filters(CData $options, string $filters, int $size): void;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     */
-    public function saucer_desktop_free(CData $desktop): void;
-
-    /**
-     * @param SaucerApplicationType $app
-     * @return SaucerDesktopType
-     */
-    public function saucer_desktop_new(CData $app): CData;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param int<-2147483648, 2147483647> $x
-     * @param int<-2147483648, 2147483647> $y
-     */
-    public function saucer_desktop_mouse_position(CData $desktop, int $x, int $y): void;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param SaucerPickerOptionsType $options
-     * @param CharPtr|null $file
-     * @param SizeTPtr|null $size
-     * @param IntPtr|null $error
-     */
-    public function saucer_picker_pick_file(CData $desktop, CData $options, CData|null $file, CData|null $size, CData|null $error): void;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param SaucerPickerOptionsType $options
-     * @param CharPtr|null $folder
-     * @param SizeTPtr|null $size
-     * @param IntPtr|null $error
-     */
-    public function saucer_picker_pick_folder(CData $desktop, CData $options, CData|null $folder, CData|null $size, CData|null $error): void;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param SaucerPickerOptionsType $options
-     * @param CharPtr|null $files
-     * @param SizeTPtr|null $size
-     * @param IntPtr|null $error
-     */
-    public function saucer_picker_pick_files(CData $desktop, CData $options, CData|null $files, CData|null $size, CData|null $error): void;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     * @param SaucerPickerOptionsType $options
-     * @param CharPtr|null $location
-     * @param SizeTPtr|null $size
-     * @param IntPtr|null $error
-     */
-    public function saucer_picker_save(CData $desktop, CData $options, CData|null $location, CData|null $size, CData|null $error): void;
-
-    /**
-     * @param SaucerDesktopType $desktop
-     */
-    public function saucer_desktop_open(CData $desktop, string $path): void;
 }

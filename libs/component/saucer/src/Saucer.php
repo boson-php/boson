@@ -89,7 +89,23 @@ __halt_compiler();
 
 /// Generic Build Functions
 
-const char *boson_version();
+typedef enum BOSON_BACKEND
+{
+    BOSON_BACKEND_WEBVIEW2,
+    BOSON_BACKEND_WEBKIT,
+    BOSON_BACKEND_WEBKIT_GTK,
+    BOSON_BACKEND_QT,
+    BOSON_BACKEND_UNKNOWN = -1,
+
+    BOSON_BACKEND_LAST = BOSON_BACKEND_QT,
+} BOSON_BACKEND;
+
+const char *boson_version(void);
+
+const BOSON_BACKEND boson_get_backend(void);
+const char *boson_get_backend_str(void);
+
+const int boson_error_code_canceled(void);
 
 /// Saucer Data Types
 
@@ -179,7 +195,7 @@ typedef enum SAUCER_SCHEME_ERROR
     SAUCER_SCHEME_ERROR_FAILED    = -1
 } SAUCER_SCHEME_ERROR;
 
-typedef void (*saucer_scheme_handler)(saucer_scheme_request *, saucer_scheme_executor *);
+typedef void (*saucer_scheme_handler)(saucer_scheme_request *, saucer_scheme_executor *, void *);
 
 // .permission
 typedef struct saucer_permission_request saucer_permission_request;
@@ -466,7 +482,7 @@ void saucer_webview_options_append_browser_flag(saucer_webview_options *, const 
 void saucer_webview_free(saucer_webview *);
 saucer_webview *saucer_webview_new(saucer_webview_options *, int *error);
 
-saucer_url *saucer_webview_url(saucer_webview *, int *error);
+saucer_url *saucer_webview_url(saucer_webview *);
 
 saucer_icon *saucer_webview_favicon(saucer_webview *);
 void saucer_webview_page_title(saucer_webview *, char *, size_t *);
@@ -511,7 +527,7 @@ size_t saucer_webview_inject(saucer_webview *, const char *code, SAUCER_SCRIPT_T
 void saucer_webview_uninject_all(saucer_webview *);
 void saucer_webview_uninject(saucer_webview *, size_t);
 
-void saucer_webview_handle_scheme(saucer_webview *, const char *, saucer_scheme_handler);
+void saucer_webview_handle_scheme(saucer_webview *, const char *, saucer_scheme_handle, void *userdata);
 void saucer_webview_remove_scheme(saucer_webview *, const char *);
 
 size_t saucer_webview_on(saucer_webview *, SAUCER_WEBVIEW_EVENT, void *callback, bool clearable, void *userdata);
