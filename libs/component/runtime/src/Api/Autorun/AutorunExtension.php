@@ -6,7 +6,6 @@ namespace Boson\Api\Autorun;
 
 use Boson\Api\Autorun\Event\ExpectsAutorun;
 use Boson\Application;
-use Boson\ApplicationCreateInfo;
 use Boson\Contracts\EventListener\Subscription\CancellableSubscriptionInterface;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\EventListener;

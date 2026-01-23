@@ -25,7 +25,6 @@ use Boson\Shared\Marker\BlockingOperation;
 use Boson\Shared\Marker\RequiresDealloc;
 use Boson\WebView\Manager\WebViewManager;
 use Boson\WebView\WebView;
-use Boson\Window\Event\WindowClosed;
 use Boson\Window\Manager\WindowManager;
 use Boson\Window\Window;
 use FFI\CData;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Boson\Api\QuitOnClose;
 
 use Boson\Application;
-use Boson\ApplicationCreateInfo;
 use Boson\Contracts\Id\IdentifiableInterface;
 use Boson\Dispatcher\EventListener;
 use Boson\Extension\Extension;
