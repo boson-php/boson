@@ -12,7 +12,7 @@ namespace Boson\Contracts\Uri\Component;
 interface UserInfoInterface extends UriComponentInterface
 {
     /**
-     * Gets username of the user information component.
+     * Gets the username of the user information component.
      *
      * ```
      * abc://user:pass@example.com:123/path/data?k=val&k2=val2#frag
