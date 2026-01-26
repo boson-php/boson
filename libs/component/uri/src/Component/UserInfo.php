@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boson\Component\Uri\Component;
 
 use Boson\Component\Uri\Exception\InvalidUriComponentArgumentException;
+use Boson\Contracts\Uri\Component\MutableUserInfoInterface;
 use Boson\Contracts\Uri\Component\UserInfoInterface;
 
 /**
@@ -12,17 +13,56 @@ use Boson\Contracts\Uri\Component\UserInfoInterface;
  */
 class UserInfo implements UserInfoInterface
 {
+    public protected(set) string $user;
+
+    public protected(set) ?string $password;
+
+    /**
+     * @param \Stringable|non-empty-string $user
+     * @param \Stringable|non-empty-string|null $password
+     *
+     * @throws InvalidUriComponentArgumentException in case of invalid user
+     *         info argument passed
+     */
     public function __construct(
-        /**
-         * @var non-empty-string
-         */
-        public protected(set) string $user,
-        /**
-         * @var non-empty-string|null
-         */
+        \Stringable|string $user,
         #[\SensitiveParameter]
-        public protected(set) ?string $password = null,
-    ) {}
+        \Stringable|string|null $password = null,
+    ) {
+        $this->user = $this->formatUserParameter($user);
+        $this->password = $this->formatPasswordParameter($password);
+    }
+
+    /**
+     * Returns an immutable user info instance from another one
+     *
+     * @api
+     */
+    final public static function from(UserInfoInterface $info): self
+    {
+        if ($info instanceof self && !$info instanceof MutableUserInfoInterface) {
+            return clone $info;
+        }
+
+        return new self(
+            user: $info->user,
+            password: $info->password,
+        );
+    }
+
+    /**
+     * Returns an immutable user info instance from another one
+     *
+     * @api
+     */
+    final public static function tryFrom(?UserInfoInterface $info): ?self
+    {
+        if ($info === null) {
+            return null;
+        }
+
+        return self::from($info);
+    }
 
     /**
      * Return an instance with the specified username information.
@@ -34,7 +74,7 @@ class UserInfo implements UserInfoInterface
      * @param non-empty-string|\Stringable $user
      * @throws InvalidUriComponentArgumentException in case of invalid username argument passed
      */
-    public function withUser(\Stringable|string $user): static
+    final public function withUser(\Stringable|string $user): static
     {
         $self = clone $this;
         $self->user = $this->formatUserParameter($user);
@@ -52,7 +92,7 @@ class UserInfo implements UserInfoInterface
      * @param \Stringable|non-empty-string|null $password
      * @throws InvalidUriComponentArgumentException in case of invalid password argument passed
      */
-    public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
+    final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
     {
         $self = clone $this;
         $self->password = $this->formatPasswordParameter($password);
@@ -68,7 +108,7 @@ class UserInfo implements UserInfoInterface
      *
      * @api
      */
-    public function withoutPassword(): self
+    final public function withoutPassword(): self
     {
         $self = clone $this;
         $self->password = null;
@@ -88,7 +128,7 @@ class UserInfo implements UserInfoInterface
      * @throws InvalidUriComponentArgumentException in case of invalid username
      *         or password argument passed
      */
-    public function withCredentials(
+    final public function withCredentials(
         \Stringable|string $user,
         #[\SensitiveParameter] \Stringable|string|null $password = null,
     ): static {
@@ -110,6 +150,7 @@ class UserInfo implements UserInfoInterface
         if ($user instanceof \Stringable) {
             try {
                 $user = (string) $user;
+                /** @phpstan-ignore-next-line : This is not a dead catch */
             } catch (\Throwable $e) {
                 throw InvalidUriComponentArgumentException::becauseStringableErrorOccurs($e);
             }
@@ -133,6 +174,7 @@ class UserInfo implements UserInfoInterface
         if ($password instanceof \Stringable) {
             try {
                 $password = (string) $password;
+                /** @phpstan-ignore-next-line : This is not a dead catch */
             } catch (\Throwable $e) {
                 throw InvalidUriComponentArgumentException::becauseStringableErrorOccurs($e);
             }
@@ -145,7 +187,7 @@ class UserInfo implements UserInfoInterface
         return $password;
     }
 
-    public function equals(mixed $other): bool
+    final public function equals(mixed $other): bool
     {
         return $other === $this
             || ($other instanceof UserInfoInterface
@@ -153,12 +195,12 @@ class UserInfo implements UserInfoInterface
                 && $other->password === $this->password);
     }
 
-    public function toString(): string
+    final public function toString(): string
     {
         return (string) $this;
     }
 
-    public function __toString(): string
+    final public function __toString(): string
     {
         if ($this->password !== null) {
             return $this->user . ':' . $this->password;

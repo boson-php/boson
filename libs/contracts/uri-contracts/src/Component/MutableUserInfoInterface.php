@@ -7,15 +7,10 @@ namespace Boson\Contracts\Uri\Component;
 use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 
 /**
- * A mutable user information component interface.
+ * Represents a mutable user information component
  */
 interface MutableUserInfoInterface extends UserInfoInterface
 {
-    /**
-     * {@inheritDoc}
-     *
-     * @var non-empty-string
-     */
     public string $user {
         get;
         /**
@@ -28,11 +23,6 @@ interface MutableUserInfoInterface extends UserInfoInterface
         set(\Stringable|string $user);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @var non-empty-string|null
-     */
     public ?string $password {
         get;
         /**

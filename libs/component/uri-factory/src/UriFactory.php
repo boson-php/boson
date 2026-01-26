@@ -113,7 +113,7 @@ final readonly class UriFactory implements UriFactoryInterface
         return new Authority(
             host: $components['host'],
             port: $components['port'],
-            userInfo: $this->createUserInfoFromComponents($components),
+            info: $this->createUserInfoFromComponents($components),
         );
     }
 
