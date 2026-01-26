@@ -39,6 +39,8 @@ $files = PhpCsFixer\Finder::create()
     ->filter(static fn (\SplFileInfo $file): bool
         => !\in_array(\realpath($file->getPathname()), [
             \realpath(__DIR__ . '/libs/extension/webview-ext-web-components/src/Internal/web-component.js.php'),
+            // php-cs-fixer bug
+            \realpath(__DIR__ . '/libs/component/runtime/src/WebView/Api/Schemes/Handler/ErrorHandlerInterface.php'),
         ], true)
     )
 ;
