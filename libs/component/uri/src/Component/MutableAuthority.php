@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Boson\Component\Uri\Component;
 
+use Boson\Component\Uri\Exception\InvalidHostArgumentException;
+use Boson\Component\Uri\Exception\InvalidPasswordArgumentException;
+use Boson\Component\Uri\Exception\InvalidPortArgumentException;
 use Boson\Component\Uri\Exception\InvalidUriComponentArgumentException;
+use Boson\Component\Uri\Exception\InvalidUserArgumentException;
 use Boson\Contracts\Uri\Component\AuthorityInterface;
 use Boson\Contracts\Uri\Component\MutableAuthorityInterface;
 use Boson\Contracts\Uri\Component\UserInfoInterface;
@@ -12,47 +16,74 @@ use Boson\Contracts\Uri\Component\UserInfoInterface;
 final class MutableAuthority extends Authority implements
     MutableAuthorityInterface
 {
+    /**
+     * Gets or updates the user of the {@see MutableUserInfo} URI component
+     *
+     * @var non-empty-string|null
+     */
     public ?string $user {
         get => $this->userInfo?->user;
+        /**
+         * Updates a user of the {@see MutableUserInfo} URI component
+         *
+         * @throws InvalidUserArgumentException in case of invalid username value passed
+         */
         set(\Stringable|string|null $user) {
             if ($user === null) {
                 $this->userInfo = null;
+
                 return;
             }
 
             if ($this->userInfo === null) {
-                $this->userInfo = new UserInfo($user);
-            } else {
-                $this->userInfo->user = $user;
+                $this->userInfo = new MutableUserInfo($user);
+
+                return;
             }
+
+            $this->userInfo->user = $user;
         }
     }
 
     /**
-     * Gets the password component of the URI.
+     * Gets or updates the password of the {@see MutableUserInfo} URI component
      *
      * @var non-empty-string|null
      */
     public ?string $password {
         get => $this->userInfo?->password;
+        /**
+         * Updates a password of the {@see MutableUserInfo} URI component
+         *
+         * @throws InvalidPasswordArgumentException in case of invalid password value passed
+         */
+        set(#[\SensitiveParameter] \Stringable|string|null $password) {
+            if ($this->userInfo === null) {
+                if ($password === null) {
+                    return;
+                }
+
+                throw InvalidPasswordArgumentException::becauseUserNotDefined();
+            }
+
+            $this->userInfo->password = $password;
+        }
     }
 
     public string $host {
         get => $this->host;
         /**
-         * @throws InvalidUriComponentArgumentException in case of invalid host
-         *         argument passed
+         * @throws InvalidHostArgumentException in case of invalid host argument passed
          */
-        set(\Stringable|string $host) => $this->formatHostParameter($host);
+        set(\Stringable|string $host) => $this->formatHostArgument($host);
     }
 
     public ?int $port = null {
         get => $this->port;
         /**
-         * @throws InvalidUriComponentArgumentException in case of invalid port
-         *         argument passed
+         * @throws InvalidPortArgumentException in case of invalid port argument passed
          */
-        set(?int $port) => $this->formatPortParameter($port);
+        set(?int $port) => $this->formatPortArgument($port);
     }
 
     /**
@@ -67,15 +98,15 @@ final class MutableAuthority extends Authority implements
          * @throws InvalidUriComponentArgumentException in case of invalid user
          *         info argument passed
          */
-        set(?UserInfoInterface $info) => $this->formatUserInfoParameter($info);
+        set(?UserInfoInterface $info) => $this->formatUserInfoArgument($info);
     }
 
     /**
-     * Unlike the parent {@see parent::formatUserInfoParameter()} method, it
+     * Unlike the parent {@see parent::formatUserInfoArgument()} method, it
      * returns a mutable implementation of user info
      */
     #[\Override]
-    protected function formatUserInfoParameter(?UserInfoInterface $info): ?MutableUserInfo
+    protected function formatUserInfoArgument(?UserInfoInterface $info): ?MutableUserInfo
     {
         return MutableUserInfo::tryFromImmutable($info);
     }

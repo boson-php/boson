@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Boson\Component\Uri\Component;
 
-use Boson\Component\Uri\Exception\InvalidUriComponentArgumentException;
+use Boson\Component\Uri\Exception\InvalidHostArgumentException;
+use Boson\Component\Uri\Exception\InvalidPasswordArgumentException;
+use Boson\Component\Uri\Exception\InvalidPortArgumentException;
+use Boson\Component\Uri\Exception\InvalidUserArgumentException;
 use Boson\Contracts\Uri\Component\AuthorityInterface;
 use Boson\Contracts\Uri\Component\UserInfoInterface;
 
@@ -46,15 +49,18 @@ class Authority implements AuthorityInterface
     /**
      * @param \Stringable|non-empty-string $host
      * @param int<0, 65535>|null $port
+     *
+     * @throws InvalidHostArgumentException in case of invalid host argument passed
+     * @throws InvalidPortArgumentException in case of invalid port argument passed
      */
     public function __construct(
         \Stringable|string $host,
         ?int $port = null,
         ?UserInfoInterface $info = null,
     ) {
-        $this->host = $this->formatHostParameter($host);
-        $this->port = $this->formatPortParameter($port);
-        $this->userInfo = $this->formatUserInfoParameter($info);
+        $this->host = $this->formatHostArgument($host);
+        $this->port = $this->formatPortArgument($port);
+        $this->userInfo = $this->formatUserInfoArgument($info);
     }
 
     /**
@@ -65,12 +71,12 @@ class Authority implements AuthorityInterface
      *
      * @api
      * @param non-empty-string|\Stringable $host
-     * @throws InvalidUriComponentArgumentException in case of invalid host argument passed
+     * @throws InvalidHostArgumentException in case of invalid host argument passed
      */
     final public function withHost(\Stringable|string $host): static
     {
         $self = clone $this;
-        $self->host = $this->formatHostParameter($host);
+        $self->host = $this->formatHostArgument($host);
 
         return $self;
     }
@@ -83,12 +89,12 @@ class Authority implements AuthorityInterface
      *
      * @api
      * @param int<0, 65535>|null $port
-     * @throws InvalidUriComponentArgumentException in case of invalid port argument passed
+     * @throws InvalidPortArgumentException in case of invalid port argument passed
      */
     final public function withPort(?int $port): static
     {
         $self = clone $this;
-        $self->port = $this->formatPortParameter($port);
+        $self->port = $this->formatPortArgument($port);
 
         return $self;
     }
@@ -116,12 +122,11 @@ class Authority implements AuthorityInterface
      * an instance that contains the specified user info information.
      *
      * @api
-     * @throws InvalidUriComponentArgumentException in case of invalid user info argument passed
      */
     final public function withUserInfo(?UserInfoInterface $info): static
     {
         $self = clone $this;
-        $self->userInfo = $this->formatUserInfoParameter($info);
+        $self->userInfo = $this->formatUserInfoArgument($info);
 
         return $self;
     }
@@ -147,7 +152,7 @@ class Authority implements AuthorityInterface
      *
      * @api
      * @param non-empty-string|\Stringable $user
-     * @throws InvalidUriComponentArgumentException in case of invalid username argument passed
+     * @throws InvalidUserArgumentException in case of invalid username argument passed
      */
     final public function withUser(\Stringable|string $user): static
     {
@@ -169,7 +174,7 @@ class Authority implements AuthorityInterface
      *
      * @api
      * @param \Stringable|non-empty-string|null $password
-     * @throws InvalidUriComponentArgumentException in case of invalid password argument passed
+     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
     {
@@ -180,9 +185,7 @@ class Authority implements AuthorityInterface
                 return $self;
             }
 
-            throw InvalidUriComponentArgumentException::becauseInvalidLogic(
-                message: 'Cannot set a password for authority without user',
-            );
+            throw InvalidPasswordArgumentException::becauseUserNotDefined();
         }
 
         $self->userInfo = $self->userInfo->withPassword($password);
@@ -214,8 +217,8 @@ class Authority implements AuthorityInterface
      * @api
      * @param \Stringable|non-empty-string $user
      * @param \Stringable|non-empty-string|null $password
-     * @throws InvalidUriComponentArgumentException in case of invalid username
-     *         or password argument passed
+     * @throws InvalidUserArgumentException in case of invalid username argument passed
+     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     final public function withCredentials(
         \Stringable|string $user,
@@ -238,21 +241,21 @@ class Authority implements AuthorityInterface
      * Format host parameter
      *
      * @return non-empty-string
-     * @throws InvalidUriComponentArgumentException in case of invalid host argument passed
+     * @throws InvalidHostArgumentException in case of invalid host argument passed
      */
-    protected function formatHostParameter(\Stringable|string $host): string
+    protected function formatHostArgument(\Stringable|string $host): string
     {
         if ($host instanceof \Stringable) {
             try {
                 $host = (string) $host;
                 /** @phpstan-ignore-next-line : This is not a dead catch */
             } catch (\Throwable $e) {
-                throw InvalidUriComponentArgumentException::becauseStringableErrorOccurs($e);
+                throw InvalidHostArgumentException::becauseStringableErrorOccurs($e);
             }
         }
 
         if ($host === '') {
-            throw InvalidUriComponentArgumentException::becauseComponentIsEmpty('host');
+            throw InvalidHostArgumentException::becauseComponentIsEmpty();
         }
 
         return $host;
@@ -262,16 +265,16 @@ class Authority implements AuthorityInterface
      * Format port parameter
      *
      * @return int<0, 65535>|null
-     * @throws InvalidUriComponentArgumentException in case of invalid port argument passed
+     * @throws InvalidPortArgumentException in case of invalid port argument passed
      */
-    protected function formatPortParameter(?int $port): ?int
+    protected function formatPortArgument(?int $port): ?int
     {
         if ($port === null) {
             return null;
         }
 
         if ($port > 65535 || $port < 0) {
-            throw InvalidUriComponentArgumentException::becauseComponentMustBe('port', 'int<0, 65535>', $port);
+            throw InvalidPortArgumentException::becauseComponentMustBe('int<0, 65535>', $port);
         }
 
         return $port;
@@ -279,11 +282,8 @@ class Authority implements AuthorityInterface
 
     /**
      * Format user info component parameter
-     *
-     * @throws InvalidUriComponentArgumentException in case of invalid user
-     *         info argument passed
      */
-    protected function formatUserInfoParameter(?UserInfoInterface $info): ?UserInfo
+    protected function formatUserInfoArgument(?UserInfoInterface $info): ?UserInfo
     {
         return UserInfo::tryFrom($info);
     }

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Component\Uri\Component;
 
-use Boson\Component\Uri\Exception\InvalidUriComponentArgumentException;
+use Boson\Component\Uri\Exception\InvalidPasswordArgumentException;
+use Boson\Component\Uri\Exception\InvalidUserArgumentException;
 use Boson\Contracts\Uri\Component\MutableUserInfoInterface;
 use Boson\Contracts\Uri\Component\UserInfoInterface;
 
@@ -21,16 +22,16 @@ class UserInfo implements UserInfoInterface
      * @param \Stringable|non-empty-string $user
      * @param \Stringable|non-empty-string|null $password
      *
-     * @throws InvalidUriComponentArgumentException in case of invalid user
-     *         info argument passed
+     * @throws InvalidUserArgumentException in case of invalid username argument passed
+     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     public function __construct(
         \Stringable|string $user,
         #[\SensitiveParameter]
         \Stringable|string|null $password = null,
     ) {
-        $this->user = $this->formatUserParameter($user);
-        $this->password = $this->formatPasswordParameter($password);
+        $this->user = $this->formatUserArgument($user);
+        $this->password = $this->formatPasswordArgument($password);
     }
 
     /**
@@ -72,12 +73,12 @@ class UserInfo implements UserInfoInterface
      *
      * @api
      * @param non-empty-string|\Stringable $user
-     * @throws InvalidUriComponentArgumentException in case of invalid username argument passed
+     * @throws InvalidUserArgumentException in case of invalid username argument passed
      */
     final public function withUser(\Stringable|string $user): static
     {
         $self = clone $this;
-        $self->user = $this->formatUserParameter($user);
+        $self->user = $this->formatUserArgument($user);
 
         return $self;
     }
@@ -90,12 +91,12 @@ class UserInfo implements UserInfoInterface
      *
      * @api
      * @param \Stringable|non-empty-string|null $password
-     * @throws InvalidUriComponentArgumentException in case of invalid password argument passed
+     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
     {
         $self = clone $this;
-        $self->password = $this->formatPasswordParameter($password);
+        $self->password = $this->formatPasswordArgument($password);
 
         return $self;
     }
@@ -125,16 +126,16 @@ class UserInfo implements UserInfoInterface
      * @api
      * @param \Stringable|non-empty-string $user
      * @param \Stringable|non-empty-string|null $password
-     * @throws InvalidUriComponentArgumentException in case of invalid username
-     *         or password argument passed
+     * @throws InvalidUserArgumentException in case of invalid username argument passed
+     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     final public function withCredentials(
         \Stringable|string $user,
         #[\SensitiveParameter] \Stringable|string|null $password = null,
     ): static {
         $self = clone $this;
-        $self->user = $this->formatUserParameter($user);
-        $self->password = $this->formatPasswordParameter($password);
+        $self->user = $this->formatUserArgument($user);
+        $self->password = $this->formatPasswordArgument($password);
 
         return $self;
     }
@@ -143,21 +144,21 @@ class UserInfo implements UserInfoInterface
      * Format user parameter
      *
      * @return non-empty-string
-     * @throws InvalidUriComponentArgumentException in case of invalid username argument passed
+     * @throws InvalidUserArgumentException in case of invalid username argument passed
      */
-    protected function formatUserParameter(\Stringable|string $user): string
+    protected function formatUserArgument(\Stringable|string $user): string
     {
         if ($user instanceof \Stringable) {
             try {
                 $user = (string) $user;
                 /** @phpstan-ignore-next-line : This is not a dead catch */
             } catch (\Throwable $e) {
-                throw InvalidUriComponentArgumentException::becauseStringableErrorOccurs($e);
+                throw InvalidUserArgumentException::becauseStringableErrorOccurs($e);
             }
         }
 
         if ($user === '') {
-            throw InvalidUriComponentArgumentException::becauseComponentIsEmpty('user');
+            throw InvalidUserArgumentException::becauseComponentIsEmpty();
         }
 
         return $user;
@@ -167,16 +168,16 @@ class UserInfo implements UserInfoInterface
      * Format password parameter
      *
      * @return non-empty-string|null
-     * @throws InvalidUriComponentArgumentException in case of invalid password argument passed
+     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
-    protected function formatPasswordParameter(#[\SensitiveParameter] \Stringable|string|null $password): ?string
+    protected function formatPasswordArgument(#[\SensitiveParameter] \Stringable|string|null $password): ?string
     {
         if ($password instanceof \Stringable) {
             try {
                 $password = (string) $password;
                 /** @phpstan-ignore-next-line : This is not a dead catch */
             } catch (\Throwable $e) {
-                throw InvalidUriComponentArgumentException::becauseStringableErrorOccurs($e);
+                throw InvalidPasswordArgumentException::becauseStringableErrorOccurs($e);
             }
         }
 
