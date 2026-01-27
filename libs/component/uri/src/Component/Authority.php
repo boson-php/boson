@@ -63,66 +63,6 @@ class Authority implements AuthorityInterface
         $this->userInfo = $this->formatUserInfoArgument($info);
     }
 
-    /**
-     * Return an instance with the specified host information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified host information.
-     *
-     * @api
-     * @param non-empty-string|\Stringable $host
-     * @throws InvalidHostArgumentException in case of invalid host argument passed
-     */
-    final public function withHost(\Stringable|string $host): static
-    {
-        $self = clone $this;
-        $self->host = $this->formatHostArgument($host);
-
-        return $self;
-    }
-
-    /**
-     * Return an instance with the specified port information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified port information.
-     *
-     * @api
-     * @param int<0, 65535>|null $port
-     * @throws InvalidPortArgumentException in case of invalid port argument passed
-     */
-    final public function withPort(?int $port): static
-    {
-        $self = clone $this;
-        $self->port = $this->formatPortArgument($port);
-
-        return $self;
-    }
-
-    /**
-     * Return an instance without port information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that did not contain port information.
-     *
-     * @api
-     */
-    final public function withoutPort(): static
-    {
-        $self = clone $this;
-        $self->port = null;
-
-        return $self;
-    }
-
-    /**
-     * Return an instance with the specified user info information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified user info information.
-     *
-     * @api
-     */
     final public function withUserInfo(?UserInfoInterface $info): static
     {
         $self = clone $this;
@@ -143,6 +83,38 @@ class Authority implements AuthorityInterface
     {
         $self = clone $this;
         $self->userInfo = null;
+
+        return $self;
+    }
+
+    final public function withHost(\Stringable|string $host): static
+    {
+        $self = clone $this;
+        $self->host = $this->formatHostArgument($host);
+
+        return $self;
+    }
+
+    final public function withPort(?int $port): static
+    {
+        $self = clone $this;
+        $self->port = $this->formatPortArgument($port);
+
+        return $self;
+    }
+
+    /**
+     * Return an instance without port information.
+     *
+     * This method MUST retain the state of the current instance and return
+     * an instance that did not contain port information.
+     *
+     * @api
+     */
+    final public function withoutPort(): static
+    {
+        $self = clone $this;
+        $self->port = null;
 
         return $self;
     }

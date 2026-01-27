@@ -66,13 +66,6 @@ class UserInfo implements UserInfoInterface
     }
 
     /**
-     * Return an instance with the specified username information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified username information.
-     *
-     * @api
-     * @param non-empty-string|\Stringable $user
      * @throws InvalidUserArgumentException in case of invalid username argument passed
      */
     final public function withUser(\Stringable|string $user): static
@@ -84,13 +77,6 @@ class UserInfo implements UserInfoInterface
     }
 
     /**
-     * Return an instance with the specified password information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified password information.
-     *
-     * @api
-     * @param \Stringable|non-empty-string|null $password
      * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
