@@ -110,14 +110,17 @@ class UserInfo implements UserInfoInterface
      * an instance that contains the specified password information.
      *
      * @api
+     *
      * @param \Stringable|non-empty-string $user
      * @param \Stringable|non-empty-string|null $password
+     *
      * @throws InvalidUserArgumentException in case of invalid username argument passed
      * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     final public function withCredentials(
         \Stringable|string $user,
-        #[\SensitiveParameter] \Stringable|string|null $password = null,
+        #[\SensitiveParameter]
+        \Stringable|string|null $password = null,
     ): static {
         $self = clone $this;
         $self->user = $this->formatUserArgument($user);

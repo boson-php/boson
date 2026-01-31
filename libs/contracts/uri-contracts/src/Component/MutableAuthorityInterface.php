@@ -25,6 +25,7 @@ interface MutableAuthorityInterface extends AuthorityInterface
          * Allows updating authority user information
          *
          * @param UserInfoInterface|null $userInfo
+         *
          * @return void
          */
         set(UserInfoInterface|null $userInfo);
@@ -36,6 +37,7 @@ interface MutableAuthorityInterface extends AuthorityInterface
          * Allows updating authority host value
          *
          * @param \Stringable|non-empty-string $host
+         *
          * @throws InvalidArgumentExceptionInterface in case of invalid
          *         host argument value has been passed
          */
@@ -48,6 +50,7 @@ interface MutableAuthorityInterface extends AuthorityInterface
          * Allows updating authority port value
          *
          * @param int<0, 65535>|null $port
+         *
          * @throws InvalidArgumentExceptionInterface in case of invalid
          *         port argument value has been passed
          */

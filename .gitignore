@@ -1,6 +1,8 @@
 # IDE
 /.idea
 /.cursor
+/.aiassistant
+/.ai
 
 # Composer
 /composer.lock

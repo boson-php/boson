@@ -17,6 +17,7 @@ interface MutableUserInfoInterface extends UserInfoInterface
          * Allows updating the username value in the user info component
          *
          * @param \Stringable|non-empty-string $user
+         *
          * @throws InvalidArgumentExceptionInterface in case of invalid
          *         username argument value has been passed
          */
@@ -29,6 +30,7 @@ interface MutableUserInfoInterface extends UserInfoInterface
          * Allows updating the password value in the user info component
          *
          * @param \Stringable|non-empty-string|null $password
+         *
          * @throws InvalidArgumentExceptionInterface in case of invalid
          *         password argument value has been passed
          */

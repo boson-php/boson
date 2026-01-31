@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Contracts\Uri\Component;
 
-use Boson\Component\Uri\Exception\InvalidHostArgumentException;
-use Boson\Component\Uri\Exception\InvalidPortArgumentException;
 use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 use Boson\Contracts\Uri\UriInterface;
 
@@ -93,6 +91,7 @@ interface AuthorityInterface extends UriComponentInterface
      * an instance that contains the specified host information.
      *
      * @param non-empty-string|\Stringable $host
+     *
      * @throws InvalidArgumentExceptionInterface in case of invalid host argument passed
      */
     public function withHost(\Stringable|string $host): static;
@@ -104,6 +103,7 @@ interface AuthorityInterface extends UriComponentInterface
      * an instance that contains the specified port information.
      *
      * @param int<0, 65535>|null $port
+     *
      * @throws InvalidArgumentExceptionInterface in case of invalid port argument passed
      */
     public function withPort(?int $port): static;

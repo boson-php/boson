@@ -123,7 +123,9 @@ class Authority implements AuthorityInterface
      * A facade method of the {@see Authority::withUser()}
      *
      * @api
+     *
      * @param non-empty-string|\Stringable $user
+     *
      * @throws InvalidUserArgumentException in case of invalid username argument passed
      */
     final public function withUser(\Stringable|string $user): static
@@ -145,7 +147,9 @@ class Authority implements AuthorityInterface
      * A facade method of the {@see Authority::withPassword()}
      *
      * @api
+     *
      * @param \Stringable|non-empty-string|null $password
+     *
      * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
@@ -187,14 +191,17 @@ class Authority implements AuthorityInterface
      * A facade method of the {@see Authority::withCredentials()}
      *
      * @api
+     *
      * @param \Stringable|non-empty-string $user
      * @param \Stringable|non-empty-string|null $password
+     *
      * @throws InvalidUserArgumentException in case of invalid username argument passed
      * @throws InvalidPasswordArgumentException in case of invalid password argument passed
      */
     final public function withCredentials(
         \Stringable|string $user,
-        #[\SensitiveParameter] \Stringable|string|null $password = null,
+        #[\SensitiveParameter]
+        \Stringable|string|null $password = null,
     ): static {
         $self = clone $this;
 

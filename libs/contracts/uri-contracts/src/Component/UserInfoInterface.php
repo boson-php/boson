@@ -52,6 +52,7 @@ interface UserInfoInterface extends UriComponentInterface
      * an instance that contains the specified username information.
      *
      * @param non-empty-string|\Stringable $user
+     *
      * @throws InvalidArgumentExceptionInterface in case of invalid username argument passed
      */
     public function withUser(\Stringable|string $user): static;
@@ -63,6 +64,7 @@ interface UserInfoInterface extends UriComponentInterface
      * an instance that contains the specified password information.
      *
      * @param \Stringable|non-empty-string|null $password
+     *
      * @throws InvalidArgumentExceptionInterface in case of invalid password argument passed
      */
     public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static;

@@ -91,6 +91,7 @@ final class MutableAuthority extends Authority implements
      * specific {@see MutableUserInfo} implementation.
      *
      * @var MutableUserInfo|null
+     *
      * @phpstan-ignore-next-line This is a valid docblock type
      */
     public ?UserInfoInterface $userInfo = null {
