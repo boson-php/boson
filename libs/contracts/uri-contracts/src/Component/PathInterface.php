@@ -12,11 +12,13 @@ use Boson\Contracts\Uri\UriInterface;
  *
  * @link https://datatracker.ietf.org/doc/html/rfc3986#section-3.3
  *
- * @template-extends \Traversable<array-key, non-empty-string>
+ * @template-extends \Traversable<int<0, max>, non-empty-string>
+ * @template-extends \ArrayAccess<int<0, max>, non-empty-string>
  */
 interface PathInterface extends
     UriComponentInterface,
     \Traversable,
+    \ArrayAccess,
     \Countable
 {
     /**
@@ -44,6 +46,13 @@ interface PathInterface extends
     }
 
     /**
+     * Returns {@see true} if the path is empty (has no path segments).
+     */
+    public bool $isEmpty {
+        get;
+    }
+
+    /**
      * Gets the absolute path as a string.
      *
      * Please note that when retrieving an explicit relative path, the
@@ -61,6 +70,13 @@ interface PathInterface extends
      *     ...
      * }
      * ```
+     *
+     * NOTE: The resulting string must be escaped into URI format according
+     * to the specification (specification standard may be implementation
+     * dependent, for example WhatWG, RFC3986, etc.)
+     *
+     * @link https://url.spec.whatwg.org/
+     * @link https://datatracker.ietf.org/doc/html/rfc3986
      *
      * @var non-empty-string
      */
@@ -86,6 +102,12 @@ interface PathInterface extends
      *     ...
      * }
      * ```
+     *
+     * NOTE: The resulting string must be escaped into URI format according
+     * to the specification (specification standard may be implementation
+     * dependent, for example {@link https://url.spec.whatwg.org/ WhatWG},
+     * {@link https://datatracker.ietf.org/doc/html/rfc3986 RFC-3986}, etc.)
+     *
      */
     public string $relative {
         get;
@@ -94,6 +116,8 @@ interface PathInterface extends
     /**
      * Returns the path segment at the specified position (index). If there
      * is no data at the passed index, it returns {@see null}.
+     *
+     * The path (segment) value is returned "as is", without any encoding.
      *
      * @param int<0, max> $index
      *
@@ -106,11 +130,55 @@ interface PathInterface extends
      * Returns {@see true} if the path contains the given segment.
      * Otherwise, returns {@see false}.
      *
+     * The URI path component is generally CASE-SENSITIVE according to the
+     * RFC-3986 spec ({@link https://datatracker.ietf.org/doc/html/rfc3986}).
+     *
+     * The path (segment) value is returned "as is", without any encoding.
+     *
      * @param \Stringable|non-empty-string $segment
      *
-     * @throws InvalidArgumentExceptionInterface in case of invalid segment passed
+     * @throws InvalidArgumentExceptionInterface in case of invalid path segment passed
      */
     public function contains(\Stringable|string $segment): bool;
+
+    /**
+     * Return an instance with the specified path segments.
+     *
+     * This method MUST retain the state of the current instance and return
+     * an instance that contains the specified path segments.
+     *
+     * @param iterable<mixed, \Stringable|non-empty-string> $segments
+     *
+     * @throws InvalidArgumentExceptionInterface in case of invalid path segment passed
+     */
+    public function withSegments(iterable $segments): static;
+
+    /**
+     * Return an instance with an added segment at the specified position (index)
+     *
+     * This method MUST retain the state of the current instance and return
+     * an instance that contains the specified path segment.
+     *
+     * When passed a {@see null} index, adds the segment to the end of the list.
+     *
+     * @param \Stringable|non-empty-string $segment
+     * @param int<0, max>|null $index
+     *
+     * @throws InvalidArgumentExceptionInterface in case of invalid path segment or index passed
+     */
+    public function withSegment(\Stringable|string $segment, ?int $index = null): static;
+
+    /**
+     * Return an instance without a path segment at the specified position (index)
+     *
+     * This method MUST retain the state of the current instance and return
+     * an instance which excludes the path segment at the specified position
+     *
+     * @param int<0, max> $index
+     *
+     * @throws InvalidArgumentExceptionInterface in case of invalid path index passed
+     */
+    public function withoutSegment(int $index): static;
 
     /**
      * @return int<0, max>

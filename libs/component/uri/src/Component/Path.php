@@ -4,35 +4,40 @@ declare(strict_types=1);
 
 namespace Boson\Component\Uri\Component;
 
+use Boson\Component\Uri\Exception\InvalidPathArgumentException;
+use Boson\Component\Uri\Exception\InvalidPathIndexArgumentException;
+use Boson\Component\Uri\Exception\InvalidPathSegmentArgumentException;
 use Boson\Contracts\Uri\Component\PathInterface;
 
 /**
  * @template-implements \IteratorAggregate<array-key, non-empty-string>
+ *
+ * @phpstan-sealed MutablePath
  */
-final class Path implements PathInterface, \IteratorAggregate
+class Path implements PathInterface, \IteratorAggregate
 {
     /**
      * @var list<non-empty-string>
      */
-    private readonly array $segments;
+    public protected(set) array $segments;
 
     /**
      * @var list<non-empty-string>
      */
     private array $encoded {
         get {
-            if (!isset($this->encoded)) {
-                $segments = [];
+            $segments = [];
 
-                foreach ($this->segments as $segment) {
-                    $segments[] = \rawurlencode($segment);
-                }
-
-                $this->encoded = $segments;
+            foreach ($this->segments as $segment) {
+                $segments[] = \rawurlencode($segment);
             }
 
-            return $this->encoded;
+            return $segments;
         }
+    }
+
+    public bool $isEmpty {
+        get => $this->segments === [];
     }
 
     public string $absolute {
@@ -44,26 +49,189 @@ final class Path implements PathInterface, \IteratorAggregate
     }
 
     /**
-     * @param iterable<mixed, non-empty-string> $segments
+     * @param iterable<mixed, \Stringable|string> $segments
+     *
+     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
      */
     public function __construct(
         iterable $segments = [],
         public protected(set) bool $isAbsolute = true,
         public protected(set) bool $hasTrailingSlash = false,
     ) {
-        $this->segments = \iterator_to_array($segments, false);
+        $this->segments = $this->formatSegmentsArgument($segments);
     }
 
-    public function at(int $index): ?string
+    /**
+     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     */
+    public function withSegments(iterable $segments): static
     {
+        $self = clone $this;
+        $self->segments = $this->formatSegmentsArgument($segments);
+
+        return $self;
+    }
+
+    /**
+     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     */
+    public function withSegment(\Stringable|string $segment, ?int $index = null): static
+    {
+        $self = clone $this;
+        $self->setSegment($segment, $index);
+
+        return $self;
+    }
+
+    /**
+     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     */
+    public function withoutSegment(int $index): static
+    {
+        $self = clone $this;
+        $self->removeSegment($index);
+
+        return $self;
+    }
+
+    /**
+     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     */
+    final public function at(int $index): ?string
+    {
+        if ($index < 0) {
+            throw InvalidPathIndexArgumentException::becauseComponentMustBe('int<0, max>', $index);
+        }
+
         return $this->segments[$index] ?? null;
     }
 
-    public function contains(\Stringable|string $segment): bool
+    /**
+     * * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     */
+    final public function contains(\Stringable|string $segment): bool
     {
-        $decoded = \rawurldecode((string) $segment);
+        return \in_array($this->formatSegmentArgument($segment), $this->segments, true);
+    }
 
-        return \in_array($decoded, $this->segments, true);
+    /**
+     * Format segments collection argument
+     *
+     * @param iterable<mixed, \Stringable|string> $segments
+     * @return list<non-empty-string>
+     * @throws InvalidPathArgumentException in case of invalid segments argument passed
+     */
+    protected function formatSegmentsArgument(iterable $segments): array
+    {
+        $result = [];
+
+        foreach ($segments as $segment) {
+            $result[] = $this->formatSegmentArgument($segment);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int<0, max> $index
+     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     */
+    protected function removeSegment(int $index): void
+    {
+        if ($index < 0) {
+            throw InvalidPathIndexArgumentException::becauseComponentMustBe('int<0, max>', $index);
+        }
+
+        if ($index >= \count($this->segments)) {
+            return;
+        }
+
+        $segments = $this->segments;
+
+        unset($segments[$index]);
+
+        $this->segments = \array_values($segments);
+    }
+
+    /**
+     * @param int<0, max>|null $index
+     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     */
+    protected function setSegment(\Stringable|string $segment, ?int $index = null): void
+    {
+        if ($index === null || $index >= \count($this->segments)) {
+            $this->segments[] = $this->formatSegmentArgument($segment);
+
+            return;
+        }
+
+        if ($index < 0) {
+            throw InvalidPathIndexArgumentException::becauseComponentMustBe('int<0, max>', $index);
+        }
+
+        $this->segments[$index] = $this->formatSegmentArgument($segment);
+    }
+
+    /**
+     * Format segment argument
+     *
+     * @return non-empty-string
+     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     */
+    protected function formatSegmentArgument(string|\Stringable $segment): string
+    {
+        if ($segment instanceof \Stringable) {
+            try {
+                $segment = (string) $segment;
+                /** @phpstan-ignore-next-line : This is not a dead catch */
+            } catch (\Throwable $e) {
+                throw InvalidPathSegmentArgumentException::becauseStringableErrorOccurs($e);
+            }
+        }
+
+        if ($segment === '') {
+            throw InvalidPathSegmentArgumentException::becauseComponentIsEmpty();
+        }
+
+        return $segment;
+    }
+
+    /**
+     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     */
+    public function offsetExists(mixed $offset): bool
+    {
+        if (!\is_int($offset) || $offset < 0) {
+            throw InvalidPathIndexArgumentException::becauseComponentMustBe('int<0, max>', $offset);
+        }
+
+        return isset($this->segments[$offset]);
+    }
+
+    /**
+     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     */
+    public function offsetGet(mixed $offset): ?string
+    {
+        if (!\is_int($offset) || $offset < 0) {
+            throw InvalidPathIndexArgumentException::becauseComponentMustBe('int<0, max>', $offset);
+        }
+
+        return $this->segments[$offset] ?? null;
+    }
+
+    #[\Deprecated('Data mutation in an immutable context is not allowed')]
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        throw new \BadMethodCallException('Cannot modify value of immutable path ' . static::class);
+    }
+
+    #[\Deprecated('Data mutation in an immutable context is not allowed')]
+    public function offsetUnset(mixed $offset): void
+    {
+        throw new \BadMethodCallException('Cannot remove value of immutable path ' . static::class);
     }
 
     public function getIterator(): \Traversable
@@ -95,19 +263,13 @@ final class Path implements PathInterface, \IteratorAggregate
 
     public function __toString(): string
     {
-        $segments = [];
-
-        foreach ($this->segments as $segment) {
-            $segments[] = \rawurlencode($segment);
-        }
-
-        $path = \implode('/', $segments);
+        $path = \implode('/', $this->encoded);
 
         if ($this->isAbsolute) {
             $path = '/' . $path;
         }
 
-        if ($segments !== [] && $this->hasTrailingSlash) {
+        if ($this->segments !== [] && $this->hasTrailingSlash) {
             $path .= '/';
         }
 
