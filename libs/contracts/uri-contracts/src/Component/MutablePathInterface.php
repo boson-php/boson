@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Boson\Contracts\Uri\Component;
 
+use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
+
 interface MutablePathInterface extends PathInterface
 {
     public bool $isAbsolute {
@@ -21,4 +23,11 @@ interface MutablePathInterface extends PathInterface
          */
         set;
     }
+
+    /**
+     * @param iterable<mixed, \Stringable|non-empty-string> $segments
+     *
+     * @throws InvalidArgumentExceptionInterface if an invalid path segment is provided
+     */
+    public function set(iterable $segments): void;
 }

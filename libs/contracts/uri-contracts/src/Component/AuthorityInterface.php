@@ -81,6 +81,8 @@ interface AuthorityInterface extends UriComponentInterface
      *
      * This method MUST retain the state of the current instance and return
      * an instance that contains the specified user info information.
+     *
+     * @throws InvalidArgumentExceptionInterface if an incompatible user info implementation is provided
      */
     public function withUserInfo(?UserInfoInterface $info): static;
 
@@ -92,7 +94,7 @@ interface AuthorityInterface extends UriComponentInterface
      *
      * @param non-empty-string|\Stringable $host
      *
-     * @throws InvalidArgumentExceptionInterface in case of invalid host argument passed
+     * @throws InvalidArgumentExceptionInterface if an invalid authority host is provided
      */
     public function withHost(\Stringable|string $host): static;
 
@@ -104,7 +106,7 @@ interface AuthorityInterface extends UriComponentInterface
      *
      * @param int<0, 65535>|null $port
      *
-     * @throws InvalidArgumentExceptionInterface in case of invalid port argument passed
+     * @throws InvalidArgumentExceptionInterface if an invalid authority port is provided
      */
     public function withPort(?int $port): static;
 }

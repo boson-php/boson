@@ -71,7 +71,7 @@ interface PathInterface extends
      * }
      * ```
      *
-     * NOTE: The resulting string must be escaped into URI format according
+     * NOTE: The resulting string MUST be escaped into URI format according
      * to the specification (specification standard may be implementation
      * dependent, for example WhatWG, RFC3986, etc.)
      *
@@ -103,7 +103,7 @@ interface PathInterface extends
      * }
      * ```
      *
-     * NOTE: The resulting string must be escaped into URI format according
+     * NOTE: The resulting string MUST be escaped into URI format according
      * to the specification (specification standard may be implementation
      * dependent, for example {@link https://url.spec.whatwg.org/ WhatWG},
      * {@link https://datatracker.ietf.org/doc/html/rfc3986 RFC-3986}, etc.)
@@ -122,7 +122,7 @@ interface PathInterface extends
      * @param int<0, max> $index
      *
      * @return non-empty-string|null
-     * @throws InvalidArgumentExceptionInterface in case of invalid index passed
+     * @throws InvalidArgumentExceptionInterface if an invalid path index is provided
      */
     public function at(int $index): ?string;
 
@@ -137,7 +137,7 @@ interface PathInterface extends
      *
      * @param \Stringable|non-empty-string $segment
      *
-     * @throws InvalidArgumentExceptionInterface in case of invalid path segment passed
+     * @throws InvalidArgumentExceptionInterface if an invalid path segment is provided
      */
     public function contains(\Stringable|string $segment): bool;
 
@@ -149,7 +149,7 @@ interface PathInterface extends
      *
      * @param iterable<mixed, \Stringable|non-empty-string> $segments
      *
-     * @throws InvalidArgumentExceptionInterface in case of invalid path segment passed
+     * @throws InvalidArgumentExceptionInterface if an invalid path segment is provided
      */
     public function withSegments(iterable $segments): static;
 
@@ -164,7 +164,7 @@ interface PathInterface extends
      * @param \Stringable|non-empty-string $segment
      * @param int<0, max>|null $index
      *
-     * @throws InvalidArgumentExceptionInterface in case of invalid path segment or index passed
+     * @throws InvalidArgumentExceptionInterface if an invalid path segment or index is provided
      */
     public function withSegment(\Stringable|string $segment, ?int $index = null): static;
 
@@ -176,7 +176,7 @@ interface PathInterface extends
      *
      * @param int<0, max> $index
      *
-     * @throws InvalidArgumentExceptionInterface in case of invalid path index passed
+     * @throws InvalidArgumentExceptionInterface if an invalid path index is provided
      */
     public function withoutSegment(int $index): static;
 

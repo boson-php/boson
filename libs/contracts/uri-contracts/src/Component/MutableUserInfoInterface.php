@@ -18,8 +18,7 @@ interface MutableUserInfoInterface extends UserInfoInterface
          *
          * @param \Stringable|non-empty-string $user
          *
-         * @throws InvalidArgumentExceptionInterface in case of invalid
-         *         username argument value has been passed
+         * @throws InvalidArgumentExceptionInterface if an invalid user info's username is provided
          */
         set(\Stringable|string $user);
     }
@@ -31,8 +30,7 @@ interface MutableUserInfoInterface extends UserInfoInterface
          *
          * @param \Stringable|non-empty-string|null $password
          *
-         * @throws InvalidArgumentExceptionInterface in case of invalid
-         *         password argument value has been passed
+         * @throws InvalidArgumentExceptionInterface if an invalid user info's password is provided
          */
         set(#[\SensitiveParameter] \Stringable|string|null $password);
     }
