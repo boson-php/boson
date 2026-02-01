@@ -118,8 +118,8 @@ class Path implements PathInterface, \IteratorAggregate
      * Format segments collection argument
      *
      * @param iterable<mixed, \Stringable|string> $segments
-     * @return list<non-empty-string>
      *
+     * @return list<non-empty-string>
      * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
     protected function formatSegmentsArgument(iterable $segments): array
@@ -135,6 +135,7 @@ class Path implements PathInterface, \IteratorAggregate
 
     /**
      * @param int<0, max> $index
+     *
      * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     protected function removeSegment(int $index): void
@@ -156,6 +157,7 @@ class Path implements PathInterface, \IteratorAggregate
 
     /**
      * @param int<0, max>|null $index
+     *
      * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */

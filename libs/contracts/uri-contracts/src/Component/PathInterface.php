@@ -107,7 +107,6 @@ interface PathInterface extends
      * to the specification (specification standard may be implementation
      * dependent, for example {@link https://url.spec.whatwg.org/ WhatWG},
      * {@link https://datatracker.ietf.org/doc/html/rfc3986 RFC-3986}, etc.)
-     *
      */
     public string $relative {
         get;
