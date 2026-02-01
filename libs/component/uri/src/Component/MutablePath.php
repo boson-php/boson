@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Component\Uri\Component;
 
-use Boson\Component\Uri\Exception\InvalidPathArgumentException;
 use Boson\Component\Uri\Exception\InvalidPathIndexArgumentException;
 use Boson\Component\Uri\Exception\InvalidPathSegmentArgumentException;
 use Boson\Contracts\Uri\Component\MutablePathInterface;
@@ -23,8 +22,8 @@ final class MutablePath extends Path implements
     public bool $hasTrailingSlash = false;
 
     /**
-     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     #[\Override]
     public function offsetSet(mixed $offset, mixed $value): void
@@ -34,15 +33,14 @@ final class MutablePath extends Path implements
         }
 
         if (!\is_string($value) && !$value instanceof \Stringable) {
-            throw InvalidPathArgumentException::becauseComponentMustBe('\Stringable|string', $value);
+            throw InvalidPathSegmentArgumentException::becauseComponentMustBe('\Stringable|string', $value);
         }
 
         $this->setSegment($value, $offset);
     }
 
     /**
-     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     #[\Override]
     public function offsetUnset(mixed $offset): void

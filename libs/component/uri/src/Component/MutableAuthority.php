@@ -7,7 +7,6 @@ namespace Boson\Component\Uri\Component;
 use Boson\Component\Uri\Exception\InvalidHostArgumentException;
 use Boson\Component\Uri\Exception\InvalidPasswordArgumentException;
 use Boson\Component\Uri\Exception\InvalidPortArgumentException;
-use Boson\Component\Uri\Exception\InvalidUriComponentArgumentException;
 use Boson\Component\Uri\Exception\InvalidUserArgumentException;
 use Boson\Contracts\Uri\Component\AuthorityInterface;
 use Boson\Contracts\Uri\Component\MutableAuthorityInterface;
@@ -26,7 +25,8 @@ final class MutableAuthority extends Authority implements
         /**
          * Updates a user of the {@see MutableUserInfo} URI component
          *
-         * @throws InvalidUserArgumentException in case of invalid username value passed
+         * @throws InvalidUserArgumentException if an invalid user info's username is provided
+         * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
          */
         set(\Stringable|string|null $user) {
             if ($user === null) {
@@ -73,7 +73,7 @@ final class MutableAuthority extends Authority implements
     public string $host {
         get => $this->host;
         /**
-         * @throws InvalidHostArgumentException in case of invalid host argument passed
+         * @throws InvalidHostArgumentException if an invalid authority host is provided
          */
         set(\Stringable|string $host) => $this->formatHostArgument($host);
     }
@@ -81,7 +81,7 @@ final class MutableAuthority extends Authority implements
     public ?int $port = null {
         get => $this->port;
         /**
-         * @throws InvalidPortArgumentException in case of invalid port argument passed
+         * @throws InvalidPortArgumentException if an invalid authority port is provided
          */
         set(?int $port) => $this->formatPortArgument($port);
     }
@@ -97,8 +97,8 @@ final class MutableAuthority extends Authority implements
     public ?UserInfoInterface $userInfo = null {
         get => $this->userInfo;
         /**
-         * @throws InvalidUriComponentArgumentException in case of invalid user
-         *         info argument passed
+         * @throws InvalidUserArgumentException if an invalid user info's username is provided
+         * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
          */
         set(?UserInfoInterface $info) => $this->formatUserInfoArgument($info);
     }
@@ -106,6 +106,9 @@ final class MutableAuthority extends Authority implements
     /**
      * Unlike the parent {@see parent::formatUserInfoArgument()} method, it
      * returns a mutable implementation of user info
+     *
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     #[\Override]
     protected function formatUserInfoArgument(?UserInfoInterface $info): ?MutableUserInfo
@@ -117,6 +120,11 @@ final class MutableAuthority extends Authority implements
      * Returns mutable authority instance from immutable one
      *
      * @api
+     *
+     * @throws InvalidHostArgumentException if an invalid authority host is provided
+     * @throws InvalidPortArgumentException if an invalid authority port is provided
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     public static function fromImmutable(AuthorityInterface $authority): self
     {
@@ -135,6 +143,11 @@ final class MutableAuthority extends Authority implements
      * Returns optional mutable authority instance from immutable one
      *
      * @api
+     *
+     * @throws InvalidHostArgumentException if an invalid authority host is provided
+     * @throws InvalidPortArgumentException if an invalid authority port is provided
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     public static function tryFromImmutable(?AuthorityInterface $authority): ?self
     {

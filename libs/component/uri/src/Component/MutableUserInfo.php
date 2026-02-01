@@ -14,7 +14,7 @@ final class MutableUserInfo extends UserInfo implements MutableUserInfoInterface
     public string $user {
         get => $this->user;
         /**
-         * @throws InvalidUserArgumentException in case of invalid username value passed
+         * @throws InvalidUserArgumentException if an invalid user info's username is provided
          */
         set(\Stringable|string $user) => $this->formatUserArgument($user);
     }
@@ -22,7 +22,7 @@ final class MutableUserInfo extends UserInfo implements MutableUserInfoInterface
     public ?string $password = null {
         get => $this->password;
         /**
-         * @throws InvalidPasswordArgumentException in case of invalid password value passed
+         * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
          */
         set(#[\SensitiveParameter] \Stringable|string|null $password) => $this->formatPasswordArgument($password);
     }
@@ -31,6 +31,9 @@ final class MutableUserInfo extends UserInfo implements MutableUserInfoInterface
      * Returns mutable user info instance from immutable one
      *
      * @api
+     *
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     final public static function fromImmutable(UserInfoInterface $info): self
     {
@@ -48,6 +51,9 @@ final class MutableUserInfo extends UserInfo implements MutableUserInfoInterface
      * Returns optional mutable user info instance from immutable one
      *
      * @api
+     *
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     final public static function tryFromImmutable(?UserInfoInterface $info): ?self
     {

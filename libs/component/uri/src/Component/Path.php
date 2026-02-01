@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Component\Uri\Component;
 
-use Boson\Component\Uri\Exception\InvalidPathArgumentException;
 use Boson\Component\Uri\Exception\InvalidPathIndexArgumentException;
 use Boson\Component\Uri\Exception\InvalidPathSegmentArgumentException;
 use Boson\Contracts\Uri\Component\PathInterface;
@@ -51,7 +50,7 @@ class Path implements PathInterface, \IteratorAggregate
     /**
      * @param iterable<mixed, \Stringable|string> $segments
      *
-     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
     public function __construct(
         iterable $segments = [],
@@ -62,7 +61,7 @@ class Path implements PathInterface, \IteratorAggregate
     }
 
     /**
-     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
     public function withSegments(iterable $segments): static
     {
@@ -73,8 +72,8 @@ class Path implements PathInterface, \IteratorAggregate
     }
 
     /**
-     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     public function withSegment(\Stringable|string $segment, ?int $index = null): static
     {
@@ -85,7 +84,7 @@ class Path implements PathInterface, \IteratorAggregate
     }
 
     /**
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     public function withoutSegment(int $index): static
     {
@@ -96,7 +95,7 @@ class Path implements PathInterface, \IteratorAggregate
     }
 
     /**
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     final public function at(int $index): ?string
     {
@@ -108,7 +107,7 @@ class Path implements PathInterface, \IteratorAggregate
     }
 
     /**
-     * * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
     final public function contains(\Stringable|string $segment): bool
     {
@@ -120,7 +119,8 @@ class Path implements PathInterface, \IteratorAggregate
      *
      * @param iterable<mixed, \Stringable|string> $segments
      * @return list<non-empty-string>
-     * @throws InvalidPathArgumentException in case of invalid segments argument passed
+     *
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
     protected function formatSegmentsArgument(iterable $segments): array
     {
@@ -135,7 +135,7 @@ class Path implements PathInterface, \IteratorAggregate
 
     /**
      * @param int<0, max> $index
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     protected function removeSegment(int $index): void
     {
@@ -156,8 +156,8 @@ class Path implements PathInterface, \IteratorAggregate
 
     /**
      * @param int<0, max>|null $index
-     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     protected function setSegment(\Stringable|string $segment, ?int $index = null): void
     {
@@ -178,7 +178,7 @@ class Path implements PathInterface, \IteratorAggregate
      * Format segment argument
      *
      * @return non-empty-string
-     * @throws InvalidPathSegmentArgumentException in case of invalid path segment argument passed
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
     protected function formatSegmentArgument(string|\Stringable $segment): string
     {
@@ -199,7 +199,7 @@ class Path implements PathInterface, \IteratorAggregate
     }
 
     /**
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     public function offsetExists(mixed $offset): bool
     {
@@ -211,7 +211,7 @@ class Path implements PathInterface, \IteratorAggregate
     }
 
     /**
-     * @throws InvalidPathIndexArgumentException in case of invalid path index passed
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
     public function offsetGet(mixed $offset): ?string
     {

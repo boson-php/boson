@@ -22,8 +22,8 @@ class UserInfo implements UserInfoInterface
      * @param \Stringable|non-empty-string $user
      * @param \Stringable|non-empty-string|null $password
      *
-     * @throws InvalidUserArgumentException in case of invalid username argument passed
-     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     public function __construct(
         \Stringable|string $user,
@@ -38,6 +38,9 @@ class UserInfo implements UserInfoInterface
      * Returns an immutable user info instance from another one
      *
      * @api
+     *
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     final public static function from(UserInfoInterface $info): self
     {
@@ -55,6 +58,9 @@ class UserInfo implements UserInfoInterface
      * Returns an immutable user info instance from another one
      *
      * @api
+     *
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     final public static function tryFrom(?UserInfoInterface $info): ?self
     {
@@ -66,7 +72,7 @@ class UserInfo implements UserInfoInterface
     }
 
     /**
-     * @throws InvalidUserArgumentException in case of invalid username argument passed
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
      */
     final public function withUser(\Stringable|string $user): static
     {
@@ -77,7 +83,7 @@ class UserInfo implements UserInfoInterface
     }
 
     /**
-     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
     {
@@ -114,8 +120,8 @@ class UserInfo implements UserInfoInterface
      * @param \Stringable|non-empty-string $user
      * @param \Stringable|non-empty-string|null $password
      *
-     * @throws InvalidUserArgumentException in case of invalid username argument passed
-     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     final public function withCredentials(
         \Stringable|string $user,
@@ -133,7 +139,7 @@ class UserInfo implements UserInfoInterface
      * Format user parameter
      *
      * @return non-empty-string
-     * @throws InvalidUserArgumentException in case of invalid username argument passed
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
      */
     protected function formatUserArgument(\Stringable|string $user): string
     {
@@ -157,7 +163,7 @@ class UserInfo implements UserInfoInterface
      * Format password parameter
      *
      * @return non-empty-string|null
-     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     protected function formatPasswordArgument(#[\SensitiveParameter] \Stringable|string|null $password): ?string
     {

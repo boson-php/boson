@@ -10,6 +10,7 @@ use Boson\Component\Uri\Exception\InvalidPortArgumentException;
 use Boson\Component\Uri\Exception\InvalidUserArgumentException;
 use Boson\Contracts\Uri\Component\AuthorityInterface;
 use Boson\Contracts\Uri\Component\UserInfoInterface;
+use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 
 /**
  * @phpstan-sealed MutableAuthority
@@ -50,8 +51,10 @@ class Authority implements AuthorityInterface
      * @param \Stringable|non-empty-string $host
      * @param int<0, 65535>|null $port
      *
-     * @throws InvalidHostArgumentException in case of invalid host argument passed
-     * @throws InvalidPortArgumentException in case of invalid port argument passed
+     * @throws InvalidHostArgumentException if an invalid authority host is provided
+     * @throws InvalidPortArgumentException if an invalid authority port is provided
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     public function __construct(
         \Stringable|string $host,
@@ -63,6 +66,10 @@ class Authority implements AuthorityInterface
         $this->userInfo = $this->formatUserInfoArgument($info);
     }
 
+    /**
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
+     */
     final public function withUserInfo(?UserInfoInterface $info): static
     {
         $self = clone $this;
@@ -87,6 +94,9 @@ class Authority implements AuthorityInterface
         return $self;
     }
 
+    /**
+     * @throws InvalidHostArgumentException if an invalid authority host is provided
+     */
     final public function withHost(\Stringable|string $host): static
     {
         $self = clone $this;
@@ -95,6 +105,9 @@ class Authority implements AuthorityInterface
         return $self;
     }
 
+    /**
+     * @throws InvalidPortArgumentException if an invalid authority port is provided
+     */
     final public function withPort(?int $port): static
     {
         $self = clone $this;
@@ -126,7 +139,9 @@ class Authority implements AuthorityInterface
      *
      * @param non-empty-string|\Stringable $user
      *
-     * @throws InvalidUserArgumentException in case of invalid username argument passed
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
+     * @throws InvalidArgumentExceptionInterface in case of other validation errors
      */
     final public function withUser(\Stringable|string $user): static
     {
@@ -150,7 +165,8 @@ class Authority implements AuthorityInterface
      *
      * @param \Stringable|non-empty-string|null $password
      *
-     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
+     * @throws InvalidArgumentExceptionInterface in case of other validation errors
      */
     final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
     {
@@ -195,8 +211,8 @@ class Authority implements AuthorityInterface
      * @param \Stringable|non-empty-string $user
      * @param \Stringable|non-empty-string|null $password
      *
-     * @throws InvalidUserArgumentException in case of invalid username argument passed
-     * @throws InvalidPasswordArgumentException in case of invalid password argument passed
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     final public function withCredentials(
         \Stringable|string $user,
@@ -220,7 +236,7 @@ class Authority implements AuthorityInterface
      * Format host parameter
      *
      * @return non-empty-string
-     * @throws InvalidHostArgumentException in case of invalid host argument passed
+     * @throws InvalidHostArgumentException if an invalid authority host is provided
      */
     protected function formatHostArgument(\Stringable|string $host): string
     {
@@ -244,7 +260,7 @@ class Authority implements AuthorityInterface
      * Format port parameter
      *
      * @return int<0, 65535>|null
-     * @throws InvalidPortArgumentException in case of invalid port argument passed
+     * @throws InvalidPortArgumentException if an invalid authority port is provided
      */
     protected function formatPortArgument(?int $port): ?int
     {
@@ -261,6 +277,9 @@ class Authority implements AuthorityInterface
 
     /**
      * Format user info component parameter
+     *
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     protected function formatUserInfoArgument(?UserInfoInterface $info): ?UserInfo
     {
