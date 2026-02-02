@@ -7,9 +7,10 @@ namespace Boson\Component\Uri\Component;
 use Boson\Component\Uri\Exception\InvalidQueryNameArgumentException;
 use Boson\Component\Uri\Exception\InvalidQueryValueArgumentException;
 use Boson\Contracts\Uri\Component\QueryInterface;
+use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 
 /**
- * @template-implements \IteratorAggregate<non-empty-string, string>
+ * @template-implements \IteratorAggregate<non-empty-string, scalar|null|array<array-key, mixed>>
  *
  * @phpstan-sealed MutableQuery
  *
@@ -18,7 +19,7 @@ use Boson\Contracts\Uri\Component\QueryInterface;
 class Query implements QueryInterface, \IteratorAggregate
 {
     /**
-     * @var array<non-empty-string, string|array<array-key, string>>
+     * @var array<non-empty-string, scalar|null|array<array-key, mixed>>
      */
     protected array $parameters;
 
@@ -69,6 +70,9 @@ class Query implements QueryInterface, \IteratorAggregate
         return static::from($query);
     }
 
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     */
     public function has(string $name): bool
     {
         $formattedName = $this->formatParameterName($name);
@@ -76,19 +80,43 @@ class Query implements QueryInterface, \IteratorAggregate
         return \array_key_exists($formattedName, $this->parameters);
     }
 
-    public function get(string $name, ?string $default = null): ?string
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     */
+    public function get(string $name, string|int|float|bool|null $default = null): string|int|float|bool|null
     {
         $formattedName = $this->formatParameterName($name);
 
-        $result = $this->parameters[$formattedName] ?? $default;
+        if (\array_key_exists($formattedName, $this->parameters)) {
+            $value = $this->parameters[$formattedName];
+
+            if (\is_scalar($value) || $value === null) {
+                return $value;
+            }
+        }
+
+        return $default;
+    }
+
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     * @throws InvalidArgumentExceptionInterface in case of other validation errors
+     */
+    public function getAsString(string $name, ?string $default = null): ?string
+    {
+        $result = $this->get($name);
 
         return match (true) {
             \is_string($result) => $result,
-            \is_array($result) => (string) \reset($result),
+            \is_scalar($result) => \var_export($result, true),
             default => $default,
         };
     }
 
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     * @throws InvalidArgumentExceptionInterface in case of other validation errors
+     */
     public function getAsInt(string $name, ?int $default = null): ?int
     {
         $result = \filter_var($this->get($name), \FILTER_VALIDATE_INT);
@@ -96,6 +124,22 @@ class Query implements QueryInterface, \IteratorAggregate
         return $result === false ? $default : $result;
     }
 
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     * @throws InvalidArgumentExceptionInterface in case of other validation errors
+     */
+    public function getAsBool(string $name, ?bool $default = null): ?bool
+    {
+        if ($this->has($name)) {
+            return \filter_var($this->get($name), \FILTER_VALIDATE_BOOL);
+        }
+
+        return $default;
+    }
+
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     */
     public function getAsArray(string $name, array $default = []): array
     {
         $formattedName = $this->formatParameterName($name);
@@ -130,7 +174,7 @@ class Query implements QueryInterface, \IteratorAggregate
      * @throws InvalidQueryNameArgumentException if an invalid query name is provided
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
      */
-    public function withParameter(string $name, string|iterable $value): static
+    public function withParameter(string $name, string|int|float|bool|null|iterable $value): static
     {
         $self = clone $this;
         $self->setParameter($name, $value);
@@ -199,17 +243,17 @@ class Query implements QueryInterface, \IteratorAggregate
     }
 
     /**
-     * @return string|array<array-key, string|array<array-key, mixed>>
-     * @phpstan-return ($value is string ? string : array<array-key, string>)
+     * @return string|int|float|bool|null|array<array-key, mixed>
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
      */
-    protected function formatParameterValue(mixed $value): string|array
+    protected function formatParameterValue(mixed $value): string|int|float|bool|null|array
     {
         return match (true) {
-            \is_string($value) => $value,
+            \is_scalar($value),
+            $value === null => $value,
             \is_iterable($value) => $this->formatParameterIterableValue($value),
             default => throw InvalidQueryValueArgumentException::becauseComponentMustBe(
-                expected: 'string|iterable<array-key, string>',
+                expected: 'scalar|null|iterable<array-key, mixed>',
                 given: $value,
             ),
         };
@@ -218,7 +262,7 @@ class Query implements QueryInterface, \IteratorAggregate
     /**
      * @param iterable<mixed, mixed> $value
      *
-     * @return array<array-key, string|array<array-key, mixed>>
+     * @return array<array-key, scalar|null|array<array-key, mixed>>
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
      */
     protected function formatParameterIterableValue(iterable $value): array
@@ -274,20 +318,7 @@ class Query implements QueryInterface, \IteratorAggregate
 
     public function getIterator(): \Traversable
     {
-        foreach ($this->parameters as $key => $value) {
-            // Note: This behaviour is specific for PHP environment only;
-            //       implementations in other languages may not interpret
-            //       this construct correctly.
-            if (\is_array($value)) {
-                foreach ($value as $index => $item) {
-                    yield \sprintf('%s[%s]', $key, $index) => $item;
-                }
-
-                continue;
-            }
-
-            yield $key => $value;
-        }
+        return new \ArrayIterator($this->parameters);
     }
 
     public function count(): int
@@ -311,15 +342,6 @@ class Query implements QueryInterface, \IteratorAggregate
 
     public function __toString(): string
     {
-        $result = [];
-
-        foreach ($this as $key => $value) {
-            /** @phpstan-ignore-next-line PHPStan false-positive. PHP may contain integer keys in array */
-            $result[] = \rawurlencode((string) $key)
-                . '='
-                . \rawurlencode($value);
-        }
-
-        return \implode('&', $result);
+        return \http_build_query($this->parameters);
     }
 }

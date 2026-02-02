@@ -41,7 +41,7 @@ interface MutableQueryInterface extends QueryInterface
      * Note: The "possible result" in examples depends on the rendering
      *       implementation (i.e. RFC 3986, RFC 1738, WhatWG, etc.).
      *
-     * @param iterable<non-empty-string, string|iterable<array-key, string|iterable<array-key, mixed>>> $parameters
+     * @param iterable<non-empty-string, scalar|null|iterable<array-key, mixed>> $parameters
      *
      * @throws InvalidArgumentExceptionInterface if an invalid path segment is provided
      */
@@ -70,11 +70,11 @@ interface MutableQueryInterface extends QueryInterface
      *        implementation (i.e. RFC 3986, RFC 1738, WhatWG, etc.).
      *
      * @param non-empty-string $name
-     * @param string|iterable<array-key, string|iterable<array-key, mixed>> $value
+     * @param scalar|null|iterable<array-key, scalar|null|iterable<array-key, mixed>> $value
      *
      * @throws InvalidArgumentExceptionInterface if an invalid path segment or index is provided
      */
-    public function put(string $name, string|iterable $value): void;
+    public function put(string $name, string|int|float|bool|null|iterable $value): void;
 
     /**
      * Removes a query parameter by name.

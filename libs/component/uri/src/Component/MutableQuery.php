@@ -26,7 +26,7 @@ final class MutableQuery extends Query implements MutableQueryInterface
      * @throws InvalidQueryNameArgumentException if an invalid query name is provided
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
      */
-    public function put(string $name, iterable|string $value): void
+    public function put(string $name, string|int|float|bool|null|iterable $value): void
     {
         $this->setParameter($name, $value);
     }
@@ -50,7 +50,7 @@ final class MutableQuery extends Query implements MutableQueryInterface
             throw InvalidQueryNameArgumentException::becauseComponentMustBe('non-empty-string', $offset);
         }
 
-        $this->setParameter($value, $offset);
+        $this->setParameter($offset, $value);
     }
 
     /**
