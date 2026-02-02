@@ -74,7 +74,7 @@ interface MutableQueryInterface extends QueryInterface
      *
      * @throws InvalidArgumentExceptionInterface if an invalid path segment or index is provided
      */
-    public function put(string $name, string|int|float|bool|null|iterable $value): void;
+    public function put(string $name, string|int|float|bool|null|iterable $value = null): void;
 
     /**
      * Removes a query parameter by name.
