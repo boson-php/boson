@@ -16,7 +16,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertNull($userInfo->password);
     }
 
@@ -24,7 +24,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'password');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('password', $userInfo->password);
     }
 
@@ -32,7 +32,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', '');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('', $userInfo->password);
     }
 
@@ -213,7 +213,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'password');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('password', $userInfo->password);
     }
 
@@ -221,7 +221,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('');
 
-        self::assertSame('', $userInfo->user);
+        self::assertSame('', $userInfo->username);
         self::assertNull($userInfo->password);
         self::assertSame('', (string) $userInfo);
     }
@@ -230,7 +230,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('', 'password');
 
-        self::assertSame('', $userInfo->user);
+        self::assertSame('', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame(':password', (string) $userInfo);
     }
@@ -239,7 +239,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('user:name', 'password');
 
-        self::assertSame('user:name', $userInfo->user);
+        self::assertSame('user:name', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame('user:name:password', (string) $userInfo);
     }
@@ -248,7 +248,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'pass:word');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('pass:word', $userInfo->password);
         self::assertSame('username:pass:word', (string) $userInfo);
     }
@@ -257,7 +257,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('user@name', 'password');
 
-        self::assertSame('user@name', $userInfo->user);
+        self::assertSame('user@name', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame('user@name:password', (string) $userInfo);
     }
@@ -266,7 +266,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'pass@word');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('pass@word', $userInfo->password);
         self::assertSame('username:pass@word', (string) $userInfo);
     }
@@ -275,7 +275,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('user/name', 'password');
 
-        self::assertSame('user/name', $userInfo->user);
+        self::assertSame('user/name', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame('user/name:password', (string) $userInfo);
     }
@@ -284,7 +284,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'pass/word');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('pass/word', $userInfo->password);
         self::assertSame('username:pass/word', (string) $userInfo);
     }
@@ -293,7 +293,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('user?name', 'password');
 
-        self::assertSame('user?name', $userInfo->user);
+        self::assertSame('user?name', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame('user?name:password', (string) $userInfo);
     }
@@ -302,7 +302,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'pass?word');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('pass?word', $userInfo->password);
         self::assertSame('username:pass?word', (string) $userInfo);
     }
@@ -311,7 +311,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('user#name', 'password');
 
-        self::assertSame('user#name', $userInfo->user);
+        self::assertSame('user#name', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame('user#name:password', (string) $userInfo);
     }
@@ -320,7 +320,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'pass#word');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('pass#word', $userInfo->password);
         self::assertSame('username:pass#word', (string) $userInfo);
     }
@@ -329,7 +329,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('user name', 'password');
 
-        self::assertSame('user name', $userInfo->user);
+        self::assertSame('user name', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame('user name:password', (string) $userInfo);
     }
@@ -338,7 +338,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'pass word');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('pass word', $userInfo->password);
         self::assertSame('username:pass word', (string) $userInfo);
     }
@@ -347,7 +347,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('usér', 'password');
 
-        self::assertSame('usér', $userInfo->user);
+        self::assertSame('usér', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame('usér:password', (string) $userInfo);
     }
@@ -356,7 +356,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'päss');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('päss', $userInfo->password);
         self::assertSame('username:päss', (string) $userInfo);
     }
@@ -365,7 +365,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('user😀name', 'password');
 
-        self::assertSame('user😀name', $userInfo->user);
+        self::assertSame('user😀name', $userInfo->username);
         self::assertSame('password', $userInfo->password);
         self::assertSame('user😀name:password', (string) $userInfo);
     }
@@ -374,7 +374,7 @@ final class UserInfoTest extends TestCase
     {
         $userInfo = new UserInfo('username', 'pass😀word');
 
-        self::assertSame('username', $userInfo->user);
+        self::assertSame('username', $userInfo->username);
         self::assertSame('pass😀word', $userInfo->password);
         self::assertSame('username:pass😀word', (string) $userInfo);
     }

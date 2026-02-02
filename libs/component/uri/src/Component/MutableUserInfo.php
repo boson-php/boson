@@ -13,7 +13,7 @@ use Boson\Contracts\Uri\Component\MutableUserInfoInterface;
  */
 final class MutableUserInfo extends UserInfo implements MutableUserInfoInterface
 {
-    public string $user {
+    public string $username {
         get => $this->user;
         /**
          * @throws InvalidUserArgumentException if an invalid user info's username is provided

@@ -34,7 +34,7 @@ final class UriFactoryTest extends TestCase
         self::assertSame('https', $uri->scheme?->toString());
         self::assertSame('host', $uri->authority?->host);
         self::assertSame(8080, $uri->authority?->port);
-        self::assertSame('user', $uri->authority?->userInfo?->user);
+        self::assertSame('user', $uri->authority?->userInfo?->username);
         self::assertSame('pass', $uri->authority?->userInfo?->password);
         self::assertSame('/path/to/resource', $uri->path->toString());
         self::assertSame('foo=bar', $uri->query->toString());

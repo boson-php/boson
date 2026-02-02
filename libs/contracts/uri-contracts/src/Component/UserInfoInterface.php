@@ -21,13 +21,15 @@ interface UserInfoInterface extends UriComponentInterface
      *    username
      * ```
      *
-     * The username cannot be omitted. If the user info is missing, the
-     * {@see UserInfoInterface} itself should not be defined ({@see null})
-     * in the {@see AuthorityInterface::$userInfo} property.
-     *
-     * @var non-empty-string
+     * Please note that an empty username may indicate its absence, but
+     * the presence of {@see UserInfoInterface}, for example:
+     * ```
+     * abc://:pass@example.com
+     *       |
+     *  empty username
+     * ```
      */
-    public string $user { get; }
+    public string $username { get; }
 
     /**
      * Gets optional user password of the user information component.
@@ -39,7 +41,17 @@ interface UserInfoInterface extends UriComponentInterface
      *         password
      * ```
      *
-     * @var non-empty-string|null
+     * Note: NO password ({@see null}) and a BLANK password are two
+     *       different values:
+     * ```
+     * abc://user:@example.com
+     *           |
+     *      empty password
+     *
+     * abc://user@example.com
+     *           |
+     *      no password
+     * ```
      */
     public ?string $password { get; }
 }

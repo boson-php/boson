@@ -15,13 +15,13 @@ use Boson\Contracts\Uri\Component\UserInfoInterface;
  */
 class UserInfo implements UserInfoInterface
 {
-    public protected(set) string $user;
+    public protected(set) string $username;
 
     public protected(set) ?string $password;
 
     /**
-     * @param \Stringable|non-empty-string $user
-     * @param \Stringable|non-empty-string|null $password
+     * @param \Stringable|string $user
+     * @param \Stringable|string|null $password
      *
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
@@ -73,7 +73,6 @@ class UserInfo implements UserInfoInterface
     }
 
     /**
-     * @return non-empty-string
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      */
     protected function formatUser(\Stringable|string $user): string
@@ -87,15 +86,10 @@ class UserInfo implements UserInfoInterface
             }
         }
 
-        if ($user === '') {
-            throw InvalidUserArgumentException::becauseComponentIsEmpty();
-        }
-
         return $user;
     }
 
     /**
-     * @return non-empty-string|null
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     protected function formatPassword(#[\SensitiveParameter] \Stringable|string|null $password): ?string
@@ -107,10 +101,6 @@ class UserInfo implements UserInfoInterface
             } catch (\Throwable $e) {
                 throw InvalidPasswordArgumentException::becauseStringableErrorOccurs($e);
             }
-        }
-
-        if ($password === '') {
-            return null;
         }
 
         return $password;
