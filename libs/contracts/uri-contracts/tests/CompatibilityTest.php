@@ -141,7 +141,7 @@ final class CompatibilityTest extends TestCase
     public function testUserInfoInterfaceCompatibility(): void
     {
         new class implements UserInfoInterface {
-            public string $user {
+            public string $username {
                 get {
                 }
             }
