@@ -10,7 +10,7 @@ use Boson\Contracts\Uri\Component\QueryInterface;
 use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 
 /**
- * @template-implements \IteratorAggregate<non-empty-string, scalar|null|array<array-key, mixed>>
+ * @template-implements \IteratorAggregate<non-empty-string, string|null|array<array-key, mixed>>
  *
  * @phpstan-sealed MutableQuery
  *
@@ -19,7 +19,7 @@ use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 class Query implements QueryInterface, \IteratorAggregate
 {
     /**
-     * @var array<non-empty-string, scalar|null|array<array-key, mixed>>
+     * @var array<non-empty-string, string|null|array<array-key, mixed>>
      */
     protected array $parameters;
 
@@ -83,7 +83,7 @@ class Query implements QueryInterface, \IteratorAggregate
     /**
      * @throws InvalidQueryNameArgumentException if an invalid query name is provided
      */
-    public function get(string $name, string|int|float|bool|null $default = null): string|int|float|bool|null
+    public function get(string $name, ?string $default = null): ?string
     {
         $formattedName = $this->formatParameterName($name);
 
@@ -96,21 +96,6 @@ class Query implements QueryInterface, \IteratorAggregate
         }
 
         return $default;
-    }
-
-    /**
-     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
-     * @throws InvalidArgumentExceptionInterface in case of other validation errors
-     */
-    public function getAsString(string $name, ?string $default = null): ?string
-    {
-        $result = $this->get($name);
-
-        return match (true) {
-            \is_string($result) => $result,
-            \is_scalar($result) => \var_export($result, true),
-            default => $default,
-        };
     }
 
     /**
@@ -214,7 +199,7 @@ class Query implements QueryInterface, \IteratorAggregate
     /**
      * @param iterable<mixed, mixed> $parameters
      *
-     * @return array<non-empty-string, string|array<array-key, string>>
+     * @return array<non-empty-string, string|null|array<array-key, mixed>>
      * @throws InvalidQueryNameArgumentException if an invalid query name is provided
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
      */
@@ -243,14 +228,15 @@ class Query implements QueryInterface, \IteratorAggregate
     }
 
     /**
-     * @return string|int|float|bool|null|array<array-key, mixed>
+     * @return string|null|array<array-key, mixed>
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
      */
-    protected function formatParameterValue(mixed $value): string|int|float|bool|null|array
+    protected function formatParameterValue(mixed $value): string|null|array
     {
         return match (true) {
-            \is_scalar($value),
+            \is_string($value),
             $value === null => $value,
+            \is_scalar($value) => \var_export($value, true),
             \is_iterable($value) => $this->formatParameterIterableValue($value),
             default => throw InvalidQueryValueArgumentException::becauseComponentMustBe(
                 expected: 'scalar|null|iterable<array-key, mixed>',
@@ -262,7 +248,7 @@ class Query implements QueryInterface, \IteratorAggregate
     /**
      * @param iterable<mixed, mixed> $value
      *
-     * @return array<array-key, scalar|null|array<array-key, mixed>>
+     * @return array<array-key, string|null|array<array-key, mixed>>
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
      */
     protected function formatParameterIterableValue(iterable $value): array

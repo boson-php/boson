@@ -7,8 +7,8 @@ namespace Boson\Contracts\Uri\Component;
 use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 
 /**
- * @template-extends \Traversable<non-empty-string, scalar|null|array<array-key, mixed>>
- * @template-extends \ArrayAccess<non-empty-string, scalar|null|array<array-key, mixed>>
+ * @template-extends \Traversable<non-empty-string, string|null|array<array-key, mixed>>
+ * @template-extends \ArrayAccess<non-empty-string, string|null|array<array-key, mixed>>
  */
 interface QueryInterface extends
     UriComponentInterface,
@@ -27,35 +27,19 @@ interface QueryInterface extends
     public function has(string $name): bool;
 
     /**
-     * Method for getting the query parameter value as a {@see scalar}
-     * or {@see null}:
-     * - Returns raw query value is {@see scalar} or {@see null}.
-     * - Returns `$default` value in case of value is NOT defined or {@see array}.
+     * Returns raw query value in case of value is defined and contains
+     * {@see string} or {@see null}, otherwise returns `$default` value (in
+     * case of value is NOT defined or contains an {@see array}).
      *
-     * This behavior ensures correct serialization into a {@see string}.
+     * This behavior ensures fail-free serialization into a {@see string}.
      *
      * Note: To obtain an {@see array} value, please use ONLY the
      *       {@see QueryInterface::getAsArray()} method.
      *
      * @param non-empty-string $name
-     * @param scalar|null $default
-     * @return scalar|null
      * @throws InvalidArgumentExceptionInterface if an invalid query parameter name is provided
      */
-    public function get(string $name, string|int|float|bool|null $default = null): string|int|float|bool|null;
-
-    /**
-     * Behavior is similar to the {@see get()} method.
-     *
-     * Returns an {@see string} if the URL/URI query parameter value is whole
-     * {@see scalar} or {@see null}. Otherwise, returns the `$default` argument
-     * or {@see null}.
-     *
-     * @param non-empty-string $name
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid query parameter name is provided
-     */
-    public function getAsString(string $name, ?string $default = null): ?string;
+    public function get(string $name, ?string $default = null): ?string;
 
     /**
      * Behavior is similar to the {@see get()} method.
@@ -85,15 +69,15 @@ interface QueryInterface extends
      * Returns all request parameters as an untyped array.
      *
      * @param non-empty-string $name
-     * @param array<array-key, scalar|null|array<array-key, mixed>> $default
+     * @param array<array-key, string|null|array<array-key, mixed>> $default
      *
-     * @return array<array-key, scalar|null|array<array-key, mixed>>
+     * @return array<array-key, string|null|array<array-key, mixed>>
      * @throws InvalidArgumentExceptionInterface if an invalid query parameter name is provided
      */
     public function getAsArray(string $name, array $default = []): array;
 
     /**
-     * @return array<non-empty-string, scalar|null|array<array-key, mixed>>
+     * @return array<non-empty-string, string|null|array<array-key, mixed>>
      */
     public function toArray(): array;
 
