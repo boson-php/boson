@@ -82,43 +82,6 @@ interface QueryInterface extends
     public function toArray(): array;
 
     /**
-     * Return an instance with the specified query parameters.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified query parameters.
-     *
-     * @param iterable<non-empty-string, scalar|null|iterable<array-key, mixed>> $parameters
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid query parameter is provided
-     */
-    public function withParameters(iterable $parameters): static;
-
-    /**
-     * Return an instance with an added query parameter with a specified name.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified query parameters.
-     *
-     * @param non-empty-string $name
-     * @param scalar|null|iterable<array-key, mixed> $value
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid query parameter is provided
-     */
-    public function withParameter(string $name, string|int|float|bool|null|iterable $value): static;
-
-    /**
-     * Return an instance without a query parameter with a specified name.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance which excludes the query parameter with a specified name
-     *
-     * @param non-empty-string $name
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid query name is provided
-     */
-    public function withoutParameter(string $name): static;
-
-    /**
      * @return int<0, max>
      */
     public function count(): int;

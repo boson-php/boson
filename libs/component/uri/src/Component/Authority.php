@@ -10,7 +10,6 @@ use Boson\Component\Uri\Exception\InvalidPortArgumentException;
 use Boson\Component\Uri\Exception\InvalidUserArgumentException;
 use Boson\Contracts\Uri\Component\AuthorityInterface;
 use Boson\Contracts\Uri\Component\UserInfoInterface;
-use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 
 /**
  * @phpstan-sealed MutableAuthority
@@ -80,10 +79,6 @@ class Authority implements AuthorityInterface
      */
     final public static function from(AuthorityInterface $authority): static
     {
-        if ($authority instanceof static) {
-            return clone $authority;
-        }
-
         return new static(
             host: $authority->host,
             port: $authority->port,
@@ -108,172 +103,6 @@ class Authority implements AuthorityInterface
         }
 
         return static::from($authority);
-    }
-
-    /**
-     * @throws InvalidUserArgumentException if an invalid user info's username is provided
-     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
-     */
-    final public function withUserInfo(?UserInfoInterface $info): static
-    {
-        $self = clone $this;
-        $self->userInfo = $this->formatUserInfo($info);
-
-        return $self;
-    }
-
-    /**
-     * Return an instance without user info information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that did not contain user info information.
-     *
-     * @api
-     */
-    final public function withoutUserInfo(): static
-    {
-        $self = clone $this;
-        $self->userInfo = null;
-
-        return $self;
-    }
-
-    /**
-     * @throws InvalidHostArgumentException if an invalid authority host is provided
-     */
-    final public function withHost(\Stringable|string $host): static
-    {
-        $self = clone $this;
-        $self->host = $this->formatHost($host);
-
-        return $self;
-    }
-
-    /**
-     * @throws InvalidPortArgumentException if an invalid authority port is provided
-     */
-    final public function withPort(?int $port): static
-    {
-        $self = clone $this;
-        $self->port = $this->formatPort($port);
-
-        return $self;
-    }
-
-    /**
-     * Return an instance without port information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that did not contain port information.
-     *
-     * @api
-     */
-    final public function withoutPort(): static
-    {
-        $self = clone $this;
-        $self->port = null;
-
-        return $self;
-    }
-
-    /**
-     * A facade method of the {@see Authority::withUser()}
-     *
-     * @api
-     *
-     * @param non-empty-string|\Stringable $user
-     *
-     * @throws InvalidUserArgumentException if an invalid user info's username is provided
-     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
-     * @throws InvalidArgumentExceptionInterface in case of other validation errors
-     */
-    final public function withUser(\Stringable|string $user): static
-    {
-        $self = clone $this;
-
-        if ($self->userInfo === null) {
-            $self->userInfo = new UserInfo($user);
-
-            return $self;
-        }
-
-        $self->userInfo = $self->userInfo->withUser($user);
-
-        return $self;
-    }
-
-    /**
-     * A facade method of the {@see Authority::withPassword()}
-     *
-     * @api
-     *
-     * @param \Stringable|non-empty-string|null $password
-     *
-     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
-     * @throws InvalidArgumentExceptionInterface in case of other validation errors
-     */
-    final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
-    {
-        $self = clone $this;
-
-        if ($self->userInfo === null) {
-            if ($password === null) {
-                return $self;
-            }
-
-            throw InvalidPasswordArgumentException::becauseUserNotDefined();
-        }
-
-        $self->userInfo = $self->userInfo->withPassword($password);
-
-        return $self;
-    }
-
-    /**
-     * A facade method of the {@see Authority::withoutPassword()}
-     *
-     * @api
-     */
-    final public function withoutPassword(): self
-    {
-        $self = clone $this;
-
-        if ($self->userInfo === null) {
-            return $self;
-        }
-
-        $self->userInfo = $self->userInfo->withoutPassword();
-
-        return $self;
-    }
-
-    /**
-     * A facade method of the {@see Authority::withCredentials()}
-     *
-     * @api
-     *
-     * @param \Stringable|non-empty-string $user
-     * @param \Stringable|non-empty-string|null $password
-     *
-     * @throws InvalidUserArgumentException if an invalid user info's username is provided
-     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
-     */
-    final public function withCredentials(
-        \Stringable|string $user,
-        #[\SensitiveParameter]
-        \Stringable|string|null $password = null,
-    ): static {
-        $self = clone $this;
-
-        if ($self->userInfo === null) {
-            $self->userInfo = new UserInfo($user, $password);
-
-            return $self;
-        }
-
-        $self->userInfo = $self->userInfo->withCredentials($user, $password);
-
-        return $self;
     }
 
     /**
@@ -324,7 +153,7 @@ class Authority implements AuthorityInterface
         return UserInfo::tryFrom($info);
     }
 
-    public function equals(mixed $other): bool
+    final public function equals(mixed $other): bool
     {
         return $other === $this
             || ($other instanceof AuthorityInterface
@@ -334,12 +163,12 @@ class Authority implements AuthorityInterface
                     || $other->userInfo?->equals($this->userInfo) === true));
     }
 
-    public function toString(): string
+    final public function toString(): string
     {
         return (string) $this;
     }
 
-    public function __toString(): string
+    final public function __toString(): string
     {
         $result = $this->host;
 

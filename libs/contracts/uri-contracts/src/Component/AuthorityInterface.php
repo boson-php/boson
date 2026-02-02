@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Contracts\Uri\Component;
 
-use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 use Boson\Contracts\Uri\UriInterface;
 
 /**
@@ -75,38 +74,4 @@ interface AuthorityInterface extends UriComponentInterface
      * @var int<0, 65535>|null
      */
     public ?int $port { get; }
-
-    /**
-     * Return an instance with the specified user info information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified user info information.
-     *
-     * @throws InvalidArgumentExceptionInterface if an incompatible user info implementation is provided
-     */
-    public function withUserInfo(?UserInfoInterface $info): static;
-
-    /**
-     * Return an instance with the specified host information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified host information.
-     *
-     * @param non-empty-string|\Stringable $host
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid authority host is provided
-     */
-    public function withHost(\Stringable|string $host): static;
-
-    /**
-     * Return an instance with the specified port information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified port information.
-     *
-     * @param int<0, 65535>|null $port
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid authority port is provided
-     */
-    public function withPort(?int $port): static;
 }

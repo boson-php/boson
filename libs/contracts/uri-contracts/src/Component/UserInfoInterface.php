@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Boson\Contracts\Uri\Component;
 
-use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
-
 /**
  * Represents the user information component of an {@see AuthorityInterface}.
  *
@@ -44,28 +42,4 @@ interface UserInfoInterface extends UriComponentInterface
      * @var non-empty-string|null
      */
     public ?string $password { get; }
-
-    /**
-     * Return an instance with the specified username information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified username information.
-     *
-     * @param non-empty-string|\Stringable $user
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid user info's username is provided
-     */
-    public function withUser(\Stringable|string $user): static;
-
-    /**
-     * Return an instance with the specified password information.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified password information.
-     *
-     * @param \Stringable|non-empty-string|null $password
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid user info's password is provided
-     */
-    public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static;
 }

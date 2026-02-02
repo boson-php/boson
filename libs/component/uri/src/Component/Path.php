@@ -71,10 +71,6 @@ class Path implements PathInterface, \IteratorAggregate
      */
     final public static function from(PathInterface $path): static
     {
-        if ($path instanceof static) {
-            return clone $path;
-        }
-
         return new static(
             segments: $path,
             isAbsolute: $path->isAbsolute,
@@ -96,40 +92,6 @@ class Path implements PathInterface, \IteratorAggregate
         }
 
         return static::from($path);
-    }
-
-    /**
-     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
-     */
-    final public function withSegments(iterable $segments): static
-    {
-        $self = clone $this;
-        $self->segments = $this->formatSegments($segments);
-
-        return $self;
-    }
-
-    /**
-     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
-     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
-     */
-    final public function withSegment(\Stringable|string $segment, ?int $index = null): static
-    {
-        $self = clone $this;
-        $self->setSegment($segment, $index);
-
-        return $self;
-    }
-
-    /**
-     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
-     */
-    final public function withoutSegment(int $index): static
-    {
-        $self = clone $this;
-        $self->removeSegment($index);
-
-        return $self;
     }
 
     /**
@@ -287,7 +249,7 @@ class Path implements PathInterface, \IteratorAggregate
         return \count($this->segments);
     }
 
-    public function equals(mixed $other): bool
+    final public function equals(mixed $other): bool
     {
         return $other === $this
             || ($other instanceof self

@@ -145,41 +145,6 @@ class Query implements QueryInterface, \IteratorAggregate
 
     /**
      * @throws InvalidQueryNameArgumentException if an invalid query name is provided
-     * @throws InvalidQueryValueArgumentException if an invalid query value is provided
-     */
-    public function withParameters(iterable $parameters): static
-    {
-        $self = clone $this;
-        $self->parameters = $this->formatParameters($parameters);
-
-        return $self;
-    }
-
-    /**
-     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
-     * @throws InvalidQueryValueArgumentException if an invalid query value is provided
-     */
-    public function withParameter(string $name, string|int|float|bool|null|iterable $value): static
-    {
-        $self = clone $this;
-        $self->setParameter($name, $value);
-
-        return $self;
-    }
-
-    /**
-     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
-     */
-    public function withoutParameter(string $name): static
-    {
-        $self = clone $this;
-        $self->removeParameter($name);
-
-        return $self;
-    }
-
-    /**
-     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
      */
     protected function removeParameter(string $name): void
     {

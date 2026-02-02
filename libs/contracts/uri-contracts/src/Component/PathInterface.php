@@ -138,45 +138,6 @@ interface PathInterface extends
     public function contains(\Stringable|string $segment): bool;
 
     /**
-     * Return an instance with the specified path segments.
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified path segments.
-     *
-     * @param iterable<mixed, \Stringable|non-empty-string> $segments
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid path segment is provided
-     */
-    public function withSegments(iterable $segments): static;
-
-    /**
-     * Return an instance with an added segment at the specified position (index)
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance that contains the specified path segment.
-     *
-     * When passed a {@see null} index, adds the segment to the end of the list.
-     *
-     * @param \Stringable|non-empty-string $segment
-     * @param int<0, max>|null $index
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid path segment or index is provided
-     */
-    public function withSegment(\Stringable|string $segment, ?int $index = null): static;
-
-    /**
-     * Return an instance without a path segment at the specified position (index)
-     *
-     * This method MUST retain the state of the current instance and return
-     * an instance which excludes the path segment at the specified position
-     *
-     * @param int<0, max> $index
-     *
-     * @throws InvalidArgumentExceptionInterface if an invalid path index is provided
-     */
-    public function withoutSegment(int $index): static;
-
-    /**
      * @return int<0, max>
      */
     public function count(): int;
