@@ -11,6 +11,8 @@ use Boson\Contracts\Uri\Component\QueryInterface;
 /**
  * @template-implements \IteratorAggregate<non-empty-string, string>
  *
+ * @phpstan-sealed MutableQuery
+ *
  * @phpstan-consistent-constructor
  */
 class Query implements QueryInterface, \IteratorAggregate
@@ -21,7 +23,7 @@ class Query implements QueryInterface, \IteratorAggregate
     protected array $parameters;
 
     /**
-     * @param iterable<non-empty-string, string|iterable<array-key, string>> $parameters
+     * @param iterable<mixed, mixed> $parameters
      *
      * @throws InvalidQueryNameArgumentException if an invalid query name is provided
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
@@ -69,12 +71,16 @@ class Query implements QueryInterface, \IteratorAggregate
 
     public function has(string $name): bool
     {
-        return \array_key_exists($name, $this->parameters);
+        $formattedName = $this->formatParameterName($name);
+
+        return \array_key_exists($formattedName, $this->parameters);
     }
 
     public function get(string $name, ?string $default = null): ?string
     {
-        $result = $this->parameters[$name] ?? $default;
+        $formattedName = $this->formatParameterName($name);
+
+        $result = $this->parameters[$formattedName] ?? $default;
 
         return match (true) {
             \is_string($result) => $result,
@@ -92,11 +98,13 @@ class Query implements QueryInterface, \IteratorAggregate
 
     public function getAsArray(string $name, array $default = []): array
     {
-        if (!\array_key_exists($name, $this->parameters)) {
+        $formattedName = $this->formatParameterName($name);
+
+        if (!\array_key_exists($formattedName, $this->parameters)) {
             return $default;
         }
 
-        $result = $this->parameters[$name] ?? [];
+        $result = $this->parameters[$formattedName] ?? [];
 
         return \is_array($result) ? $result : [$result];
     }
@@ -107,7 +115,60 @@ class Query implements QueryInterface, \IteratorAggregate
     }
 
     /**
-     * @param iterable<non-empty-string, string|iterable<array-key, string>> $parameters
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     * @throws InvalidQueryValueArgumentException if an invalid query value is provided
+     */
+    public function withParameters(iterable $parameters): static
+    {
+        $self = clone $this;
+        $self->parameters = $this->formatParameters($parameters);
+
+        return $self;
+    }
+
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     * @throws InvalidQueryValueArgumentException if an invalid query value is provided
+     */
+    public function withParameter(string $name, string|iterable $value): static
+    {
+        $self = clone $this;
+        $self->setParameter($name, $value);
+
+        return $self;
+    }
+
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     */
+    public function withoutParameter(string $name): static
+    {
+        $self = clone $this;
+        $self->removeParameter($name);
+
+        return $self;
+    }
+
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     */
+    protected function removeParameter(string $name): void
+    {
+        unset($this->parameters[$this->formatParameterName($name)]);
+    }
+
+    /**
+     * @throws InvalidQueryNameArgumentException if an invalid query name is provided
+     * @throws InvalidQueryValueArgumentException if an invalid query value is provided
+     */
+    protected function setParameter(string $name, mixed $value): void
+    {
+        $this->parameters[$this->formatParameterName($name)]
+            = $this->formatParameterValue($value);
+    }
+
+    /**
+     * @param iterable<mixed, mixed> $parameters
      *
      * @return array<non-empty-string, string|array<array-key, string>>
      * @throws InvalidQueryNameArgumentException if an invalid query name is provided
@@ -138,20 +199,30 @@ class Query implements QueryInterface, \IteratorAggregate
     }
 
     /**
-     * @param string|iterable<array-key, string> $value
-     *
-     * @return string|array<array-key, string>
-     *
+     * @return string|array<array-key, string|array<array-key, mixed>>
      * @phpstan-return ($value is string ? string : array<array-key, string>)
-     *
      * @throws InvalidQueryValueArgumentException if an invalid query value is provided
      */
-    protected function formatParameterValue(string|iterable $value): string|array
+    protected function formatParameterValue(mixed $value): string|array
     {
-        if (\is_string($value)) {
-            return $value;
-        }
+        return match (true) {
+            \is_string($value) => $value,
+            \is_iterable($value) => $this->formatParameterIterableValue($value),
+            default => throw InvalidQueryValueArgumentException::becauseComponentMustBe(
+                expected: 'string|iterable<array-key, string>',
+                given: $value,
+            ),
+        };
+    }
 
+    /**
+     * @param iterable<mixed, mixed> $value
+     *
+     * @return array<array-key, string|array<array-key, mixed>>
+     * @throws InvalidQueryValueArgumentException if an invalid query value is provided
+     */
+    protected function formatParameterIterableValue(iterable $value): array
+    {
         $result = [];
 
         foreach ($value as $key => $val) {
@@ -159,11 +230,7 @@ class Query implements QueryInterface, \IteratorAggregate
                 throw InvalidQueryValueArgumentException::becauseComponentMustBe('array-key', $key);
             }
 
-            if (!\is_string($val)) {
-                throw InvalidQueryValueArgumentException::becauseComponentMustBe('string', $val);
-            }
-
-            $result[$key] = $val;
+            $result[$key] = $this->formatParameterValue($val);
         }
 
         return $result;

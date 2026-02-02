@@ -22,24 +22,21 @@ interface PathInterface extends
     \Countable
 {
     /**
-     * Returns {@see true} if the path is absolute.
+     * Indicates whether the path is absolute (starts with a leading slash).
      *
-     * ```
-     * /path/to/file // true
-     * path/to/file  // false
-     * ```
+     * An absolute path starts with `/` (e.g., "/users/profile"), while a
+     * relative path does not (e.g., "users/profile").
      */
     public bool $isAbsolute {
         get;
     }
 
     /**
-     * Returns {@see true} if the path has trailing slash.
+     * Indicates whether the path has a trailing slash.
      *
-     *  ```
-     *  path/to/file/ // true
-     *  path/to/file  // false
-     *  ```
+     * When {@see true}, the path string representation will end with `/`
+     * (e.g., "/users/"). This is often used to distinguish directory paths
+     * from file paths.
      */
     public bool $hasTrailingSlash {
         get;

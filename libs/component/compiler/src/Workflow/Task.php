@@ -23,7 +23,6 @@ final readonly class Task
      * @param TArgWorkflow $workflow
      *
      * @return TArgWorkflow
-     *
      * @phpstan-return WorkflowProxy<TArgWorkflow>
      */
     public static function new(object $workflow): object

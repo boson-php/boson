@@ -41,7 +41,6 @@ final readonly class FlagsListFormatter
 
     /**
      * @return non-empty-string
-     *
      * @phpstan-return ($name is non-empty-string ? non-empty-string : never)
      */
     private static function formatFlagName(string $name): string

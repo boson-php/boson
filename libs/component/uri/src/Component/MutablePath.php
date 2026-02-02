@@ -27,9 +27,26 @@ final class MutablePath extends Path implements
     /**
      * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
-    public function set(iterable $segments): void
+    public function putAll(iterable $segments): void
     {
         $this->segments = $this->formatSegments($segments);
+    }
+
+    /**
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
+     */
+    public function put(\Stringable|string $segment, ?int $index = null): void
+    {
+        $this->setSegment($segment, $index);
+    }
+
+    /**
+     * @throws InvalidPathIndexArgumentException if an invalid path index is provided
+     */
+    public function remove(int $index): void
+    {
+        $this->removeSegment($index);
     }
 
     /**

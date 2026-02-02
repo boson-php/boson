@@ -10,8 +10,12 @@ class UriException extends \RuntimeException implements UriExceptionInterface
 {
     final protected static function getType(mixed $value): string
     {
+        if ($value === null) {
+            return 'null';
+        }
+
         if (\is_scalar($value)) {
-            return \var_export($value, true);
+            return \sprintf('%s(%s)', \get_debug_type($value), \var_export($value, true));
         }
 
         /** @var non-empty-list<string> $parts */
