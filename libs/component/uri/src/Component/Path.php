@@ -12,13 +12,15 @@ use Boson\Contracts\Uri\Component\PathInterface;
  * @template-implements \IteratorAggregate<array-key, non-empty-string>
  *
  * @phpstan-sealed MutablePath
+ *
+ * @phpstan-consistent-constructor
  */
 class Path implements PathInterface, \IteratorAggregate
 {
     /**
      * @var list<non-empty-string>
      */
-    public protected(set) array $segments;
+    final protected array $segments;
 
     /**
      * @var list<non-empty-string>
@@ -35,15 +37,15 @@ class Path implements PathInterface, \IteratorAggregate
         }
     }
 
-    public bool $isEmpty {
+    final public bool $isEmpty {
         get => $this->segments === [];
     }
 
-    public string $absolute {
+    final public string $absolute {
         get => '/' . $this->relative;
     }
 
-    public string $relative {
+    final public string $relative {
         get => \implode('/', $this->encoded);
     }
 
@@ -57,16 +59,52 @@ class Path implements PathInterface, \IteratorAggregate
         public protected(set) bool $isAbsolute = true,
         public protected(set) bool $hasTrailingSlash = false,
     ) {
-        $this->segments = $this->formatSegmentsArgument($segments);
+        $this->segments = $this->formatSegments($segments);
+    }
+
+    /**
+     * Returns a path instance from another one
+     *
+     * @api
+     *
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
+     */
+    final public static function from(PathInterface $path): static
+    {
+        if ($path instanceof static) {
+            return clone $path;
+        }
+
+        return new static(
+            segments: $path,
+            isAbsolute: $path->isAbsolute,
+            hasTrailingSlash: $path->hasTrailingSlash,
+        );
+    }
+
+    /**
+     * Returns a path instance from another one
+     *
+     * @api
+     *
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
+     */
+    final public static function tryFrom(?PathInterface $path): ?static
+    {
+        if ($path === null) {
+            return null;
+        }
+
+        return static::from($path);
     }
 
     /**
      * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
-    public function withSegments(iterable $segments): static
+    final public function withSegments(iterable $segments): static
     {
         $self = clone $this;
-        $self->segments = $this->formatSegmentsArgument($segments);
+        $self->segments = $this->formatSegments($segments);
 
         return $self;
     }
@@ -75,7 +113,7 @@ class Path implements PathInterface, \IteratorAggregate
      * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
-    public function withSegment(\Stringable|string $segment, ?int $index = null): static
+    final public function withSegment(\Stringable|string $segment, ?int $index = null): static
     {
         $self = clone $this;
         $self->setSegment($segment, $index);
@@ -86,7 +124,7 @@ class Path implements PathInterface, \IteratorAggregate
     /**
      * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
-    public function withoutSegment(int $index): static
+    final public function withoutSegment(int $index): static
     {
         $self = clone $this;
         $self->removeSegment($index);
@@ -111,26 +149,7 @@ class Path implements PathInterface, \IteratorAggregate
      */
     final public function contains(\Stringable|string $segment): bool
     {
-        return \in_array($this->formatSegmentArgument($segment), $this->segments, true);
-    }
-
-    /**
-     * Format segments collection argument
-     *
-     * @param iterable<mixed, \Stringable|string> $segments
-     *
-     * @return list<non-empty-string>
-     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
-     */
-    protected function formatSegmentsArgument(iterable $segments): array
-    {
-        $result = [];
-
-        foreach ($segments as $segment) {
-            $result[] = $this->formatSegmentArgument($segment);
-        }
-
-        return $result;
+        return \in_array($this->formatSegment($segment), $this->segments, true);
     }
 
     /**
@@ -164,7 +183,7 @@ class Path implements PathInterface, \IteratorAggregate
     protected function setSegment(\Stringable|string $segment, ?int $index = null): void
     {
         if ($index === null || $index >= \count($this->segments)) {
-            $this->segments[] = $this->formatSegmentArgument($segment);
+            $this->segments[] = $this->formatSegment($segment);
 
             return;
         }
@@ -173,16 +192,35 @@ class Path implements PathInterface, \IteratorAggregate
             throw InvalidPathIndexArgumentException::becauseComponentMustBe('int<0, max>', $index);
         }
 
-        $this->segments[$index] = $this->formatSegmentArgument($segment);
+        $this->segments[$index] = $this->formatSegment($segment);
     }
 
     /**
-     * Format segment argument
+     * Format segments collection
+     *
+     * @param iterable<mixed, \Stringable|string> $segments
+     *
+     * @return list<non-empty-string>
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
+     */
+    protected function formatSegments(iterable $segments): array
+    {
+        $result = [];
+
+        foreach ($segments as $segment) {
+            $result[] = $this->formatSegment($segment);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Format segment
      *
      * @return non-empty-string
      * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
      */
-    protected function formatSegmentArgument(string|\Stringable $segment): string
+    protected function formatSegment(string|\Stringable $segment): string
     {
         if ($segment instanceof \Stringable) {
             try {
@@ -203,7 +241,7 @@ class Path implements PathInterface, \IteratorAggregate
     /**
      * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
-    public function offsetExists(mixed $offset): bool
+    final public function offsetExists(mixed $offset): bool
     {
         if (!\is_int($offset) || $offset < 0) {
             throw InvalidPathIndexArgumentException::becauseComponentMustBe('int<0, max>', $offset);
@@ -215,7 +253,7 @@ class Path implements PathInterface, \IteratorAggregate
     /**
      * @throws InvalidPathIndexArgumentException if an invalid path index is provided
      */
-    public function offsetGet(mixed $offset): ?string
+    final public function offsetGet(mixed $offset): ?string
     {
         if (!\is_int($offset) || $offset < 0) {
             throw InvalidPathIndexArgumentException::becauseComponentMustBe('int<0, max>', $offset);
@@ -236,7 +274,7 @@ class Path implements PathInterface, \IteratorAggregate
         throw new \BadMethodCallException('Cannot remove value of immutable path ' . static::class);
     }
 
-    public function getIterator(): \Traversable
+    final public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->segments);
     }
@@ -244,7 +282,7 @@ class Path implements PathInterface, \IteratorAggregate
     /**
      * @return int<0, max>
      */
-    public function count(): int
+    final public function count(): int
     {
         return \count($this->segments);
     }
@@ -258,12 +296,12 @@ class Path implements PathInterface, \IteratorAggregate
                 && $other->relative === $this->relative);
     }
 
-    public function toString(): string
+    final public function toString(): string
     {
         return (string) $this;
     }
 
-    public function __toString(): string
+    final public function __toString(): string
     {
         $path = \implode('/', $this->encoded);
 

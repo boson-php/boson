@@ -6,11 +6,12 @@ namespace Boson\Component\Uri\Component;
 
 use Boson\Component\Uri\Exception\InvalidPasswordArgumentException;
 use Boson\Component\Uri\Exception\InvalidUserArgumentException;
-use Boson\Contracts\Uri\Component\MutableUserInfoInterface;
 use Boson\Contracts\Uri\Component\UserInfoInterface;
 
 /**
  * @phpstan-sealed MutableUserInfo
+ *
+ * @phpstan-consistent-constructor
  */
 class UserInfo implements UserInfoInterface
 {
@@ -30,45 +31,45 @@ class UserInfo implements UserInfoInterface
         #[\SensitiveParameter]
         \Stringable|string|null $password = null,
     ) {
-        $this->user = $this->formatUserArgument($user);
-        $this->password = $this->formatPasswordArgument($password);
+        $this->user = $this->formatUser($user);
+        $this->password = $this->formatPassword($password);
     }
 
     /**
-     * Returns an immutable user info instance from another one
+     * Returns a user info instance from another one
      *
      * @api
      *
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
-    final public static function from(UserInfoInterface $info): self
+    final public static function from(UserInfoInterface $info): static
     {
-        if ($info instanceof self && !$info instanceof MutableUserInfoInterface) {
+        if ($info instanceof static) {
             return clone $info;
         }
 
-        return new self(
+        return new static(
             user: $info->user,
             password: $info->password,
         );
     }
 
     /**
-     * Returns an immutable user info instance from another one
+     * Returns a user info instance from another one
      *
      * @api
      *
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
-    final public static function tryFrom(?UserInfoInterface $info): ?self
+    final public static function tryFrom(?UserInfoInterface $info): ?static
     {
         if ($info === null) {
             return null;
         }
 
-        return self::from($info);
+        return static::from($info);
     }
 
     /**
@@ -77,7 +78,7 @@ class UserInfo implements UserInfoInterface
     final public function withUser(\Stringable|string $user): static
     {
         $self = clone $this;
-        $self->user = $this->formatUserArgument($user);
+        $self->user = $this->formatUser($user);
 
         return $self;
     }
@@ -88,7 +89,7 @@ class UserInfo implements UserInfoInterface
     final public function withPassword(#[\SensitiveParameter] \Stringable|string|null $password): static
     {
         $self = clone $this;
-        $self->password = $this->formatPasswordArgument($password);
+        $self->password = $this->formatPassword($password);
 
         return $self;
     }
@@ -129,19 +130,17 @@ class UserInfo implements UserInfoInterface
         \Stringable|string|null $password = null,
     ): static {
         $self = clone $this;
-        $self->user = $this->formatUserArgument($user);
-        $self->password = $this->formatPasswordArgument($password);
+        $self->user = $this->formatUser($user);
+        $self->password = $this->formatPassword($password);
 
         return $self;
     }
 
     /**
-     * Format user parameter
-     *
      * @return non-empty-string
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      */
-    protected function formatUserArgument(\Stringable|string $user): string
+    protected function formatUser(\Stringable|string $user): string
     {
         if ($user instanceof \Stringable) {
             try {
@@ -160,12 +159,10 @@ class UserInfo implements UserInfoInterface
     }
 
     /**
-     * Format password parameter
-     *
      * @return non-empty-string|null
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
-    protected function formatPasswordArgument(#[\SensitiveParameter] \Stringable|string|null $password): ?string
+    protected function formatPassword(#[\SensitiveParameter] \Stringable|string|null $password): ?string
     {
         if ($password instanceof \Stringable) {
             try {

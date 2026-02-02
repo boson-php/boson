@@ -6,19 +6,21 @@ namespace Boson\Contracts\Uri\Component;
 
 /**
  * @template-extends \Traversable<non-empty-string, string>
+ * @template-extends \ArrayAccess<non-empty-string, string|array<array-key, string>>
  */
 interface QueryInterface extends
     UriComponentInterface,
     \Traversable,
+    \ArrayAccess,
     \Countable
 {
     /**
      * Returns {@see true} in case of passed key is defined in query
      * parameter or {@see false} instead.
      *
-     * @param non-empty-string $key
+     * @param non-empty-string $name
      */
-    public function has(string $key): bool;
+    public function has(string $name): bool;
 
     /**
      * Returns raw query parameter if defined or default value if query
@@ -33,9 +35,9 @@ interface QueryInterface extends
      * If there is no such URL/URI query parameter, the `$default` argument
      * or {@see null} will be returned.
      *
-     * @param non-empty-string $key
+     * @param non-empty-string $name
      */
-    public function get(string $key, ?string $default = null): ?string;
+    public function get(string $name, ?string $default = null): ?string;
 
     /**
      * Behavior is similar to the {@see get()} method.
@@ -43,19 +45,19 @@ interface QueryInterface extends
      * Returns an {@see int} if the URL/URI query parameter value is whole numeric.
      * Otherwise, returns the `$default` argument or {@see null}.
      *
-     * @param non-empty-string $key
+     * @param non-empty-string $name
      */
-    public function getAsInt(string $key, ?int $default = null): ?int;
+    public function getAsInt(string $name, ?int $default = null): ?int;
 
     /**
      * Returns all request parameters as an array.
      *
-     * @param non-empty-string $key
+     * @param non-empty-string $name
      * @param array<array-key, string> $default
      *
      * @return array<array-key, string>
      */
-    public function getAsArray(string $key, array $default = []): array;
+    public function getAsArray(string $name, array $default = []): array;
 
     /**
      * @return array<non-empty-string, string|array<array-key, string>>

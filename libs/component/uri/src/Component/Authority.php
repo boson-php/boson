@@ -14,6 +14,8 @@ use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
 
 /**
  * @phpstan-sealed MutableAuthority
+ *
+ * @phpstan-consistent-constructor
  */
 class Authority implements AuthorityInterface
 {
@@ -61,9 +63,51 @@ class Authority implements AuthorityInterface
         ?int $port = null,
         ?UserInfoInterface $info = null,
     ) {
-        $this->host = $this->formatHostArgument($host);
-        $this->port = $this->formatPortArgument($port);
-        $this->userInfo = $this->formatUserInfoArgument($info);
+        $this->host = $this->formatHost($host);
+        $this->port = $this->formatPort($port);
+        $this->userInfo = $this->formatUserInfo($info);
+    }
+
+    /**
+     * Returns an authority instance from another one
+     *
+     * @api
+     *
+     * @throws InvalidHostArgumentException if an invalid authority host is provided
+     * @throws InvalidPortArgumentException if an invalid authority port is provided
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
+     */
+    final public static function from(AuthorityInterface $authority): static
+    {
+        if ($authority instanceof static) {
+            return clone $authority;
+        }
+
+        return new static(
+            host: $authority->host,
+            port: $authority->port,
+            info: $authority->userInfo,
+        );
+    }
+
+    /**
+     * Returns an authority instance from another one
+     *
+     * @api
+     *
+     * @throws InvalidHostArgumentException if an invalid authority host is provided
+     * @throws InvalidPortArgumentException if an invalid authority port is provided
+     * @throws InvalidUserArgumentException if an invalid user info's username is provided
+     * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
+     */
+    final public static function tryFrom(?AuthorityInterface $authority): ?static
+    {
+        if ($authority === null) {
+            return null;
+        }
+
+        return static::from($authority);
     }
 
     /**
@@ -73,7 +117,7 @@ class Authority implements AuthorityInterface
     final public function withUserInfo(?UserInfoInterface $info): static
     {
         $self = clone $this;
-        $self->userInfo = $this->formatUserInfoArgument($info);
+        $self->userInfo = $this->formatUserInfo($info);
 
         return $self;
     }
@@ -100,7 +144,7 @@ class Authority implements AuthorityInterface
     final public function withHost(\Stringable|string $host): static
     {
         $self = clone $this;
-        $self->host = $this->formatHostArgument($host);
+        $self->host = $this->formatHost($host);
 
         return $self;
     }
@@ -111,7 +155,7 @@ class Authority implements AuthorityInterface
     final public function withPort(?int $port): static
     {
         $self = clone $this;
-        $self->port = $this->formatPortArgument($port);
+        $self->port = $this->formatPort($port);
 
         return $self;
     }
@@ -233,12 +277,10 @@ class Authority implements AuthorityInterface
     }
 
     /**
-     * Format host parameter
-     *
      * @return non-empty-string
      * @throws InvalidHostArgumentException if an invalid authority host is provided
      */
-    protected function formatHostArgument(\Stringable|string $host): string
+    protected function formatHost(\Stringable|string $host): string
     {
         if ($host instanceof \Stringable) {
             try {
@@ -257,12 +299,10 @@ class Authority implements AuthorityInterface
     }
 
     /**
-     * Format port parameter
-     *
      * @return int<0, 65535>|null
      * @throws InvalidPortArgumentException if an invalid authority port is provided
      */
-    protected function formatPortArgument(?int $port): ?int
+    protected function formatPort(?int $port): ?int
     {
         if ($port === null) {
             return null;
@@ -276,12 +316,10 @@ class Authority implements AuthorityInterface
     }
 
     /**
-     * Format user info component parameter
-     *
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
-    protected function formatUserInfoArgument(?UserInfoInterface $info): ?UserInfo
+    protected function formatUserInfo(?UserInfoInterface $info): ?UserInfo
     {
         return UserInfo::tryFrom($info);
     }

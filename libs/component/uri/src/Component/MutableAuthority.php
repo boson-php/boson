@@ -12,6 +12,9 @@ use Boson\Contracts\Uri\Component\AuthorityInterface;
 use Boson\Contracts\Uri\Component\MutableAuthorityInterface;
 use Boson\Contracts\Uri\Component\UserInfoInterface;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 final class MutableAuthority extends Authority implements
     MutableAuthorityInterface
 {
@@ -75,7 +78,7 @@ final class MutableAuthority extends Authority implements
         /**
          * @throws InvalidHostArgumentException if an invalid authority host is provided
          */
-        set(\Stringable|string $host) => $this->formatHostArgument($host);
+        set(\Stringable|string $host) => $this->formatHost($host);
     }
 
     public ?int $port = null {
@@ -83,7 +86,7 @@ final class MutableAuthority extends Authority implements
         /**
          * @throws InvalidPortArgumentException if an invalid authority port is provided
          */
-        set(?int $port) => $this->formatPortArgument($port);
+        set(?int $port) => $this->formatPort($port);
     }
 
     /**
@@ -100,20 +103,20 @@ final class MutableAuthority extends Authority implements
          * @throws InvalidUserArgumentException if an invalid user info's username is provided
          * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
          */
-        set(?UserInfoInterface $info) => $this->formatUserInfoArgument($info);
+        set(?UserInfoInterface $info) => $this->formatUserInfo($info);
     }
 
     /**
-     * Unlike the parent {@see parent::formatUserInfoArgument()} method, it
+     * Unlike the parent {@see parent::formatUserInfo()} method, it
      * returns a mutable implementation of user info
      *
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
     #[\Override]
-    protected function formatUserInfoArgument(?UserInfoInterface $info): ?MutableUserInfo
+    protected function formatUserInfo(?UserInfoInterface $info): ?MutableUserInfo
     {
-        return MutableUserInfo::tryFromImmutable($info);
+        return MutableUserInfo::tryFrom($info);
     }
 
     /**

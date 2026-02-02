@@ -115,13 +115,13 @@ final class CompatibilityTest extends TestCase
     public function testQueryInterfaceCompatibility(): void
     {
         new class implements QueryInterface, \IteratorAggregate {
-            public function has(string $key): bool {}
+            public function has(string $name): bool {}
 
-            public function get(string $key, ?string $default = null): ?string {}
+            public function get(string $name, ?string $default = null): ?string {}
 
-            public function getAsInt(string $key, ?int $default = null): ?int {}
+            public function getAsInt(string $name, ?int $default = null): ?int {}
 
-            public function getAsArray(string $key, array $default = []): array {}
+            public function getAsArray(string $name, array $default = []): array {}
 
             public function toArray(): array {}
 

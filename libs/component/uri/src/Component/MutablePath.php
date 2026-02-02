@@ -8,6 +8,9 @@ use Boson\Component\Uri\Exception\InvalidPathIndexArgumentException;
 use Boson\Component\Uri\Exception\InvalidPathSegmentArgumentException;
 use Boson\Contracts\Uri\Component\MutablePathInterface;
 
+/**
+ * @phpstan-consistent-constructor
+ */
 final class MutablePath extends Path implements
     MutablePathInterface
 {
@@ -20,6 +23,14 @@ final class MutablePath extends Path implements
      * The {@see $hasTrailingSlash} value is both readable and writable.
      */
     public bool $hasTrailingSlash = false;
+
+    /**
+     * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
+     */
+    public function set(iterable $segments): void
+    {
+        $this->segments = $this->formatSegments($segments);
+    }
 
     /**
      * @throws InvalidPathSegmentArgumentException if an invalid path segment is provided
