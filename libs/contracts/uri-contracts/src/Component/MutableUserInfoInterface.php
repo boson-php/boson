@@ -11,7 +11,7 @@ use Boson\Contracts\Uri\Exception\InvalidArgumentExceptionInterface;
  */
 interface MutableUserInfoInterface extends UserInfoInterface
 {
-    public string $user {
+    public string $username {
         get;
         /**
          * Allows updating the username value in the user info component

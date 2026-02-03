@@ -56,11 +56,10 @@ interface AuthorityInterface extends UriComponentInterface
      * number in decimal following the host and delimited from it by a
      * single colon (':') character.
      *
-     * A scheme may define a default port ({@see StandardScheme::$port}).
-     * For example, the `HTTP` scheme defines a default port of `80`,
-     * corresponding to its reserved `TCP` port number. The type of
-     * port designated by the port number (e.g., `TCP`, `UDP`, `SCTP`) is
-     * defined by the URI scheme.
+     * Each scheme also may define a default port: For example, the `HTTP`
+     * scheme defines a default port of `80`, corresponding to its reserved
+     * `TCP` port number. The type of port designated by the port number
+     * (e.g., `TCP`, `UDP`, `SCTP`) is defined by the URI scheme.
      *
      * ```
      * abc://user:pass@example.com:123/path/data?k=val&k2=val2#frag
@@ -69,9 +68,16 @@ interface AuthorityInterface extends UriComponentInterface
      *                            port
      * ```
      *
+     *
+     * Note: According to the RFC-3986, section 3.2.3, a port can be an
+     *       arbitrary number with an infinite digit, but from an
+     *       implementation perspective, the port size will likely not exceed
+     *       the maximum bit depth of a PHP {@see int} type ({@see PHP_INT_MAX}).
+     *       All built-in parsers also rely on this (int32/int64 max) value.
+     *
      * @link https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.3
      *
-     * @var int<0, 65535>|null
+     * @var int<0, max>|null
      */
     public ?int $port { get; }
 }

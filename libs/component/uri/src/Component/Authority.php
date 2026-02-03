@@ -24,7 +24,7 @@ class Authority implements AuthorityInterface
      * @var non-empty-string|null
      */
     public ?string $user {
-        get => $this->userInfo?->user;
+        get => $this->userInfo?->username;
     }
 
     /**
@@ -50,10 +50,9 @@ class Authority implements AuthorityInterface
 
     /**
      * @param \Stringable|non-empty-string $host
-     * @param int<0, 65535>|null $port
+     * @param int<0, max>|null $port
      *
      * @throws InvalidHostArgumentException if an invalid authority host is provided
-     * @throws InvalidPortArgumentException if an invalid authority port is provided
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
@@ -73,7 +72,6 @@ class Authority implements AuthorityInterface
      * @api
      *
      * @throws InvalidHostArgumentException if an invalid authority host is provided
-     * @throws InvalidPortArgumentException if an invalid authority port is provided
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
@@ -92,7 +90,6 @@ class Authority implements AuthorityInterface
      * @api
      *
      * @throws InvalidHostArgumentException if an invalid authority host is provided
-     * @throws InvalidPortArgumentException if an invalid authority port is provided
      * @throws InvalidUserArgumentException if an invalid user info's username is provided
      * @throws InvalidPasswordArgumentException if an invalid user info's password is provided
      */
@@ -128,19 +125,10 @@ class Authority implements AuthorityInterface
     }
 
     /**
-     * @return int<0, 65535>|null
-     * @throws InvalidPortArgumentException if an invalid authority port is provided
+     * @return int<0, max>|null
      */
     protected function formatPort(?int $port): ?int
     {
-        if ($port === null) {
-            return null;
-        }
-
-        if ($port > 65535 || $port < 0) {
-            throw InvalidPortArgumentException::becauseComponentMustBe('int<0, 65535>', $port);
-        }
-
         return $port;
     }
 

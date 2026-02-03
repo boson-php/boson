@@ -24,7 +24,7 @@ final class MutableAuthority extends Authority implements
      * @var non-empty-string|null
      */
     public ?string $user {
-        get => $this->userInfo?->user;
+        get => $this->userInfo?->username;
         /**
          * Updates a user of the {@see MutableUserInfo} URI component
          *
@@ -44,7 +44,7 @@ final class MutableAuthority extends Authority implements
                 return;
             }
 
-            $this->userInfo->user = $user;
+            $this->userInfo->username = $user;
         }
     }
 

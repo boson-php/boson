@@ -19,8 +19,8 @@ final class Uri implements UriInterface
      *
      * @var non-empty-string|null
      */
-    public ?string $user {
-        get => $this->authority?->userInfo?->user;
+    public ?string $username {
+        get => $this->authority?->userInfo?->username;
     }
 
     /**
