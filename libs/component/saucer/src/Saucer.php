@@ -527,7 +527,7 @@ size_t saucer_webview_inject(saucer_webview *, const char *code, SAUCER_SCRIPT_T
 void saucer_webview_uninject_all(saucer_webview *);
 void saucer_webview_uninject(saucer_webview *, size_t);
 
-void saucer_webview_handle_scheme(saucer_webview *, const char *, saucer_scheme_handle, void *userdata);
+void saucer_webview_handle_scheme(saucer_webview *, const char *, saucer_scheme_handler, void *userdata);
 void saucer_webview_remove_scheme(saucer_webview *, const char *);
 
 size_t saucer_webview_on(saucer_webview *, SAUCER_WEBVIEW_EVENT, void *callback, bool clearable, void *userdata);
