@@ -96,14 +96,14 @@ final class LifecycleEventsListener extends LoadedWebViewExtension
         $this->listeners = [
             // WebViewEvent::SAUCER_WEBVIEW_EVENT_PERMISSION => ...,
             // WebViewEvent::SAUCER_WEBVIEW_EVENT_FULLSCREEN => ...,
-            WebViewEvent::SAUCER_WEBVIEW_EVENT_DOM_READY => $this->listenSaucerDomReadyEvent(...),
-            WebViewEvent::SAUCER_WEBVIEW_EVENT_NAVIGATED => $this->listenSaucerNavigatedEvent(...),
-            WebViewEvent::SAUCER_WEBVIEW_EVENT_NAVIGATE => $this->listenSaucerNavigatingEvent(...),
-            WebViewEvent::SAUCER_WEBVIEW_EVENT_MESSAGE => $this->listenSaucerMessageEvent(...),
+            WebViewEvent::SAUCER_WEBVIEW_EVENT_DOM_READY => $this->listenSaucerDomReadyEvent(),
+            WebViewEvent::SAUCER_WEBVIEW_EVENT_NAVIGATED => $this->listenSaucerNavigatedEvent(),
+            WebViewEvent::SAUCER_WEBVIEW_EVENT_NAVIGATE => $this->listenSaucerNavigatingEvent(),
+            WebViewEvent::SAUCER_WEBVIEW_EVENT_MESSAGE => $this->listenSaucerMessageEvent(),
             // WebViewEvent::SAUCER_WEBVIEW_EVENT_REQUEST => ...,
-            WebViewEvent::SAUCER_WEBVIEW_EVENT_FAVICON => $this->listenSaucerFaviconChangedEvent(...),
-            WebViewEvent::SAUCER_WEBVIEW_EVENT_TITLE => $this->listenSaucerTitleChangedEvent(...),
-            WebViewEvent::SAUCER_WEBVIEW_EVENT_LOAD => $this->listenSaucerLoadEvent(...),
+            WebViewEvent::SAUCER_WEBVIEW_EVENT_FAVICON => $this->listenSaucerFaviconChangedEvent(),
+            WebViewEvent::SAUCER_WEBVIEW_EVENT_TITLE => $this->listenSaucerTitleChangedEvent(),
+            WebViewEvent::SAUCER_WEBVIEW_EVENT_LOAD => $this->listenSaucerLoadEvent(),
         ];
     }
 
