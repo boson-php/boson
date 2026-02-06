@@ -21,6 +21,7 @@
         "boson-php/http-bridge": "^0.20",
         "boson-php/http-contracts": "^0.20",
         "boson-php/http-static-provider": "^0.20",
+        "boson-php/ipc": "^0.20",
         "boson-php/id-contracts": "^0.20",
         "boson-php/laravel-http-bridge": "^0.20",
         "boson-php/laravel-provider": "^0.20",

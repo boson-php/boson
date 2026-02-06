@@ -1,0 +1,9 @@
+parameters:
+  level: max
+  strictRules:
+    allRules: true
+  fileExtensions:
+    - php
+  paths:
+    - src
+  tmpDir: vendor/.cache.phpstan

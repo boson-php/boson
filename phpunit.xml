@@ -25,6 +25,7 @@
             <directory>libs/component/http/tests</directory>
             <directory>libs/component/http-body-decoder/tests</directory>
             <directory>libs/component/http-static-provider/tests</directory>
+            <directory>libs/component/ipc/tests</directory>
             <directory>libs/component/os-info/tests</directory>
             <directory>libs/component/pasm/tests</directory>
             <directory>libs/component/runtime/tests</directory>
@@ -68,6 +69,7 @@
             <directory>libs/component/http/src</directory>
             <directory>libs/component/http-body-decoder/src</directory>
             <directory>libs/component/http-static-provider/src</directory>
+            <directory>libs/component/ipc/src</directory>
             <directory>libs/component/os-info/src</directory>
             <directory>libs/component/pasm/src</directory>
             <directory>libs/component/runtime/src</directory>

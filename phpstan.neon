@@ -16,6 +16,7 @@ includes:
   - libs/component/http/phpstan.neon
   - libs/component/http-body-decoder/phpstan.neon
   - libs/component/http-static-provider/phpstan.neon
+  - libs/component/ipc/phpstan.neon
   - libs/component/os-info/phpstan.neon
   - libs/component/pasm/phpstan.neon
   - libs/component/runtime/phpstan.neon
