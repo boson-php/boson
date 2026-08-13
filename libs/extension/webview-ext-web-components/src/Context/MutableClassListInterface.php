@@ -27,7 +27,7 @@ interface MutableClassListInterface extends ClassListInterface
     public function remove(string $class, string ...$other): void;
 
     /**
-     * Replaces `$fromClass` clas name with `$toClass`.
+     * Replaces `$fromClass` class name with `$toClass`.
      *
      * Returns {@see true} if class name was replaced with `$toClass`,
      * and {@see false} otherwise.
