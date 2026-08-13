@@ -67,7 +67,7 @@ class <?=$className?> extends HTMLElement {
         this.#id = window.boson.ids.generate();
 
 <?php if ($isDebug): ?>
-        // You may set ApplicationCreateInfo::$debug to false to diable this logs
+        // You may set ApplicationCreateInfo::$debug to false to disable this logs
         console.log(`${this.#debugPrefix}<<?=$tagName?> /> created`);
 <?php endif ?>
 
@@ -93,7 +93,7 @@ class <?=$className?> extends HTMLElement {
                 }
 
 <?php if ($isDebug): ?>
-                // You may set ApplicationCreateInfo::$debug to false to diable this logs
+                // You may set ApplicationCreateInfo::$debug to false to disable this logs
                 console.log(`${this.#debugPrefix}<<?=$tagName?> /> render raw ${value}`);
 <?php endif ?>
 
@@ -116,7 +116,7 @@ class <?=$className?> extends HTMLElement {
         window.boson.components.instances.attach(this.#id, this);
 
 <?php if ($isDebug): ?>
-        // You may set ApplicationCreateInfo::$debug to false to diable this logs
+        // You may set ApplicationCreateInfo::$debug to false to disable this logs
         console.log(`${this.#debugPrefix}<<?=$tagName?> /> connected`);
 <?php endif ?>
 
@@ -128,7 +128,7 @@ class <?=$className?> extends HTMLElement {
                 }
 
 <?php if ($isDebug): ?>
-                // You may set ApplicationCreateInfo::$debug to false to diable this logs
+                // You may set ApplicationCreateInfo::$debug to false to disable this logs
                 console.log(`${this.#debugPrefix}<<?=$tagName?> /> render shadow ${value}`);
 <?php endif ?>
 
@@ -141,7 +141,7 @@ class <?=$className?> extends HTMLElement {
         window.boson.components.instances.detach(this.#id);
 
 <?php if ($isDebug): ?>
-        // You may set ApplicationCreateInfo::$debug to false to diable this logs
+        // You may set ApplicationCreateInfo::$debug to false to disable this logs
         console.log(`${this.#debugPrefix}<<?=$tagName?> /> disconnected`);
 <?php endif ?>
 
@@ -151,7 +151,7 @@ class <?=$className?> extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
 <?php if ($isDebug): ?>
-        // You may set ApplicationCreateInfo::$debug to false to diable this logs
+        // You may set ApplicationCreateInfo::$debug to false to disable this logs
         console.log(`${this.#debugPrefix}<<?=$tagName?> ${name}="${newValue}" /> attribute changed`);
 <?php endif ?>
 

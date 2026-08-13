@@ -20,7 +20,7 @@ use Boson\Contracts\Http\Exception\InvalidComponentArgumentExceptionInterface;
 interface EvolvableHeadersProviderInterface extends HeadersProviderInterface
 {
     /**
-     * Return an instance with the specified message heders list
+     * Return an instance with the specified message headers list
      *
      * This method MUST be implemented in such a way as to retain the
      * immutability of the message, and MUST return a new instance
